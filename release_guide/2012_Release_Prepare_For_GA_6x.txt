@@ -1,0 +1,148 @@
+HOWTO Prepare for a Final/GA release
+
+** TODO: JBIDE-11111 process for pushing Central discovery files needs to change soon **
+
+See also 2012_Release_Branching_For_Milestone.txt
+
+		alias   ga='git add'
+		alias   stat='git status'
+		alias   gd='git diff --color=always -w'
+		alias   scpr='rsync -aPrz --rsh=ssh'
+		alias   ci='git commit -m'
+		alias   gp='git stash; git svn rebase; git svn dcommit; git stash pop'
+
+		version="4.0.0.Final-SNAPSHOT"
+2. [1 file] update jbt/trunk/build/parent/pom.xml - set BUILD_ALIAS to new milestone (CR1 -> Final)
+
+3. Parent pom versioning 
+
+# this is now all done in github. See branching guide, 2012_Release_Branching_For_Milestone.txt, for details.
+# TODO: rewrite this
+
+	cd ~/trunk
+	# 
+	for p in $(find . -mindepth 2 -maxdepth 2 -name pom.xml | egrep -v "bpel|esb|flow|jbpm|runtime-soa") ./build/aggregate/pom.xml; do 
+		sed -i -e "s#<version>4.0.0.CR1-SNAPSHOT</version>#<version>4.0.0.Final-SNAPSHOT</version>#g" $p
+	done
+	stat .
+	ci "Use new ${version} version of parent pom" .; gp
+
+5. [1 file] update jbt/branch/examples/plugins/org.jboss.tools.project.examples/src/org/jboss/tools/project/examples/configurators/DefaultJBossCentralConfigurator.java to point at correct directory file for the milestone (or GA) -- see JBIDE-10367
+
+	# this is now all done in github. 
+	# TODO rewrite this
+	cd /tmp; svn co http://svn.jboss.org/repos/jbosstools/branches/jbosstools-3.3.x/examples/plugins/org.jboss.tools.project.examples/src/org/jboss/tools/project/examples/configurators/
+	cd  configurators; vi DefaultJBossCentralConfigurator.java
+	svn diff .; svn ci -m "switch configurator to use stable/ instead of development/" DefaultJBossCentralConfigurator.java
+	cd /tmp; rm -fr configurators
+
+	--> http://download.jboss.org/jbosstools/updates/development/indigo/jbosstools-directory.xml (should have this through the milestone cycle)
+	--> http://download.jboss.org/jbosstools/updates/stable/indigo/jbosstools-directory.xml (for last CR / prep for GA)
+		
+6. [6 files] update these files to point at new parent pom version (CR1 -> Final)
+
+	# TODO rewrite this - techpreview and extras are no more needed
+	jbds/trunk/devstudio.eapcompatibility.tests/pom.xml 
+	jbds/trunk/extras/pom.xml 
+	jbds/trunk/product-soa/pom.xml 
+	jbds/trunk/product/pom.xml 
+	jbds/trunk/qa/devstudiotest-site/pom.xml 
+	jbds/trunk/techpreview/pom.xml 
+	jbds/trunk/**/pom*.xml
+
+	cd ~/truu
+ 	for p in $(find.sh . pom\*.xml 4.0.0.CR1-SNAPSHOT target "" -q); do
+		sed -i -e "s#<version>4.0.0.CR1-SNAPSHOT</version>#<version>4.0.0.Final-SNAPSHOT</version>#g" $p
+ 	done
+ 	stat .
+ 	ci "Use new ${version} version of parent pom" .; gp
+
+7. [1 files] update these files to new milestone (CR1 -> Final)
+	jbds/trunk/devstudio-installer/version.properties
+
+	cd ~/truu
+	vi product/installer/version.properties
+	:%s/CR1/GA/g
+	:wn
+	gd .
+ 	ci "Switch CR to GA" .; gp
+
+9. PURGE OLD staging/ and staging.previous/ cache to avoid accidentally bootstrapping the builds w/ old milestones.
+	Dirs to purge:
+	
+	ssh to dev01.mw.lab.eng.bos.redhat.com, sudo to hudson user, then:
+	cd ~/STATIC/jbds/builds/staging.previous/; rm -fr *_stable_branch* &
+	cd ~/STATIC/jbds/builds/staging/; rm -fr *_stable_branch* &
+	(etc.)
+
+	sftp to tools@filemgmt.jboss.org, then:
+	cd /downloads_htdocs/tools/builds/staging.previous/; rm -fr *_stable_branch* &
+	cd /downloads_htdocs/tools/builds/staging/; rm -fr *_stable_branch* &
+	(etc.)
+	
+10. Enable stable branch jobs in https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_5.0.indigo/ 
+
+	gp # update local SVN cache from SVN repo (get latest)
+	hudpull # fetch latest config.xml files from server
+	cd ~/truu/hudson-jobs/cache/https/jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_5.0.indigo/job
+	ci "update jobs" .; gp # ensure server copy and SVN copy are in sync; omit target platform and xulrunner
+	for c in $(find.sh . config.xml "disabled>true<" "" "" -q); do #includes
+		if [[ $(echo $c | grep -v "xulrunner|target-platform") ]]; then #excludes
+			sed -i -e "s#disabled>true<#disabled>false<#g" $c
+		fi
+	done
+
+	stat .
+	ci "enable stable_branch jobs" .; gp
+
+12. Kick off parent pom deployer job: https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-3.3_stable_branch.parent/build
+
+13. Ensure XulRunner 1.9.2 job builds from the stable branch; enable the job (want .Final suffix, not .M1 or .CR1).
+
+14. Kick tests component job and wait for the whole stack to respin: https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_5.0.indigo/job/jbosstools-3.3_stable_branch.component--tests/build
+
+15. Configure JBT stable branch .aggregate job:   https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-3.3_stable_branch.aggregate/configure
+
+	set RELEASE = "Yes"
+	set update.site.description = "Stable Release"
+	update job description if applicable
+
+16. Configure JBDS stable branch .updatesite job: https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/devstudio-5.0_stable_branch.updatesite/configure
+
+	add "-DBUILD_ALIAS=GA " into MAVEN_FLAGS
+	set RELEASE = "Yes"
+	set update.site.description = "Stable Release"
+	update job description if applicable
+
+17. Configure JBDS stable branch .product job (deprecated): https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/devstudio-5.0_stable_branch.product/configure
+
+	set BUILDTYPE = "R"
+	update job description if applicable
+
+-----
+
+== EMAIL TEMPLATE ==
+
+To:
+
+jbds-pm-list <jbds-pm-list@redhat.com>
+"jbosstools-dev@lists.jboss.org" <jbosstools-dev@lists.jboss.org>
+"external-exadel-list@redhat.com" <external-exadel-list@redhat.com>
+
+echo "
+Subject: 
+
+JBoss Tools & Dev Studio are configured for upcoming Final/GA releases
+
+Body:
+
+Jobs are now spinning here:
+
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_5.0.indigo/
+http://hudson.jboss.org/hudson/view/JBossTools/view/JBossTools_3.3.indigo/
+
+Note that we are *CODE FROZEN*, which means DO NOT COMMIT ANY CODE CHANGES into the 3.3.x/5.0.x branch while these builds are spinning. (Documentation changes are OK.)
+
+Trunk remains open for new development work. Once we release Final/GA, the branch will reopen for 3.3.x/5.0.x maintenance work.
+
+"

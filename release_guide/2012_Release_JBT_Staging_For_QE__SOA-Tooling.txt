@@ -1,0 +1,82 @@
+== Publishing JBT update sites for QE ==
+
+0. Open an sftp connection to tools@filemgmt.jboss.org:/downloads_htdocs/jbosstools/
+	sftp tools@filemgmt.jboss.org:/downloads_htdocs/jbosstools/
+
+=== Builds ===
+
+1. Move the latest SOA Tooling nightly build:
+
+	version=3.3.3.Final
+	branch=soa-tooling/3.3.3.Final
+	buildID2=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/nightly/${branch} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); buildID2=${buildID2%%/*}
+	echo "Latest build: ${buildID2}"
+	echo "mkdir development/${version}.soa-tooling" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+	echo "rename nightly/${branch}/${buildID2} development/soatools-${version}/${buildID2}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+
+	echo "http://download.jboss.org/jbosstools/builds/development/soatools-${version}/${buildID2}/"
+
+=== Update Sites ===
+
+2. Move the latest SOA Tooling update sites (no symlinks to avoid accidental overwrites):
+
+	version=3.3.3.Final
+	branch=soa-tooling/3.3.3.Final
+	echo "rename builds/development/soatools-${version}/${buildID2}/all/repo updates/soatools-${version}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/
+	echo "http://download.jboss.org/jbosstools/updates/soatools-${version}/"
+
+---
+
+Note that 
+	sftp://tools@filemgmt.jboss.org/downloads_htdocs/tools/ 
+		maps to 
+	http://download.jboss.org/jbosstools/
+
+If you don't need it urgently, you can push files there simply by committing changes to SVN here:
+
+	http://anonsvn.jboss.org/repos/jbosstools/trunk/download.jboss.org/jbosstools/
+
+This is controlled by Hudson job here:
+
+	https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_All/job/jbosstools-download.jboss.org-rsync-from-svn/
+	
+--------------------------------------------
+
+== EMAIL TEMPLATE ==
+
+To:
+
+jbds-pm-list <jbds-pm-list@redhat.com>
+"jbosstools-dev@lists.jboss.org" <jbosstools-dev@lists.jboss.org>
+"external-exadel-list@redhat.com" <external-exadel-list@redhat.com>
+
+echo "
+Subject: 
+
+JBoss Tools SOA Tooling ${version} bits available for QE testing
+
+Body:
+
+As always, these are not FINAL bits, but preliminary results for QE testing. Not for redistribution to customers. 
+
+Update Sites:
+
+http://download.jboss.org/jbosstools/updates/soatools-${version}/
+
+Builds:
+
+http://download.jboss.org/jbosstools/builds/development/soatools-${version}/${buildID2}
+
+JBoss Central:
+
+To test this version of Central, add this to your eclipse.ini file after the -vmargs line:
+
+-Djboss.discovery.directory.url=http://download.jboss.org/jbosstools/updates/JBossTools-${version}.soa-tooling/jbosstools-directory.xml
+
+New + Noteworthy:
+
+Subject to change, the latest N&N is here:
+
+https://anonsvn.jboss.org/repos/jbosstools/trunk/documentation/whatsnew/index.html 
+
+"

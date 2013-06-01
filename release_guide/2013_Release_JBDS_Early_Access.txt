@@ -1,0 +1,201 @@
+== Publishing JBDS Installers to EA ==
+
+# TODO in product/features/com.jboss.jbds.product.feature/p2.inf
+# TODO when releasing GA make sure to :%s/development/stable/g and :%s/7.0-staging/7.0/g
+
+1. ssh to wallace.redhat.com, then fetch installers & sources zip:
+
+  screen
+
+  branch=7.0.0.Alpha2
+  version=7.0.0.Alpha2c; # a, b, c, ...
+  dev=10.16.88.146; # dev01.mw.lab.eng.bos.redhat.com
+  cd /mnt/devstudio/earlyaccess/builds/development/
+  mkdir -p /mnt/devstudio/earlyaccess/builds/development/${branch}
+  touch ${branch}-eap__No.eap.builds.will.be.released
+  rsync -aPrz --rsh=ssh --exclude="*-eap-*" nboldt@${dev}:~/RHDS/builds/development/${version}.installer/jbdevstudio-product* ${branch}/
+
+  # Add an .htaccess file w/ password to the *-eap folder, and if necessary, update the .htpasswd file w/ a new password (use `htpasswd` to generate the hashed password).
+  # cp /mnt/devstudio/earlyaccess/builds/development/7.0.*-eap/.htaccess /mnt/devstudio/earlyaccess/builds/development/${version}-eap/
+
+  # clean out old installers & update sites from previous milestones; rename update sites from "a,b,c" to ""
+  branch=7.0.0.Alpha2
+  version=7.0.0.Alpha2c; # a, b, c, ...
+  cd /mnt/devstudio/updates/7.0.0/
+  if [[ ${branch} != ${version} ]]; then 
+    mv ${branch}.core ${branch}.core.DELETEME
+    mv ${branch}.target-platform ${branch}.target-platform.DELETEME
+    mv ${version}.core ${branch}.core
+    mv ${version}.target-platform ${branch}.target-platform
+  fi
+  # TODO: make sure this is safe!
+  rm -fr ${branch}?.core ${branch}?.target-platform *.DELETEME
+
+  cd /mnt/devstudio/earlyaccess/builds/development
+  if [[ ${branch} != ${version} ]]; then 
+    mv ${branch} ${branch}.DELETEME
+    mv ${version} ${branch}
+  fi  
+  # TODO: make sure this is safe!
+  rm -fr *.DELETEME
+
+2. rename milestones from Beta1b to Beta1; fix html pages in 7.0-staging
+
+  cd ~/truu/devstudio.jboss.com/updates/7.0-staging
+  branch=7.0.0.Alpha2
+  version=7.0.0.Alpha2c; # a, b, c, ...
+  now=`date +%s000`
+  for d in composite*.xml index.html central/core/index.html ; do
+    sed -i -e "s#${version}#${branch}#g" $d
+    sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
+  done
+  ci "rename ${version} to ${branch}" .
+
+3. Update http://svn.jboss.org/repos/devstudio/trunk/devstudio.jboss.com/earlyaccess/*.html
+
+  alias   ga='git add'
+  alias   stat='git status'
+  alias   gd='git diff --color=always -w'
+  alias   scpr='rsync -aPrz --rsh=ssh'
+  alias   ci='git commit -m'
+  alias   gp='git stash; git svn rebase; git svn dcommit; git stash pop'
+
+  branch=7.0.0.Alpha2
+  version=7.0.0.Alpha2c; # a, b, ...
+  cd ~/truu/devstudio.jboss.com/earlyaccess
+  wget http://www.qa.jboss.com/binaries/RHDS/builds/development/${version}.installer/${branch}.html
+  echo "<html><head></head><body onload=\"document.location.href='../${branch}.html'\"></body></html>" > 7.0/index.html
+  ga ${branch}.html; ci "new early access build - ${branch}" .; gp
+
+  scpr ${branch}.html 7.0 nboldt@wallace.redhat.com:/mnt/devstudio/earlyaccess/
+
+4. Update https://devstudio.jboss.com/updates/7.0*/devstudio-directory.xml to point at new discovery jar(s) from staging.
+
+  branch=7.0.0.Alpha2
+  SRC_SITE=7.0-staging
+  DESTSITE=7.0-development # or 7.0/ for a GA release
+  scpr ~/truu/devstudio.jboss.com/updates/${SRC_SITE}/* ~/truu/devstudio.jboss.com/updates/${DESTSITE}/
+
+  # check in / sync changes
+  cd ~/truu/devstudio.jboss.com/updates/
+  stat .; gd .
+  ga ${DESTSITE}
+  ci "release ${branch} from ${SRC_SITE} to ${DESTSITE}" . 
+  # push both staging and development folders to wallace
+  scpr ~/truu/devstudio.jboss.com/updates/${DESTSITE} ~/truu/devstudio.jboss.com/updates/${SRC_SITE} $WALL/updates/
+
+5. Fix file permissions on wallace (pull from dev01):
+
+  ssh nboldt@wallace
+
+  chmod -R g+w /mnt/devstudio/updates/7.0-development /mnt/devstudio/earlyaccess 2>/dev/null
+  chgrp -R devstudio /mnt/devstudio/updates/7.0-development /mnt/devstudio/earlyaccess 2>/dev/null
+
+
+6. After 30-60 mins, review Early Access site:
+
+  https://devstudio.jboss.com/earlyaccess/
+
+7. Tag SVN
+
+  # if not tagging from tip of the branch, use git log to determine the revision needed to tag, eg., http://svn.jboss.org/repos/devstudio/!svn/bc/${rev}/branches/devstudio-7.0.x/
+  branch=7.0.0.Alpha2
+  rev=9640
+  svn -m "tag revision ${rev} as ${branch}" -r ${rev} copy http://svn.jboss.org/repos/devstudio/branches/devstudio-7.0.x/ http://svn.jboss.org/repos/devstudio/tags/devstudio-${branch}/
+
+  #else just do this
+  branch=7.0.0.Alpha2
+  svn -m "tag for ${branch}" copy http://svn.jboss.org/repos/devstudio/branches/devstudio-${branch}x/ http://svn.jboss.org/repos/devstudio/tags/devstudio-${branch}/
+
+8. Commit updates to release guide (including this document):
+
+  branch=7.0.0.Alpha2
+  cd ~/truu/documentation/Release_Guide
+  ci "update release guide for ${branch}" *2013*JBDS*
+  gp
+
+9. Move installers from "a" or "b" folder to base folder; purge old stuff from OLD/ folder
+
+  ssh to dev01.mw.lab.eng.bos.redhat.com, sudo to hudson user, then
+
+  cd ~/RHDS/builds/development/
+  mv 7.0.0.Alpha2.installer OLD/
+  mv 7.0.0.Alpha2c.installer 7.0.0.Alpha2.installer
+  # repeat for updates/development and discovery/development
+
+== Email Template -- send two emails ==
+
+1. To:
+"jbosstools-dev@lists.jboss.org" <jbosstools-dev@lists.jboss.org>
+
+2. To:
+jbds-pm-list <jbds-pm-list@redhat.com>
+"external-exadel-list@redhat.com" <external-exadel-list@redhat.com>
+jboss-announce@redhat.com (optional for major milestones/releases)
+
+branch=7.0.0.Alpha2
+version=7.0.0.Alpha2 # a, b, c...
+echo "
+Subject: 
+
+JBDS ${branch} on Early Access
+
+Body:
+
+
+JBDS ${branch} Early Access installers are now available!
+
+https://devstudio.jboss.com/earlyaccess/
+
+Note that bits may take a while to replicate from our staging server to publication. Please allow at least an hour before attempting to download them - if the page above still shows the previous milestone instead of ${branch}, try again later.
+
+--
+
+JBoss Central
+
+JBDS Central should be looking to this URL to resolve content listed on the Software/Update tab (can be changed in studio/jbdevstudio.ini):
+
+  -Djboss.discovery.directory.url=https://devstudio.jboss.com/updates/7.0-development/devstudio-directory.xml
+       -Djboss.discovery.site.url=https://devstudio.jboss.com/updates/7.0-development/
+
+--
+
+Eclipse Marketplace
+
+JBDS ${branch} will also be available on the Eclipse Marketplace soon. The link below should work once the content has been reviewed by the Eclipse Foundation:
+
+http://marketplace.eclipse.org/content/jboss-developer-studio-kepler
+
+--
+
+Schedule / Upcoming Releases:
+
+https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.plugin.system.project%3Aversions-panel
+
+"
+
+== Email Template -- announce internally for push to CSP ==
+
+#To:
+#
+#jbds-pm-list <jbds-pm-list@redhat.com>
+#Mark Yarborough <myarboro@redhat.com>
+
+branch=7.0.0.Alpha2
+version=7.0.0.Alpha2 # a, b, c...
+echo "
+Subject: 
+
+JBDS ${branch} available for push to CSP
+
+Body:
+
+JBDS ${branch} (renamed from ${version}) is available to push to CSP.
+
+http://www.qa.jboss.com/binaries/RHDS/builds/development/${version}.installer/
+
+--
+
+Note: if your DNS won't resolve it, use 10.16.89.17 instead of www.qa.jboss.com.
+
+"

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bookmarks>
+   <site url="http://download.jboss.org/jbosstools/updates/stable/indigo/" selected="true" name=""/>
+   <site url="http://download.jboss.org/jbosstools/updates/indigo/" selected="true" name=""/>
+   <site url="http://download.jboss.org/jbosstools/updates/indigo/extras/" selected="true" name=""/>
+
+   <site url="http://download.jboss.org/jbosstools/updates/stable/indigo/soa-tooling/" selected="true" name=""/>
+   <site url="http://download.jboss.org/jbosstools/updates/indigo/soa-tooling/" selected="true" name=""/>
+</bookmarks>

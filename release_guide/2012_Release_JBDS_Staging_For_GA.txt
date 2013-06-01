@@ -1,0 +1,154 @@
+== Publishing JBDS Updates to Staging ==
+
+# TODO in product/features/com.jboss.jbds.product.feature/p2.inf
+# TODO when releasing GA make sure to :%s/development/stable/g and :%s/6.0-staging/6.0/g
+
+1. ssh to wallace.redhat.com, then:
+
+	screen
+	echo; root=4.1
+	branch=4.1.2.GA
+	version=4.1.2.GA
+	tpzip=jbds400-e362-wtp325.target.zip
+    dev=10.16.88.146; # dev01.mw.lab.eng.bos.redhat.com
+	mkdir -p /mnt/devstudio/updates/${root}/; cd /mnt/devstudio/updates/${root}/
+   
+	rsync -aPrz --rsh=ssh nboldt@${dev}:~/RHDS/updates/development/${version}.core/* /mnt/devstudio/updates/${root}/${branch}.core/
+	rsync -aPrz --rsh=ssh nboldt@${dev}:~/RHDS/updates/development/${version}.extras/* /mnt/devstudio/updates/${root}/${branch}.extras/
+	rsync -aPrz --rsh=ssh nboldt@${dev}:~/RHDS/updates/development/${version}.techpreview/* /mnt/devstudio/updates/${root}/${branch}.techpreview/
+	rsync -aPrz --rsh=ssh nboldt@${dev}:~/RHDS/updates/jbds-target-platform/${tpzip} /mnt/devstudio/updates/${root}/
+	unzip -d /mnt/devstudio/updates/${root}/${branch}.target-platform /mnt/devstudio/updates/${root}/${tpzip}
+
+or
+
+	screen
+	echo; root=5.0.0
+	branch=5.0.0.Beta1
+	version=5.0.0.Beta1a
+	tpzip=jbds500-e372-wtp332.target.zip
+    dev=10.16.88.146; # dev01.mw.lab.eng.bos.redhat.com
+	mkdir -p /mnt/devstudio/updates/${root}/; cd /mnt/devstudio/updates/${root}/
+
+	rsync -aPrz --rsh=ssh nboldt@${dev}:~/RHDS/updates/development/${version}.core/* /mnt/devstudio/updates/${root}/${branch}.core/
+	rsync -aPrz --rsh=ssh nboldt@${dev}:~/RHDS/updates/development/${version}.extras/* /mnt/devstudio/updates/${root}/${branch}.extras/
+	rsync -aPrz --rsh=ssh nboldt@${dev}:~/RHDS/updates/development/${version}.techpreview/* /mnt/devstudio/updates/${root}/${branch}.techpreview/
+	rsync -aPrz --rsh=ssh nboldt@${dev}:~/RHDS/updates/development/${version}.soa-tooling/* /mnt/devstudio/updates/${root}/${branch}.soa-tooling/
+	rsync -aPrz --rsh=ssh nboldt@${dev}:~/RHDS/updates/jbds-target-platform_3.3.indigo/${tpzip} /mnt/devstudio/updates/${root}/
+	unzip -d /mnt/devstudio/updates/${root}/${branch}.target-platform /mnt/devstudio/updates/${root}/${tpzip}
+
+2. Update ~/truu/devstudio.jboss.com/updates/?.0/staging/{,soa-tooling,extras,techpreview}/composite*.xml and ~/truu/devstudio.jboss.com/updates/?.0/staging/index.html.
+   Commit changes to http://svn.jboss.org/repos/devstudio/trunk/devstudio.jboss.com/updates/. Publish changes to wallace.
+
+	stream=4.0
+	vi ~/truu/devstudio.jboss.com/updates/${stream}/staging/{extras,techpreview}/composite*.xml ~/truu/devstudio.jboss.com/updates/${stream}/staging/index.html ~/truu/devstudio.jboss.com/updates/${stream}/staging/*/index.html
+	cd ~/truu/devstudio.jboss.com/updates/${stream}/staging/; ci "new staging site" .; gp
+	rsync -aPrz --rsh=ssh ~/truu/devstudio.jboss.com/updates/${stream}/staging/* nboldt@wallace.redhat.com:/mnt/devstudio/updates/${stream}/staging/
+or
+	stream=5.0
+	vi ~/truu/devstudio.jboss.com/updates/${stream}/staging/{,soa-tooling,extras,techpreview}/composite*.xml ~/truu/devstudio.jboss.com/updates/${stream}/staging/index.html ~/truu/devstudio.jboss.com/updates/${stream}/staging/*/index.html
+		:%s/.M5./.Beta1./g
+		:wn
+		\ts
+		:wn		
+	cd ~/truu/devstudio.jboss.com/updates/${stream}/staging/; ci "new staging site" .; gp
+	rsync -aPrz --rsh=ssh ~/truu/devstudio.jboss.com/updates/${stream}/staging/* nboldt@wallace.redhat.com:/mnt/devstudio/updates/${stream}/staging/
+
+3. After 30-60 mins, review update sites for Core, SOA Tooling, Extras, Tech Preview in browser and in JBDS. Install available features.
+
+	https://devstudio.jboss.com/updates/4.0/staging/
+	https://devstudio.jboss.com/updates/4.0/staging/extras/
+	https://devstudio.jboss.com/updates/4.0/staging/techpreview/
+or
+	https://devstudio.jboss.com/updates/5.0-staging/
+	https://devstudio.jboss.com/updates/5.0-staging/soa-tooling/ [JBDS 5 ONLY]
+	https://devstudio.jboss.com/updates/5.0-staging/extras/
+	https://devstudio.jboss.com/updates/5.0-staging/techpreview/
+
+== [GA ONLY] Clean up development area / move to stable ==
+
+1. ssh to 10.16.88.146, sudo to hudson user # dev01.mw.lab.eng.bos.redhat.com
+
+2. Move last milestone build and update sites from development into staging, and rename from ${version} to ${branch}:
+
+	branch=4.1.3.GA
+	version=4.1.3.GA
+	for f in ~/RHDS/builds/development/ ~/RHDS/updates/development/; do 
+		for d in $(find . -maxdepth 1 -type d -name "${version}*"); do e=${d/\.\/${version}/..\/stable\/${branch}}; mv $d $e; done
+	done
+
+3. Purge old files in ~/RHDS/builds/development/OLD/ and ~/RHDS/updates/development/OLD/
+
+# ** TODO: JBIDE-11111 process for pushing Central discovery files needs to change soon **
+
+4. fix Central discovery plugin - must point to the RELEASE URL, not the STAGING one
+
+	version=5.0.0.GA
+	cd ~/truu/devstudio.jboss.com/updates/5.0-staging/discovery/
+	wget -q -nc https://devstudio.jboss.com/updates/5.0-staging/devstudio-directory.xml
+	newJar=$(cat devstudio-directory.xml | grep entry | sed -e "s#.\+discovery/#discovery/#g" | sed -e "s#\.jar.\+#.jar#g" | grep -v "soa-tooling"); echo $newJar
+	wget -q -nc https://devstudio.jboss.com/updates/5.0-staging/${newJar}
+	echo $newJar
+	rm -f ~/truu/devstudio.jboss.com/updates/5.0-staging/discovery/devstudio-directory.xml
+
+	# ensure that your plugin points to the RELEASE URL, not the STAGING one:
+	unzip -d ~/truu/devstudio.jboss.com/updates/5.0-staging/${newJar}{_,}
+	pushd ~/truu/devstudio.jboss.com/updates/5.0-staging/${newJar}_ >/dev/null 
+	sed -i "s#https://devstudio.jboss.com/updates/5.0-staging/central/core/#https://devstudio.jboss.com/updates/5.0/central/core/#g" plugin.xml
+	zip -u ~/truu/devstudio.jboss.com/updates/5.0-staging/${newJar} plugin.xml
+	popd >/dev/null
+	rm -fr ~/truu/devstudio.jboss.com/updates/5.0-staging/${newJar}_
+
+== Email Template ==
+
+	stream=4.0
+	branch=4.1.3.GA
+	version=4.1.3.GA
+
+or
+
+	stream=5.0
+	branch=5.0.0.M4
+	version=5.0.0.M4b
+
+To:
+
+jbds-pm-list <jbds-pm-list@redhat.com>
+"external-exadel-list@redhat.com" <external-exadel-list@redhat.com>
+jboss-announce@redhat.com (optional for major milestones/releases)
+
+echo "
+Subject: 
+
+JBDS ${branch} Update Site on Staging
+
+Body:
+
+JBDS ${branch} Update Sites are now available on staging!
+
+	https://devstudio.jboss.com/updates/${stream}/staging/
+	https://devstudio.jboss.com/updates/${stream}/staging/extras/
+	https://devstudio.jboss.com/updates/${stream}/staging/techpreview/
+	https://devstudio.jboss.com/updates/${stream}/staging/soa-tooling/ 
+
+Note that bits may take a while to replicate from our staging server to publication. Please allow at least an hour before attempting to access them - if the page above still shows the previous milestone instead of ${branch}, try again later.
+"
+
+[GA ONLY]
+echo "
+
+Additionally, I've moved the development bits (${version}) into stable (${branch}) for backup/storage, and purged the older milestone bits to save disk.
+
+Installers:
+
+http://www.qa.jboss.com/binaries/RHDS/builds/stable/${branch}/
+
+Update Site(s):
+
+http://www.qa.jboss.com/binaries/RHDS/updates/stable/${branch}.core/
+http://www.qa.jboss.com/binaries/RHDS/updates/stable/${branch}.soa-tooling/
+
+--
+
+Note: if your DNS won't resolve it, use 10.16.89.17 instead of www.qa.jboss.com.
+
+"

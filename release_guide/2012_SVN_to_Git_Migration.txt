@@ -1,0 +1,222 @@
+== Migration from SVN to Git ==
+
+This operation will require a fair amount of disk. Each copy of the overall jbosstools-svn-mirror git repo is about 2.6Gb. 
+After the migration, Freemarker was only 4.4Mb.
+
+1. Check out entire git repo:
+
+	git clone git@github.com:jbosstools/jbosstools-svn-mirror.git
+		or
+	git clone https://github.com/jbosstools/jbosstools-svn-mirror.git
+
+2. Copy local repo to new working folder 
+
+	# for a single component migrating to github (1:1)
+	targetName="jbosstools-forge"
+	target="forge"
+	subdirs="" # leave blank for single component
+	# for a collection of components migrating to a single repo (N:1)
+	targetName="jbosstools-base"
+	target="base"
+	subdirs="common runtime tests usage" # space-separated list of child folders
+
+	rsync -aPz jbosstools-svn-mirror tmp; mv tmp/jbosstools-svn-mirror ${targetName}/; rmdir tmp
+
+3. Enter the new copy folder, and clean out all but the content we care about
+
+	cd ${targetName}/
+
+	# remove all but the branches/tags we want
+	branches="jbosstools-3.2.x jbosstools-3.3.x jbosstools-4.0.0.Alpha1 tags/jbosstools-3.2.2.Final tags/jbosstools-3.3.1.Final trunk"
+	for branch in $branches; do git branch -t $branch origin/$branch; done
+
+	#	Branch jbosstools-3.2.x set up to track remote branch jbosstools-3.2.x from origin.
+	#	Branch jbosstools-3.3.x set up to track remote branch jbosstools-3.3.x from origin.
+	#	Branch jbosstools-4.0.0.Alpha1 set up to track remote branch jbosstools-4.0.0.Alpha1 from origin.
+	#   Branch tags/jbosstools-3.2.2.Final set up to track remote branch tags/jbosstools-3.2.2.Final from origin.
+	#	Branch tags/jbosstools-3.3.1.Final set up to track remote branch tags/jbosstools-3.3.1.Final from origin.
+
+ 	# remove the origin to avoid pushing there and to make sure that old commits will not be referenced by the origin
+ 	git remote rm origin
+
+	# list branches
+	git branch -a
+
+  	#	jbosstools-3.2.x
+  	#	jbosstools-3.3.x
+  	#	jbosstools-4.0.0.Alpha1
+  	#  	tags/jbosstools-3.2.2.Final
+  	#	tags/jbosstools-3.3.1.Final
+	#	* trunk
+
+	# remove all tags - note that for an svn2git repo like jbosstools-svn-mirror this has no effect because svn2git put all the tags as branches under tags/jbosstools-*
+	# git tag -l | xargs git tag -d
+
+	#git status .
+
+	# if anything needs to be committed, do so now
+	#git commit -m "prepare local repo copy for filtering" .
+
+	# ** FOR A SINGLE COMPONENT USE THIS **
+	if [[ ! ${subdirs} ]]; then
+
+		# filter out all the subdirs we don't care about - repeat for each branch in $branches
+		for branch in $branches; do 
+			echo "git checkout $branch ..."
+			git checkout -q -f ${branch}
+			if [[ ! -d ${target} ]]; then # if component didn't exist for an older branch/tag, we need an empty folder for it
+				echo "Create empty folder ${target}/ ..."
+				mkdir ${target}; touch ${target}/.gitkeep; git add ${target}; git commit -m "add empty ${target} folder" ${target}
+			fi
+			echo "Filter $branch ..."
+			git filter-branch -f --tag-name-filter cat --prune-empty --subdirectory-filter ${target} -- --all
+		done
+
+		# 	Rewrite 5236edd9edb5b0b7656d15e57deab472e955eb95 (374/374)
+		#	WARNING: Ref 'refs/heads/jbosstools-3.1.x' is unchanged
+		#	WARNING: Ref 'refs/heads/jbosstools-3.2.x' is unchanged
+		#	Ref 'refs/heads/jbosstools-3.3.x' was rewritten
+		#	Ref 'refs/heads/jbosstools-4.0.0.Alpha1' was rewritten
+		#	Ref 'refs/heads/trunk' was rewritten
+
+		# NOTE: If you need to revert something above, use this to revert all filter-branch operations above:
+		# for branch in $branches; do git checkout $branch; git pull --rebase origin $branch; done
+
+	# ** FOR A COLLECTION OF COMPONENTS BEING MERGED INTO A SINGLE REPO USE THIS **
+	else 
+
+		# METHOD 1 - YOU WILL LOSE HISTORY THIS WAY!
+
+		#git move then filter as if a single component
+		mkdir ${target}; for d in ${subdirs}; do git mv ${d} ${target}/; done
+		git commit -m "move ${subdirs} into ${target}" . # check in moved files
+
+		# filter out all the subdirs we don't care about - repeat for each branch in $branches
+		for branch in $branches; do 
+			echo "git checkout $branch ..."
+			git checkout -q -f ${branch}
+			echo "Filter $branch ..."
+			git filter-branch -f --tag-name-filter cat --prune-empty --subdirectory-filter ${target} -- --all
+		done
+
+		# METHOD 2 - takes as much as 6hrs to purge each subfolder from the 2.6G repo
+		for d in $(find . -maxdepth 1 -type f); do 
+			date; echo "Purge from index: file $d"
+			git filter-branch --force --index-filter "git rm -f -q --cached --ignore-unmatch ${d}" --prune-empty HEAD
+			date; echo "Purge from filesystem: file $d"
+			git rm -f -q $d
+		done
+		for d in $(find . -maxdepth 1 -type d -not -name "." -not -name ".git" | sort); do 
+			dd=${d:2}
+			if [[ ${subdirs/${dd}/} != $subdirs ]]; then 
+				date; echo "Keep folder $dd/"
+			else 
+				date; echo "Purge from index: folder $dd/"
+				git filter-branch --force --index-filter "git rm -r -f -q --cached --ignore-unmatch ${dd}/" --prune-empty HEAD 
+				date; echo "Purge from filesystem: folder $dd/"
+				git rm -r -f -q $d
+			fi
+		done
+		
+		echo '<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.jboss</groupId>
+	<artifactId>'${targetName}'</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<modules>' > pom.xml; for d in ${subdirs}; do echo "		<module>${d}</module>" >> pom.xml; done; echo '	</modules>
+</project>
+' >> pom.xml
+		git add pom.xml
+		git commit -m "add root pom to be able to build whole ${target} project in one operation" pom.xml
+	fi
+
+	du -sh ../${targetName}
+	# should get about 1.6G
+
+	# garbage collect
+	git reset --hard
+
+	# 	HEAD is now at [some commitid] [some commit message]
+
+	git for-each-ref --format="%(refname)" refs/original/ | xargs -n 1 git update-ref -d
+	git reflog expire --expire=now --all
+
+	# this might take >4 mins
+	git gc --aggressive --prune=now
+
+	# 	Counting objects: 252576, done.
+	# 	Delta compression using up to 8 threads.
+	# 	Compressing objects: 100% (194466/194466), done.
+	# 	Writing objects: 100% (252576/252576), done.
+	# 	Total 252576 (delta 140467), reused 107773 (delta 0)
+	# 	Removing duplicate objects: 100% (256/256), done.
+
+	du -sh ../${targetName}
+	# should NOW get <100M - 70M forge, 2.3M freemarker
+
+	# make sure we're in trunk for the next steps
+	git checkout trunk
+
+	# prevent .project, bin, and *.class files in root from being committed
+	echo bin >> .gitignore
+	echo "*.class" >> .gitignore
+	echo "target" >> .gitignore
+	echo .project >> .gitignore; git add .gitignore ; git commit -m ".gitignore file" .gitignore
+	
+	# generate project description
+	# for a single component migrating to github (1:1)
+	# or, for a collection of components migrating to a single repo (N:1), include a description listing the components
+	if [[ ! ${subdirs} ]]; then description="JBoss Tools - ${target} component repo"; else description="JBoss Tools - ${target} repo includes these components: ${subdirs}"; fi
+
+	# generate a README.md
+	echo "${targetName}
+==========
+
+${description}
+
+This project is a fork from https://github.com/jbosstools/jbosstools-svn-mirror, after 
+stripping out all but this repo's folder(s) and the most recent dev and maintenance branches.
+
+<pre>" > README.md
+git branch -a | grep -v "remote" 2>&1 >> README.md
+	echo "</pre>"  >> README.md
+	# commit README.md in trunk
+	git add README.md; git commit -m "README.md file" README.md
+
+4. Create new remote repo in github, named as above ${targetName}, eg. jbosstools-base or jbosstools-forge
+
+	https://github.com/new 
+
+	DO NOT GENERATE A README -- USE THE ONE ABOVE
+
+	echo "Repository name: ${targetName}"
+	echo "Description: 
+${description}
+"
+
+5. Connect local to new remote repo in github
+
+	git remote add origin ssh://git@github.com/nickboldt/${targetName}.git
+
+	# each branch could take >4 mins to complete. 
+	# note that the "+" before the branch when pushing means FORCE regardless of fast-forward or merging issues
+	for branch in $branches; do
+		echo "git checkout $branch ..."
+		git checkout -q -f ${branch}
+		echo "git push origin +${branch} ..."
+		git push origin +${branch} 
+	done
+	#	Counting objects: 4224, done.
+	#	Delta compression using up to 8 threads.
+	#	Compressing objects: 100% (3163/3163), done.
+	#	Writing objects: 100% (4224/4224), 22.24 MiB | 104 KiB/s, done.
+	#	Total 4224 (delta 1252), reused 3023 (delta 588)
+	#	To git@github.com:nickboldt/jbosstools-Base_v2.git
+ 	#	* [new branch]      trunk -> trunk
+	#	Branch trunk set up to track remote branch trunk from origin.
+
+6. To set the default branch in github, click the "admin" link on the right-hand side of the project main page
+
+	# https://github.com/nickboldt/jbosstools-forge/admin
+

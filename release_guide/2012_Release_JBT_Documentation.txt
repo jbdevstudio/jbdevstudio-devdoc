@@ -1,0 +1,60 @@
+0. ssh to dev01 server; sudo to hudson user
+
+1. pull latest zip to dev01; unpack it and rsync it to docs.jboss.org
+
+	DESTINATION=tools@filemgmt.jboss.org:/docs_htdocs/tools
+	version=3.3.0.Final
+	cd /tmp; wget http://docs.jboss.org/tools/${version}_archive.zip
+	unzip ${version}_archive.zip
+	alias   scpr='rsync -Pzrlt --rsh=ssh --protocol=28'
+	scpr ${version}/* ${DESTINATION}/${version}/
+
+2. Verify website: 
+
+	http://docs.jboss.org/tools/${version}/
+
+3. cleanup temp files
+
+	rm -fr /tmp/${version}_archive.zip /tmp/${version}
+
+4. replace old symlink w/ new one
+
+	echo "rm latest" | sftp ${DESTINATION}/
+	echo "ln ${version} latest" | sftp ${DESTINATION}/
+
+5. update https://anonsvn.jboss.org/repos/jbosstools/trunk/documentation/index.html & commit changes to SVN
+
+6. push updated index file to http://docs.jboss.org/tools/index.html
+
+	scpr ~/tru/documentation/index.html ${DESTINATION}/
+
+7. send email announcement to mailing lists:
+
+== EMAIL TEMPLATE ==
+
+To:
+
+jbds-pm-list <jbds-pm-list@redhat.com>
+"jbosstools-dev@lists.jboss.org" <jbosstools-dev@lists.jboss.org>
+"external-exadel-list@redhat.com" <external-exadel-list@redhat.com>
+jboss-announce@redhat.com (optional for major milestones/releases)
+
+version=3.3.0.Final
+echo "
+Subject:
+
+JBoss Tools ${version} Documentation is available
+
+Body:
+
+The latest JBoss Tools documentation for ${version} is now available.
+
+Docs:
+
+http://docs.jboss.org/tools/latest/
+http://docs.jboss.org/tools/${version}/
+
+What's New:
+
+http://docs.jboss.org/tools/whatsnew/
+"

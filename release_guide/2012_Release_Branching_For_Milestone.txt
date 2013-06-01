@@ -1,0 +1,273 @@
+HOWTO branch JBT/JBDS:
+
+See also 2012_Release_Prepare_For_GA.txt
+
+		alias   ga='git add'
+		alias   stat='git status'
+		alias   gd='git diff --color=always -w'
+		alias   scpr='rsync -aPrz --rsh=ssh'
+		alias   ci='git commit -m'
+		alias   gp='git stash; git svn rebase; git svn dcommit; git stash pop'
+
+1. create branches in git for all the jbosstools-* repos here: https://github.com/jbosstools/
+
+2. [1 file] update jbt/trunk/jbosstools-build/parent/pom.xml - set BUILD_ALIAS to new milestone (CR1 -> Alpha1)
+
+3. Parent pom & target platform versioning 
+
+# (1 file) update jbt/trunk/jbosstools-build/parent/pom.xml - set <version/> to next version (4.0.0.CR1-SNAPSHOT -> 4.1.0.Alpha1-SNAPSHOT)
+# Ensure parent pom is pushed to nexus (via [https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-4.0_trunk.parent/ related Jenkins job])
+# (n files) update jbt/trunk/[component]/pom.xml to reference new version of parent. Also notify other projects depdending on parent (SOA...) to update their pom
+
+	# note: may want to skip the SOA Tooling components: bpel/pom.xml, esb/pom.xml, jbpm/pom.xml, runtime-soa/pom.xml
+	cd ~/trunk
+	for p in $(find . -mindepth 2 -maxdepth 3 -name pom.xml) ./jbosstools-build-sites/aggregate/pom.xml; do sed -i -e "s#<version>4.0.0.CR1-SNAPSHOT</version>#<version>4.1.0.Alpha1-SNAPSHOT</version>#g" $p; done
+	for p in $(find jbosstools-base jbosstools-server jbosstools-javaee jbosstools-central -mindepth 2 -maxdepth 3 -name pom.xml); do sed -i -e "s#<version>4.0.0.CR1-SNAPSHOT</version>#<version>4.1.0.Alpha1-SNAPSHOT</version>#g" $p; done
+	cd ./jbosstools-build/target-platforms/
+	for p in $(find.sh .  pom\*.xml 4.1.0.Alpha1-SNAPSHOT target "" -q); do sed -i -e "s#<version>4.0.0.CR1-SNAPSHOT</version>#<version>4.1.0.Alpha1-SNAPSHOT</version>#g" $p; done
+	cd ~/trunk
+
+	# update root poms & child poms (multicomponent repos: base, server, javaee, central)
+	for d in jbosstools-*; do if [[ ${d//build} == $d ]]; then 
+	cd $d; echo " === $d === "; 
+	git checkout -b jbosstools-4.0.x
+	gd .
+	git checkout master 
+	git pull origin master  
+	git checkout jbosstools-4.0.x
+	git rebase master  
+	ci "switch master to use parent pom 4.1.0.Alpha1-SNAPSHOT" pom.xml */pom.xml
+	git rebase master  
+	git push nickboldt jbosstools-4.0.x
+	cd - >/dev/null; echo " --- --- ---"; echo ""; fi; done
+	
+	# update parent pom, target-platforms poms, and aggregate poms
+	for d in jbosstools-build jbosstools-build-sites; do 
+	cd $d; echo " === $d === "; 
+	git checkout -b jbosstools-4.0.x
+	gd .
+	git checkout master 
+	git pull origin master  
+	git checkout jbosstools-4.0.x
+	git rebase master  
+	ci "switch master to use parent pom 4.1.0.Alpha1-SNAPSHOT" */pom.xml */*/pom.xml */*/*/pom.xml */*/*/pom.xml 
+	git rebase master  
+	git push nickboldt jbosstools-4.0.x
+	cd - >/dev/null; echo " --- --- ---"; echo ""; done
+
+	# do pull requests 
+	#  Note that these repos should not receive PRs and will throw error Unprocessable Entity (HTTP 422): 
+	#   jbosstools-maven-plugins jbosstools-download.jboss.org jbosstools-build-ci
+	for d in jbosstools-*; do cd $d; echo " === $d === "; 
+	git checkout jbosstools-4.0.x
+	git pull-request "switch master to use parent pom 4.1.0.Alpha1-SNAPSHOT" -b jbosstools:master -h nickboldt:jbosstools-4.0.x
+	cd - >/dev/null; echo " --- --- ---"; echo ""; done
+
+4. [1 file] update jbosstools-build/parent/pom.xml to point at correct _staging_ site (in branch)
+	
+	cd jbosstools-build
+	GITUSER=nickboldt
+	branch=jbosstools-4.0.x
+	topic=branch-for-jbosstools-4.0.x
+	echo $branch, $topic
+	git pull origin ${branch}
+	git checkout ${branch}
+	git checkout -b ${topic}; git checkout ${topic}; git branch -v
+	sed -i -e "s#/trunk/#/4.0.juno/#g" parent/pom.xml
+	gd .
+	ci "switch parent pom to stable_branch _staging_ site in stable branch" parent/pom.xml
+	git pull --rebase origin ${branch}
+	git push ${GITUSER} ${topic}
+	hub pull-request "switch parent pom to stable_branch _staging_ site in stable branch" -b jbosstools:jbosstools-4.0.x -h ${GITUSER}:${topic}
+
+	# next, fetch the PR:
+	git checkout -b ${branch}; git checkout ${branch}; git branch -v
+	git pull --rebase origin ${branch}
+	git checkout -b ${topic}; git checkout ${topic}; git branch -v
+	git rebase ${branch}
+	git checkout ${branch}
+	git rebase ${topic}
+	git branch -v
+	git lg -10
+	# if all is well, then push the PR:
+	git push origin ${branch}
+
+6. [6 files] update these files to point at new parent pom version (CR1 -> Alpha1)
+	jbds/trunk/devstudio.eapcompatibility.tests/pom.xml 
+	jbds/trunk/extras/pom.xml 
+	jbds/trunk/product-soa/pom.xml 
+	jbds/trunk/product/pom.xml 
+	jbds/trunk/qa/devstudiotest-site/pom.xml 
+	jbds/trunk/techpreview/pom.xml 
+	jbds/trunk/**/pom*.xml
+
+	cd ~/truu # devstudio trunk
+	for p in $(find.sh . pom\*.xml 4.0.0.CR1-SNAPSHOT target "" -q); do sed -i -e "s#<version>4.0.0.CR1-SNAPSHOT</version>#<version>4.1.0.Alpha1-SNAPSHOT</version>#g" $p; done
+	stat .
+	ci "Use new 4.1.0.Alpha1-SNAPSHOT version of parent pom" .; gp
+
+7. [1 to 3 files] update these files to new milestone (CR1 -> Alpha1)
+	jbds/trunk/product/installer/version.properties
+	jbds/trunk/product/site/com.jboss.jbds.product
+	jbds/trunk/product/plugins/com.jboss.jbds.product/jbds.product
+
+	cd ~/truu
+	sed -i -e "s/CR1/Alpha1/g" ./product/installer/version.properties
+	gd .
+	ci "Switch to Alpha1" .; gp
+
+9. PURGE OLD staging/ and staging.previous/ cache to avoid accidentally bootstrapping the builds w/ old milestones.
+	Dirs to purge:
+	
+	ssh to dev01.mw.lab.eng.bos.redhat.com, sudo to hudson user, then:
+	cd ~/STATIC/jbds/builds/staging.previous/; rm -fr *4.0_stable_branch* *6.0_stable_branch* &
+	cd ~/STATIC/jbds/builds/staging/; rm -fr *4.0_stable_branch* *6.0_stable_branch* &
+	(etc.)
+
+	sftp to tools@filemgmt.jboss.org, then:
+	cd /downloads_htdocs/tools/builds/staging.previous/; rm -fr *_stable_branch* &
+	cd /downloads_htdocs/tools/builds/staging/; rm -fr *_stable_branch* &
+	(etc.)
+	
+	# TODO JBIDE-12914 this step may no longer be necessary. 
+	When done, because Tycho 0.16.0 is super-picky about resolving all the sites listed in the composite, generate empty sites on dev01 and push them to the download.jboss.org.
+	ssh to dev01.mw.lab.eng.bos.redhat.com, sudo to hudson user, then:
+
+TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
+#stream=4.0_trunk
+stream=4.0_stable_branch
+now=`date +%s000`
+cd ~/STATIC/jbds/builds/
+for f in staging staging.previous; do
+mkdir -p $f; cd $f
+for d in base birt forge freemarker gwt javaee central-maven-examples hibernate jst openshift portlet server vpe webservices; do
+echo "== ${f}/jbosstools-${stream}.component--${d} =="
+mkdir -p jbosstools-${stream}.component--${d}/all/repo/
+echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" > jbosstools-${stream}.component--${d}/all/repo/site.xml
+echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" > jbosstools-${stream}.component--${d}/all/repo/artifacts.xml
+echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" > jbosstools-${stream}.component--${d}/all/repo/content.xml
+echo "<site><description>Placeholder for jbosstools-${stream}.component--${d} site</description><feature></feature><category-def></category-def</site>" >> jbosstools-${stream}.component--${d}/all/repo/site.xml
+echo "<?artifactRepository version='1.1.0'?><repository name='jbosstools-${stream}.component.${d}.site' type='org.eclipse.equinox.p2.artifact.repository.simpleRepository' version='1'><properties size='2'><property name='p2.timestamp' value='${now}'/><property name='p2.compressed' value='true'/></properties></repository>" >> jbosstools-${stream}.component--${d}/all/repo/artifacts.xml
+echo "<?metadataRepository version='1.1.0'?><repository name='jbosstools-${stream}.component.${d}.site' type='org.eclipse.equinox.internal.p2.metadata.repository.LocalMetadataRepository' version='1.0.0'><properties size='2'><property name='p2.timestamp' value='${now}'/><property name='p2.compressed' value='true'/></properties></repository>" >> jbosstools-${stream}.component--${d}/all/repo/content.xml
+scpr -q jbosstools-${stream}.component--${d}/* $TOOLS/builds/${f}/jbosstools-${stream}.component--${d}/
+done
+cd ..
+done
+
+10. Enable stable branch jobs in https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_6.0.juno/ 
+
+	gp # update local SVN cache from SVN repo (get latest)
+	hudpull -DviewFilter=view/DevStudio/view/DevStudio_6.0.juno/ -DregexFilter=".*" # update local cache of jobs from server
+	cd ~/truu/hudson-jobs/cache/https/jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_6.0.juno/job
+	ci "update jobs" .; gp # ensure server copy and SVN copy are in sync; omit target platform and xulrunner
+	for c in $(find.sh . config.xml "disabled>true<" "" "" -q); do 
+	if [[ $(echo $c | grep -v "xulrunner|target-platform") ]]; then
+	sed -i -e "s#disabled>true<#disabled>false<#g" $c
+	fi
+	done
+	hudpush -DviewFilter=view/DevStudio/view/DevStudio_6.0.juno/ -DregexFilter=".*" # update server configs from local cache
+	ci "enable stable branch jobs" .
+	
+11. Set correct git source
+
+	for c in $(find.sh . config.xml "Beta2x" "" "" -q); do if [[ $(echo $c | grep -v "xulrunner") ]]; then sed -i -e "s#jbosstools-4.0.0.Beta2x#jbosstools-4.0.x#g" $c; fi; done
+	hudpush -DviewFilter=view/DevStudio/view/DevStudio_6.0.juno/ -DregexFilter=".*" # update server configs from local cache
+	stat .
+	ci "enable stable_branch jobs; set correct git source to jbosstools-4.0.x branch" .; gp
+
+12. Kick off parent pom deployer jobs: 
+	https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-4.0_stable_branch.parent/build
+	https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-4.0_trunk.parent/build
+
+13. [Still needed?] Ensure XulRunner 1.9.2 job builds from the stable branch; enable the job (want .Final suffix, not .M1 or .Alpha1).
+
+14. Kick top-level component jobs
+
+	https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_6.0.juno/job/jbosstools-4.0_stable_branch.component--base/buildWithParameters
+	https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_6.0.juno/job/jbosstools-4.0_trunk.component--base/buildWithParameters
+	
+15. Configure JBT stable branch .aggregate job:   https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-4.0_stable_branch.aggregate/configure
+
+	set RELEASE = "No"
+	set update.site.description = "Development Milestone"
+	update job description if applicable
+
+16. Configure JBDS stable branch .updatesite job: https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/devstudio-6.0_stable_branch.updatesite/configure
+
+	remove "-DBUILD_ALIAS=GA " from MAVEN_FLAGS
+	set RELEASE = "No"
+	set update.site.description = "Development Milestone"
+	update job description if applicable
+
+ 17. Wait for the whole stack to respin: 
+
+	https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_6.0.juno/
+
+-----
+
+== EMAIL TEMPLATES ==
+
+SEND 2 emails: 
+1 to jbosstools-dev, and 
+1 to interal addresses (to avoid accidentally sending internal info to external address)
+
+# 1. To: "jbosstools-dev@lists.jboss.org" <jbosstools-dev@lists.jboss.org>
+
+version=CR1
+
+echo "
+Subject: 
+
+JBoss Tools is branched for 4.0.0.${version}
+
+Body:
+
+Branches:
+
+https://github.com/jbosstools/jbosstools-base/tree/jbosstools-4.0.x
+https://github.com/jbosstools/jbosstools-central/tree/jbosstools-4.0.x
+...
+
+Jobs:
+
+http://hudson.jboss.org/hudson/view/JBossTools/view/JBossTools_4.0.juno/
+
+Note that we are *code frozen* for ${version}, which means only urgent fixes should be done in the branch, associated w/ a JIRA. 
+
+Trunk remains open for new development work.
+	OR
+Trunk is open for BUGFIXES ONLY.
+
+Where applicable, please remember to commit changes in BOTH trunk and the new branch.
+"
+
+# 2: To: jbds-pm-list <jbds-pm-list@redhat.com>, "external-exadel-list@redhat.com" <external-exadel-list@redhat.com>
+
+echo "
+Subject: 
+
+JBoss Tools & Dev Studio are branched for 4.0.0.${version} / 6.0.0.${version}
+
+Body:
+
+Branches:
+
+https://github.com/jbosstools/jbosstools-base/tree/jbosstools-4.0.x
+https://github.com/jbosstools/jbosstools-central/tree/jbosstools-4.0.x
+...
+http://svn.jboss.org/repos/devstudio/branches/devstudio-6.0.0.${version}/
+
+Jobs:
+
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_6.0.juno/
+http://hudson.jboss.org/hudson/view/JBossTools/view/JBossTools_4.0.juno/
+
+Note that we are *code frozen* for ${version}, which means only urgent fixes should be done in the branch, associated w/ a JIRA. 
+
+Trunk remains open for new development work.
+	OR
+Trunk is open for BUGFIXES ONLY.
+
+Where applicable, please remember to commit changes in BOTH trunk and the new branch.
+"
+

@@ -1,0 +1,248 @@
+0. First, do steps in ../*_Release_JBT_Staging_For_QE__SOA-Tooling.txt.
+
+1. Move/rename 2 files (1 zip, 1 md5sum) into http://download.jboss.org/jbosstools/builds/development/sf.net/
+
+	stream=3.3.3_Final
+	version=3.3.3.Final
+
+	cd /tmp; wget http://download.jboss.org/jbosstools/builds/staging/soatools-${stream}.aggregate/logs/build.properties
+	buildID1=$(cat build.properties | grep ZIPSUFFIX | sed "s/ZIPSUFFIX = //g"); rm -f /tmp/build.properties
+	echo "Latest build: ${buildID1}"
+
+	echo "mkdir development/sf.net/${version}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+	echo "rename staging/soatools-${stream}.aggregate/all/soatools-${stream}.aggregate-Update-${buildID1}.zip           development/sf.net/${version}/soatools-${version}.aggregate-Update-${buildID1}.zip"                     | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+	echo "rename staging/soatools-${stream}.aggregate/all/soatools-${stream}.aggregate-Update-${buildID1}.zip.MD5       development/sf.net/${version}/soatools-${version}.aggregate-Update-${buildID1}.zip.MD5"                 | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+	echo "rename staging/soatools-${stream}.aggregate/all/soatools-${stream}.aggregate-Sources-${buildID1}.zip          development/sf.net/${version}/soatools-${version}.aggregate-Sources-${buildID1}.zip"                    | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+	echo "rename staging/soatools-${stream}.aggregate/all/soatools-${stream}.aggregate-Sources-${buildID1}.zip.MD5      development/sf.net/${version}/soatools-${version}.aggregate-Sources-${buildID1}.zip.MD5"                | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+
+	# now get file sizes for use with Magnolia site later (www.jboss.org/tools)
+	wget -q -nc http://download.jboss.org/jbosstools/builds/development/sf.net/${version} -k -O /tmp/index.html
+	echo "  >>>  http://download.jboss.org/jbosstools/builds/development/sf.net/${version}/"
+	for f in $(cat /tmp/index.html | egrep -v "C=D|title>|h1>" | egrep "soatools-${version}"); do
+	if [[ ${f/zip/} != ${f} ]]; then 
+	echo -n $f | sed 's#.\+href="\([^"]\+\)".\+#\1#g' | sed "s#.\+${version}/##g" | sed 's#".\+##g';
+	if [[ ${f/MD5/} != ${f} ]]; then echo ""; echo ""; fi
+	fi
+	if [[ ${f/M</} != ${f} ]]; then echo -n " :: "; echo $f | sed 's#.\+>\([^<>]\)#\1#g' | sed 's#\([^<>]\)<.\+#\1#g'; fi
+	if [[ ${f/K</} != ${f} ]]; then echo -n " :: "; echo $f | sed 's#.\+>\([^<>]\)#\1#g' | sed 's#\([^<>]\)<.\+#\1#g'; fi
+	done
+	rm -f /tmp/index.html
+
+    # end up with something like this:
+	soatools-3.3.3.Final.aggregate-Sources-2013-01-28_17-58-40-H2.zip :: 854K
+	soatools-3.3.3.Final.aggregate-Sources-2013-01-28_17-58-40-H2.zip.MD5
+
+	soatools-3.3.3.Final.aggregate-Update-2013-01-28_17-58-40-H2.zip :: 87M
+	soatools-3.3.3.Final.aggregate-Update-2013-01-28_17-58-40-H2.zip.MD5
+
+2. Pull files to SF after logging in via SSH:
+
+	ssh -t nickboldt,jboss@shell.sourceforge.net create
+	branch=3.3.x # if this is a Final build, use 3.3.x; else use 3.3.0.x
+	version=3.3.3.Final
+	mkdir -p /home/users/n/ni/nickboldt/jboss/JBossTools/SOATools${branch}
+	cd /home/users/n/ni/nickboldt/jboss/JBossTools/SOATools${branch}
+	wget http://download.jboss.org/jbosstools/builds/development/sf.net/${version} -k -O /tmp/index.html
+	for f in $(cat /tmp/index.html | egrep -v "C=D|title>|h1>" | egrep "soatools-${version}" | sed 's#.\+href="\([^"]\+\)".\+#\1#g'); do wget -nc $f; done
+	rm -f /tmp/index.html
+	exit
+	
+	* While uploading... *
+	
+3. Create release notes file & rename, then upload to sf.net:
+
+	https://jira.jboss.org/jira/browse/JBIDE
+	--> click "Summary" tab at left, then click "Reports > Release Notes Report" on right side
+	--> select release ("3.3.0.CR1-SOA"), type of issues ("All"), and style ("HTML").
+	--> select text and paste into file.
+
+	branch=3.3.3.Final
+	cd /home/nboldt/truu/documentation/Release_Guide/ # in devstudio SVN
+	prev=$(find . -name "zz_Release_Notes_SOA_3.3.1.*"); prev=${prev:2}; echo $prev
+	sublime zz_Release_Notes_SOA_*.html # or use gedit, vim, etc.
+	git mv zz_Release_Notes_SOA_*.html zz_Release_Notes_SOA_${branch}.readme.html
+	# for Final builds
+	scp /home/nboldt/truu/documentation/Release_Guide/zz_Release_Notes_SOA_${branch}.readme.html "nickboldt,jboss@frs.sourceforge.net:/home/frs/project/j/jb/jboss/JBossTools/SOATools3.3.x/"
+
+	git commit -m "generate release notes for ${branch} release" ${prev} zz_Release_Notes_SOA_${branch}.readme.html
+
+4. Check contents of bookmarks.xml file, and upload to sf.net if changed:
+
+	sublime  /home/nboldt/truu/documentation/Release_Guide/jbosstools*_bookmarks.xml
+	scp /home/nboldt/truu/documentation/Release_Guide/jbosstools*_bookmarks.xml "nickboldt,jboss@frs.sourceforge.net:/home/frs/project/j/jb/jboss/JBossTools/"
+----
+
+5. Tweak magnolia pages to link to new files, but do not publish yet
+
+	https://www.jboss.org/author/tools/download
+	https://www.jboss.org/author/tools/download/dev
+	https://www.jboss.org/author/tools/download/dev/3_3_SOA
+
+	# for Final builds, COPY (do not move!) & rename dev/3_3_SOA to align with next release (4_0_SOA) into stable/3_3_SOA, update other pages accordingly.
+
+----
+
+6. Update composite site metadata (absolute path), Central directory file (absolute path), and index.html files (absolute paths). Also pull a copy of the updated discovery jar.
+
+	previous=3.3.1.Final
+	branch=3.3.3.Final
+	cd ~/tru/download.jboss.org/jbosstools/updates/development/indigo/soa-tooling/
+
+	now=`date +%s000`
+	for d in composite*.xml; do
+		sed -i -e "s#${previous}#${branch}#g" $d
+		sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
+	done
+
+	rm -f index.html; wget -nc http://download.jboss.org/jbosstools/updates/soatools-${branch}/index.html
+	sed -i -e "s#href=\"#href=\"http://download.jboss.org/jbosstools/updates/soatools-${branch}/#g" -e "s#href=\"http://download.jboss.org/jbosstools/updates/soatools-3.3.1.Final/http#href=\"http#g" index.html
+	mv index.html README.html
+	
+	# ** TODO: JBIDE-11111 process for pushing Central discovery files needs to change soon **
+
+	rm -f jbosstools-directory.xml; wget -nc http://download.jboss.org/jbosstools/updates/soatools-${branch}/jbosstools-directory.xml
+	#newJar=plugins/org.jboss.tools.central.discovery_1.0.0.v20120612-0053-H99-Final.jar
+	newJar=$(cat jbosstools-directory.xml | grep entry | sed -e "s#.\+plugins/#plugins/#g" | sed -e "s#\.jar.\+#.jar#g"); echo $newJar
+
+	# update XML
+	cd ~/tru/download.jboss.org/jbosstools/updates/development/indigo/soa-tooling/
+	sed -i -e "s#\"plugins/#\"http://download.jboss.org/jbosstools/updates/soatools-${branch}/plugins/#g" jbosstools-directory.xml
+
+	# get the jar
+	mkdir -p plugins; cd plugins
+	wget -nc http://download.jboss.org/jbosstools/updates/soatools-${branch}/${newJar}
+	cd ..
+
+	# TODO -- make this work for SOA which uses plugin.properties instead of plugin.xml
+	# IF THIS IS pre-Final, ensure that your plugin points to the STAGING URL, not the RELEASE one:
+	unzip -q -d ~/tru/download.jboss.org/jbosstools/updates/development/indigo/soa-tooling/${newJar}{_,}
+	pushd ~/tru/download.jboss.org/jbosstools/updates/development/indigo/soa-tooling/${newJar}_ >/dev/null 
+	sed -i "s#http://download.jboss.org/jbosstools/updates/stable/indigo/central/soa-tooling/#http://download.jboss.org/jbosstools/updates/development/indigo/central/soa-tooling/#g" plugin.properties
+	zip -u ~/tru/download.jboss.org/jbosstools/updates/development/indigo/soa-tooling/${newJar} plugin.xml
+	popd >/dev/null
+	rm -fr ~/tru/download.jboss.org/jbosstools/updates/development/indigo/${newJar}_
+
+	# TODO -- make this work for SOA which uses plugin.properties instead of plugin.xml
+	# IF THIS IS Final, ensure that your plugin points to the RELEASE URL, not the STAGING one:
+	unzip -q -d ~/tru/download.jboss.org/jbosstools/updates/development/indigo/soa-tooling/${newJar}{_,}
+	pushd ~/tru/download.jboss.org/jbosstools/updates/development/indigo/soa-tooling/${newJar}_ >/dev/null 
+	sed -i "s#http://download.jboss.org/jbosstools/updates/development/indigo/central/soa-tooling/#http://download.jboss.org/jbosstools/updates/stable/indigo/central/soa-tooling/#g" plugin.properties
+	zip -u ~/tru/download.jboss.org/jbosstools/updates/development/indigo/soa-tooling/${newJar} plugin.xml
+	popd >/dev/null
+	rm -fr ~/tru/download.jboss.org/jbosstools/updates/development/indigo/soa-tooling/${newJar}_
+
+	# check in / sync changes - 4 updated files, 1 new jar, 1 deleted jar
+	stat .; gd .
+	scpr ~/tru/download.jboss.org/jbosstools/updates/development/indigo/soa-tooling/* $TOOLS/updates/development/indigo/soa-tooling/
+	ci "release ${branch} to http://download.jboss.org/jbosstools/updates/development/indigo/; add new discovery plugin ${newJar} + update jbosstools-directory.xml" .; gppom
+	# then push to github repo - https://github.com/jbosstools/jbosstools-download.jboss.org
+
+If this is the pre-Final build, ensure that the following files exist:
+
+	http://download.jboss.org/jbosstools/updates/stable/indigo/soa-tooling/jbosstools-directory.xml -> pointing at a real plugin, the Final version which uses http://download.jboss.org/jbosstools/updates/development/indigo/central/soa-tooling/
+	http://download.jboss.org/jbosstools/updates/stable/indigo/soa-tooling/site.xml (empty)
+	http://download.jboss.org/jbosstools/updates/stable/indigo/central/soa-tooling/site.xml (empty)
+
+If this is the Final build, ensure that the following files exist:
+
+	http://download.jboss.org/jbosstools/updates/stable/indigo/soa-tooling/jbosstools-directory.xml -> pointing at a real plugin, the Final version which uses http://download.jboss.org/jbosstools/updates/stable/indigo/central/soa-tooling/
+	http://download.jboss.org/jbosstools/updates/stable/indigo/soa-tooling/composite*.xml
+	http://download.jboss.org/jbosstools/updates/stable/indigo/central/soa-tooling/composite*.xml
+
+If this is the Final build, ensure that SOA central contribution is available in the Core directory.xml file:
+
+	http://download.jboss.org/jbosstools/updates/stable/indigo/jbosstools-directory.xml
+	and
+	http://download.jboss.org/jbosstools/updates/stable/indigo/soa-tooling/jbosstools-directory.xml
+
+	cd ~/tru/download.jboss.org/jbosstools/updates/stable/indigo/
+	sed -i -e "s#updates/.\+/org.jboss.tools.central.discovery.soa-tooling_.\+\.jar#updates/soatools-${branch}/${newJar}#g" jbosstools-directory.xml
+	
+----
+
+7. Review changes:
+
+a. composite sites and Central directory file
+
+	http://download.jboss.org/jbosstools/updates/development/indigo/soa-tooling/
+	http://download.jboss.org/jbosstools/updates/development/indigo/soa-tooling/jbosstools-directory.xml
+	http://download.jboss.org/jbosstools/updates/development/indigo/jbosstools-directory.xml
+
+	http://download.jboss.org/jbosstools/updates/stable/indigo/soa-tooling/
+	http://download.jboss.org/jbosstools/updates/stable/indigo/soa-tooling/jbosstools-directory.xml
+	http://download.jboss.org/jbosstools/updates/stable/indigo/jbosstools-directory.xml
+
+b. files on SF
+
+	https://sourceforge.net/projects/jboss/files/JBossTools/SOATools3.3.0.x/
+
+c. magnolia pages
+
+	https://www.jboss.org/author/tools/download
+	https://www.jboss.org/author/tools/download/dev/3_3_SOA
+	https://www.jboss.org/author/tools/download/stable/3_3_SOA
+	https://www.jboss.org/author/tools/download/installation/update_3_3
+
+----
+
+8. Publish magnolia pages
+
+	https://www.jboss.org/author/
+
+9. Tag SVN
+
+	# if not tagging from tip of the branch, use git log to determine the revision needed to tag, eg., http://svn.jboss.org/repos/devstudio/!svn/bc/${rev}/branches/devstudio-5.0.x/
+	branch=3.3.x
+	version=3.3.3.Final-SOA
+	rev=9999999 # use actual revision
+	svn -m "tag revision ${rev} as ${branch}" -r ${rev} copy  copy http://svn.jboss.org/repos/jbosstools/branches/jbosstools-${branch}/ http://svn.jboss.org/repos/jbosstools/tags/jbosstools-${version}/
+
+	branch=3.3.x
+	version=3.3.3.Final-SOA
+	svn -m "tag as version ${version} on branch ${branch}" copy http://svn.jboss.org/repos/jbosstools/branches/jbosstools-${branch}/ http://svn.jboss.org/repos/jbosstools/tags/jbosstools-${version}/
+
+9. Commit updates to release guide (including this document):
+
+	branch=3.3.3.Final
+	cd ~/truu/documentation/Release_Guide
+	ci "update release guide & docs for SOA ${branch}" *2012*JBT*
+	gp
+	
+10. Send email, prepare blogs & announcements
+
+== EMAIL TEMPLATE -- send two emails to avoid mixing internal/external lists ==
+
+1. 
+To:
+"jbosstools-dev@lists.jboss.org" <jbosstools-dev@lists.jboss.org>
+
+
+2. 
+To:
+jbds-pm-list <jbds-pm-list@redhat.com>
+"external-exadel-list@redhat.com" <external-exadel-list@redhat.com>
+soa-pm-list <soa-pm-list@redhat.com>
+soa-tools-list <soa-tools-list@redhat.com>
+jboss-announce@redhat.com (optional for major milestones/releases)
+
+version=3.3.3.Final
+echo "
+Subject:
+
+JBoss SOA Tools ${version} is available
+
+Body:
+
+The latest JBoss SOA Tools stable release, ${version}, is now available.
+
+Update Site:
+
+http://download.jboss.org/jbosstools/updates/stable/indigo/soa-tooling/
+
+Installation + Download Pages:
+
+http://www.jboss.org/tools/download
+https://www.jboss.org/tools/download/stable/3_3_SOA.html
+http://www.jboss.org/tools/download/installation/update_3_3
+
+"

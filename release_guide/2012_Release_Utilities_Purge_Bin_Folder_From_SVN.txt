@@ -1,0 +1,14 @@
+# to purge bin folder contents if already checked into SVN:
+
+for d in org.eclipse.bpel.wsil.model org.eclipse.bpel.ui \
+org.eclipse.bpel.apache.ode.runtime org.eclipse.bpel.apache.ode.deploy.ui org.eclipse.bpel.validator; do \
+	echo $d; pushd $d; svn up; 
+	svn propset svn:ignore "bin
+bin/*" .; svn propget svn:ignore .; 
+	svn propset svn:ignore "*.class
+*/*.class
+**/*.class" bin; svn propget svn:ignore bin; 
+	cd bin; rm -fr *; svn delete org; svn delete model; cd ..; 
+	svn ci -m "svn:ignore"; 
+	popd; 
+done

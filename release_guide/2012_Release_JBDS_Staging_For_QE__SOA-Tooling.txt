@@ -1,0 +1,137 @@
+== Publishing JBDS Installers & update sites for QE ==
+
+1. ssh to dev01.mw.lab.eng.bos.redhat.com, sudo to hudson user
+
+2. move the last good JBDS SOA Tooling update site (no symlinks to avoid accidental overwrites):
+	
+	branch=5.0.1_GA
+	version=5.0.1.GA
+	mv /qa/services/http/binaries/RHDS/builds/staging/soastudio-${branch}.updatesite/product-soa /qa/services/http/binaries/RHDS/updates/development/${version}.soa-tooling
+	cd /qa/services/http/binaries/RHDS/updates/development/${version}.soa-tooling/features; qualifier=`ls . |  grep com.jboss.jbds.central.discovery.soa-tooling.feature | sed -e "s/com.jboss.jbds.central.discovery.soa-tooling.feature_[0-9]\+\.[0-9]\+\.[0-9]\+\.\(.\+\).jar/\1/"`
+	mv /qa/services/http/binaries/RHDS/builds/staging/soastudio-${branch}.updatesite/product-soa-Update-*.zip /qa/services/http/binaries/RHDS/updates/development/jbdevstudio-soa-tooling-updatesite-5.0.1.${qualifier}.zip
+
+	cd /qa/services/http/binaries/RHDS/updates/development/; find . -maxdepth 1 -type d -name "${version}*" | grep "${version}"
+	cd /qa/services/http/binaries/RHDS/updates/development/; find . -maxdepth 1 -type f -name "*${qualifier}*" | egrep "${qualifier}"
+	find . -maxdepth 1 -type d -name "${version}*" | sed "s#\.#http://www.qa.jboss.com/binaries/RHDS/updates/development#" | grep ${version}
+
+3. if this is a "a" or "b" respin, fix any index.html pages to replace .GA with .GAa, eg:
+	:%s/5.0.1.GA/5.0.1.GAa/g
+	:wq
+
+4. pull files on dev01 from wallace:
+
+	ssh nboldt@wallace
+	alias   scpr='rsync -aPrz --rsh=ssh'
+	
+	version=5.0.1.GA; cd /mnt/devstudio/updates/5.0.0
+	scpr nboldt@dev01.mw.lab.eng.bos.redhat.com:~/RHDS/updates/development/${version}.soa-tooling .
+	cd ${version}.soa-tooling/features; qualifier=`ls . |  grep com.jboss.jbds.central.discovery.soa-tooling.feature | sed -e "s/com.jboss.jbds.central.discovery.soa-tooling.feature_[0-9]\+\.[0-9]\+\.[0-9]\+\.\(.\+\).jar/\1/"`
+	cd /mnt/devstudio/updates/5.0.0
+	scpr nboldt@dev01.mw.lab.eng.bos.redhat.com:~/RHDS/updates/development/jbdevstudio-soa-tooling-updatesite-*${qualifier}.zip .
+
+5. update composite*.xml files in updates/5.0-staging/ to point at new locations (update in SVN too: http://svn.jboss.org/repos/devstudio/trunk/devstudio.jboss.com/updates/5.0-staging/)
+
+	cd ~/truu/devstudio.jboss.com/updates/5.0-staging/
+	now=`date +%s000`
+	for d in soa-tooling/*.*ml central/soa-tooling/*.*ml; do
+	sed -i -e "s#5.0.0.CR1#5.0.1.GA#g" $d;
+	sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d;
+	done
+	scpr ~/truu/devstudio.jboss.com/updates/5.0-staging/soa-tooling/* $WALL/updates/5.0-staging/soa-tooling/
+	scpr ~/truu/devstudio.jboss.com/updates/5.0-staging/central/soa-tooling/* $WALL/updates/5.0-staging/central/soa-tooling/
+
+	version=5.0.1.GA
+	ci "release ${version} for QE" .
+
+# ** TODO: JBIDE-11111 process for pushing Central discovery files needs to change soon **
+
+6. update https://devstudio.jboss.com/updates/5.0-staging/devstudio-directory.xml to point Central at new SOA Tooling discovery jar.
+
+	alias   ga='git add'
+	alias   stat='git status'
+	alias   gd='git diff --color=always -w'
+	alias   scpr='rsync -aPrz --rsh=ssh'
+	alias   ci='git commit -m'
+	alias   gp='git stash; git svn rebase; git svn dcommit; git stash pop'
+
+	# if already published to QE, pull from 
+	SOASITE=http://www.qa.jboss.com/binaries/RHDS/updates/development/${version}.soa-tooling
+	# else pull nightly
+	SOASITE=http://www.qa.jboss.com/binaries/RHDS/builds/staging/devstudio-5.0_stable_branch.soa-tooling.updatesite/product-soa
+	
+	# get new plugin
+	cd ~/truu/devstudio.jboss.com/updates/5.0-staging/discovery/
+	#git rm -f com.jboss.jbds.central.discovery_*.jar
+	wget -q -nc ${SOASITE}/devstudio-directory.xml
+	newJar=$(cat devstudio-directory.xml | grep entry | sed -e "s#.\+plugins#plugins#g" | sed -e "s#\.jar.\+#.jar#g"); echo $newJar
+	wget -q -nc ${SOASITE}/${newJar}
+	newJar=${newJar/plugins/discovery}; echo $newJar
+	rm -f ~/truu/devstudio.jboss.com/updates/5.0-staging/discovery/devstudio-directory.xml
+
+	# update XML
+	cd ~/truu/devstudio.jboss.com/updates/5.0-staging/
+	sed -i -e "s#discovery/com.jboss.jbds.central.discovery.soa-tooling_.\+\.jar#${newJar}#g" devstudio-directory.xml
+	
+	# check in / sync changes
+	ga ${newJar}; stat .; gd .
+	scpr ~/truu/devstudio.jboss.com/updates/5.0-staging/${newJar} $WALL/updates/5.0-staging/discovery/
+	scpr ~/truu/devstudio.jboss.com/updates/5.0-staging/devstudio-directory.xml $WALL/updates/5.0-staging/
+	ci "release ${version} for QE: add new discovery plugin ${newJar} + update devstudio-directory.xml" . discovery/*.jar
+
+7. Commit updated docs & push:
+
+	cd ~/truu/documentation/Release_Guide
+	ci "release ${version} for QE" .
+	gp
+
+== EMAIL TEMPLATE ==
+
+To:
+
+jbds-pm-list <jbds-pm-list@redhat.com>
+"external-exadel-list@redhat.com" <external-exadel-list@redhat.com>
+soa-pm-list <soa-pm-list@redhat.com>
+soa-tools-list <soa-tools-list@redhat.com>
+
+version=5.0.1.GA
+echo "
+Subject: 
+
+JBDS SOA Tooling ${version} bits available for QE testing
+
+Body:
+
+As always, these are not FINAL bits, but preliminary results for QE testing. Not for redistribution to customers. 
+
+Update Site:
+
+To test installation of SOA Tooling bits, be sure to provide JBDS with a site from which to resolve 
+upstream dependencies, eg., https://devstudio.jboss.com/updates/5.0-staging/
+
+http://www.qa.jboss.com/binaries/RHDS/updates/development/${version}.soa-tooling/
+
+JBoss Central:
+
+To test this version of Central, add this to your ~/jbdevstudio/studio/jbdevstudio.ini file after the -vmargs line:
+
+-Djboss.discovery.directory.url=http://www.qa.jboss.com/binaries/RHDS/updates/development/${version}.soa-tooling/devstudio-directory.xml
+or
+-Djboss.discovery.directory.url=https://devstudio.jboss.com/updates/5.0-staging/devstudio-directory.xml
+
+"
+
+# [Beta, CR, or GA ONLY]
+
+echo "
+
+Additionally, I've staged the update sites onto devstudio.jboss.com, but it may take 30-60 mins to appear.
+
+Update Sites:
+
+https://devstudio.jboss.com/updates/5.0-staging/soa-tooling/
+
+--
+
+Note: if your DNS won't resolve it, use 10.16.89.17 instead of www.qa.jboss.com.
+
+"

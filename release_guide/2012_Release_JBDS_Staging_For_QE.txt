@@ -1,0 +1,157 @@
+== Publishing JBDS Installers & update sites for QE ==
+
+# TODO in product/features/com.jboss.jbds.product.feature/p2.inf
+# TODO when releasing GA make sure to :%s/development/stable/g and :%s/6.0-staging/6.0/g
+
+1. ssh to dev01.mw.lab.eng.bos.redhat.com, sudo to hudson user
+
+2. move the last good JBDS Core update site + installer (no symlinks to avoid accidental overwrites):
+  
+  version=6.0.0.CR1e # a, b, c...
+  mv /qa/services/http/binaries/RHDS/builds/staging/devstudio-6.0_stable_branch.updatesite/product /qa/services/http/binaries/RHDS/updates/development/${version}.core
+  #mv /qa/services/http/binaries/RHDS/builds/staging/devstudio-6.0_stable_branch.updatesite/extras /qa/services/http/binaries/RHDS/updates/development/${version}.extras
+  #mv /qa/services/http/binaries/RHDS/builds/staging/devstudio-6.0_stable_branch.updatesite/techpreview /qa/services/http/binaries/RHDS/updates/development/${version}.techpreview
+  mv /qa/services/http/binaries/RHDS/builds/staging/devstudio-6.0_stable_branch.updatesite/installer /qa/services/http/binaries/RHDS/builds/development/${version}.installer
+  cd /qa/services/http/binaries/RHDS/updates/development/; find . -maxdepth 1 -type d -name "${version}*" | grep ${version}
+  find . -maxdepth 1 -type d -name "${version}*" | sed "s#\.# >> http://www.qa.jboss.com/binaries/RHDS/updates/development#" | egrep ">>|${version}"
+  cd /qa/services/http/binaries/RHDS/builds/development/; find . -maxdepth 1 -type d -name "${version}*" | grep ${version}
+  find . -maxdepth 1 -type d -name "${version}*" | sed "s#\.# >> http://www.qa.jboss.com/binaries/RHDS/builds/development#" | egrep ">>|${version}"
+
+3. (optional) pull files on dev01 from wallace:
+
+  ssh nboldt@wallace
+  alias   scpr='rsync -aPrz --rsh=ssh'
+  
+  (in two parallel terminal connections!)
+  
+  version=6.0.0.CR1e; cd /mnt/devstudio/updates/6.0.0
+  scpr nboldt@dev01.mw.lab.eng.bos.redhat.com:~/RHDS/updates/development/${version}.core .
+
+  #version=6.0.0.CR1e; cd /mnt/devstudio/updates/6.0.0
+  #scpr nboldt@dev01.mw.lab.eng.bos.redhat.com:~/RHDS/updates/development/${version}.techpreview .
+  #scpr nboldt@dev01.mw.lab.eng.bos.redhat.com:~/RHDS/updates/development/${version}.extras .
+
+  # TODO: verify correct URL and filename for the target zip
+  version=6.0.0.CR1e; cd /mnt/devstudio/updates/6.0.0
+  scpr nboldt@dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/updates/jbds-target-platform_4.0.juno.SR1a/jbds600-e421-wtp341.target.zip .
+  unzip -d ${version}.target-platform jbds600-e421-wtp341.target.zip
+
+4. (while previous step is running) update composite*.xml files in updates/6.0-staging/ to point at new locations (update in SVN too: http://svn.jboss.org/repos/devstudio/trunk/devstudio.jboss.com/updates/6.0-staging/)
+
+  alias   ga='git add'
+  alias   stat='git status'
+  alias   gd='git diff --color=always -w'
+  alias   scpr='rsync -aPrz --rsh=ssh'
+  alias   ci='git commit -m'
+  alias   gp='git stash; git svn rebase; git svn dcommit; git stash pop'
+
+  cd ~/truu/devstudio.jboss.com/updates/6.0-staging/
+  previous=6.0.0.CR1d
+  version=6.0.0.CR1e
+  now=`date +%s000`
+  for d in *.*ml extras/*.*ml central/core/*.*ml; do
+  sed -i -e "s#${previous}#${version}#g" -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d; done
+
+# ** TODO: JBIDE-11111 process for pushing Central discovery files needs to change soon **
+
+7. update https://devstudio.jboss.com/updates/6.0-staging/devstudio-directory.xml to point at new Core discovery jar.
+
+  version=6.0.0.CR1e # a, b...
+  # get new plugin
+  cd ~/truu/devstudio.jboss.com/updates/6.0-staging/discovery/
+  #git rm -f com.jboss.jbds.central.discovery_*.jar
+  wget -q -nc http://www.qa.jboss.com/binaries/RHDS/updates/development/${version}.core/devstudio-directory.xml
+  newJar=$(cat devstudio-directory.xml | grep entry | sed -e "s#.\+plugins#plugins#g" | sed -e "s#\.jar.\+#.jar#g"); echo $newJar
+  wget -q -nc http://www.qa.jboss.com/binaries/RHDS/updates/development/${version}.core/${newJar}
+  newJar=${newJar/plugins/discovery}; echo $newJar
+  rm -f ~/truu/devstudio.jboss.com/updates/6.0-staging/discovery/devstudio-directory.xml
+
+  # update XML
+  cd ~/truu/devstudio.jboss.com/updates/6.0-staging/
+  sed -i -e "s#discovery/com.jboss.jbds.central.discovery_.\+\.jar#${newJar}#g" devstudio-directory.xml
+  
+  unzip -q -d ~/truu/devstudio.jboss.com/updates/6.0-staging/${newJar}{_,}
+  pushd ~/truu/devstudio.jboss.com/updates/6.0-staging/${newJar}_ >/dev/null 
+
+  # IF THIS IS pre-GA, ensure that your plugin points to the STAGING URL, not the RELEASE one:
+  #sed -i "s#https://devstudio.jboss.com/updates/6.0/central/core/#https://devstudio.jboss.com/updates/6.0-staging/central/core/#g" plugin.xml
+
+  # IF THIS IS GA, ensure that your plugin points to the RELEASE URL, not the STAGING one:
+  sed -i "s#https://devstudio.jboss.com/updates/6.0-staging/central/core/#https://devstudio.jboss.com/updates/6.0/central/core/#g" plugin.xml
+
+  zip -u ~/truu/devstudio.jboss.com/updates/6.0-staging/${newJar} plugin.xml
+  popd >/dev/null
+  rm -fr ~/truu/devstudio.jboss.com/updates/6.0-staging/${newJar}_
+
+  # IF THIS IS GA, ensure the new plugin is also in 6.0/ as well as 6.0-staging/
+  alias cp=cp;
+  cp -f ~/truu/devstudio.jboss.com/updates/6.0-staging/${newJar} ~/truu/devstudio.jboss.com/updates/6.0/${newJar}
+  cp -f ~/truu/devstudio.jboss.com/updates/6.0-staging/devstudio-directory.xml ~/truu/devstudio.jboss.com/updates/6.0/devstudio-directory.xml
+
+  # check in / sync changes
+  ga ${newJar}; stat .
+  gd .
+  ci "release ${version} for QE: add new discovery plugin ${newJar} + update devstudio-directory.xml + update HTML pages" . discovery/*.jar
+  scpr ~/truu/devstudio.jboss.com/updates/6.0-staging/* $WALL/updates/6.0-staging/
+
+  # IF THIS IS GA
+  cd ~/truu/devstudio.jboss.com/updates/6.0/
+  ga ${newJar}; stat .
+  gd .
+  ci "release ${version} for QE: add new discovery plugin ${newJar} + update devstudio-directory.xml" . discovery/*.jar
+  scpr ~/truu/devstudio.jboss.com/updates/6.0/* $WALL/updates/6.0/
+
+8. Commit updated docs & push:
+
+  cd ~/truu/documentation/Release_Guide
+  ci "release ${version} for QE" .
+  gp
+
+== EMAIL TEMPLATE ==
+
+# To: jbds-pm-list <jbds-pm-list@redhat.com>, "external-exadel-list@redhat.com" <external-exadel-list@redhat.com>
+
+version=6.0.0.CR1e
+echo "
+Subject: 
+
+JBDS ${version} Core bits available for QE testing
+
+Body:
+
+As always, these are not FINAL bits, but preliminary results for QE testing. Not for redistribution to customers. Links in this section are all internal (VPN required).
+
+Universal Installers (Internal):
+
+http://www.qa.jboss.com/binaries/RHDS/builds/development/${version}.installer/
+
+Update Sites (Internal):
+
+http://www.qa.jboss.com/binaries/RHDS/updates/development/${version}.core/
+http://www.qa.jboss.com/binaries/RHDS/updates/jbds-target-platform_4.0.juno.SR1a/ (Target Platform)
+
+JBoss Central:
+
+To test this version of Central, add this to your ~/jbdevstudio/studio/jbdevstudio.ini file after the -vmargs line:
+
+-Djboss.discovery.directory.url=http://www.qa.jboss.com/binaries/RHDS/updates/development/${version}.core/devstudio-directory.xml
+
+--
+
+The sites below will take about 1 hour to appear. These are public-facing for staging purposes (no VPN required). 
+
+Update Sites (Public, Staging):
+
+https://devstudio.jboss.com/updates/6.0-staging/ (includes ${version} Core + Target Platform)
+https://devstudio.jboss.com/updates/6.0-staging/central/core/ (includes ${version} Core + Target Platform + 3rd party site mirrors)
+
+JBoss Central (Public, Staging):
+
+To test this version of Central, add this to your ~/jbdevstudio/studio/jbdevstudio.ini file after the -vmargs line:
+
+-Djboss.discovery.directory.url=https://devstudio.jboss.com/updates/6.0-staging/devstudio-directory.xml
+
+--
+
+Note: if your DNS won't resolve it, use 10.16.89.17 instead of www.qa.jboss.com.
+"

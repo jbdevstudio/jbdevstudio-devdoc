@@ -1,0 +1,70 @@
+=== Installation ===
+
+Fire up JBDS. Install EGit and the github connector, eg., from Central > Software/Update. Restart when prompted
+
+
+=== Checking out a new project ===
+
+	File > Import > Git > Projects from Git > Next 
+	GitHub > Next > "nickboldt/freemarker" > Search > select repo > Next
+	Select branches to fetch > Next > Next > Next > Finish
+
+
+=== Connecting an existing / local project ===
+
+If not already in your workspace (eg., only on disk from a 'git clone' operation) do this:
+
+	File > New > Project > browse for existing folder and link to a new project
+
+Then:
+
+	Right-click project > Team > Share project > Git > Next > Finish
+
+
+=== Committing changes ===
+
+	Right-click project > Team > Commit... > 
+
+
+=== Pushing changes ===
+
+To push changes, use ssh://git@github.com:nickboldt/freemarker.git - https://github.com/nickboldt/freemarker.git does not seem to work
+
+	Team > Remote > Configure Push to Upstream... 
+
+Then:
+
+	Right-click project > Team > Commit and Push... > 
+		or
+	Right-click project > Team > Remote > Push... > 
+		Source ref: HEAD
+		Destination ref: refs/head/trunk
+		Click 'All Branches Spec' button > Next > Finish 
+
+		(this could take some time to finish depending on how much has changed)
+
+
+=== Pulling (Fetching) Changes ===
+
+To pull changes, use ssh://git@github.com:nickboldt/freemarker.git - https://github.com/nickboldt/freemarker.git does not seem to work
+
+	Team > Remote > Configure Fetch from Upstream... > set correct branch (eg., trunk or 4.0.0.Alpha1) 
+
+Then click 'Save' or 'Save and Fetch'
+
+Once configured use this to pull updates:
+
+	Team > Pull
+
+
+=== Switching between branches ===
+
+To attach your local repo to a remote branch (first time):
+
+	Right-click project > Team > Switch to... > New Branch > "trunk"
+
+Then later, to switch to an existing branch:
+
+	Right-click project > Team > Switch to... > select branch (eg., trunk)
+
+Be sure to pull updates to avoid merge conflicts.

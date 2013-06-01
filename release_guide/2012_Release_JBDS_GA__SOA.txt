@@ -1,0 +1,43 @@
+== Release JBDS to GA ==
+
+Assuming content (update sites and installers) are already staged to wallace, all you need to do is update pointers:
+
+1. Tag SVN
+
+	# if not tagging from tip of the branch, use git log to determine the revision needed to tag, eg., http://svn.jboss.org/repos/devstudio/!svn/bc/${rev}/branches/devstudio-5.0.x/
+	branch=5.0.x
+	version=5.0.1.GA-SOA
+	rev=9999999 # use actual revision
+	svn -m "tag revision ${rev} as ${branch}" -r ${rev} copy http://svn.jboss.org/repos/devstudio/branches/devstudio-${branch}/ http://svn.jboss.org/repos/devstudio/tags/devstudio-${version}/
+
+	#else just do this
+	branch=5.0.x
+	version=5.0.1.GA-SOA
+	svn -m "tag as version ${version} on branch ${branch}" copy http://svn.jboss.org/repos/devstudio/branches/devstudio-${branch}/ http://svn.jboss.org/repos/devstudio/tags/devstudio-${version}/
+
+2. update https://devstudio.jboss.com/updates/5.0/ from https://devstudio.jboss.com/updates/5.0-staging/, using beyondcompare to selectively copy and edit files
+
+# ** TODO: JBIDE-11111 process for pushing Central discovery files needs to change soon **
+
+3. update https://devstudio.jboss.com/updates/5.0/devstudio-directory.xml from https://devstudio.jboss.com/updates/5.0-staging/devstudio-directory.xml
+
+	bc ~/truu/devstudio.jboss.com/updates/5.0/ ~/truu/devstudio.jboss.com/updates/5.0-staging/ 
+
+4. ensure that discovery plugin points at the RELEASE URL, not the STAGING one
+
+	# TODO -- make this work for SOA which uses plugin.properties instead of plugin.xml
+	# IF THIS IS GA, ensure that your plugin points to the RELEASE URL, not the STAGING one
+	cd ~/truu/devstudio.jboss.com/updates/5.0/
+	newJar=$(find discovery -name com.jboss.jbds.central.discovery_\*-GA.jar)
+	unzip -d ~/truu/devstudio.jboss.com/updates/5.0/${newJar}{_,}
+	pushd ~/truu/devstudio.jboss.com/updates/5.0/${newJar}_ >/dev/null 
+	sed -i "s#https://devstudio.jboss.com/updates/5.0-staging/central/core/#https://devstudio.jboss.com/updates/5.0/central/core/#g" plugin.xml
+	zip -u ~/truu/devstudio.jboss.com/updates/5.0/${newJar} plugin.xml
+	popd >/dev/null
+	rm -fr ~/truu/devstudio.jboss.com/updates/5.0/${newJar}_
+
+5. add new files, commit changes.
+
+6. If this is a maintenance release, attach a link to the update site zip [1] onto the BZ which prompted the release.
+
+[1] for example, https://devstudio.jboss.com/updates/5.0.0/jbdevstudio-soa-tooling-updatesite-5.0.1.v20121025-2155-H2-GA.zip 

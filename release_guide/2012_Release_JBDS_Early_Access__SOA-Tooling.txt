@@ -1,0 +1,73 @@
+== Publishing JBDS SOA Tooling to EA ==
+
+# ** TODO: JBIDE-11111 process for pushing Central discovery files needs to change soon **
+
+1. Update https://devstudio.jboss.com/updates/5.0/devstudio-directory.xml to point Central at new discovery jar(s) from staging.
+
+       *** UNTESTED SCRIPT - USE CAUTION WHEN USING FIRST TIME ***
+
+	THESITE=https://devstudio.jboss.com/updates/5.0/staging/
+
+	# get new plugin
+	cd ~/truu/devstudio.jboss.com/updates/5.0/staging/discovery/
+	wget -q -nc ${THESITE}/devstudio-directory.xml
+	newJar=$(cat devstudio-directory.xml | grep com.jboss.jbds.central.discovery.soa-tooling_ | sed -e "s#.\+discovery/#staging/discovery/#g" | sed -e "s#\.jar.\+#.jar#g"); echo $newJar
+	wget -q -nc ${THESITE}/${newJar}
+	rm -f ~/truu/devstudio.jboss.com/updates/5.0/staging/discovery/devstudio-directory.xml
+
+	# update XML
+	cd ~/truu/devstudio.jboss.com/updates/5.0/
+	cat devstudio-directory.xml | sed -e "s#staging/discovery/com.jboss.jbds.central.discovery.soa-tooling_.\+\.jar#${newJar}#g" > devstudio-directory.xml.new
+	mv -f devstudio-directory.xml.new devstudio-directory.xml
+
+	# *** NOTE THAT CURRENTLY THE CONTRIBUTION TO CENTRAL FROM SOA TOOLING IS COMMENTED OUT. YOU'LL PROBABLY WANT TO CHANGE THAT AFTER DOING THE ABOVE STEP ***
+	
+	# check in / sync changes
+	stat .; gd .
+	scpr ~/truu/devstudio.jboss.com/updates/5.0/devstudio-directory.xml $WALL/updates/5.0/
+	ci "release ${version}: add new discovery plugin ${newJar} + update devstudio-directory.xml" . 
+
+2. Tag SVN
+
+	branch=5.0.0.Beta2
+	svn -m "tag for ${branch}" copy http://svn.jboss.org/repos/devstudio/branches/soatools-${branch}/ http://svn.jboss.org/repos/devstudio/tags/soatools-${branch}/
+
+3. Commit updates to release guide (including this document):
+
+	branch=5.0.0.Beta2
+	cd ~/truu/documentation/Release_Guide
+	ci "update release guide for ${branch}" *2012*JBDS*
+	gp
+
+== Email Template ==
+
+To:
+
+jbds-pm-list <jbds-pm-list@redhat.com>
+"external-exadel-list@redhat.com" <external-exadel-list@redhat.com>
+soa-pm-list <soa-pm-list@redhat.com>
+soa-tools-list <soa-tools-list@redhat.com>
+
+branch=5.0.0.Beta2
+version=5.0.0.Beta2 # could be Beta2a if a respin occurred
+echo "
+Subject: 
+
+JBDS SOA Tooling ${branch} on Early Access
+
+Body:
+
+JBDS SOA Tooling ${branch} Early Access now available via JBoss Central and via update site
+
+JBoss Central:
+
+To test this version of Central, simply fire up JBDS. You do not need to set a custom URL in your jbdevstudio.ini file, as this is the default one already there:
+
+-Djboss.discovery.directory.url=https://devstudio.jboss.com/updates/5.0/devstudio-directory.xml
+
+Update Site:
+
+https://devstudio.jboss.com/updates/5.0/staging/soa-tooling/
+
+Note that bits may take a while to replicate from our staging server to publication. Please allow at least an hour before attempting to download them via Central - if the page above still shows the previous milestone instead of ${branch}, try again later.
+"

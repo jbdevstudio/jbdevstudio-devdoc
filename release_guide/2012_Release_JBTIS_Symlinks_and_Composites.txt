@@ -1,0 +1,27 @@
+When releasing a /stable/ build, you need to ensure that it also exists in /development/ as a symlink to the actual bits in /stable/.
+
+This can best be achieved as follows:
+
+a) if bits are already published to /development/ subfolder, move them over sftp to /stable/ subfolder
+b) if bits are NOT already published to /development/ subfolder, publish them via promote job to /stable/ subfolder
+
+Then, create a symlink from stable to development like this:
+
+TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
+
+project=modeshape
+version=3.0.0.Final
+echo "ln ../../../../stable/juno/soa-tooling/${project}/${version} ${version}" | sftp $TOOLS/updates/development/juno/soa-tooling/${project}/
+version=3.1.0.Final
+echo "ln ../../../../stable/juno/soa-tooling/${project}/${version} ${version}" | sftp $TOOLS/updates/development/juno/soa-tooling/${project}/
+
+project=teiiddesigner
+version=8.0.0.Final
+echo "ln ../../../../stable/juno/soa-tooling/${project}/${version} ${version}" | sftp $TOOLS/updates/development/juno/soa-tooling/${project}/
+
+project=switchyard
+version=0.7.0.Final
+echo "ln ../../../../stable/juno/soa-tooling/${project}/${version} ${version}" | sftp $TOOLS/updates/development/juno/soa-tooling/${project}/
+
+Next, update $TOOLS/updates/{stable,development}/juno/soa-tooling/**/composite*.xml to ensure all the correct builds are listed.
+

@@ -1,0 +1,163 @@
+== Publishing JBDS Installers to EA ==
+
+# TODO in product/features/com.jboss.jbds.product.feature/p2.inf
+# TODO when releasing GA make sure to :%s/development/stable/g and :%s/6.0-staging/6.0/g
+
+1. ssh to wallace.redhat.com, then fetch installers & sources zip:
+
+  screen
+
+  branch=6.0.1.GA
+  version=6.0.1.GA; # a, b, c, ...
+    dev=10.16.88.146; # dev01.mw.lab.eng.bos.redhat.com
+  cd /mnt/devstudio/earlyaccess/builds/development/
+  mkdir -p /mnt/devstudio/earlyaccess/builds/development/${branch}
+  touch ${branch}-eap__No.eap.builds.will.be.released
+  rsync -aPrz --rsh=ssh --exclude="*-eap-*" nboldt@${dev}:~/RHDS/builds/development/${version}.installer/jbdevstudio-product* ${branch}/
+
+  # TODO: verify that the source zip is correctly named (timestamp might be wrong)
+  # TODO: JBDS-2351 - verify that we only have 1 source zip (not 2!)
+
+  # clean out old installers from previous milestones
+  cd /mnt/devstudio/earlyaccess/builds/development
+  rm -fr 6.0.0.Alpha* 6.0.0.Beta* 6.0.0.CR*
+
+#2. Add an .htaccess file w/ password to the *-eap folder, and if necessary, update the .htpasswd file w/ a new password (use `htpasswd` to generate the hashed password).
+
+#  cp /mnt/devstudio/earlyaccess/builds/development/6.0.*-eap/.htaccess /mnt/devstudio/earlyaccess/builds/development/${version}-eap/
+
+3. Update http://svn.jboss.org/repos/devstudio/trunk/devstudio.jboss.com/earlyaccess/*.html
+
+  alias   ga='git add'
+  alias   stat='git status'
+  alias   gd='git diff --color=always -w'
+  alias   scpr='rsync -aPrz --rsh=ssh'
+  alias   ci='git commit -m'
+  alias   gp='git stash; git svn rebase; git svn dcommit; git stash pop'
+
+  branch=6.0.1.GA
+  version=6.0.1.GA; # a, b, ...
+  cd ~/truu/devstudio.jboss.com/earlyaccess
+  wget http://www.qa.jboss.com/binaries/RHDS/builds/development/${version}.installer/${branch}.html
+  cp -f ${branch}.html index.html
+  ga ${branch}.html; ci "new early access build - ${branch}" .; gp
+
+  scpr ${branch}.html index.html nboldt@wallace.redhat.com:/mnt/devstudio/earlyaccess/
+
+# ** TODO: JBIDE-11111 process for pushing Central discovery files needs to change soon **
+
+4. Update https://devstudio.jboss.com/updates/6.0/devstudio-directory.xml to point at new discovery jar(s) from staging.
+
+  THESITE=https://devstudio.jboss.com/updates/6.0-staging/
+
+  # get new plugin
+  cd ~/truu/devstudio.jboss.com/updates/6.0-staging/discovery/
+  wget -q -nc ${THESITE}/devstudio-directory.xml
+  newJar=$(cat devstudio-directory.xml | grep com.jboss.jbds.central.discovery_ | sed -e "s#.\+discovery/#staging/discovery/#g" | sed -e "s#\.jar.\+#.jar#g"); echo $newJar
+  wget -q -nc ${THESITE}/${newJar}
+  rm -f ~/truu/devstudio.jboss.com/updates/6.0-staging/discovery/devstudio-directory.xml
+
+  # update XML
+  cd ~/truu/devstudio.jboss.com/updates/6.0/
+  sed -i -e "s#staging/discovery/com.jboss.jbds.central.discovery_.\+\.jar#${newJar}#g" devstudio-directory.xml
+  
+  # check in / sync changes
+  stat .; gd .
+  scpr ~/truu/devstudio.jboss.com/updates/6.0/devstudio-directory.xml $WALL/updates/6.0/
+  ci "release ${version}: add new discovery plugin ${newJar} + update devstudio-directory.xml" . 
+
+5. After 30-60 mins, review Early Access site:
+
+  https://devstudio.jboss.com/earlyaccess/
+
+6. Tag SVN
+
+  # if not tagging from tip of the branch, use git log to determine the revision needed to tag, eg., http://svn.jboss.org/repos/devstudio/!svn/bc/${rev}/branches/devstudio-6.0.x/
+  branch=6.0.0.Beta2
+  rev=9640
+  svn -m "tag revision ${rev} as ${branch}" -r ${rev} copy http://svn.jboss.org/repos/devstudio/branches/devstudio-6.0.x/ http://svn.jboss.org/repos/devstudio/tags/devstudio-${branch}/
+
+  #else just do this
+  branch=6.0.1.GA
+  svn -m "tag for ${branch}" copy http://svn.jboss.org/repos/devstudio/branches/devstudio-6.0.x/ http://svn.jboss.org/repos/devstudio/tags/devstudio-${branch}/
+
+7. Commit updates to release guide (including this document):
+
+  branch=6.0.1.GA
+  cd ~/truu/documentation/Release_Guide
+  ci "update release guide for ${branch}" *2012*JBDS*
+  gp
+
+8. Move installers from "a" or "b" folder to base folder; purge old stuff from OLD/ folder
+
+  ssh to dev01.mw.lab.eng.bos.redhat.com, sudo to hudson user, then
+
+  cd ~/RHDS/builds/development/
+  mv 6.0.0.Beta2.installer OLD/
+  mv 6.0.0.Beta2a.installer 6.0.0.Beta2.installer
+  # etc.
+
+== Email Template -- send two emails ==
+
+1. To:
+"jbosstools-dev@lists.jboss.org" <jbosstools-dev@lists.jboss.org>
+
+2. To:
+jbds-pm-list <jbds-pm-list@redhat.com>
+"external-exadel-list@redhat.com" <external-exadel-list@redhat.com>
+jboss-announce@redhat.com (optional for major milestones/releases)
+
+branch=6.0.1.GA
+version=6.0.1.GA # a, b, c...
+echo "
+Subject: 
+
+JBDS ${branch} on Early Access
+
+Body:
+
+JBDS ${branch} Early Access installers are now available!
+
+https://devstudio.jboss.com/earlyaccess/
+
+--
+
+The 6.0.1.GA update site is also available:
+
+https://devstudio.jboss.com/updates/6.0/
+
+Release Notes:
+
+https://access.redhat.com/knowledge/docs/en-US/JBoss_Developer_Studio/6.0/html/6.0.1_Release_Notes/index.html
+
+--
+
+Note that bits may take a while to replicate from our staging server to publication. Please allow at least an hour before attempting to download them - if the page above still shows the previous milestone instead of ${branch}, try again later.
+
+"
+
+== Email Template -- announce internally for push to CSP ==
+
+#To:
+#
+#jbds-pm-list <jbds-pm-list@redhat.com>
+#Mark Yarborough <myarboro@redhat.com>
+
+branch=6.0.0.Beta2
+version=6.0.0.Beta2a # a, b, c...
+echo "
+Subject: 
+
+JBDS ${branch} available for push to CSP
+
+Body:
+
+JBDS ${branch} (renamed from ${version}) is available to push to CSP.
+
+http://www.qa.jboss.com/binaries/RHDS/builds/development/6.0.0.Beta2.installer/
+
+--
+
+Note: if your DNS won't resolve it, use 10.16.89.17 instead of www.qa.jboss.com.
+
+"

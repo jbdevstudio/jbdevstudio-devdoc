@@ -62,12 +62,15 @@
 
 4. (while previous step is running) update composite*.xml files in updates/7.0-staging/ to point at new locations (update in SVN too: http://svn.jboss.org/repos/devstudio/trunk/devstudio.jboss.com/updates/7.0-staging/)
 
+  # NOTE: ~/truu/devstudio.jboss.com is a symlink on my local machine to this folder in github: https://github.com/jbdevstudio/jbdevstudio-website/tree/master/content
+  # "gw1" uses special aliases/scripts/shortcuts. Basically, we want to follow correct github workflows so that commits are pushed to user's fork, then later pull-requested (and the PR applied)
+  # "gw2" will create the PR, "gw3" will apply it, and "gw4" will delete the topic branch locally and in my fork
+  # the 4 steps are captured here: https://gist.github.com/nickboldt/4111850
   alias   ga='git add'
   alias   stat='git status'
   alias   gd='git diff --color=always -w'
   alias   scpr='rsync -aPrz --rsh=ssh'
   alias   ci='git commit -m'
-  alias   gp='git stash; git svn rebase; git svn dcommit; git stash pop'
 
   cd ~/truu/devstudio.jboss.com/updates/7.0-staging/
   previous=7.0.0.Beta1
@@ -139,9 +142,9 @@
 7. Commit updated docs & push:
 
   cd ~/truu/doc/release_guide
+  topic="release-${version}";branch=master; gw1
   ci "release ${version} for QE" .
-  gp
-
+  gw2;gw3;gw4
 
 --------------------------------------------
 

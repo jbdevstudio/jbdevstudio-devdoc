@@ -57,7 +57,7 @@
   done
 
   # commit to github   
-  topic="release-Beta1";branch=master; gw1
+  topic="release-${version2}";branch=master; gw1
   ci "rename ${version2} to ${version}" .
   gw2;gw3;gw4
 
@@ -68,8 +68,7 @@
   alias   gd='git diff --color=always -w'
   alias   scpr='rsync -aPrz --rsh=ssh'
   alias   ci='git commit -m'
-  alias   gp='git stash; git svn rebase; git svn dcommit; git stash pop'
-
+  
   version=7.0.0.Beta1
   version2=7.0.0.Beta1b; # a, b, ...
   cd ~/truu/devstudio.jboss.com/earlyaccess
@@ -148,6 +147,8 @@
   mv 7.0.0.Beta1.installer OLD/
   mv 7.0.0.Beta1b.installer 7.0.0.Beta1.installer
   # repeat for updates/development and discovery/development
+
+  #TODO: add note abouut also renaming/moving update and discovery sites
 
 == Email Template -- send two emails ==
 

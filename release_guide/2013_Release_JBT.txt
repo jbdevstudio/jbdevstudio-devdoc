@@ -377,11 +377,11 @@ Body:
 
 JBoss Tools ${version} is now available.
 
-This is a development release aimed at Eclipse Kepler (4.3 M6) users.
+This is a development release aimed at Eclipse Kepler (4.3 M7) users.
 
 Eclipse Marketplace:
 
-https://marketplace.eclipse.org/node/xxxxxx
+https://marketplace.eclipse.org/content/jboss-tools-kepler
 
 Update Sites:
 

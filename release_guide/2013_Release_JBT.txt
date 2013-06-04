@@ -1,26 +1,31 @@
+# "gw1" uses special aliases/scripts/shortcuts. Basically, we want to follow correct github workflows so that commits are pushed to user's fork, then later pull-requested (and the PR applied)
+# "gw2" will create the PR, "gw3" will apply it, and "gw4" will delete the topic branch locally and in my fork
+# the 4 steps are captured here: https://gist.github.com/nickboldt/4111850
+# "stat" is short for "git status"; "gd" is short for "git diff"; "ga" is short for "git add"
+
 1. Move/rename 6 files (3 zips, 3 md5sums) [JBT 3.2.x was 3 zips, 3 md5sums = 6 files] (no longer includes SOA Tooling zip/md5 file) into http://download.jboss.org/jbosstools/builds/development/sf.net/
 
   stream=41
-  branch=4.1.0.Alpha2
-  version=4.1.0.Alpha2c; # a, b...
-  buildID1=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/development/${version}.core/ 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); buildID1=${buildID1%%/*}
+  version=4.1.0.Beta1
+  version2=4.1.0.Beta1b; # a, b...
+  buildID1=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/development/${version2}.core/ 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); buildID1=${buildID1%%/*}
   echo "Latest build: ${buildID1}"
 
-  echo "mkdir development/sf.net/${branch}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
-  echo "rename development/${version}.core/${buildID1}/components/jbosstools-hibernate_${stream}-Update-SNAPSHOT.zip                   development/sf.net/${branch}/hibernatetools-Update-${branch}_${buildID1}.zip"     | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
-  echo "rename development/${version}.core/${buildID1}/components/jbosstools-hibernate_${stream}-Update-SNAPSHOT.zip.MD5               development/sf.net/${branch}/hibernatetools-Update-${branch}_${buildID1}.zip.MD5" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
-  echo "rename development/${version}.core/${buildID1}/all/jbosstools-build-sites.aggregate.site_${stream}-Update-${buildID1}.zip      development/sf.net/${branch}/jbosstools-Update-${branch}_${buildID1}.zip"         | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
-  echo "rename development/${version}.core/${buildID1}/all/jbosstools-build-sites.aggregate.site_${stream}-Update-${buildID1}.zip.MD5  development/sf.net/${branch}/jbosstools-Update-${branch}_${buildID1}.zip.MD5"     | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
-  echo "rename development/${version}.core/${buildID1}/all/jbosstools-build-sites.aggregate.site_${stream}-Sources-${buildID1}.zip     development/sf.net/${branch}/jbosstools-Sources-${branch}_${buildID1}.zip"        | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
-  echo "rename development/${version}.core/${buildID1}/all/jbosstools-build-sites.aggregate.site_${stream}-Sources-${buildID1}.zip.MD5 development/sf.net/${branch}/jbosstools-Sources-${branch}_${buildID1}.zip.MD5"    | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+  echo "mkdir development/sf.net/${version}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+  echo "rename development/${version2}.core/${buildID1}/components/jbosstools-hibernate_${stream}-Update-SNAPSHOT.zip                   development/sf.net/${version}/hibernatetools-Update-${version}_${buildID1}.zip"     | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+  echo "rename development/${version2}.core/${buildID1}/components/jbosstools-hibernate_${stream}-Update-SNAPSHOT.zip.MD5               development/sf.net/${version}/hibernatetools-Update-${version}_${buildID1}.zip.MD5" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+  echo "rename development/${version2}.core/${buildID1}/all/jbosstools-build-sites.aggregate.site_${stream}-Update-${buildID1}.zip      development/sf.net/${version}/jbosstools-Update-${version}_${buildID1}.zip"         | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+  echo "rename development/${version2}.core/${buildID1}/all/jbosstools-build-sites.aggregate.site_${stream}-Update-${buildID1}.zip.MD5  development/sf.net/${version}/jbosstools-Update-${version}_${buildID1}.zip.MD5"     | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+  echo "rename development/${version2}.core/${buildID1}/all/jbosstools-build-sites.aggregate.site_${stream}-Sources-${buildID1}.zip     development/sf.net/${version}/jbosstools-Sources-${version}_${buildID1}.zip"        | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+  echo "rename development/${version2}.core/${buildID1}/all/jbosstools-build-sites.aggregate.site_${stream}-Sources-${buildID1}.zip.MD5 development/sf.net/${version}/jbosstools-Sources-${version}_${buildID1}.zip.MD5"    | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
 
   # now get file sizes for use with Magnolia site later (www.jboss.org/tools)
-  wget -q http://download.jboss.org/jbosstools/builds/development/sf.net/${branch} -k -O /tmp/index.html
-  echo "  >>>  http://download.jboss.org/jbosstools/builds/development/sf.net/${branch}/"
-  for f in $(cat /tmp/index.html | egrep -v "C=D|title>|h1>" | egrep "${branch}"); do
+  wget -q http://download.jboss.org/jbosstools/builds/development/sf.net/${version} -k -O /tmp/index.html
+  echo "  >>>  http://download.jboss.org/jbosstools/builds/development/sf.net/${version}/"
+  for f in $(cat /tmp/index.html | egrep -v "C=D|title>|h1>" | egrep "${version}"); do
     if [[ ${f/zip/} != ${f} ]]; then 
       echo -n "  "
-      echo -n $f | sed 's#.\+href="\([^"]\+\)".\+#\1#g' | sed "s#.\+${branch}/##g" | sed 's#".\+##g';
+      echo -n $f | sed 's#.\+href="\([^"]\+\)".\+#\1#g' | sed "s#.\+${version}/##g" | sed 's#".\+##g';
       if [[ ${f/MD5/} != ${f} ]]; then echo ""; echo ""; fi
     fi
     if [[ ${f/M</} != ${f} ]]; then echo -n " :: "; echo $f | sed 's#.\+>\([^<>]\)#\1#g' | sed 's#\([^<>]\)<.\+#\1#g'; fi
@@ -28,24 +33,24 @@
   rm -f /tmp/index.html
 
   # end up with somtehing like this:
-  hibernatetools-Update-4.1.0.Alpha2_2013-04-24_17-20-04-B202.zip :: 78M
-  hibernatetools-Update-4.1.0.Alpha2_2013-04-24_17-20-04-B202.zip.MD5
+  hibernatetools-Update-4.1.0.Beta1_2013-05-29_02-05-21-B272.zip :: 78M
+  hibernatetools-Update-4.1.0.Beta1_2013-05-29_02-05-21-B272.zip.MD5
 
-  jbosstools-Sources-4.1.0.Alpha2_2013-04-24_17-20-04-B202.zip :: 98M
-  jbosstools-Sources-4.1.0.Alpha2_2013-04-24_17-20-04-B202.zip.MD5
+  jbosstools-Sources-4.1.0.Beta1_2013-05-29_02-05-21-B272.zip :: 133M
+  jbosstools-Sources-4.1.0.Beta1_2013-05-29_02-05-21-B272.zip.MD5
 
-  jbosstools-Update-4.1.0.Alpha2_2013-04-24_17-20-04-B202.zip :: 301M
-  jbosstools-Update-4.1.0.Alpha2_2013-04-24_17-20-04-B202.zip.MD5
+  jbosstools-Update-4.1.0.Beta1_2013-05-29_02-05-21-B272.zip :: 403M
+  jbosstools-Update-4.1.0.Beta1_2013-05-29_02-05-21-B272.zip.MD5
 
 2. Pull files to SF after logging in via SSH (Downloaded: 8 files, 353M in 4m 22s (1.35 MB/s)):
 
   ssh -t nickboldt,jboss@shell.sourceforge.net create # wait until this is done before running the next lines
-  branch=4.1.0.x # if this is a Final build, use 4.1.x instead of 4.1.0.x
-  version=4.1.0.Alpha2
-  mkdir -p /home/users/n/ni/nickboldt/jboss/JBossTools/JBossTools${branch}
-  cd /home/users/n/ni/nickboldt/jboss/JBossTools/JBossTools${branch}
-  wget http://download.jboss.org/jbosstools/builds/development/sf.net/${version} -k -O /tmp/index.html
-  for f in $(cat /tmp/index.html | egrep -v "C=D|title>|h1>" | egrep "${version}" | sed 's#.\+href="\([^"]\+\)".\+#\1#g'); do wget -nc $f; done
+  version=4.1.0.x # if this is a Final build, use 4.1.x instead of 4.1.0.x
+  version2=4.1.0.Beta1
+  mkdir -p /home/users/n/ni/nickboldt/jboss/JBossTools/JBossTools${version}
+  cd /home/users/n/ni/nickboldt/jboss/JBossTools/JBossTools${version}
+  wget http://download.jboss.org/jbosstools/builds/development/sf.net/${version2} -k -O /tmp/index.html
+  for f in $(cat /tmp/index.html | egrep -v "C=D|title>|h1>" | egrep "${version2}" | sed 's#.\+href="\([^"]\+\)".\+#\1#g'); do wget -nc $f; done
   rm -f /tmp/index.html
   exit
   
@@ -53,23 +58,25 @@
   
 3. Create release notes file & rename, then upload to sf.net:
     https://issues.jboss.org/secure/ConfigureReport!default.jspa?selectedProjectId=10020&projectOrFilterId=project-10020&projectOrFilterName=Tools%20%28JBoss%20Tools%29&reportKey=org.jboss.labs.jira.plugin.release-notes-report-plugin:releasenotes
-  --> select release ("4.1.0.Alpha2"), type of issues ("All"), and style ("HTML").
+  --> select release ("4.1.0.Beta1"), type of issues ("All"), and style ("HTML").
   --> select text and paste into file.
 
-  branch=4.1.0.x # if this is a Final build, use 4.1.x instead of 4.1.0.x
-  version=4.1.0.Alpha2
+  version=4.1.0.x # if this is a Final build, use 4.1.x instead of 4.1.0.x
+  version2=4.1.0.Beta1
   cd /home/nboldt/truu/doc/release_guide/ # in devstudio SVN
   prev=$(find . -name "zz_Release_Notes_4.1*"); prev=${prev:2}; echo $prev
   sublime zz_Release_Notes_4.1*.html # or use gedit, vim, etc.
-  git mv zz_Release_Notes_4.1*.html zz_Release_Notes_${version}.readme.html
+  git mv zz_Release_Notes_4.1*.html zz_Release_Notes_${version2}.readme.html
   # for milestones
-  scp /home/nboldt/truu/doc/release_guide/zz_Release_Notes_${version}.readme.html "nickboldt,jboss@frs.sourceforge.net:/home/frs/project/j/jb/jboss/JBossTools/JBossTools4.1.0.x/"
+  scp /home/nboldt/truu/doc/release_guide/zz_Release_Notes_${version2}.readme.html "nickboldt,jboss@frs.sourceforge.net:/home/frs/project/j/jb/jboss/JBossTools/JBossTools4.1.0.x/"
   # or, for Final builds
-  scp /home/nboldt/truu/doc/release_guide/zz_Release_Notes_${version}.readme.html "nickboldt,jboss@frs.sourceforge.net:/home/frs/project/j/jb/jboss/JBossTools/JBossTools4.1.x/"
+  scp /home/nboldt/truu/doc/release_guide/zz_Release_Notes_${version2}.readme.html "nickboldt,jboss@frs.sourceforge.net:/home/frs/project/j/jb/jboss/JBossTools/JBossTools4.1.x/"
 
-  echo ">>> http://sourceforge.net/projects/jboss/files/JBossTools/JBossTools${branch}/zz_Release_Notes_${version}.readme.html/download"
+  echo ">>> http://sourceforge.net/projects/jboss/files/JBossTools/JBossTools${version}/zz_Release_Notes_${version2}.readme.html/download"
 
-  git commit -m "generate release notes for ${version} release" ${prev} zz_Release_Notes_${version}.readme.html
+  topic="release-${version2}"; branch=master; gw1
+  ci "generate release notes for ${version2} release" ${prev} zz_Release_Notes_${version2}.readme.html
+  gw2;gw3;gw4
 
 4. Check contents of bookmarks.xml file, and upload to sf.net if changed:
 
@@ -92,28 +99,28 @@
 
 6. (ONLY if necessary) Move Milestonex to Milestone
 
-  branch=4.1.0.Alpha2
-  version=4.1.0.Alpha2c # a, b, c, d...
+  version=4.1.0.Beta1
+  version2=4.1.0.Beta1b # a, b, c, d...
 
   # rename the development build
-  echo "rename development/${branch}.core  development/${branch}.core.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
-  echo "rename development/${version}.core development/${branch}.core" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+  echo "rename development/${version}.core  development/${version}.core.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+  echo "rename development/${version2}.core development/${version}.core" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
 
-  # rename discovery site, http://download.jboss.org/jbosstools/discovery/development/${version}/
-  echo "rename development/${branch}  development/${branch}.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery
-  echo "rename development/${version} development/${branch}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery
+  # rename discovery site, http://download.jboss.org/jbosstools/discovery/development/${version2}/
+  echo "rename development/${version}  development/${version}.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery
+  echo "rename development/${version2} development/${version}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery
 
   # make sure this exists - might be only "a" while core is on "c"
-  echo "rename development/${branch}.webtools  development/${branch}.webtools.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
-  echo "rename development/${version}.webtools development/${branch}.webtools" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+  echo "rename development/${version}.webtools  development/${version}.webtools.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+  echo "rename development/${version2}.webtools development/${version}.webtools" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
 
   # rename the update site
-  echo "rename JBossTools-${branch}.core  JBossTools-${branch}.core.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
-  echo "rename JBossTools-${version}.core JBossTools-${branch}.core" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
+  echo "rename JBossTools-${version}.core  JBossTools-${version}.core.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
+  echo "rename JBossTools-${version2}.core JBossTools-${version}.core" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
 
   # make sure this exists - might be only "a" while core is on "c"
-  echo "rename JBossTools-${branch}.webtools  JBossTools-${branch}.webtools.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
-  echo "rename JBossTools-${version}.webtools JBossTools-${branch}.webtools" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
+  echo "rename JBossTools-${version}.webtools  JBossTools-${version}.webtools.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
+  echo "rename JBossTools-${version2}.webtools JBossTools-${version}.webtools" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
 
   Also, over sftp, delete any old iterations or respins that are no longer needed from 
 
@@ -128,12 +135,9 @@
   alias   gd='git diff --color=always -w'
   alias   scpr='rsync -aPrz --rsh=ssh'
   alias   ci='git commit -m'
-  alias   gp='git stash; git svn rebase; git svn dcommit; git stash pop'
-  alias   gpuom='git pull origin master; git lg -10'
-  alias   gppom='gpuom; git push origin master; git lg -10'
 
-  previous=4.1.0.Alpha1
-  version=4.1.0.Alpha2 # (no suffix if performed rename in step 6 above) a, b...
+  previous=4.1.0.Alpha2
+  version=4.1.0.Beta1 # (no suffix if performed rename in step 6 above) a, b...
   #echo "rename webtools/kepler webtools/kepler.`date +%Y%m%d-%H%M`" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/
   echo "rename webtools/kepler webtools/kepler_${previous}"         | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/
   echo "rename JBossTools-${version}.webtools webtools/kepler"      | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/
@@ -145,31 +149,28 @@
   scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/webtools/kepler/index.html .
   scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/webtools/kepler/site.xml .
 
-  # "gw1" uses special aliases/scripts/shortcuts. Basically, we want to follow correct github workflows so that commits are pushed to user's fork, then later pull-requested (and the PR applied)
-  # "gw2" will create the PR, "gw3" will apply it, and "gw4" will delete the topic branch locally and in my fork
-  # the 4 steps are captured here: https://gist.github.com/nickboldt/4111850
-  # "stat" is short for "git status"; "gd" is short for "git diff"; "ga" is short for "git add"
-
   stat .; gd .
-  topic="release-${version}"; branch=master; gw1
-  ci "release ${version} to http://download.jboss.org/jbosstools/updates/webtools/kepler/" index.html site.xml
+  topic="release-${version2}"; branch=master; gw1
+  ci "release ${version} (${version2}) to http://download.jboss.org/jbosstools/updates/webtools/kepler/" index.html site.xml
   gw2;gw3;gw4
 
   Also, over sftp, delete any old iterations or respins that are no longer needed.
 
-  ** If this is  the first release, ensure that upstream project Web Tools (WTP) knows to include this new URL in their server adapter wizard. New bugzilla required! **
+  ** If this is the first release, ensure that upstream project Web Tools (WTP) knows to include this new URL in their server adapter wizard. New bugzilla required! **
 
 
-8. [8 files] Update composite site metadata (absolute path), Central directory file (absolute path, from http://download.jboss.org/jbosstools/discovery/development/${branch}/), and 
-             index.html files (absolute paths). Also pull a copy of the updated discovery jar (from http://download.jboss.org/jbosstools/discovery/development/${branch}/plugins/).
+8. [8 files] Update composite site metadata (absolute path), Central directory file (absolute path, from http://download.jboss.org/jbosstools/discovery/development/${version}/), and 
+             index.html files (absolute paths). Also pull a copy of the updated discovery jar (from http://download.jboss.org/jbosstools/discovery/development/${version}/plugins/).
              And update the pointer to the latest target platform, too.
 
-  previous=4.1.0.Alpha1
-  version=4.1.0.Alpha2
-  version2=4.1.0.Alpha2
+  previous=4.1.0.Alpha2
+  version=4.1.0.Beta1
+  version2=4.1.0.Beta1 # a, b, c
 
-  oldTargetPlatform=4.30.5.Alpha
-  newTargetPlatform=4.30.5.Alpha3
+  oldTargetPlatform=4.30.5.Alpha3
+  newTargetPlatform=4.30.5.Alpha5
+
+  topic="release-target-platform-${newTargetPlatform}"; branch=master; gw1
   pushd ~/tru/download.jboss.org/jbosstools/updates/kepler/
   now=`date +%s000`
   for d in composite*.xml; do
@@ -178,9 +179,19 @@
   done
   ci "release ${newTargetPlatform} to http://download.jboss.org/jbosstools/updates/kepler/" .
   popd >/dev/null
+  gw2;gw3;gw4
 
-  cd ~/tru/download.jboss.org/jbosstools/updates/development/kepler/
+  # push updated target platform to production
+  scpr ~/tru/download.jboss.org/jbosstools/updates/kepler/composite*.xml $TOOLS/updates/kepler/
+
+  # -------
+
+  previous=4.1.0.Alpha2
+  version=4.1.0.Beta1
+  version2=4.1.0.Beta1 # a, b, c
+
   branch=master; topic="release-development-${version2}"; gw1
+  cd ~/tru/download.jboss.org/jbosstools/updates/development/kepler/
 
   now=`date +%s000`
   for d in composite*.xml; do
@@ -192,14 +203,14 @@
   sed -i -e "s#href=\"#href=\"http://download.jboss.org/jbosstools/updates/JBossTools-${version2}.core/#g" -e "s#href=\"http://download.jboss.org/jbosstools/updates/JBossTools-${version2}.core/http#href=\"http#g" index.html
   
   # update XML
-  branch=4.1.0.Alpha2
+  version=4.1.0.Beta1
   cd ~/tru/download.jboss.org/jbosstools/updates/development/kepler/
-  rm -f jbosstools-directory.xml; wget -nc http://download.jboss.org/jbosstools/discovery/development/${branch}/jbosstools-directory.xml
+  rm -f jbosstools-directory.xml; wget -nc http://download.jboss.org/jbosstools/discovery/development/${version}/jbosstools-directory.xml
   #newJar=plugins/org.jboss.tools.central.discovery_1.0.0.v20120612-0053-H99-Final.jar
   newJar=$(cat jbosstools-directory.xml | grep entry | sed -e "s#.\+plugins/#plugins/#g" | sed -e "s#\.jar.\+#.jar#g"); echo $newJar
   mkdir -p ~/tru/download.jboss.org/jbosstools/updates/development/kepler/plugins
   pushd ~/tru/download.jboss.org/jbosstools/updates/development/kepler/plugins >/dev/null
-  wget http://download.jboss.org/jbosstools/discovery/development/${branch}/${newJar}
+  wget http://download.jboss.org/jbosstools/discovery/development/${version}/${newJar}
   popd >/dev/null
   
   # IF THIS IS pre-Final, ensure that your plugin points to the STAGING URL, not the RELEASE one:
@@ -225,12 +236,7 @@
   # TODO: make sure next line works
   git add ${newJar}
   ci "release ${version2} to http://download.jboss.org/jbosstools/updates/development/kepler/; add new discovery plugin ${newJar} + update jbosstools-directory.xml" .
-
-  # "gw2;gw3;gw4" uses special aliases/scripts/shortcuts. Basically, we want to follow correct github workflows so that commits are pushed to user's fork, then later pull-requested (and the p-r applied)
   gw2;gw3;gw4
-
-  # push updated target platform to production
-  scpr ~/tru/download.jboss.org/jbosstools/updates/kepler/composite*.xml $TOOLS/updates/kepler/
   
 
 If this is the pre-Final build, ensure that the following files exist:
@@ -240,8 +246,8 @@ If this is the pre-Final build, ensure that the following files exist:
   http://download.jboss.org/jbosstools/updates/kepler/extras/compositeArtifacts.xml & compositeContent.xml
 
   http://download.jboss.org/jbosstools/updates/development/kepler/jbosstools-directory.xml 
-    -> must point at a real plugin, eg., to http://download.jboss.org/jbosstools/discovery/development/4.1.0.Alpha2/plugins/org.jboss.tools.central.discovery_1.2.0.Alpha2-v20130407-1937-B45.jar
-    --> jar must point at a real composite site, eg., change http://download.jboss.org/jbosstools/updates/JBossTools-4.1.0.Alpha2.discovery/ 
+    -> must point at a real plugin, eg., to http://download.jboss.org/jbosstools/discovery/development/4.1.0.Beta1/plugins/org.jboss.tools.central.discovery_1.2.0.Beta1-v20130407-1937-B45.jar
+    --> jar must point at a real composite site, eg., change http://download.jboss.org/jbosstools/updates/JBossTools-4.1.0.Beta1.discovery/ 
     --> to http://download.jboss.org/jbosstools/updates/development/kepler/central/core/
   http://download.jboss.org/jbosstools/updates/development/kepler/compositeArtifacts.xml & compositeContent.xml
   http://download.jboss.org/jbosstools/updates/development/kepler/central/core/compositeArtifacts.xml & compositeContent.xml
@@ -258,7 +264,6 @@ If this is the Final build, ensure that the following files exist (copy content 
   # "gw1" uses special aliases/scripts/shortcuts. Basically, we want to follow correct github workflows so that commits are pushed to user's fork, then later pull-requested (and the p-r applied)
   branch=master; topic="release-stable-${version2}"; gw1
   ci "release ${version} to http://download.jboss.org/jbosstools/updates/stable/kepler/; add new discovery plugin ${newJar} + update jbosstools-directory.xml" .
-  # "gw2;gw3;gw4" uses special aliases/scripts/shortcuts. Basically, we want to follow correct github workflows so that commits are pushed to user's fork, then later pull-requested (and the p-r applied)
   gw2;gw3;gw4
   
 ----
@@ -296,7 +301,7 @@ c. magnolia pages
 
   ** not for first Alpha2 - wait for Alpha2 or Beta1 **
 
-  Compare list of features here:  http://download.jboss.org/jbosstools/updates/JBossTools-4.1.0.Alpha2.core/site.properties (see AbridgedTools.category.features)
+  Compare list of features here:  http://download.jboss.org/jbosstools/updates/JBossTools-4.1.0.Beta1.core/site.properties (see CoreTools.category.features)
   with features here:       https://marketplace.eclipse.org/node/xxxxxx/edit
 
     org.hibernate.eclipse.feature,
@@ -307,21 +312,19 @@ c. magnolia pages
     org.jboss.tools.cdi.feature,
     org.jboss.tools.cdi.seam.feature,
     org.jboss.tools.common.jdt.feature,
-    org.jboss.tools.common.mylyn.feature,
     org.jboss.tools.community.central.feature,
     org.jboss.tools.community.project.examples.feature,
     org.jboss.tools.forge.feature,
     org.jboss.tools.jmx.feature,
     org.jboss.tools.jsf.feature,
     org.jboss.tools.jst.feature,
+    org.jboss.tools.livereload.feature,
+    org.jboss.tools.maven.apt.feature,
     org.jboss.tools.maven.cdi.feature,
     org.jboss.tools.maven.feature,
     org.jboss.tools.maven.hibernate.feature,
-    org.jboss.tools.maven.jaxrs.feature,
     org.jboss.tools.maven.jbosspackaging.feature,
-    org.jboss.tools.maven.jdt.feature, 
-    org.jboss.tools.maven.jpa.feature,
-    org.jboss.tools.maven.jsf.feature,
+    org.jboss.tools.maven.jdt.feature,
     org.jboss.tools.maven.portlet.feature,
     org.jboss.tools.maven.profiles.feature,
     org.jboss.tools.maven.project.examples.feature,
@@ -335,20 +338,22 @@ c. magnolia pages
     org.jboss.tools.runtime.core.feature,
     org.jboss.tools.runtime.seam.detector.feature,
     org.jboss.tools.seam.feature,
+    org.jboss.tools.stacks.core.feature,
     org.jboss.tools.usage.feature,
     org.jboss.tools.vpe.browsersim.feature,
     org.jboss.tools.vpe.feature,
     org.jboss.tools.ws.feature,
-    org.jboss.tools.ws.jaxrs.feature,  
+    org.jboss.tools.ws.jaxrs.feature,
 
 Be sure to also update the listing to the latest release version (eg., Beta1 -> Beta2)
 
 12. Commit updates to release guide (including this document):
 
-  version=4.1.0.Alpha2
+  version=4.1.0.Beta1
   cd ~/truu/doc/release_guide
+  topic="release-${version}";branch=master; gw1
   ci "update release guide for ${version}" *2013*JBT*
-  gp
+  gw2;gw3;gw4
   
 15. Send email, prepare blogs & announcements
 
@@ -362,15 +367,15 @@ jbds-pm-list <jbds-pm-list@redhat.com>
 "external-exadel-list@redhat.com" <external-exadel-list@redhat.com>
 jboss-announce@redhat.com (optional for major milestones/releases)
 
-branch=4.1.0.Alpha2
+version=4.1.0.Beta1
 echo "
 Subject:
 
-JBoss Tools ${branch} is available
+JBoss Tools ${version} is available
 
 Body:
 
-JBoss Tools ${branch} is now available.
+JBoss Tools ${version} is now available.
 
 This is a development release aimed at Eclipse Kepler (4.3 M6) users.
 
@@ -415,8 +420,8 @@ https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.plugin.syst
 
 Project leads, please tag your projects!
 
-  co jbosstools-${branch}x
-  git tag jbosstools-${branch}
-  git push origin jbosstools-${branch}
+  co jbosstools-${version}x
+  git tag jbosstools-${version}
+  git push origin jbosstools-${version}
 
 "

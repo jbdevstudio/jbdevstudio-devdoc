@@ -58,14 +58,14 @@
 
   branch=4.1.0.x # if this is a Final build, use 4.1.x instead of 4.1.0.x
   version=4.1.0.Alpha2
-  cd /home/nboldt/truu/documentation/Release_Guide/ # in devstudio SVN
+  cd /home/nboldt/truu/doc/release_guide/ # in devstudio SVN
   prev=$(find . -name "zz_Release_Notes_4.1*"); prev=${prev:2}; echo $prev
   sublime zz_Release_Notes_4.1*.html # or use gedit, vim, etc.
   git mv zz_Release_Notes_4.1*.html zz_Release_Notes_${version}.readme.html
   # for milestones
-  scp /home/nboldt/truu/documentation/Release_Guide/zz_Release_Notes_${version}.readme.html "nickboldt,jboss@frs.sourceforge.net:/home/frs/project/j/jb/jboss/JBossTools/JBossTools4.1.0.x/"
+  scp /home/nboldt/truu/doc/release_guide/zz_Release_Notes_${version}.readme.html "nickboldt,jboss@frs.sourceforge.net:/home/frs/project/j/jb/jboss/JBossTools/JBossTools4.1.0.x/"
   # or, for Final builds
-  scp /home/nboldt/truu/documentation/Release_Guide/zz_Release_Notes_${version}.readme.html "nickboldt,jboss@frs.sourceforge.net:/home/frs/project/j/jb/jboss/JBossTools/JBossTools4.1.x/"
+  scp /home/nboldt/truu/doc/release_guide/zz_Release_Notes_${version}.readme.html "nickboldt,jboss@frs.sourceforge.net:/home/frs/project/j/jb/jboss/JBossTools/JBossTools4.1.x/"
 
   echo ">>> http://sourceforge.net/projects/jboss/files/JBossTools/JBossTools${branch}/zz_Release_Notes_${version}.readme.html/download"
 
@@ -73,8 +73,8 @@
 
 4. Check contents of bookmarks.xml file, and upload to sf.net if changed:
 
-  vi  /home/nboldt/truu/documentation/Release_Guide/jbosstools4.1_bookmarks.xml
-  scp /home/nboldt/truu/documentation/Release_Guide/jbosstools4.1_bookmarks.xml "nickboldt,jboss@frs.sourceforge.net:/home/frs/project/j/jb/jboss/JBossTools/"
+  vi  /home/nboldt/truu/doc/release_guide/jbosstools4.1_bookmarks.xml
+  scp /home/nboldt/truu/doc/release_guide/jbosstools4.1_bookmarks.xml "nickboldt,jboss@frs.sourceforge.net:/home/frs/project/j/jb/jboss/JBossTools/"
 ----
 
 5. Tweak magnolia pages to link to new files, but do not publish yet
@@ -145,8 +145,12 @@
   scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/webtools/kepler/index.html .
   scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/webtools/kepler/site.xml .
 
+  # "gw1" uses special aliases/scripts/shortcuts. Basically, we want to follow correct github workflows so that commits are pushed to user's fork, then later pull-requested (and the PR applied)
+  # "gw2" will create the PR, "gw3" will apply it, and "gw4" will delete the topic branch locally and in my fork
+  # the 4 steps are captured here: https://gist.github.com/nickboldt/4111850
+  # "stat" is short for "git status"; "gd" is short for "git diff"; "ga" is short for "git add"
+
   stat .; gd .
-  # "gw1" uses special aliases/scripts/shortcuts. Basically, we want to follow correct github workflows so that commits are pushed to user's fork, then later pull-requested (and the p-r applied)
   topic="release-${version}"; branch=master; gw1
   ci "release ${version} to http://download.jboss.org/jbosstools/updates/webtools/kepler/" index.html site.xml
   gw2;gw3;gw4
@@ -342,7 +346,7 @@ Be sure to also update the listing to the latest release version (eg., Beta1 -> 
 12. Commit updates to release guide (including this document):
 
   version=4.1.0.Alpha2
-  cd ~/truu/documentation/Release_Guide
+  cd ~/truu/doc/release_guide
   ci "update release guide for ${version}" *2013*JBT*
   gp
   

@@ -1,8 +1,8 @@
 == Publishing JBDS Installers & update sites for QE ==
 
 0. Make sure that the URLs in the discovery site built from jbosstools-discovery_41 point to the correct version, eg.,
-    http://download.jboss.org/jbosstools/updates/JBossTools-4.1.0.Beta1b.core/
-    http://www.qa.jboss.com/binaries/RHDS/updates/development/7.0.0.Beta1b.core/
+    http://download.jboss.org/jbosstools/updates/JBossTools-4.1.0.Beta2.core/
+    http://www.qa.jboss.com/binaries/RHDS/updates/development/7.0.0.Beta2.core/
 
   Respin if necessary.
 
@@ -15,17 +15,17 @@
 
   # can do these next 3 steps in parallel
   
-  version=7.0.0.Beta1b # a, b, c...
+  version=7.0.0.Beta2 # a, b, c...
   scpr /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_70/installer/* /qa/services/http/binaries/RHDS/builds/development/${version}.installer/
   cd /qa/services/http/binaries/RHDS/builds/development/; find . -maxdepth 1 -type d -name "${version}*" | grep ${version}; find . -maxdepth 1 -type d -name "${version}*" | sed "s#\.# >> http://www.qa.jboss.com/binaries/RHDS/builds/development#" | egrep ">>|${version}"
 
-  version=7.0.0.Beta1b # a, b, c...
+  version=7.0.0.Beta2 # a, b, c...
   scpr /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_70/all/repo/* /qa/services/http/binaries/RHDS/updates/development/${version}.core/
   cd /qa/services/http/binaries/RHDS/updates/development/; find . -maxdepth 1 -type d -name "${version}*" | grep ${version}; find . -maxdepth 1 -type d -name "${version}*" | sed "s#\.# >> http://www.qa.jboss.com/binaries/RHDS/updates/development#" | egrep ">>|${version}"
 
   # Make sure that the parameters fed into the Discovery job are correct; respin if necessary.
   # https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_7.0.kepler/job/jbosstools-discovery_41/
-  version=7.0.0.Beta1b # a, b, c...
+  version=7.0.0.Beta2 # a, b, c...
   scpr /qa/services/http/binaries/RHDS/discovery/nightly/core/4.1.kepler/* /qa/services/http/binaries/RHDS/discovery/development/${version}/
   # JBDS-2551 fix composite discovery site
   cd /qa/services/http/binaries/RHDS/discovery/development/${version}/
@@ -43,7 +43,7 @@
   
   (in parallel terminal connections!)
   
-  version=7.0.0.Beta1b; cd /mnt/devstudio/updates/7.0.0
+  version=7.0.0.Beta2; cd /mnt/devstudio/updates/7.0.0
   scpr nboldt@dev01.mw.lab.eng.bos.redhat.com:~/RHDS/updates/development/${version}.core .
   chmod -R g+w /mnt/devstudio/updates/${version}.core 2>/dev/null
   chgrp -R devstudio /mnt/devstudio/updates/${version}.core 2>/dev/null
@@ -53,7 +53,7 @@
   #scpr nboldt@dev01.mw.lab.eng.bos.redhat.com:~/RHDS/updates/development/${version}.extras .
 
   # TODO: verify correct URL and filename for the target zip
-  version=7.0.0.Beta1b; cd /mnt/devstudio/updates/7.0.0
+  version=7.0.0.Beta2; cd /mnt/devstudio/updates/7.0.0
   TARGET_PLATFORM_VERSION=4.30.5.Alpha5
   scpr nboldt@dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION}/jbdevstudiotarget-${TARGET_PLATFORM_VERSION}.zip . 
   unzip -d ${version}.target-platform jbdevstudiotarget-${TARGET_PLATFORM_VERSION}.zip
@@ -70,8 +70,8 @@
   alias   gp='git stash; git svn rebase; git svn dcommit; git stash pop'
 
   cd ~/truu/devstudio.jboss.com/updates/7.0-staging/
-  previous=7.0.0.Beta1a
-  version=7.0.0.Beta1b
+  previous=7.0.0.Beta1
+  version=7.0.0.Beta2
   now=`date +%s000`
   for d in *.*ml extras/*.*ml central/core/*.*ml; do
   sed -i -e "s#${previous}#${version}#g" -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d; done
@@ -79,7 +79,7 @@
 5. update https://devstudio.jboss.com/updates/7.0-staging/devstudio-directory.xml to point at new Core discovery jar.
 
   # Latest discovery site is here: http://www.qa.jboss.com/binaries/RHDS/discovery/development/${version}
-  version=7.0.0.Beta1b # a, b...
+  version=7.0.0.Beta2 # a, b...
   # get new plugin
   cd ~/truu/devstudio.jboss.com/updates/7.0-staging/discovery/
   #git rm -f com.jboss.jbds.central.discovery_*.jar
@@ -138,7 +138,7 @@
 
 7. Commit updated docs & push:
 
-  cd ~/truu/documentation/Release_Guide
+  cd ~/truu/doc/release_guide
   ci "release ${version} for QE" .
   gp
 
@@ -149,11 +149,11 @@
 
 # To: jbds-pm-list <jbds-pm-list@redhat.com>, "external-exadel-list@redhat.com" <external-exadel-list@redhat.com>
 
-version=7.0.0.Beta1b # a, b, c...
+version=7.0.0.Beta2 # a, b, c...
 respin="respin-b"
 TARGET_PLATFORM_VERSION=4.30.5.Alpha5
-version2=7.0.0.Beta1 # no respin suffix here
-version3=4.1.0.Beta1 # no respin suffix here
+version2=7.0.0.Beta2 # no respin suffix here
+version3=4.1.0.Beta2 # no respin suffix here
 echo "
 Subject: 
 

@@ -7,49 +7,59 @@
 
   screen
 
-  branch=7.0.0.Alpha2
-  version=7.0.0.Alpha2c; # a, b, c, ...
+  version=7.0.0.Beta1
+  version2=7.0.0.Beta1b; # a, b, c, ...
   dev=10.16.88.146; # dev01.mw.lab.eng.bos.redhat.com
   cd /mnt/devstudio/earlyaccess/builds/development/
-  mkdir -p /mnt/devstudio/earlyaccess/builds/development/${branch}
-  touch ${branch}-eap__No.eap.builds.will.be.released
-  rsync -aPrz --rsh=ssh --exclude="*-eap-*" nboldt@${dev}:~/RHDS/builds/development/${version}.installer/jbdevstudio-product* ${branch}/
+  mkdir -p /mnt/devstudio/earlyaccess/builds/development/${version}
+  touch ${version}-eap__No.eap.builds.will.be.released
+  rsync -aPrz --rsh=ssh --exclude="*-eap-*" nboldt@${dev}:~/RHDS/builds/development/${version2}.installer/jbdevstudio-product* ${version}/
 
   # Add an .htaccess file w/ password to the *-eap folder, and if necessary, update the .htpasswd file w/ a new password (use `htpasswd` to generate the hashed password).
-  # cp /mnt/devstudio/earlyaccess/builds/development/7.0.*-eap/.htaccess /mnt/devstudio/earlyaccess/builds/development/${version}-eap/
+  # cp /mnt/devstudio/earlyaccess/builds/development/7.0.*-eap/.htaccess /mnt/devstudio/earlyaccess/builds/development/${version2}-eap/
 
   # clean out old installers & update sites from previous milestones; rename update sites from "a,b,c" to ""
-  branch=7.0.0.Alpha2
-  version=7.0.0.Alpha2c; # a, b, c, ...
+  version=7.0.0.Beta1
+  version2=7.0.0.Beta1b; # a, b, c, ...
   cd /mnt/devstudio/updates/7.0.0/
-  if [[ ${branch} != ${version} ]]; then 
-    mv ${branch}.core ${branch}.core.DELETEME
-    mv ${branch}.target-platform ${branch}.target-platform.DELETEME
-    mv ${version}.core ${branch}.core
-    mv ${version}.target-platform ${branch}.target-platform
+  if [[ ${version} != ${version2} ]]; then 
+    mv ${version}.core ${version}.core.DELETEME
+    mv ${version}.target-platform ${version}.target-platform.DELETEME
+    mv ${version2}.core ${version}.core
+    mv ${version2}.target-platform ${version}.target-platform
   fi
-  # TODO: make sure this is safe!
-  rm -fr ${branch}?.core ${branch}?.target-platform *.DELETEME
+  # TODO: do not run this next line if the above step fails!
+  rm -fr ${version}?.core ${version}?.target-platform *.DELETEME
 
+  # only applies if we staged installers for QE; if you did not, then skip this step
   cd /mnt/devstudio/earlyaccess/builds/development
-  if [[ ${branch} != ${version} ]]; then 
-    mv ${branch} ${branch}.DELETEME
-    mv ${version} ${branch}
+  if [[ ${version} != ${version2} ]]; then 
+    mv ${version} ${version}.DELETEME
+    mv ${version2} ${version}
   fi  
-  # TODO: make sure this is safe!
   rm -fr *.DELETEME
 
 2. rename milestones from Beta1b to Beta1; fix html pages in 7.0-staging
 
+  # NOTE: ~/truu/devstudio.jboss.com is a symlink on my local machine to this folder in github: https://github.com/jbdevstudio/jbdevstudio-website/tree/master/content
+  # "gw1" uses special aliases/scripts/shortcuts. Basically, we want to follow correct github workflows so that commits are pushed to user's fork, then later pull-requested (and the PR applied)
+  # "gw2" will create the PR, "gw3" will apply it, and "gw4" will delete the topic branch locally and in my fork
+  # the 4 steps are captured here: https://gist.github.com/nickboldt/4111850
+  # "stat" is short for "git status"; "gd" is short for "git diff"; "ga" is short for "git add"
+
   cd ~/truu/devstudio.jboss.com/updates/7.0-staging
-  branch=7.0.0.Alpha2
-  version=7.0.0.Alpha2c; # a, b, c, ...
+  version=7.0.0.Beta1
+  version2=7.0.0.Beta1b; # a, b, c, ...
   now=`date +%s000`
   for d in composite*.xml index.html central/core/index.html ; do
-    sed -i -e "s#${version}#${branch}#g" $d
+    sed -i -e "s#${version2}#${version}#g" $d
     sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
   done
-  ci "rename ${version} to ${branch}" .
+
+  # commit to github   
+  topic="release-Beta1";branch=master; gw1
+  ci "rename ${version2} to ${version}" .
+  gw2;gw3;gw4
 
 3. Update http://svn.jboss.org/repos/devstudio/trunk/devstudio.jboss.com/earlyaccess/*.html
 
@@ -60,27 +70,37 @@
   alias   ci='git commit -m'
   alias   gp='git stash; git svn rebase; git svn dcommit; git stash pop'
 
-  branch=7.0.0.Alpha2
-  version=7.0.0.Alpha2c; # a, b, ...
+  version=7.0.0.Beta1
+  version2=7.0.0.Beta1b; # a, b, ...
   cd ~/truu/devstudio.jboss.com/earlyaccess
-  wget http://www.qa.jboss.com/binaries/RHDS/builds/development/${version}.installer/${branch}.html
-  echo "<html><head></head><body onload=\"document.location.href='../${branch}.html'\"></body></html>" > 7.0/index.html
-  ga ${branch}.html; ci "new early access build - ${branch}" .; gp
+  wget http://www.qa.jboss.com/binaries/RHDS/builds/development/${version2}.installer/${version}.html
+  echo "<html><head></head><body onload=\"document.location.href='../${version}.html'\"></body></html>" > 7.0/index.html
 
-  scpr ${branch}.html 7.0 nboldt@wallace.redhat.com:/mnt/devstudio/earlyaccess/
+  # commit to github   
+  topic="release-Beta1";branch=master; gw1
+  ga ${version}.html; ci "new early access build - ${version}" .
+  gw2;gw3;gw4
+
+  scpr ${version}.html 7.0 nboldt@wallace.redhat.com:/mnt/devstudio/earlyaccess/
 
 4. Update https://devstudio.jboss.com/updates/7.0*/devstudio-directory.xml to point at new discovery jar(s) from staging.
 
-  branch=7.0.0.Alpha2
+  version=7.0.0.Beta1
   SRC_SITE=7.0-staging
   DESTSITE=7.0-development # or 7.0/ for a GA release
   scpr ~/truu/devstudio.jboss.com/updates/${SRC_SITE}/* ~/truu/devstudio.jboss.com/updates/${DESTSITE}/
 
   # check in / sync changes
   cd ~/truu/devstudio.jboss.com/updates/
+
+  # commit to github   
+  topic="release-Beta1";branch=master; gw1
   stat .; gd .
+
   ga ${DESTSITE}
-  ci "release ${branch} from ${SRC_SITE} to ${DESTSITE}" . 
+  ci "release ${version} from ${SRC_SITE} to ${DESTSITE}" . 
+  gw2;gw3;gw4
+
   # push both staging and development folders to wallace
   scpr ~/truu/devstudio.jboss.com/updates/${DESTSITE} ~/truu/devstudio.jboss.com/updates/${SRC_SITE} $WALL/updates/
 
@@ -96,31 +116,37 @@
 
   https://devstudio.jboss.com/earlyaccess/
 
-7. Tag SVN
+7. Tag SVN (for Beta1); tag Git (for Beta2 and beyond)
 
-  # if not tagging from tip of the branch, use git log to determine the revision needed to tag, eg., http://svn.jboss.org/repos/devstudio/!svn/bc/${rev}/branches/devstudio-7.0.x/
-  branch=7.0.0.Alpha2
-  rev=9640
-  svn -m "tag revision ${rev} as ${branch}" -r ${rev} copy http://svn.jboss.org/repos/devstudio/branches/devstudio-7.0.x/ http://svn.jboss.org/repos/devstudio/tags/devstudio-${branch}/
+  version=7.0.0.Beta1
+  svn -m "tag for ${version}" copy http://svn.jboss.org/repos/devstudio/branches/devstudio-${version}x/ http://svn.jboss.org/repos/devstudio/tags/devstudio-${version}/
 
-  #else just do this
-  branch=7.0.0.Alpha2
-  svn -m "tag for ${branch}" copy http://svn.jboss.org/repos/devstudio/branches/devstudio-${branch}x/ http://svn.jboss.org/repos/devstudio/tags/devstudio-${branch}/
+  #TODO: verify this for Beta2 release:
+  git clone https://github.com/jbdevstudio/jbdevstudio-product
+  git clone https://github.com/jbdevstudio/jbdevstudio-ci
+  git clone https://github.com/jbdevstudio/jbdevstudio-website
+  git clone https://github.com/jbdevstudio/jbdevstudio-artwork
+  git clone https://github.com/jbdevstudio/jbdevstudio-devdoc
+  # then do this for each one...
+  co jbosstools-${version}x
+  git tag jbosstools-${version}
+  git push origin jbosstools-${version}
 
 8. Commit updates to release guide (including this document):
 
-  branch=7.0.0.Alpha2
-  cd ~/truu/documentation/Release_Guide
-  ci "update release guide for ${branch}" *2013*JBDS*
-  gp
+  version=7.0.0.Beta1
+  cd ~/truu/doc/release_guide
+  topic="release-Beta1";branch=master; gw1
+  ci "update release guide for ${version}" *2013*JBDS*
+  g2;gw3;gw4
 
 9. Move installers from "a" or "b" folder to base folder; purge old stuff from OLD/ folder
 
   ssh to dev01.mw.lab.eng.bos.redhat.com, sudo to hudson user, then
 
   cd ~/RHDS/builds/development/
-  mv 7.0.0.Alpha2.installer OLD/
-  mv 7.0.0.Alpha2c.installer 7.0.0.Alpha2.installer
+  mv 7.0.0.Beta1.installer OLD/
+  mv 7.0.0.Beta1b.installer 7.0.0.Beta1.installer
   # repeat for updates/development and discovery/development
 
 == Email Template -- send two emails ==
@@ -133,21 +159,21 @@ jbds-pm-list <jbds-pm-list@redhat.com>
 "external-exadel-list@redhat.com" <external-exadel-list@redhat.com>
 jboss-announce@redhat.com (optional for major milestones/releases)
 
-branch=7.0.0.Alpha2
-version=7.0.0.Alpha2 # a, b, c...
+version=7.0.0.Beta1
+version2=7.0.0.Beta1 # a, b, c...
 echo "
 Subject: 
 
-JBDS ${branch} on Early Access
+JBDS ${version} on Early Access
 
 Body:
 
 
-JBDS ${branch} Early Access installers are now available!
+JBDS ${version} Early Access installers are now available!
 
 https://devstudio.jboss.com/earlyaccess/
 
-Note that bits may take a while to replicate from our staging server to publication. Please allow at least an hour before attempting to download them - if the page above still shows the previous milestone instead of ${branch}, try again later.
+Note that bits may take a while to replicate from our staging server to publication. Please allow at least an hour before attempting to download them - if the page above still shows the previous milestone instead of ${version}, try again later.
 
 --
 
@@ -162,7 +188,7 @@ JBDS Central should be looking to this URL to resolve content listed on the Soft
 
 Eclipse Marketplace
 
-JBDS ${branch} will also be available on the Eclipse Marketplace soon. The link below should work once the content has been reviewed by the Eclipse Foundation:
+JBDS ${version} will also be available on the Eclipse Marketplace soon. The link below should work once the content has been reviewed by the Eclipse Foundation:
 
 http://marketplace.eclipse.org/content/jboss-developer-studio-kepler
 
@@ -170,7 +196,7 @@ http://marketplace.eclipse.org/content/jboss-developer-studio-kepler
 
 Schedule / Upcoming Releases:
 
-https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.plugin.system.project%3Aversions-panel
+https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.plugin.system.project%3Aversion2s-panel
 
 "
 
@@ -181,18 +207,18 @@ https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.plugin.syst
 #jbds-pm-list <jbds-pm-list@redhat.com>
 #Mark Yarborough <myarboro@redhat.com>
 
-branch=7.0.0.Alpha2
-version=7.0.0.Alpha2 # a, b, c...
+version=7.0.0.Beta1
+version2=7.0.0.Beta1 # a, b, c...
 echo "
 Subject: 
 
-JBDS ${branch} available for push to CSP
+JBDS ${version} available for push to CSP
 
 Body:
 
-JBDS ${branch} (renamed from ${version}) is available to push to CSP.
+JBDS ${version} (renamed from ${version2}) is available to push to CSP.
 
-http://www.qa.jboss.com/binaries/RHDS/builds/development/${version}.installer/
+http://www.qa.jboss.com/binaries/RHDS/builds/development/${version2}.installer/
 
 --
 

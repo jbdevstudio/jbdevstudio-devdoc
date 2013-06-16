@@ -8,39 +8,34 @@
 
 === Builds ===
 
-1. Move the latest JBT, Web Tools, and SOA Tooling nightly builds (no symlinks to avoid accidental cleanup):
+1. Move the latest JBT + Web Tools nightly builds (no symlinks to avoid accidental cleanup):
 
-	version=4.1.0.Beta2 # a, b, c...
-	branch=core/4.1.kepler
-	buildID1=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/nightly/${branch} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); buildID1=${buildID1%%/*}
-	echo "Latest build: ${buildID1}"
-	echo "mkdir development/${version}.core" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
-	echo "rename nightly/${branch}/${buildID1} development/${version}.core/${buildID1}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
-	
-	branch=webtools/4.1.kepler
-	buildID3=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/nightly/${branch} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); buildID3=${buildID3%%/*}
-	echo "Latest build: ${buildID3}"
-	echo "mkdir development/${version}.webtools" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
-	echo "rename nightly/${branch}/${buildID3} development/${version}.webtools/${buildID3}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
-	
-	echo " >> http://download.jboss.org/jbosstools/builds/development/${version}.core/${buildID1}" | egrep ">>|${version}"
-	echo " >> http://download.jboss.org/jbosstools/builds/development/${version}.webtools/${buildID3}" | egrep ">>|${version}"
+  version=4.1.0.Beta2 # a, b, c...
+  branch=core/4.1.kepler
+  buildID1=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/nightly/${branch} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); buildID1=${buildID1%%/*}
+  echo "Latest build: ${buildID1}"
+  echo "mkdir development/${version}.core" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+  echo "rename nightly/${branch}/${buildID1} development/${version}.core/${buildID1}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+  
+  branch=webtools/4.1.kepler
+  buildID3=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/nightly/${branch} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); buildID3=${buildID3%%/*}
+  echo "Latest build: ${buildID3}"
+  echo "mkdir development/${version}.webtools" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+  echo "rename nightly/${branch}/${buildID3} development/${version}.webtools/${buildID3}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+  
+  echo " >> http://download.jboss.org/jbosstools/builds/development/${version}.core/${buildID1}" | egrep ">>|${version}"
+  echo " >> http://download.jboss.org/jbosstools/builds/development/${version}.webtools/${buildID3}" | egrep ">>|${version}"
 
 === Update Sites ===
 
 2. Move the latest JBT, Web Tools, and Discovery update sites (no symlinks to avoid accidental overwrites):
 
-	version=4.1.0.Beta2 # a, b, c...
-	branch=core/4.1.kepler; 	echo "rename nightly/${branch} JBossTools-${version}.core" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates	
-	echo " >> http://download.jboss.org/jbosstools/updates/JBossTools-${version}.core/" | egrep ">>|${version}"
+  version=4.1.0.Beta2 # a, b, c...
+  branch=core/4.1.kepler; echo "rename nightly/${branch} JBossTools-${version}.core" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates  
+  echo " >> http://download.jboss.org/jbosstools/updates/JBossTools-${version}.core/" | egrep ">>|${version}"
 
   branch=webtools/4.1.kepler;   echo "rename nightly/${branch} JBossTools-${version}.webtools" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
   echo " >> http://download.jboss.org/jbosstools/updates/JBossTools-${version}.webtools/" | egrep ">>|${version}"
-
-*** NOTE: for Alpha2, I screwed up so had to put a symlink here:
-*** http://download.jboss.org/jbosstools/updates/JBossTools-4.1.0.Alpha2.discovery -> ../discovery/development/4.1.0.Alpha2/
-*** For future QE spins, just link to discovery/development/${version}/
-*** For Beta1, remove this symlink
 
   Make sure that the parameters fed into the Discovery job are correct; respin if necessary.
 
@@ -51,16 +46,16 @@
 
 3. To preserve a copy of the nightly sites after the move:
 
-	ssh to dev01.mw.lab.eng.bos.redhat.com, sudo to hudson user, then
+  ssh to dev01.mw.lab.eng.bos.redhat.com, sudo to hudson user, then
  
-	alias   scpr='rsync -aPrz --rsh=ssh --protocol=28'
+  alias   scpr='rsync -aPrz --rsh=ssh --protocol=28'
 
   version=4.1.0.Beta2 # a, b, c...
-	branch=core/4.1.kepler
-	scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/JBossTools-${version}.core/* /tmp/JBossTools-${version}.core/
-	scpr /tmp/JBossTools-${version}.core/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
-	rm -fr /tmp/JBossTools-${version}.core/
-	echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
+  branch=core/4.1.kepler
+  scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/JBossTools-${version}.core/* /tmp/JBossTools-${version}.core/
+  scpr /tmp/JBossTools-${version}.core/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
+  rm -fr /tmp/JBossTools-${version}.core/
+  echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
 
   version=4.1.0.Beta2 # a, b, c...
   branch=webtools/4.1.kepler
@@ -79,14 +74,14 @@
 ---
 
 Note that 
-	sftp://tools@filemgmt.jboss.org/downloads_htdocs/tools/ 
-		maps to 
-	http://download.jboss.org/jbosstools/
+  sftp://tools@filemgmt.jboss.org/downloads_htdocs/tools/ 
+    maps to 
+  http://download.jboss.org/jbosstools/
 
 If you do not need it urgently, you can push files there simply by committing changes to SVN here:
-	http://anonsvn.jboss.org/repos/jbosstools/trunk/download.jboss.org/jbosstools/
+  http://anonsvn.jboss.org/repos/jbosstools/trunk/download.jboss.org/jbosstools/
 This is controlled by Hudson job here:
-	https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_All/job/jbosstools-download.jboss.org-rsync-from-svn/
+  https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_All/job/jbosstools-download.jboss.org-rsync-from-svn/
 
 --------------------------------------------
 
@@ -96,12 +91,12 @@ SEND 2 emails:
 1 to jbosstools-dev, and 
 1 to internal addresses (to avoid accidentally sending internal info to external address)
 
-# 1. To: 	"jbosstools-dev@lists.jboss.org"
+# 1. To:   "jbosstools-dev@lists.jboss.org"
 # 2. To:  jbds-pm-list <jbds-pm-list@redhat.com>, "external-exadel-list@redhat.com" <external-exadel-list@redhat.com>
 
 version=4.1.0.Beta2 # a, b, c...
-respin="respin-b"
-TARGET_PLATFORM_VERSION=4.30.5.Alpha5
+respin="respin-"
+TARGET_PLATFORM_VERSION=4.30.5.Alpha6
 version2=7.0.0.Beta2 # no respin suffix here
 version3=4.1.0.Beta2 # no respin suffix here
 echo "
@@ -157,7 +152,7 @@ Schedule / Upcoming Releases:
 https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.plugin.system.project%3Aversions-panel
 
 "
-if [[ $respin ]]; then
+if [[ $respin != "respin-" ]]; then
 echo " 
 Changes prompting this $respin are:
 "'

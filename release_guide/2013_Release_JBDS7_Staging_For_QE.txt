@@ -48,13 +48,13 @@
   chmod -R g+w /mnt/devstudio/updates/${version}.core 2>/dev/null
   chgrp -R devstudio /mnt/devstudio/updates/${version}.core 2>/dev/null
 
-  #version=7.0.0.Alpha2; cd /mnt/devstudio/updates/7.0.0
+  #version=7.0.0.Beta2; cd /mnt/devstudio/updates/7.0.0
   #scpr nboldt@dev01.mw.lab.eng.bos.redhat.com:~/RHDS/updates/development/${version}.techpreview .
   #scpr nboldt@dev01.mw.lab.eng.bos.redhat.com:~/RHDS/updates/development/${version}.extras .
 
   # TODO: verify correct URL and filename for the target zip
   version=7.0.0.Beta2; cd /mnt/devstudio/updates/7.0.0
-  TARGET_PLATFORM_VERSION=4.30.5.Alpha5
+  TARGET_PLATFORM_VERSION=4.30.5.Alpha6
   scpr nboldt@dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION}/jbdevstudiotarget-${TARGET_PLATFORM_VERSION}.zip . 
   unzip -d ${version}.target-platform jbdevstudiotarget-${TARGET_PLATFORM_VERSION}.zip
   chmod -R g+w /mnt/devstudio/updates/${version}.target-platform 2>/dev/null
@@ -153,8 +153,8 @@
 # To: jbds-pm-list <jbds-pm-list@redhat.com>, "external-exadel-list@redhat.com" <external-exadel-list@redhat.com>
 
 version=7.0.0.Beta2 # a, b, c...
-respin="respin-b"
-TARGET_PLATFORM_VERSION=4.30.5.Alpha5
+respin="respin-"
+TARGET_PLATFORM_VERSION=4.30.5.Alpha6
 version2=7.0.0.Beta2 # no respin suffix here
 version3=4.1.0.Beta2 # no respin suffix here
 echo "
@@ -209,7 +209,7 @@ https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.plugin.syst
 Note: if your DNS won't resolve it, use 10.16.89.17 instead of www.qa.jboss.com.
 
 "
-if [[ $respin ]]; then
+if [[ $respin != "respin-" ]]; then
 echo " 
 Changes prompting this $respin are:
 "'

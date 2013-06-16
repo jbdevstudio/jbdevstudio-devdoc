@@ -38,6 +38,8 @@
 
 3. Stage files on wallace (pull from dev01):
 
+*** NOT YET DONE FOR BETA 2 BECAUSE WALLACE IS READ-ONLY FILESYSTEM ***
+
   ssh nboldt@wallace
   alias   scpr='rsync -aPrz --rsh=ssh'
   
@@ -62,6 +64,8 @@
 
 4. (while previous step is running) update composite*.xml files in updates/7.0-staging/ to point at new locations (update in SVN too: http://svn.jboss.org/repos/devstudio/trunk/devstudio.jboss.com/updates/7.0-staging/)
 
+*** NOT YET DONE FOR BETA 2 BECAUSE WALLACE IS READ-ONLY FILESYSTEM ***
+
   # NOTE: ~/truu/devstudio.jboss.com is a symlink on my local machine to this folder in github: https://github.com/jbdevstudio/jbdevstudio-website/tree/master/content
   # "gw1" uses special aliases/scripts/shortcuts. Basically, we want to follow correct github workflows so that commits are pushed to user's fork, then later pull-requested (and the PR applied)
   # "gw2" will create the PR, "gw3" will apply it, and "gw4" will delete the topic branch locally and in my fork
@@ -80,6 +84,8 @@
   sed -i -e "s#${previous}#${version}#g" -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d; done
 
 5. update https://devstudio.jboss.com/updates/7.0-staging/devstudio-directory.xml to point at new Core discovery jar.
+
+*** NOT YET DONE FOR BETA 2 BECAUSE WALLACE IS READ-ONLY FILESYSTEM ***
 
   # Latest discovery site is here: http://www.qa.jboss.com/binaries/RHDS/discovery/development/${version}
   version=7.0.0.Beta2 # a, b...
@@ -134,6 +140,8 @@
   #scpr ~/truu/devstudio.jboss.com/updates/7.0/* $WALL/updates/7.0/
 
 6. Fix file permissions on wallace (pull from dev01):
+
+*** NOT YET DONE FOR BETA 2 BECAUSE WALLACE IS READ-ONLY FILESYSTEM ***
 
   ssh nboldt@wallace
 

@@ -1,8 +1,8 @@
 == Publishing JBDS Installers & update sites for QE ==
 
 0. Make sure that the URLs in the discovery site built from jbosstools-discovery_41 point to the correct version, eg.,
-    http://download.jboss.org/jbosstools/updates/JBossTools-4.1.0.Beta2.core/
-    http://www.qa.jboss.com/binaries/RHDS/updates/development/7.0.0.Beta2.core/
+    http://download.jboss.org/jbosstools/updates/JBossTools-4.1.0.Beta2a.core/
+    http://www.qa.jboss.com/binaries/RHDS/updates/development/7.0.0.Beta2a.core/
 
   Respin if necessary.
 
@@ -15,17 +15,17 @@
 
   # can do these next 3 steps in parallel
   
-  version=7.0.0.Beta2 # a, b, c...
+  version=7.0.0.Beta2a # a, b, c...
   scpr /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_70/installer/* /qa/services/http/binaries/RHDS/builds/development/${version}.installer/
   cd /qa/services/http/binaries/RHDS/builds/development/; find . -maxdepth 1 -type d -name "${version}*" | grep ${version}; find . -maxdepth 1 -type d -name "${version}*" | sed "s#\.# >> http://www.qa.jboss.com/binaries/RHDS/builds/development#" | egrep ">>|${version}"
 
-  version=7.0.0.Beta2 # a, b, c...
+  version=7.0.0.Beta2a # a, b, c...
   scpr /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_70/all/repo/* /qa/services/http/binaries/RHDS/updates/development/${version}.core/
   cd /qa/services/http/binaries/RHDS/updates/development/; find . -maxdepth 1 -type d -name "${version}*" | grep ${version}; find . -maxdepth 1 -type d -name "${version}*" | sed "s#\.# >> http://www.qa.jboss.com/binaries/RHDS/updates/development#" | egrep ">>|${version}"
 
   # Make sure that the parameters fed into the Discovery job are correct; respin if necessary.
   # https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_7.0.kepler/job/jbosstools-discovery_41/
-  version=7.0.0.Beta2 # a, b, c...
+  version=7.0.0.Beta2a # a, b, c...
   scpr /qa/services/http/binaries/RHDS/discovery/nightly/core/4.1.kepler/* /qa/services/http/binaries/RHDS/discovery/development/${version}/
   # JBDS-2551 fix composite discovery site
   cd /qa/services/http/binaries/RHDS/discovery/development/${version}/
@@ -38,14 +38,12 @@
 
 3. Stage files on wallace (pull from dev01):
 
-*** NOT YET DONE FOR BETA 2 BECAUSE WALLACE IS READ-ONLY FILESYSTEM ***
-
   ssh nboldt@wallace
   alias   scpr='rsync -aPrz --rsh=ssh'
   
   (in parallel terminal connections!)
   
-  version=7.0.0.Beta2; cd /mnt/devstudio/updates/7.0.0
+  version=7.0.0.Beta2a; cd /mnt/devstudio/updates/7.0.0
   scpr nboldt@dev01.mw.lab.eng.bos.redhat.com:~/RHDS/updates/development/${version}.core .
   chmod -R g+w /mnt/devstudio/updates/${version}.core 2>/dev/null
   chgrp -R devstudio /mnt/devstudio/updates/${version}.core 2>/dev/null
@@ -55,7 +53,7 @@
   #scpr nboldt@dev01.mw.lab.eng.bos.redhat.com:~/RHDS/updates/development/${version}.extras .
 
   # TODO: verify correct URL and filename for the target zip
-  version=7.0.0.Beta2; cd /mnt/devstudio/updates/7.0.0
+  version=7.0.0.Beta2a; cd /mnt/devstudio/updates/7.0.0
   TARGET_PLATFORM_VERSION=4.30.5.Alpha6
   scpr nboldt@dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION}/jbdevstudiotarget-${TARGET_PLATFORM_VERSION}.zip . 
   unzip -d ${version}.target-platform jbdevstudiotarget-${TARGET_PLATFORM_VERSION}.zip
@@ -63,8 +61,6 @@
   chgrp -R devstudio /mnt/devstudio/updates/${version}.target-platform 2>/dev/null
 
 4. (while previous step is running) update composite*.xml files in updates/7.0-staging/ to point at new locations (update in SVN too: http://svn.jboss.org/repos/devstudio/trunk/devstudio.jboss.com/updates/7.0-staging/)
-
-*** NOT YET DONE FOR BETA 2 BECAUSE WALLACE IS READ-ONLY FILESYSTEM ***
 
   # NOTE: ~/truu/devstudio.jboss.com is a symlink on my local machine to this folder in github: https://github.com/jbdevstudio/jbdevstudio-website/tree/master/content
   # "gw1" uses special aliases/scripts/shortcuts. Basically, we want to follow correct github workflows so that commits are pushed to user's fork, then later pull-requested (and the PR applied)
@@ -76,19 +72,18 @@
   alias   scpr='rsync -aPrz --rsh=ssh'
   alias   ci='git commit -m'
 
+  topic="release-${version}-to-staging";branch=master; gw1
   cd ~/truu/devstudio.jboss.com/updates/7.0-staging/
-  previous=7.0.0.Beta1
-  version=7.0.0.Beta2
+  previous=7.0.0.Beta1 # a, b...
+  version=7.0.0.Beta2a # a, b...
   now=`date +%s000`
   for d in *.*ml extras/*.*ml central/core/*.*ml; do
   sed -i -e "s#${previous}#${version}#g" -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d; done
 
 5. update https://devstudio.jboss.com/updates/7.0-staging/devstudio-directory.xml to point at new Core discovery jar.
 
-*** NOT YET DONE FOR BETA 2 BECAUSE WALLACE IS READ-ONLY FILESYSTEM ***
-
   # Latest discovery site is here: http://www.qa.jboss.com/binaries/RHDS/discovery/development/${version}
-  version=7.0.0.Beta2 # a, b...
+  version=7.0.0.Beta2a # a, b...
   # get new plugin
   cd ~/truu/devstudio.jboss.com/updates/7.0-staging/discovery/
   #git rm -f com.jboss.jbds.central.discovery_*.jar
@@ -130,6 +125,8 @@
   gd .
   
   ci "release ${version} for QE: add new discovery plugin ${newJar} + update devstudio-directory.xml + update HTML pages" . discovery/*.jar
+  gw2;gw3;gw4
+
   scpr ~/truu/devstudio.jboss.com/updates/7.0-staging/* $WALL/updates/7.0-staging/
 
   # IF THIS IS GA
@@ -140,8 +137,6 @@
   #scpr ~/truu/devstudio.jboss.com/updates/7.0/* $WALL/updates/7.0/
 
 6. Fix file permissions on wallace (pull from dev01):
-
-*** NOT YET DONE FOR BETA 2 BECAUSE WALLACE IS READ-ONLY FILESYSTEM ***
 
   ssh nboldt@wallace
 
@@ -160,8 +155,8 @@
 
 # To: jbds-pm-list <jbds-pm-list@redhat.com>, "external-exadel-list@redhat.com" <external-exadel-list@redhat.com>
 
-version=7.0.0.Beta2 # a, b, c...
-respin="respin-"
+version=7.0.0.Beta2a # a, b, c...
+respin="respin-b"
 TARGET_PLATFORM_VERSION=4.30.5.Alpha6
 version2=7.0.0.Beta2 # no respin suffix here
 version3=4.1.0.Beta2 # no respin suffix here

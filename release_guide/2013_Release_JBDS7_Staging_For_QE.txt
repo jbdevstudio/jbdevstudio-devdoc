@@ -142,6 +142,7 @@
 7. Commit updated docs & push:
 
   cd ~/truu/doc/release_guide
+  version=7.0.0.Beta2b # a, b...
   topic="release-${version}";branch=master; gw1
   ci "release ${version} for QE" .
   gw2;gw3;gw4

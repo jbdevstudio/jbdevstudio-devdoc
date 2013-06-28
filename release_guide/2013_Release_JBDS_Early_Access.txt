@@ -31,15 +31,15 @@
   # TODO: do not run this next line if the above step fails!
   rm -fr ${version}?.core ${version}?.target-platform *.DELETEME
 
-  # only applies if we staged installers for QE; if you did not, then skip this step
-  cd /mnt/devstudio/earlyaccess/builds/development
-  if [[ ${version} != ${version2} ]]; then 
-    mv ${version} ${version}.DELETEME
-    mv ${version2} ${version}
-  fi  
-  rm -fr *.DELETEME
+  # only applies if we staged installers for QE (eg., CR builds?); if you did not, then skip this step
+  #cd /mnt/devstudio/earlyaccess/builds/development
+  #if [[ ${version} != ${version2} ]]; then 
+  #  mv ${version} ${version}.DELETEME
+  #  mv ${version2} ${version}
+  #fi  
+  #rm -fr *.DELETEME
 
-2. rename milestones from Beta1b to Beta1; fix html pages in 7.0-staging
+2. rename milestones from Foo1b to Foo1; fix html pages in 7.0-staging
 
   # NOTE: ~/truu/devstudio.jboss.com is a symlink on my local machine to this folder in github: https://github.com/jbdevstudio/jbdevstudio-website/tree/master/content
   # "gw1" uses special aliases/scripts/shortcuts. Basically, we want to follow correct github workflows so that commits are pushed to user's fork, then later pull-requested (and the PR applied)
@@ -76,8 +76,8 @@
   echo "<html><head></head><body onload=\"document.location.href='../${version}.html'\"></body></html>" > 7.0/index.html
 
   # commit to github   
-  topic="release-Beta1";branch=master; gw1
-  ga ${version}.html; ci "new early access build - ${version}" .
+  topic="release-${version}";branch=master; gw1
+  ga ${version}.html; ci "new early access build - ${version} (${version2})" .
   gw2;gw3;gw4
 
   scpr ${version}.html 7.0 nboldt@wallace.redhat.com:/mnt/devstudio/earlyaccess/
@@ -87,13 +87,11 @@
   version=7.0.0.Beta2
   SRC_SITE=7.0-staging
   DESTSITE=7.0-development # or 7.0/ for a GA release
+  # check in / sync changes
   scpr ~/truu/devstudio.jboss.com/updates/${SRC_SITE}/* ~/truu/devstudio.jboss.com/updates/${DESTSITE}/
 
-  # check in / sync changes
   cd ~/truu/devstudio.jboss.com/updates/
-
-  # commit to github   
-  topic="release-Beta1";branch=master; gw1
+  topic="release-${version}";branch=master; gw1
   stat .; gd .
 
   ga ${DESTSITE}
@@ -105,41 +103,53 @@
 
 5. Fix file permissions on wallace (pull from dev01):
 
-  ssh nboldt@wallace
-
-  chmod -R g+w /mnt/devstudio/updates/7.0-development /mnt/devstudio/earlyaccess 2>/dev/null
-  chgrp -R devstudio /mnt/devstudio/updates/7.0-development /mnt/devstudio/earlyaccess 2>/dev/null
-
+  ssh nboldt@wallace "
+    chmod -R g+w       /mnt/devstudio/updates/7.0-staging /mnt/devstudio/updates/7.0-development /mnt/devstudio/earlyaccess 2>/dev/null;
+    chgrp -R devstudio /mnt/devstudio/updates/7.0-staging /mnt/devstudio/updates/7.0-development /mnt/devstudio/earlyaccess 2>/dev/null
+  "
 
 6. After 30-60 mins, review Early Access site:
 
   https://devstudio.jboss.com/earlyaccess/
 
-7. Tag SVN (for Beta1); tag Git (for Beta2 and beyond)
-
-  version=7.0.0.Beta2
-  svn -m "tag for ${version}" copy http://svn.jboss.org/repos/devstudio/branches/devstudio-${version}x/ http://svn.jboss.org/repos/devstudio/tags/devstudio-${version}/
-
-  #TODO: verify this for Beta2 release:
+7. Tag tag Git
+  # if not already cloned, the do this:
   git clone https://github.com/jbdevstudio/jbdevstudio-product
   git clone https://github.com/jbdevstudio/jbdevstudio-ci
   git clone https://github.com/jbdevstudio/jbdevstudio-website
   git clone https://github.com/jbdevstudio/jbdevstudio-artwork
   git clone https://github.com/jbdevstudio/jbdevstudio-devdoc
-  # then do this for each one...
-  co jbosstools-${version}x
-  git tag jbosstools-${version}
-  git push origin jbosstools-${version}
+
+  jbt_ver=4.1.0.Beta2
+  version=7.0.0.Beta2
+
+  # TODO: For CR1, make sure this actually works...
+  # then do this for each one
+  for d in product ci website artwork devdoc; do
+    echo "====================================================================="
+    echo "Tagging jbdevstudio-${d} from branch ${jbt_ver}x as tag ${version}..."
+    pushd ~/truu/jbdevstudio-${d}
+    git stash
+    git pull origin
+    git fetch -t -p
+    git checkout jbosstools-${jbt_ver}x && git tag -f jbdevstudio-${version} && git push origin jbdevstudio-${version}
+    popd >/dev/null 
+    echo "====================================================================="
+    echo ""
+    git checkout master; git stash pop
+  done
 
 8. Commit updates to release guide (including this document):
 
   version=7.0.0.Beta2
   cd ~/truu/doc/release_guide
-  topic="release-Beta1";branch=master; gw1
+  topic="release-${version}";branch=master; gw1
   ci "update release guide for ${version}" *2013*JBDS*
   g2;gw3;gw4
 
-9. Move installers from "a" or "b" folder to base folder; purge old stuff from OLD/ folder
+9. Move installers from "a" or "b" folder to base folder; purge old stuff from OLD/ folder\
+
+  ** SKIPPED FOR BETA2b **
 
   ssh to dev01.mw.lab.eng.bos.redhat.com, sudo to hudson user, then
 

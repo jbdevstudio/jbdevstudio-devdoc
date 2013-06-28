@@ -1,0 +1,199 @@
+HOWTO branch JBT/JBDS:
+
+0. [MASTER] Ensure project root poms point at the version of the parent pom to be used in the branch (eg., CR1)
+
+https://github.com/jbosstools/jbosstools-base/commit/5c54ae3cb24b7dba7e4d4137e479d21feabc9daf
+
+
+1. [MASTER] create branches in git
+
+  * all the jbosstools-* repos here: https://github.com/jbosstools/
+  * all the jbdevstudio-* repos here: https://github.com/jbdevstudio/
+
+
+2. [MASTER] set <version> and BUILD_ALIAS to new milestone (Beta2 -> CR1)
+
+  https://github.com/jbosstools/jbosstools-build/commit/3b579c2357c14b2fa8ed35689c766ef65b912596
+
+Then respin
+
+  https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-build.parent_master/
+
+
+3. [BRANCH] s/trunk/4.1.kepler/g in branched version of parent pom:
+
+  https://github.com/jbosstools/jbosstools-build/commit/a8abbd10917ffc3ecee93e3dc45a3b6ad51c1ad3
+
+Then respin
+
+  https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-build.parent_41/
+
+
+4. [MASTER] Update project root poms to point at latest parent pom version.
+
+  https://github.com/jbosstools/jbosstools-build-sites/commit/6d2c8bfd453d92e625598eb23fc8afb2af24d45a
+  https://github.com/jbdevstudio/jbdevstudio-product/commit/fa415268fbcd459c9d305c1f84cf258e5d932f3b
+
+Then respin:
+
+  https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-composite-install_master/
+  https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-build-sites.aggregate.site_master
+  https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-build-sites.aggregate.webtools-site_master/
+  https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-build-sites.aggregate.coretests-site_master/
+  https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/devstudio.product_master/
+
+
+5. [MASTER] Verify these files have the correct version in them (eg., 7.0.0-SNAPSHOT or 7.0.0.qualifier)
+
+  https://github.com/jbdevstudio/jbdevstudio-product/blob/master/product/pom.xml
+	ttps://github.com/jbdevstudio/jbdevstudio-product/blob/master/site/com.jboss.jbds.product
+  https://github.com/jbdevstudio/jbdevstudio-product/blob/master/plugins/com.jboss.jbds.product/
+
+
+6. [BRANCH] PURGE OLD staging/ and staging.previous/ cache to avoid accidentally bootstrapping the builds w/ old milestones.
+
+	ssh to dev01.mw.lab.eng.bos.redhat.com, sudo to hudson user, then:
+  cd ~/STATIC/jbds/builds/
+  rm -fr staging/*_41 staging.previous/*_41 &
+
+	sftp to tools@filemgmt.jboss.org, then:
+	cd /downloads_htdocs/tools/builds/staging.previous/; rm -fr *_41 &
+	cd /downloads_htdocs/tools/builds/staging/; rm -fr *_41 &
+
+	
+7. [BRANCH] Enable stable branch jobs (if not already) in https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_7.0.kepler/ 
+
+  # NOTE: ~/truu/jbdevstudio-ci is a symlink on my local machine to this folder in github: https://github.com/jbdevstudio/jbdevstudio-ci/
+  # "gw1" uses special aliases/scripts/shortcuts. Basically, we want to follow correct github workflows so that commits are pushed to user's fork, then later pull-requested (and the PR applied)
+  # "gw2" will create the PR, "gw3" will apply it, and "gw4" will delete the topic branch locally and in my fork
+  # the 4 steps are captured here: https://gist.github.com/nickboldt/4111850
+  # "stat" is short for "git status"; "gd" is short for "git diff"; "ga" is short for "git add"
+
+  topic="enable-branch-jobs";branch=master; gw1
+
+	hudpull -DviewFilter=view/DevStudio/view/DevStudio_7.0.kepler/ -DregexFilter=".*" # update local cache of jobs from server
+	cd ~/truu/jbdevstudio-ci/cache/https/jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_7.0.kepler/job
+  ci "update jobs" .; gp # ensure server copy and SVN copy are in sync; omit target platform and xulrunner
+
+  # now enable jobs
+	for c in $(find.sh . config.xml "disabled>true<" "" "" -q); do 
+	if [[ $(echo $c | grep -v "xulrunner|target-platform") ]]; then
+	sed -i -e "s#disabled>true<#disabled>false<#g" $c
+	fi
+	done
+  # check in changes
+  stat .
+  ci "enable stable branch jobs" .
+  # push to server
+	hudpush -DviewFilter=view/DevStudio/view/DevStudio_7.0.kepler/ -DregexFilter=".*" # update server configs from local cache
+  # commit to github
+  gw2;gw3;gw4
+	
+  # Set correct git branch
+  topic="switch-to-correct-branch";branch=master; gw1
+
+	for c in $(find.sh . config.xml "Beta2x" "" "" -q); do if [[ $(echo $c | grep -v "xulrunner") ]]; then sed -i -e "s#jbosstools-4.1.0.Beta2x#jbosstools-4.1.x#g" $c; fi; done
+	hudpush -DviewFilter=view/DevStudio/view/DevStudio_7.0.kepler/ -DregexFilter=".*" # update server configs from local cache
+	stat .
+	ci "set correct git source to jbosstools-4.1.x branch" .
+  # commit to github
+  gw2;gw3;gw4
+
+
+8. [BRANCH] Configure JBT/JBDS stable branch .aggregate jobs: 
+
+  https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-build-sites.aggregate.site_41/configure
+  https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-build-sites.aggregate.webtools-site_41/configure
+  https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-build-sites.aggregate.coretests-site_41/configure
+  https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/devstudio.product_master/configure
+
+  For JBT:
+
+  	set RELEASE = "No" ("Yes" for Final)
+  	set update.site.description = "Development Milestone" ("Stable Release" for Final)
+  	update job description if applicable
+
+  For JBDS:
+
+    add "-DBUILD_ALIAS=GA " to MAVEN_FLAGS (if a GA build)
+  	set RELEASE = "No" ("Yes" for GA)
+  	set update.site.description = "Development Milestone" ("Stable Release" for GA)
+  	update job description if applicable
+
+
+9. [BRANCH] Kick buildflow job for the new branch
+
+  https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_7.0.kepler/job/jbosstools-buildflow_41/
+	https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_7.0.kepler/
+
+-----
+
+
+# TODO: tweak these emails?
+
+== EMAIL TEMPLATES ==
+
+SEND 2 emails: 
+1 to jbosstools-dev, and 
+1 to interal addresses (to avoid accidentally sending internal info to external address)
+
+# 1. To: "jbosstools-dev@lists.jboss.org" <jbosstools-dev@lists.jboss.org>
+
+version=CR1
+
+echo "
+Subject: 
+
+JBoss Tools is branched for 4.1.0.${version}
+
+Body:
+
+Branches:
+
+https://github.com/jbosstools/jbosstools-base/tree/jbosstools-4.1.x
+https://github.com/jbosstools/jbosstools-central/tree/jbosstools-4.1.x
+...
+
+Jobs:
+
+http://hudson.jboss.org/hudson/view/JBossTools/view/JBossTools_4.1.kepler/
+
+Note that we are *code frozen* for ${version}, which means only urgent fixes should be done in the branch, associated w/ a JIRA. 
+
+Trunk remains open for new development work.
+	OR
+Trunk is open for BUGFIXES ONLY.
+
+Where applicable, please remember to commit changes in BOTH trunk and the new branch.
+"
+
+# 2: To: jbds-pm-list <jbds-pm-list@redhat.com>, "external-exadel-list@redhat.com" <external-exadel-list@redhat.com>
+
+echo "
+Subject: 
+
+JBoss Tools & Dev Studio are branched for 4.1.0.${version} / 7.0.0.${version}
+
+Body:
+
+Branches:
+
+https://github.com/jbosstools/jbosstools-base/tree/jbosstools-4.1.x
+https://github.com/jbosstools/jbosstools-central/tree/jbosstools-4.1.x
+...
+http://svn.jboss.org/repos/devstudio/branches/devstudio-7.0.0.${version}/
+
+Jobs:
+
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_7.0.kepler/
+http://hudson.jboss.org/hudson/view/JBossTools/view/JBossTools_4.1.kepler/
+
+Note that we are *code frozen* for ${version}, which means only urgent fixes should be done in the branch, associated w/ a JIRA. 
+
+Trunk remains open for new development work.
+	OR
+Trunk is open for BUGFIXES ONLY.
+
+Where applicable, please remember to commit changes in BOTH trunk and the new branch.
+"
+

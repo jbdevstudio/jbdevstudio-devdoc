@@ -150,6 +150,11 @@
 
   #TODO: add note abouut also renaming/moving update and discovery sites
 
+10. Update Marketplace entry (Beta2 -> CR1)
+
+
+11. Send email
+
 == Email Template -- send two emails ==
 
 1. To:
@@ -161,7 +166,7 @@ jbds-pm-list <jbds-pm-list@redhat.com>
 jboss-announce@redhat.com (optional for major milestones/releases)
 
 version=7.0.0.Beta2
-version2=7.0.0.Beta2 # a, b, c...
+version2=7.0.0.Beta2b # a, b, c...
 echo "
 Subject: 
 
@@ -189,9 +194,7 @@ JBDS Central should be looking to this URL to resolve content listed on the Soft
 
 Eclipse Marketplace
 
-JBDS ${version} will also be available on the Eclipse Marketplace soon. The link below should work once the content has been reviewed by the Eclipse Foundation:
-
-http://marketplace.eclipse.org/content/jboss-developer-studio-kepler
+https://marketplace.eclipse.org/content/red-hat-jboss-developer-studio-kepler
 
 --
 
@@ -203,26 +206,40 @@ https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.plugin.syst
 
 == Email Template -- announce internally for push to CSP ==
 
-#To:
-#
-#jbds-pm-list <jbds-pm-list@redhat.com>
-#Mark Yarborough <myarboro@redhat.com>
+# To:
+# jbds-pm-list <jbds-pm-list@redhat.com>
+# release-engineering@redhat.com
+
+# Cc: 
+# Chris O'Brien <cobrien@redhat.com>
+# Len DiMaggio <ldimaggi@redhat.com>
+# Michelle Murray <mmurray@redhat.com>
+# Jiri Pallich <jpallich@redhat.com>
 
 version=7.0.0.Beta2
-version2=7.0.0.Beta2 # a, b, c...
+version2=7.0.0.Beta2b # a, b, c...
 echo "
 Subject: 
 
-JBDS ${version} available for push to CSP
+JBDS ${version} available for push to CSP staging server
 
 Body:
 
-JBDS ${version} (renamed from ${version2}) is available to push to CSP.
+JBDS ${version} (renamed from ${version2}) is available to push to CSP staging server, for subsequent smoke test & review by QE.
+
+Please include these 4 files:
+
+jbdevstudio-product-eap-universal-${version}-*.jar
+jbdevstudio-product-universal-${version}-*.jar 
+jbdevstudio-product-Update-${version}-*.zip
+jbdevstudio-product-sources-${version}-*.zip
+
+Content is here:
 
 http://www.qa.jboss.com/binaries/RHDS/builds/development/${version2}.installer/
 
---
+When pushed, please reply to this thread so that QE can review it for push to production.
 
-Note: if your DNS won't resolve it, use 10.16.89.17 instead of www.qa.jboss.com.
+Thanks in advance,
 
 "

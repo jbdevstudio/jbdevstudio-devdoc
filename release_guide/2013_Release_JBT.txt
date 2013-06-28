@@ -102,13 +102,13 @@
   version=4.1.0.Beta1
   version2=4.1.0.Beta1b # a, b, c, d...
 
-  # rename the development build
-  echo "rename development/${version}.core  development/${version}.core.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
-  echo "rename development/${version2}.core development/${version}.core" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
-
   # rename discovery site, http://download.jboss.org/jbosstools/discovery/development/${version2}/
   echo "rename development/${version}  development/${version}.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery
   echo "rename development/${version2} development/${version}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery
+
+  # rename the development build
+  echo "rename development/${version}.core  development/${version}.core.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+  echo "rename development/${version2}.core development/${version}.core" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
 
   # make sure this exists - might be only "a" while core is on "c"
   echo "rename development/${version}.webtools  development/${version}.webtools.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
@@ -122,10 +122,10 @@
   echo "rename JBossTools-${version}.webtools  JBossTools-${version}.webtools.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
   echo "rename JBossTools-${version2}.webtools JBossTools-${version}.webtools" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
 
-  Also, over sftp, delete any old iterations or respins that are no longer needed from 
+  Also, over sftp, delete any old iterations (*.DELETEME) or previous respins that are no longer needed from 
 
-  * tools/updates/JBossTools-*
   * tools/discovery/development/
+  * tools/updates/JBossTools-*
   * tools/builds/development/
 
 7. Publish new Web Tools site:
@@ -136,8 +136,8 @@
   alias   scpr='rsync -aPrz --rsh=ssh'
   alias   ci='git commit -m'
 
-  previous=4.1.0.Alpha2
-  version=4.1.0.Beta1 # (no suffix if performed rename in step 6 above) a, b...
+  previous=4.1.0.Beta1
+  version=4.1.0.Beta2 # only use a, b suffix if did not perform rename in step 6 above
   #echo "rename webtools/kepler webtools/kepler.`date +%Y%m%d-%H%M`" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/
   echo "rename webtools/kepler webtools/kepler_${previous}"         | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/
   echo "rename JBossTools-${version}.webtools webtools/kepler"      | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/
@@ -156,19 +156,19 @@
 
   Also, over sftp, delete any old iterations or respins that are no longer needed.
 
-  ** If this is the first release, ensure that upstream project Web Tools (WTP) knows to include this new URL in their server adapter wizard. New bugzilla required! **
+  ** If this is the first milestone release, ensure that upstream project Web Tools (WTP) knows to include this new URL in their server adapter wizard. New bugzilla required! **
 
 
 8. [8 files] Update composite site metadata (absolute path), Central directory file (absolute path, from http://download.jboss.org/jbosstools/discovery/development/${version}/), and 
              index.html files (absolute paths). Also pull a copy of the updated discovery jar (from http://download.jboss.org/jbosstools/discovery/development/${version}/plugins/).
              And update the pointer to the latest target platform, too.
 
-  previous=4.1.0.Alpha2
-  version=4.1.0.Beta1
-  version2=4.1.0.Beta1 # a, b, c
+  previous=4.1.0.Beta1
+  version=4.1.0.Beta2
+  version2=4.1.0.Beta2 # no a, b, c if renamed above 
 
-  oldTargetPlatform=4.30.5.Alpha3
-  newTargetPlatform=4.30.5.Alpha5
+  oldTargetPlatform=4.30.5.Alpha5
+  newTargetPlatform=4.30.5.Alpha6
 
   topic="release-target-platform-${newTargetPlatform}"; branch=master; gw1
   pushd ~/tru/download.jboss.org/jbosstools/updates/kepler/
@@ -186,9 +186,9 @@
 
   # -------
 
-  previous=4.1.0.Alpha2
-  version=4.1.0.Beta1
-  version2=4.1.0.Beta1 # a, b, c
+  previous=4.1.0.Beta1
+  version=4.1.0.Beta2
+  version2=4.1.0.Beta2 # no a, b, c if renamed above 
 
   branch=master; topic="release-development-${version2}"; gw1
   cd ~/tru/download.jboss.org/jbosstools/updates/development/kepler/
@@ -222,13 +222,13 @@
   rm -fr ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}_
 
   # IF THIS IS Final, ensure that your plugin points to the RELEASE URL, not the STAGING one:
-  unzip -q -d ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}{_,}
-  pushd ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}_ >/dev/null 
-  sed -i "s#http://download.jboss.org/jbosstools/updates/development/kepler/central/core/#http://download.jboss.org/jbosstools/updates/stable/kepler/central/core/#g" plugin.xml
-  *** make sure we do not point at http://download.jboss.org/jbosstools/discovery/development/${version} instead
-  zip -u ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar} plugin.xml
-  popd >/dev/null
-  rm -fr ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}_
+  #unzip -q -d ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}{_,}
+  #pushd ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}_ >/dev/null 
+  #sed -i "s#http://download.jboss.org/jbosstools/updates/development/kepler/central/core/#http://download.jboss.org/jbosstools/updates/stable/kepler/central/core/#g" plugin.xml
+  ## *** make sure we do not point at http://download.jboss.org/jbosstools/discovery/development/${version} instead
+  #zip -u ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar} plugin.xml
+  #popd >/dev/null
+  #rm -fr ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}_
 
   # check in / sync changes - 4 updated files, 1 new jar, 1 deleted jar
   stat .; gd .
@@ -245,9 +245,9 @@ If this is the pre-Final build, ensure that the following files exist:
   http://download.jboss.org/jbosstools/updates/kepler/compositeArtifacts.xml & compositeContent.xml
   http://download.jboss.org/jbosstools/updates/kepler/extras/compositeArtifacts.xml & compositeContent.xml
 
-  http://download.jboss.org/jbosstools/updates/development/kepler/jbosstools-directory.xml 
-    -> must point at a real plugin, eg., to http://download.jboss.org/jbosstools/discovery/development/4.1.0.Beta1/plugins/org.jboss.tools.central.discovery_1.2.0.Beta1-v20130407-1937-B45.jar
-    --> jar must point at a real composite site, eg., change http://download.jboss.org/jbosstools/updates/JBossTools-4.1.0.Beta1.discovery/ 
+  Make sure directory.xml points at a real jar:
+    http://download.jboss.org/jbosstools/updates/development/kepler/jbosstools-directory.xml 
+    -> http://download.jboss.org/jbosstools/updates/development/kepler/plugins/org.jboss.tools.central.discovery_1.2.0.Beta2-v20130626-1621-B250.jar
     --> to http://download.jboss.org/jbosstools/updates/development/kepler/central/core/
   http://download.jboss.org/jbosstools/updates/development/kepler/compositeArtifacts.xml & compositeContent.xml
   http://download.jboss.org/jbosstools/updates/development/kepler/central/core/compositeArtifacts.xml & compositeContent.xml
@@ -299,9 +299,7 @@ c. magnolia pages
 
 11. Update Eclipse Marketplace (add/remove features)
 
-  ** not for first Alpha2 - wait for Alpha2 or Beta1 **
-
-  Compare list of features here:  http://download.jboss.org/jbosstools/updates/JBossTools-4.1.0.Beta1.core/site.properties (see CoreTools.category.features)
+  Compare list of features here:  http://download.jboss.org/jbosstools/updates/JBossTools-4.1.0.Beta2.core/site.properties (see CoreTools.category.features)
   with features here:       https://marketplace.eclipse.org/node/xxxxxx/edit
 
     org.hibernate.eclipse.feature,
@@ -315,6 +313,7 @@ c. magnolia pages
     org.jboss.tools.community.central.feature,
     org.jboss.tools.community.project.examples.feature,
     org.jboss.tools.forge.feature,
+    org.jboss.tools.foundation.feature,
     org.jboss.tools.jmx.feature,
     org.jboss.tools.jsf.feature,
     org.jboss.tools.jst.feature,
@@ -345,7 +344,7 @@ c. magnolia pages
     org.jboss.tools.ws.feature,
     org.jboss.tools.ws.jaxrs.feature,
 
-Be sure to also update the listing to the latest release version (eg., Beta1 -> Beta2)
+Be sure to also update the listing to the latest release version (eg., Beta2 -> CR1)
 
 12. Commit updates to release guide (including this document):
 

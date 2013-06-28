@@ -7,8 +7,8 @@
 
   screen
 
-  version=7.0.0.Beta1
-  version2=7.0.0.Beta1b; # a, b, c, ...
+  version=7.0.0.Beta2
+  version2=7.0.0.Beta2b; # a, b, c, ...
   dev=10.16.88.146; # dev01.mw.lab.eng.bos.redhat.com
   cd /mnt/devstudio/earlyaccess/builds/development/
   mkdir -p /mnt/devstudio/earlyaccess/builds/development/${version}
@@ -19,8 +19,8 @@
   # cp /mnt/devstudio/earlyaccess/builds/development/7.0.*-eap/.htaccess /mnt/devstudio/earlyaccess/builds/development/${version2}-eap/
 
   # clean out old installers & update sites from previous milestones; rename update sites from "a,b,c" to ""
-  version=7.0.0.Beta1
-  version2=7.0.0.Beta1b; # a, b, c, ...
+  version=7.0.0.Beta2
+  version2=7.0.0.Beta2b; # a, b, c, ...
   cd /mnt/devstudio/updates/7.0.0/
   if [[ ${version} != ${version2} ]]; then 
     mv ${version}.core ${version}.core.DELETEME
@@ -48,8 +48,8 @@
   # "stat" is short for "git status"; "gd" is short for "git diff"; "ga" is short for "git add"
 
   cd ~/truu/devstudio.jboss.com/updates/7.0-staging
-  version=7.0.0.Beta1
-  version2=7.0.0.Beta1b; # a, b, c, ...
+  version=7.0.0.Beta2
+  version2=7.0.0.Beta2b; # a, b, c, ...
   now=`date +%s000`
   for d in composite*.xml index.html central/core/index.html ; do
     sed -i -e "s#${version2}#${version}#g" $d
@@ -69,8 +69,8 @@
   alias   scpr='rsync -aPrz --rsh=ssh'
   alias   ci='git commit -m'
   
-  version=7.0.0.Beta1
-  version2=7.0.0.Beta1b; # a, b, ...
+  version=7.0.0.Beta2
+  version2=7.0.0.Beta2b; # a, b, ...
   cd ~/truu/devstudio.jboss.com/earlyaccess
   wget http://www.qa.jboss.com/binaries/RHDS/builds/development/${version2}.installer/${version}.html
   echo "<html><head></head><body onload=\"document.location.href='../${version}.html'\"></body></html>" > 7.0/index.html
@@ -84,7 +84,7 @@
 
 4. Update https://devstudio.jboss.com/updates/7.0*/devstudio-directory.xml to point at new discovery jar(s) from staging.
 
-  version=7.0.0.Beta1
+  version=7.0.0.Beta2
   SRC_SITE=7.0-staging
   DESTSITE=7.0-development # or 7.0/ for a GA release
   scpr ~/truu/devstudio.jboss.com/updates/${SRC_SITE}/* ~/truu/devstudio.jboss.com/updates/${DESTSITE}/
@@ -117,7 +117,7 @@
 
 7. Tag SVN (for Beta1); tag Git (for Beta2 and beyond)
 
-  version=7.0.0.Beta1
+  version=7.0.0.Beta2
   svn -m "tag for ${version}" copy http://svn.jboss.org/repos/devstudio/branches/devstudio-${version}x/ http://svn.jboss.org/repos/devstudio/tags/devstudio-${version}/
 
   #TODO: verify this for Beta2 release:
@@ -133,7 +133,7 @@
 
 8. Commit updates to release guide (including this document):
 
-  version=7.0.0.Beta1
+  version=7.0.0.Beta2
   cd ~/truu/doc/release_guide
   topic="release-Beta1";branch=master; gw1
   ci "update release guide for ${version}" *2013*JBDS*
@@ -144,8 +144,8 @@
   ssh to dev01.mw.lab.eng.bos.redhat.com, sudo to hudson user, then
 
   cd ~/RHDS/builds/development/
-  mv 7.0.0.Beta1.installer OLD/
-  mv 7.0.0.Beta1b.installer 7.0.0.Beta1.installer
+  mv 7.0.0.Beta2.installer OLD/
+  mv 7.0.0.Beta2b.installer 7.0.0.Beta2.installer
   # repeat for updates/development and discovery/development
 
   #TODO: add note abouut also renaming/moving update and discovery sites
@@ -160,8 +160,8 @@ jbds-pm-list <jbds-pm-list@redhat.com>
 "external-exadel-list@redhat.com" <external-exadel-list@redhat.com>
 jboss-announce@redhat.com (optional for major milestones/releases)
 
-version=7.0.0.Beta1
-version2=7.0.0.Beta1 # a, b, c...
+version=7.0.0.Beta2
+version2=7.0.0.Beta2 # a, b, c...
 echo "
 Subject: 
 
@@ -208,8 +208,8 @@ https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.plugin.syst
 #jbds-pm-list <jbds-pm-list@redhat.com>
 #Mark Yarborough <myarboro@redhat.com>
 
-version=7.0.0.Beta1
-version2=7.0.0.Beta1 # a, b, c...
+version=7.0.0.Beta2
+version2=7.0.0.Beta2 # a, b, c...
 echo "
 Subject: 
 

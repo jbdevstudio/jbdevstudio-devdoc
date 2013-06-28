@@ -1,14 +1,31 @@
 HOWTO branch JBT/JBDS:
 
-0. [MASTER] Ensure project root poms point at the version of the parent pom to be used in the branch (eg., CR1)
+
+** These steps are required to be done by all project leads; as such, they must be **
+** sent an email on Wed night reminding them of the upcoming freeze and what to do **
+
+a) fix root pom to point at latest parent pom
+b) build locally; verify correct version of target-platform is used when building
+c) commit
+d) create branch
+e) send email confirmation
+
+-----------------
+
+0. [MASTER, ALL PROJECTS] Ensure project root poms point at the version of the parent pom to be used in the branch (eg., CR1)
 
 https://github.com/jbosstools/jbosstools-base/commit/5c54ae3cb24b7dba7e4d4137e479d21feabc9daf
 
 
-1. [MASTER] create branches in git
+1. [MASTER, ALL PROJECTS] create branches in git
 
   * all the jbosstools-* repos here: https://github.com/jbosstools/
   * all the jbdevstudio-* repos here: https://github.com/jbdevstudio/
+
+-----------------
+
+
+** These steps are just for releng (Nick, Mickael, Denis, or Max) to do. **
 
 
 2. [MASTER] set <version> and BUILD_ALIAS to new milestone (Beta2 -> CR1)

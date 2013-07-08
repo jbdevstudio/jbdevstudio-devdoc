@@ -171,7 +171,7 @@ JBDS ${version} Core bits available for QE testing
 
 Body:
 
-As always, these are not FINAL bits, but preliminary results for QE testing. Not for redistribution to customers. Links in this section are all internal (VPN required).
+As always, these are not FINAL bits, but preliminary results for QE testing. Not for redistribution to customers. Links in this section are all internal (VPN required), except for the target platform.
 
 Universal Installers (Internal):
 
@@ -180,14 +180,17 @@ http://www.qa.jboss.com/binaries/RHDS/builds/development/${version}.installer/
 Update Sites (Internal):
 
 http://www.qa.jboss.com/binaries/RHDS/updates/development/${version}.core/
-http://www.qa.jboss.com/binaries/RHDS/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION}/ (Target Platform)
 
-JBoss Central:
+JBoss Central (Internal):
 
 To test this version of Central, add this to your ~/jbdevstudio/studio/jbdevstudio.ini file after the -vmargs line:
 
 -Djboss.discovery.directory.url=http://www.qa.jboss.com/binaries/RHDS/discovery/development/${version}/devstudio-directory.xml
      -Djboss.discovery.site.url=http://www.qa.jboss.com/binaries/RHDS/discovery/development/${version}/
+
+Target Platform (Public):
+
+http://download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION}/
 
 --
 

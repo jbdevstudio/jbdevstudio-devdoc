@@ -2,7 +2,7 @@
 
 0. Set the URLs in the discovery site so they point to the correct versions:
 
-    >> https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_7.0.kepler/job/jbosstools-discovery_41/configure
+  https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_7.0.kepler/job/jbosstools-discovery_41/configure
 
     http://download.jboss.org/jbosstools/updates/JBossTools-4.1.0.CR1a.core/ # a, b, c...
     http://www.qa.jboss.com/binaries/RHDS/updates/development/7.0.0.CR1a.core/ # a, b, c...

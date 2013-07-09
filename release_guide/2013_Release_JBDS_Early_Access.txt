@@ -84,16 +84,52 @@
 
 4. Update https://devstudio.jboss.com/updates/7.0*/devstudio-directory.xml to point at new discovery jar(s) from staging.
 
+## TODO for CR1 and GA: VERIFY CONTENTS OF DISCOVERY JAR ARE CORRECTLY POINTING AT 
+#  7.0 for /7.0/
+#  7.0-development for /7.0-development/
+#  7.0-staging for /7.0-staging/
+
   version=7.0.0.Beta2
   SRC_SITE=7.0-staging
   DESTSITE=7.0-development # or 7.0/ for a GA release
+
+  topic="release-${version}";branch=master; gw1
+
   # check in / sync changes
   scpr ~/truu/devstudio.jboss.com/updates/${SRC_SITE}/* ~/truu/devstudio.jboss.com/updates/${DESTSITE}/
 
-  cd ~/truu/devstudio.jboss.com/updates/
-  topic="release-${version}";branch=master; gw1
-  stat .; gd .
+  cd ~/truu/devstudio.jboss.com/updates/${DESTSITE}/discovery/
+  #git rm -f com.jboss.jbds.central.discovery_*.jar
+  wget -q -nc http://www.qa.jboss.com/binaries/RHDS/discovery/development/${version}/devstudio-directory.xml
+  newJar=$(cat devstudio-directory.xml | grep entry | sed -e "s#.\+plugins#plugins#g" | sed -e "s#\.jar.\+#.jar#g"); echo $newJar
+  wget -q -nc http://www.qa.jboss.com/binaries/RHDS/discovery/development/${version}/${newJar}
+  newJar=${newJar/plugins/discovery}; echo $newJar
+  rm -f ~/truu/devstudio.jboss.com/updates/${DESTSITE}/discovery/devstudio-directory.xml
 
+  # update XML
+  cd ~/truu/devstudio.jboss.com/updates/${DESTSITE}/
+  sed -i -e "s#discovery/com.jboss.jbds.central.discovery_.\+\.jar#${newJar}#g" devstudio-directory.xml
+ 
+  unzip -q -d ~/truu/devstudio.jboss.com/updates/${DESTSITE}/${newJar}{_,}
+  pushd ~/truu/devstudio.jboss.com/updates/${DESTSITE}/${newJar}_ >/dev/null 
+
+  # IF THIS IS pre-GA, ensure that your plugin points to the STAGING URL, not the RELEASE one:
+  sed -i "s#https://devstudio.jboss.com/updates/7.0-staging/central/core/#https://devstudio.jboss.com/updates/7.0-development/central/core/#g" plugin.xml
+  sed -i "s#https://devstudio.jboss.com/updates/7.0/central/core/#https://devstudio.jboss.com/updates/7.0-development/central/core/#g" plugin.xml
+
+  # IF THIS IS GA, ensure that your plugin points to the RELEASE URL, not the STAGING one:
+  #sed -i "s#https://devstudio.jboss.com/updates/7.0-staging/central/core/#https://devstudio.jboss.com/updates/7.0/central/core/#g" plugin.xml
+  #sed -i "s#https://devstudio.jboss.com/updates/7.0-development/central/core/#https://devstudio.jboss.com/updates/7.0/central/core/#g" plugin.xml
+
+  zip -u ~/truu/devstudio.jboss.com/updates/${DESTSITE}/${newJar} plugin.xml
+  popd >/dev/null
+  rm -fr ~/truu/devstudio.jboss.com/updates/${DESTSITE}/${newJar}_
+
+  # check in / sync changes
+  ga ${newJar}; stat .
+  gd .
+
+  cd ~/truu/devstudio.jboss.com/updates/
   ga ${DESTSITE}
   ci "release ${version} from ${SRC_SITE} to ${DESTSITE}" . 
   gw2;gw3;gw4

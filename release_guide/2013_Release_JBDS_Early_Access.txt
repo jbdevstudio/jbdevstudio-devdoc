@@ -7,8 +7,8 @@
 
   screen
 
-  version=7.0.0.Beta2
-  version2=7.0.0.Beta2b; # a, b, c, ...
+  version=7.0.0.GA
+  version2=7.0.0.GA; # a, b, c, ...
   dev=10.16.88.146; # dev01.mw.lab.eng.bos.redhat.com
   cd /mnt/devstudio/earlyaccess/builds/development/
   mkdir -p /mnt/devstudio/earlyaccess/builds/development/${version}
@@ -19,8 +19,8 @@
   # cp /mnt/devstudio/earlyaccess/builds/development/7.0.*-eap/.htaccess /mnt/devstudio/earlyaccess/builds/development/${version2}-eap/
 
   # clean out old installers & update sites from previous milestones; rename update sites from "a,b,c" to ""
-  version=7.0.0.Beta2
-  version2=7.0.0.Beta2b; # a, b, c, ...
+  version=7.0.0.GA
+  version2=7.0.0.GA; # a, b, c, ...
   cd /mnt/devstudio/updates/7.0.0/
   if [[ ${version} != ${version2} ]]; then 
     mv ${version}.core ${version}.core.DELETEME
@@ -48,8 +48,8 @@
   # "stat" is short for "git status"; "gd" is short for "git diff"; "ga" is short for "git add"
 
   cd ~/truu/devstudio.jboss.com/updates/7.0-staging
-  version=7.0.0.Beta2
-  version2=7.0.0.Beta2b; # a, b, c, ...
+  version=7.0.0.GA
+  version2=7.0.0.GA; # a, b, c, ...
   now=`date +%s000`
   for d in composite*.xml index.html central/core/index.html ; do
     sed -i -e "s#${version2}#${version}#g" $d
@@ -69,8 +69,8 @@
   alias   scpr='rsync -aPrz --rsh=ssh'
   alias   ci='git commit -m'
   
-  version=7.0.0.Beta2
-  version2=7.0.0.Beta2b; # a, b, ...
+  version=7.0.0.GA
+  version2=7.0.0.GA; # a, b, ...
   cd ~/truu/devstudio.jboss.com/earlyaccess
   wget http://www.qa.jboss.com/binaries/RHDS/builds/development/${version2}.installer/${version}.html
   echo "<html><head></head><body onload=\"document.location.href='../${version}.html'\"></body></html>" > 7.0/index.html
@@ -89,7 +89,7 @@
 #  7.0-development for /7.0-development/
 #  7.0-staging for /7.0-staging/
 
-  version=7.0.0.Beta2
+  version=7.0.0.GA
   SRC_SITE=7.0-staging
   DESTSITE=7.0-development # or 7.0/ for a GA release
 
@@ -148,7 +148,7 @@
 
   https://devstudio.jboss.com/earlyaccess/
 
-7. Tag tag Git
+7. Tag Git
   # if not already cloned, the do this:
   git clone https://github.com/jbdevstudio/jbdevstudio-product
   git clone https://github.com/jbdevstudio/jbdevstudio-ci
@@ -156,19 +156,18 @@
   git clone https://github.com/jbdevstudio/jbdevstudio-artwork
   git clone https://github.com/jbdevstudio/jbdevstudio-devdoc
 
-  jbt_ver=4.1.0.Beta2
-  version=7.0.0.Beta2
-
-  # TODO: For CR1, make sure this actually works...
-  # then do this for each one
+  # TODO: make sure this actually works
+  jbt_branch=jbosstools-4.1.x
+  version=7.0.0.GA
   for d in product ci website artwork devdoc; do
     echo "====================================================================="
-    echo "Tagging jbdevstudio-${d} from branch ${jbt_ver}x as tag ${version}..."
+    echo "Tagging jbdevstudio-${d} from branch ${jbt_branch} as tag ${version}..."
     pushd ~/truu/jbdevstudio-${d}
     git stash
     git pull origin
     git fetch -t -p
-    git checkout jbosstools-${jbt_ver}x && git tag -f jbdevstudio-${version} && git push origin jbdevstudio-${version}
+    git checkout ${jbt_branch} && git tag -f jbdevstudio-${version} && git push origin jbdevstudio-${version}
+    echo ">>> https://github.com/jbdevstudio/jbdevstudio-${d}/tree/jbdevstudio-${version}"
     popd >/dev/null 
     echo "====================================================================="
     echo ""
@@ -177,7 +176,7 @@
 
 8. Commit updates to release guide (including this document):
 
-  version=7.0.0.Beta2
+  version=7.0.0.GA
   cd ~/truu/doc/release_guide
   topic="release-${version}";branch=master; gw1
   ci "update release guide for ${version}" *2013*JBDS*
@@ -185,18 +184,16 @@
 
 9. Move installers from "a" or "b" folder to base folder; purge old stuff from OLD/ folder\
 
-  ** SKIPPED FOR BETA2b **
-
   ssh to dev01.mw.lab.eng.bos.redhat.com, sudo to hudson user, then
 
   cd ~/RHDS/builds/development/
-  mv 7.0.0.Beta2.installer OLD/
-  mv 7.0.0.Beta2b.installer 7.0.0.Beta2.installer
+  mv 7.0.0.GAx.installer OLD/
+  mv 7.0.0.GAx.installer 7.0.0.GA.installer
   # repeat for updates/development and discovery/development
 
   #TODO: add note abouut also renaming/moving update and discovery sites
 
-10. Update Marketplace entry (Beta2 -> CR1)
+10. Update Marketplace entry (CR1 -> GA)
 
 
 11. Send email
@@ -211,8 +208,8 @@ jbds-pm-list <jbds-pm-list@redhat.com>
 "external-exadel-list@redhat.com" <external-exadel-list@redhat.com>
 jboss-announce@redhat.com (optional for major milestones/releases)
 
-version=7.0.0.Beta2
-version2=7.0.0.Beta2b # a, b, c...
+version=7.0.0.GA
+version2=7.0.0.GA # a, b, c...
 echo "
 Subject: 
 
@@ -262,8 +259,8 @@ https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.plugin.syst
 # Michelle Murray <mmurray@redhat.com>
 # Jiri Pallich <jpallich@redhat.com>
 
-version=7.0.0.Beta2
-version2=7.0.0.Beta2b # a, b, c...
+version=7.0.0.GA
+version2=7.0.0.GA # a, b, c...
 echo "
 Subject: 
 

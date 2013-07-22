@@ -156,7 +156,7 @@
   git clone https://github.com/jbdevstudio/jbdevstudio-artwork
   git clone https://github.com/jbdevstudio/jbdevstudio-devdoc
 
-  # TODO: make sure this actually works
+  # now tag multiple projects in a single step, replacing existing tags if already exist
   jbt_branch=jbosstools-4.1.x
   version=7.0.0.GA
   for d in product ci website artwork devdoc; do
@@ -167,11 +167,11 @@
     git pull origin
     git fetch -t -p
     git checkout ${jbt_branch} && git tag -f jbdevstudio-${version} && git push origin jbdevstudio-${version}
+    git checkout master; git stash pop
     echo ">>> https://github.com/jbdevstudio/jbdevstudio-${d}/tree/jbdevstudio-${version}"
     popd >/dev/null 
     echo "====================================================================="
     echo ""
-    git checkout master; git stash pop
   done
 
 8. Commit updates to release guide (including this document):

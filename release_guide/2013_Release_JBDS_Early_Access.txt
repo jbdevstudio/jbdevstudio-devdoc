@@ -114,12 +114,12 @@
   pushd ~/truu/devstudio.jboss.com/updates/${DESTSITE}/${newJar}_ >/dev/null 
 
   # IF THIS IS pre-GA, ensure that your plugin points to the STAGING URL, not the RELEASE one:
-  sed -i "s#https://devstudio.jboss.com/updates/7.0-staging/central/core/#https://devstudio.jboss.com/updates/7.0-development/central/core/#g" plugin.xml
-  sed -i "s#https://devstudio.jboss.com/updates/7.0/central/core/#https://devstudio.jboss.com/updates/7.0-development/central/core/#g" plugin.xml
+  sed -i "s#https://devstudio.jboss.com/updates/7.0-staging/central/#https://devstudio.jboss.com/updates/7.0-development/central/#g" plugin.xml
+  sed -i "s#https://devstudio.jboss.com/updates/7.0/central/#https://devstudio.jboss.com/updates/7.0-development/central/#g" plugin.xml
 
   # IF THIS IS GA, ensure that your plugin points to the RELEASE URL, not the STAGING one:
-  #sed -i "s#https://devstudio.jboss.com/updates/7.0-staging/central/core/#https://devstudio.jboss.com/updates/7.0/central/core/#g" plugin.xml
-  #sed -i "s#https://devstudio.jboss.com/updates/7.0-development/central/core/#https://devstudio.jboss.com/updates/7.0/central/core/#g" plugin.xml
+  #sed -i "s#https://devstudio.jboss.com/updates/7.0-staging/central/#https://devstudio.jboss.com/updates/7.0/central/#g" plugin.xml
+  #sed -i "s#https://devstudio.jboss.com/updates/7.0-development/central/#https://devstudio.jboss.com/updates/7.0/central/#g" plugin.xml
 
   zip -u ~/truu/devstudio.jboss.com/updates/${DESTSITE}/${newJar} plugin.xml
   popd >/dev/null
@@ -140,8 +140,8 @@
 5. Fix file permissions on wallace (pull from dev01):
 
   ssh nboldt@wallace "
-    chmod -R g+w       /mnt/devstudio/updates/7.0-staging /mnt/devstudio/updates/7.0-development /mnt/devstudio/earlyaccess 2>/dev/null;
-    chgrp -R devstudio /mnt/devstudio/updates/7.0-staging /mnt/devstudio/updates/7.0-development /mnt/devstudio/earlyaccess 2>/dev/null
+    chmod -R g+w       /mnt/devstudio/updates/7.0* /mnt/devstudio/earlyaccess 2>/dev/null;
+    chgrp -R devstudio /mnt/devstudio/updates/7.0* /mnt/devstudio/earlyaccess 2>/dev/null
   "
 
 6. After 30-60 mins, review Early Access site:

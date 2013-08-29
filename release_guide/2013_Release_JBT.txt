@@ -167,18 +167,30 @@
   newTargetPlatform=4.30.5.Final
 
   topic="release-target-platform-${newTargetPlatform}"; branch=master; gw1
-  pushd ~/tru/download.jboss.org/jbosstools/updates/kepler/
+
+  pushd ~/tru/download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/
   now=`date +%s000`
   for d in composite*.xml; do
   sed -i -e "s#${oldTargetPlatform}#${newTargetPlatform}#g" $d
   sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
   done
-  ci "release ${newTargetPlatform} to http://download.jboss.org/jbosstools/updates/kepler/" .
+  ci "release ${newTargetPlatform} to http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/" .
   popd >/dev/null
+
+  pushd ~/tru/download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/kepler/
+  now=`date +%s000`
+  for d in composite*.xml; do
+  sed -i -e "s#${oldTargetPlatform}#${newTargetPlatform}#g" $d
+  sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
+  done
+  ci "release ${newTargetPlatform} to http://download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/kepler/" .
+  popd >/dev/null
+
   gw2;gw3;gw4
 
-  # push updated target platform to production
-  scpr ~/tru/download.jboss.org/jbosstools/updates/kepler/composite*.xml $TOOLS/updates/kepler/
+  # push updated target platforms to production
+  scpr ~/tru/download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/composite*.xml $TOOLS/targetplatforms/jbosstoolstarget/kepler/
+  scpr ~/tru/download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/kepler/composite*.xml $TOOLS/targetplatforms/jbdevstudiotarget/kepler/
 
   # -------
 
@@ -237,9 +249,9 @@
 
 If this is the pre-Final build, ensure that the following files exist:
 
-  http://download.jboss.org/jbosstools/updates/kepler/
-  http://download.jboss.org/jbosstools/updates/kepler/compositeArtifacts.xml & compositeContent.xml
-  http://download.jboss.org/jbosstools/updates/kepler/extras/compositeArtifacts.xml & compositeContent.xml
+  http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/
+  http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/compositeArtifacts.xml & compositeContent.xml
+  http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/extras/compositeArtifacts.xml & compositeContent.xml
 
   Make sure directory.xml points at a real jar:
     http://download.jboss.org/jbosstools/updates/development/kepler/jbosstools-directory.xml 
@@ -425,8 +437,8 @@ Requirement Sites:
 
 (These are loaded automatically into Eclipse when installing JBoss Tools from the URLs above. Provided here simply for reference.)
 
-http://download.jboss.org/jbosstools/updates/kepler/
-http://download.jboss.org/jbosstools/updates/kepler/extras/
+http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/
+http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/extras/
 
 --
 

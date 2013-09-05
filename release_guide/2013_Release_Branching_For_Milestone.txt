@@ -67,7 +67,7 @@ Then respin:
 5. [MASTER] Verify these files have the correct version in them (eg., 7.0.0-SNAPSHOT or 7.0.0.qualifier)
 
   https://github.com/jbdevstudio/jbdevstudio-product/blob/master/product/pom.xml
-	ttps://github.com/jbdevstudio/jbdevstudio-product/blob/master/site/com.jboss.jbds.product
+	https://github.com/jbdevstudio/jbdevstudio-product/blob/master/site/com.jboss.jbds.product
   https://github.com/jbdevstudio/jbdevstudio-product/blob/master/plugins/com.jboss.jbds.product/
 
 

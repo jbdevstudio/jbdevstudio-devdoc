@@ -1,6 +1,5 @@
 HOWTO branch JBT/JBDS:
 
-
 ** These steps are required to be done by all project leads; as such, they must be **
 ** sent an email on Wed night reminding them of the upcoming freeze and what to do **
 
@@ -9,6 +8,11 @@ b) build locally; verify correct version of target-platform is used when buildin
 c) commit
 d) create branch
 e) send email confirmation
+
+** Automated approach using JIRA, see:
+
+  https://github.com/jbdevstudio/jbdevstudio-ci/blob/master/bin/createTaskJIRAs.py
+  https://github.com/jbdevstudio/jbdevstudio-ci/blob/master/bin/createTaskJIRAs.py.examples.txt
 
 -----------------
 

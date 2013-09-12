@@ -194,7 +194,7 @@
 
   # -------
 
-  previous=4.1.0.Beta2
+  previous=4.1.0.Final
   version=4.1.1.Alpha1
   version2=4.1.1.Alpha1 # no a, b, c if renamed above 
 
@@ -222,30 +222,29 @@
   popd >/dev/null
   
   # IF THIS IS pre-Final, ensure that your plugin points to the STAGING URL, not the RELEASE one:
-  #unzip -q -d ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}{_,}
-  #pushd ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}_ >/dev/null 
-  #sed -i "s#http://download.jboss.org/jbosstools/updates/stable/kepler/central/core/#http://download.jboss.org/jbosstools/updates/development/kepler/central/core/#g" plugin.xml
-  #zip -u ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar} plugin.xml
-  #popd >/dev/null
-  #rm -fr ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}_
-
-  # IF THIS IS Final, ensure that your plugin points to the RELEASE URL, not the STAGING one:
   unzip -q -d ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}{_,}
   pushd ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}_ >/dev/null 
-  sed -i "s#http://download.jboss.org/jbosstools/updates/development/kepler/central/core/#http://download.jboss.org/jbosstools/updates/stable/kepler/central/core/#g" plugin.xml
-  ## *** make sure we do not point at http://download.jboss.org/jbosstools/discovery/development/${version} instead
+  sed -i "s#http://download.jboss.org/jbosstools/updates/stable/kepler/central/core/#http://download.jboss.org/jbosstools/updates/development/kepler/central/core/#g" plugin.xml
   zip -u ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar} plugin.xml
   popd >/dev/null
   rm -fr ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}_
 
+  # IF THIS IS Final, ensure that your plugin points to the RELEASE URL, not the STAGING one:
+  #unzip -q -d ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}{_,}
+  #pushd ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}_ >/dev/null 
+  #sed -i "s#http://download.jboss.org/jbosstools/updates/development/kepler/central/core/#http://download.jboss.org/jbosstools/updates/stable/kepler/central/core/#g" plugin.xml
+  ## *** make sure we do not point at http://download.jboss.org/jbosstools/discovery/development/${version} instead
+  #zip -u ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar} plugin.xml
+  #popd >/dev/null
+  #rm -fr ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}_
+
   # check in / sync changes - 4 updated files, 1 new jar, 1 deleted jar
   stat .; gd .
   scpr ~/tru/download.jboss.org/jbosstools/updates/development/kepler/* $TOOLS/updates/development/kepler/
-  # TODO: make sure next line works
+  # TODO: only add the new jar + updated directory.xml if this is Alpha/Beta/CR toward a .0.Final, or Beta/CR toward a .x.Final (skip Alphas toward .x.Final)
   git add ${newJar}
   ci "release ${version2} to http://download.jboss.org/jbosstools/updates/development/kepler/; add new discovery plugin ${newJar} + update jbosstools-directory.xml" .
   gw2;gw3;gw4
-  
 
 If this is the pre-Final build, ensure that the following files exist:
 
@@ -288,7 +287,7 @@ a. composite sites and Central directory file
 
 b. files on SF
 
-  https://sourceforge.net/projects/jboss/files/JBossTools/JBossTools4.1.x/
+  https://sourceforge.net/projects/jboss/files/JBossTools/JBossTools4.1.1.x/
 
 c. magnolia pages
 
@@ -378,8 +377,8 @@ Be sure to also update the listing to the latest release version (eg., CR1 -> Fi
   git clone https://github.com/jbosstools/jbosstools-maven-plugins
 
   # now tag multiple projects in a single step, replacing existing tags if already exist
-  jbt_branch=jbosstools-4.1.x
-  version=4.1.0.GA
+  jbt_branch=jbosstools-4.1.1.Alpha1x
+  version=4.1.1.Alpha1
   for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins; do
     echo "====================================================================="
     echo "Tagging jbosstools-${d} from branch ${jbt_branch} as tag ${version}..."
@@ -430,15 +429,15 @@ http://download.jboss.org/jbosstools/updates/development/kepler/
 Installation + Download Pages:
 
 http://www.jboss.org/tools/download
-http://www.jboss.org/tools/download/dev/4_1
+http://www.jboss.org/tools/download/dev/4_1_x
 http://www.jboss.org/tools/download/installation/update_4_1
 
-Requirement Sites:
+Requirement Site / Target Platform:
 
-(These are loaded automatically into Eclipse when installing JBoss Tools from the URLs above. Provided here simply for reference.)
+(This is loaded automatically into Eclipse when installing JBoss Tools from the URLs above. Provided here simply for reference.)
 
 http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/
-http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/extras/
+http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/kepler/ << TODO: JBDS-2623
 
 --
 

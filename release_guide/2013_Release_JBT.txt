@@ -6,8 +6,8 @@
 1. Move/rename 6 files (3 zips, 3 md5sums) [JBT 3.2.x was 3 zips, 3 md5sums = 6 files] (no longer includes SOA Tooling zip/md5 file) into http://download.jboss.org/jbosstools/builds/development/sf.net/
 
   stream=41
-  version=4.1.0.Final
-  version2=4.1.0.Final; # a, b...
+  version=4.1.1.Alpha1
+  version2=4.1.1.Alpha1; # a, b...
   buildID1=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/development/${version2}.core/ 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); buildID1=${buildID1%%/*}
   echo "Latest build: ${buildID1}"
 
@@ -33,20 +33,20 @@
   rm -f /tmp/index.html
 
   # end up with somtehing like this:
-  hibernatetools-Update-4.1.0.Final_2013-07-19_19-47-52-B380.zip :: 78M
-  hibernatetools-Update-4.1.0.Final_2013-07-19_19-47-52-B380.zip.MD5
+  hibernatetools-Update-4.1.1.Alpha1_2013-09-08_21-08-29-B392.zip :: 78M
+  hibernatetools-Update-4.1.1.Alpha1_2013-09-08_21-08-29-B392.zip.MD5
 
-  jbosstools-Sources-4.1.0.Final_2013-07-19_19-47-52-B380.zip :: 135M
-  jbosstools-Sources-4.1.0.Final_2013-07-19_19-47-52-B380.zip.MD5
+  jbosstools-Sources-4.1.1.Alpha1_2013-09-08_21-08-29-B392.zip :: 88M
+  jbosstools-Sources-4.1.1.Alpha1_2013-09-08_21-08-29-B392.zip.MD5
 
-  jbosstools-Update-4.1.0.Final_2013-07-19_19-47-52-B380.zip :: 409M
-  jbosstools-Update-4.1.0.Final_2013-07-19_19-47-52-B380.zip.MD5
+  jbosstools-Update-4.1.1.Alpha1_2013-09-08_21-08-29-B392.zip :: 412M
+  jbosstools-Update-4.1.1.Alpha1_2013-09-08_21-08-29-B392.zip.MD5
 
 2. Pull files to SF after logging in via SSH (Downloaded: 8 files, 353M in 4m 22s (1.35 MB/s)):
 
   ssh -t nickboldt,jboss@shell.sourceforge.net create # wait until this is done before running the next lines
-  version=4.1.x # if this is a Final build, use 4.1.x instead of 4.1.0.x
-  version2=4.1.0.Final
+  version=4.1.1.x # if this is a Final or build, use 4.1.x instead of 4.1.1.x
+  version2=4.1.1.Alpha1
   mkdir -p /home/users/n/ni/nickboldt/jboss/JBossTools/JBossTools${version}
   cd /home/users/n/ni/nickboldt/jboss/JBossTools/JBossTools${version}
   wget http://download.jboss.org/jbosstools/builds/development/sf.net/${version2} -k -O /tmp/index.html
@@ -58,17 +58,17 @@
   
 3. Create release notes file & rename, then upload to sf.net:
     https://issues.jboss.org/secure/ConfigureReport!default.jspa?selectedProjectId=10020&projectOrFilterId=project-10020&projectOrFilterName=Tools%20%28JBoss%20Tools%29&reportKey=org.jboss.labs.jira.plugin.release-notes-report-plugin:releasenotes
-  --> select release ("4.1.0.Final"), type of issues ("All"), and style ("HTML").
+  --> select release ("4.1.1.Alpha1"), type of issues ("All"), and style ("HTML").
   --> select text and paste into file.
 
-  version=4.1.x # if this is a Final build, use 4.1.x instead of 4.1.0.x
-  version2=4.1.0.Final
+  version=4.1.1.x # if this is a Final build, use 4.1.x instead of 4.1.1.x
+  version2=4.1.1.Alpha1
   cd /home/nboldt/truu/doc/release_guide/ # in devstudio SVN
   prev=$(find . -name "zz_Release_Notes_4.1*"); prev=${prev:2}; echo $prev
   sublime zz_Release_Notes_4.1*.html # or use gedit, vim, etc.
   git mv zz_Release_Notes_4.1*.html zz_Release_Notes_${version2}.readme.html
   # for milestones
-  scp /home/nboldt/truu/doc/release_guide/zz_Release_Notes_${version2}.readme.html "nickboldt,jboss@frs.sourceforge.net:/home/frs/project/j/jb/jboss/JBossTools/JBossTools4.1.0.x/"
+  scp /home/nboldt/truu/doc/release_guide/zz_Release_Notes_${version2}.readme.html "nickboldt,jboss@frs.sourceforge.net:/home/frs/project/j/jb/jboss/JBossTools/JBossTools4.1.1.x/"
   # or, for Final builds
   scp /home/nboldt/truu/doc/release_guide/zz_Release_Notes_${version2}.readme.html "nickboldt,jboss@frs.sourceforge.net:/home/frs/project/j/jb/jboss/JBossTools/JBossTools4.1.x/"
 
@@ -80,7 +80,7 @@
 
 4. Check contents of bookmarks.xml file, and upload to sf.net if changed:
 
-  vi  /home/nboldt/truu/doc/release_guide/jbosstools4.1_bookmarks.xml
+  sublime  /home/nboldt/truu/doc/release_guide/jbosstools4.1_bookmarks.xml
   scp /home/nboldt/truu/doc/release_guide/jbosstools4.1_bookmarks.xml "nickboldt,jboss@frs.sourceforge.net:/home/frs/project/j/jb/jboss/JBossTools/"
 ----
 
@@ -99,8 +99,8 @@
 
 6. (ONLY if necessary) Move Milestonex to Milestone
 
-  version=4.1.0.Final
-  version2=4.1.0.Final # a, b, c, d...
+  version=4.1.1.Alpha1
+  version2=4.1.1.Alpha1 # a, b, c, d...
 
   # rename discovery site, http://download.jboss.org/jbosstools/discovery/development/${version2}/
   echo "rename development/${version}  development/${version}.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery
@@ -136,8 +136,8 @@
   alias   scpr='rsync -aPrz --rsh=ssh'
   alias   ci='git commit -m'
 
-  previous=4.1.0.Final
-  version=4.1.0.Final # only use a, b suffix if did not perform rename in step 6 above
+  previous=4.1.1.Alpha1
+  version=4.1.1.Alpha1 # only use a, b suffix if did not perform rename in step 6 above
   #echo "rename webtools/kepler webtools/kepler.`date +%Y%m%d-%H%M`" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/
   echo "rename webtools/kepler webtools/kepler_${previous}"         | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/
   echo "rename JBossTools-${version}.webtools webtools/kepler"      | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/
@@ -195,8 +195,8 @@
   # -------
 
   previous=4.1.0.Beta2
-  version=4.1.0.Final
-  version2=4.1.0.Final # no a, b, c if renamed above 
+  version=4.1.1.Alpha1
+  version2=4.1.1.Alpha1 # no a, b, c if renamed above 
 
   branch=master; topic="release-development-${version2}"; gw1
   cd ~/tru/download.jboss.org/jbosstools/updates/development/kepler/
@@ -211,7 +211,7 @@
   sed -i -e "s#href=\"#href=\"http://download.jboss.org/jbosstools/updates/JBossTools-${version2}.core/#g" -e "s#href=\"http://download.jboss.org/jbosstools/updates/JBossTools-${version2}.core/http#href=\"http#g" index.html
   
   # update XML
-  version=4.1.0.Final
+  version=4.1.1.Alpha1
   cd ~/tru/download.jboss.org/jbosstools/updates/development/kepler/
   rm -f jbosstools-directory.xml; wget -nc http://download.jboss.org/jbosstools/discovery/development/${version}/jbosstools-directory.xml
   #newJar=plugins/org.jboss.tools.central.discovery_1.0.0.v20120612-0053-H99-Final.jar
@@ -263,7 +263,7 @@ If this is the pre-Final build, ensure that the following files exist:
 If this is the Final build, ensure that the following files exist (copy content from /development/kepler/ so that both the milestone and the release have nearly the same content):
 
   http://download.jboss.org/jbosstools/updates/stable/kepler/jbosstools-directory.xml
-    -> must point at a real plugin, eg., to http://download.jboss.org/jbosstools/discovery/stable/4.1.0.Final/plugins/org.jboss.tools.central.discovery_1.2.0.Final-v20130.....jar
+    -> must point at a real plugin, eg., to http://download.jboss.org/jbosstools/discovery/stable/4.1.1.Alpha1/plugins/org.jboss.tools.central.discovery_1.2.0.Final-v20130.....jar
   http://download.jboss.org/jbosstools/updates/stable/kepler/composite*.xml
   http://download.jboss.org/jbosstools/updates/stable/kepler/central/core/composite*.xml
 
@@ -307,7 +307,7 @@ c. magnolia pages
 
 11. Update Eclipse Marketplace (add/remove features)
 
-  Compare list of features here:  http://download.jboss.org/jbosstools/updates/JBossTools-4.1.0.Final.core/site.properties (see CoreTools.category.features)
+  Compare list of features here:  http://download.jboss.org/jbosstools/updates/JBossTools-4.1.1.Alpha1.core/site.properties (see CoreTools.category.features)
   with features here:       https://marketplace.eclipse.org/node/xxxxxx/edit
 
   Currently, there are 43 features:
@@ -360,7 +360,7 @@ Be sure to also update the listing to the latest release version (eg., CR1 -> Fi
 
 12. Commit updates to release guide (including this document):
 
-  version=4.1.0.Final
+  version=4.1.1.Alpha1
   cd ~/truu/doc/release_guide
   topic="release-${version}";branch=master; gw1
   ci "update release guide for ${version}" *2013*JBT*
@@ -407,7 +407,7 @@ jbds-pm-list <jbds-pm-list@redhat.com>
 "external-exadel-list@redhat.com" <external-exadel-list@redhat.com>
 jboss-announce@redhat.com (optional for major milestones/releases)
 
-version=4.1.0.Final
+version=4.1.1.Alpha1
 echo "
 Subject:
 

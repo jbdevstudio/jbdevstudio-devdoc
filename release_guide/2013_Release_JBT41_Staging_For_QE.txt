@@ -4,8 +4,8 @@
 
   https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_7.0.kepler/job/jbosstools-discovery_41/configure
 
-    http://download.jboss.org/jbosstools/updates/JBossTools-4.1.1.Alpha1.core/ # a, b, c...
-    http://www.qa.jboss.com/binaries/RHDS/updates/development/7.1.0.Alpha1.core/ # a, b, c...
+    http://download.jboss.org/jbosstools/updates/JBossTools-4.1.1.Alpha2.core/ # a, b, c...
+    http://www.qa.jboss.com/binaries/RHDS/updates/development/7.1.0.Alpha2.core/ # a, b, c...
 
   Respin.
   
@@ -13,7 +13,7 @@
 
 1. Move the latest JBT & Web Tools nightly builds (no symlinks to avoid accidental cleanup):
 
-	version=4.1.1.Alpha1 # a, b, c...
+	version=4.1.1.Alpha2 # a, b, c...
 	branch=core/4.1.kepler
 	buildID1=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/nightly/${branch} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); buildID1=${buildID1%%/*}
 	echo "Latest build: ${buildID1}"
@@ -40,7 +40,7 @@
 
 2. Move the latest JBT, Web Tools, and Discovery update sites (no symlinks to avoid accidental overwrites):
 
-	version=4.1.1.Alpha1 # a, b, c...
+	version=4.1.1.Alpha2 # a, b, c...
   branch=core/4.1.kepler;   echo "rename nightly/${branch} JBossTools-${version}.core" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates  
   echo " >> http://download.jboss.org/jbosstools/updates/JBossTools-${version}.core/" | egrep ">>|${version}"
 
@@ -62,28 +62,28 @@
  
   alias   scpr='rsync -aPrz --rsh=ssh --protocol=28'
 
-  version=4.1.1.Alpha1 # a, b, c...
+  version=4.1.1.Alpha2 # a, b, c...
   branch=core/4.1.kepler
   scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/JBossTools-${version}.core/* /tmp/JBossTools-${version}.core/
   scpr /tmp/JBossTools-${version}.core/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
   rm -fr /tmp/JBossTools-${version}.core/
   echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
 
-  version=4.1.1.Alpha1 # a, b, c...
+  version=4.1.1.Alpha2 # a, b, c...
   branch=coretests/4.1.kepler
   scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/JBossTools-${version}.coretests/* /tmp/JBossTools-${version}.coretests/
   scpr /tmp/JBossTools-${version}.coretests/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
   rm -fr /tmp/JBossTools-${version}.coretests/
   echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
 
-  version=4.1.1.Alpha1 # a, b, c...
+  version=4.1.1.Alpha2 # a, b, c...
   branch=webtools/4.1.kepler
   scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/JBossTools-${version}.webtools/* /tmp/JBossTools-${version}.webtools/
   scpr /tmp/JBossTools-${version}.webtools/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
   rm -fr /tmp/JBossTools-${version}.webtools/
   echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
 
-  version=4.1.1.Alpha1 # a, b, c...
+  version=4.1.1.Alpha2 # a, b, c...
   branch=core/4.1.kepler
   scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery/development/${version}/* /tmp/JBossTools-${version}.discovery/
   scpr /tmp/JBossTools-${version}.discovery/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery/nightly/${branch}/ --delete
@@ -113,12 +113,12 @@ SEND 2 emails:
 # 1. To:   "jbosstools-dev@lists.jboss.org"
 # 2. To:  jbds-pm-list <jbds-pm-list@redhat.com>, "external-exadel-list@redhat.com" <external-exadel-list@redhat.com>
 
-version=4.1.1.Alpha1 # a, b, c...
+version=4.1.1.Alpha2 # a, b, c...
 respin="respin-"
 TARGET_PLATFORM_VERSION_MIN=4.30.5.Final
-TARGET_PLATFORM_VERSION_MAX=4.31.0.Alpha1
-version2=7.1.0.Alpha1 # no respin suffix here
-version3=4.1.1.Alpha1 # no respin suffix here
+TARGET_PLATFORM_VERSION_MAX=4.31.0.Alpha2-SNAPSHOT
+version2=7.1.0.Alpha2 # no respin suffix here
+version3=4.1.1.Alpha2 # no respin suffix here
 echo "
 Subject: 
 

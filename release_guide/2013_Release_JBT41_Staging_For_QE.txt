@@ -97,8 +97,8 @@ Note that
     maps to 
   http://download.jboss.org/jbosstools/
 
-If you do not need it urgently, you can push files there simply by committing changes to SVN here:
-  http://anonsvn.jboss.org/repos/jbosstools/trunk/download.jboss.org/jbosstools/
+If you do not need it urgently, you can push files there simply by committing changes to Git here:
+  https://github.com/jbosstools/jbosstools-download.jboss.org/tree/master/jbosstools
 This is controlled by Hudson job here:
   https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_All/job/jbosstools-download.jboss.org-rsync-from-svn/
 
@@ -116,7 +116,7 @@ SEND 2 emails:
 version=4.1.1.Alpha2 # a, b, c...
 respin="respin-"
 TARGET_PLATFORM_VERSION_MIN=4.30.5.Final
-TARGET_PLATFORM_VERSION_MAX=4.31.0.Alpha2-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.31.0.Final
 version2=7.1.0.Alpha2 # no respin suffix here
 version3=4.1.1.Alpha2 # no respin suffix here
 echo "

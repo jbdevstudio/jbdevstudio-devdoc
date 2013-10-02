@@ -41,7 +41,7 @@
 
 3. Stage files on wallace (pull from dev01):
 
-  ** SKIP THIS FOR Alpha2 and ALPHA2 **
+  ** SKIP THIS FOR ALPHA1 and ALPHA2 **
 
   ssh nboldt@wallace
   alias   scpr='rsync -aPrz --rsh=ssh'
@@ -70,7 +70,7 @@
 
 4. (while previous step is running) update composite*.xml files in updates/7.0-staging/ to point at new locations (update in SVN too: http://svn.jboss.org/repos/devstudio/trunk/devstudio.jboss.com/updates/7.0-staging/)
 
-  ** SKIP THIS FOR Alpha2 and ALPHA2 **
+  ** SKIP THIS FOR ALPHA1 and ALPHA2 **
 
   # NOTE: ~/truu/devstudio.jboss.com is a symlink on my local machine to this folder in github: https://github.com/jbdevstudio/jbdevstudio-website/tree/master/content
   # "gw1" uses special aliases/scripts/shortcuts. Basically, we want to follow correct github workflows so that commits are pushed to user's fork, then later pull-requested (and the PR applied)
@@ -168,7 +168,7 @@
 version=7.1.0.Alpha2 # a, b, c...
 respin="respin-"
 TARGET_PLATFORM_VERSION_MIN=4.30.5.Final
-TARGET_PLATFORM_VERSION_MAX=4.31.0.Alpha2-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.31.0.Final
 version2=7.1.0.Alpha2 # no respin suffix here
 version3=4.1.1.Alpha2 # no respin suffix here
 echo "

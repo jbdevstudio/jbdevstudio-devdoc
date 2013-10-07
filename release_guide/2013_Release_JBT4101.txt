@@ -94,27 +94,27 @@
 6. (ONLY if necessary) Move Milestonex to Milestone
 
   version=4.1.0.1.Final
-  version2=4.1.0.1.Final # a, b, c, d...
+  version2=4.1.0.1.CR1 # a, b, c, d...
 
   # rename discovery site, http://download.jboss.org/jbosstools/discovery/development/${version2}/
-  echo "rename development/${version}  development/${version}.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery
+  #echo "rename development/${version}  development/${version}.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery
   echo "rename development/${version2} development/${version}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery
 
   # rename the development build
-  echo "rename development/${version}.core  development/${version}.core.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+  #echo "rename development/${version}.core  development/${version}.core.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
   echo "rename development/${version2}.core development/${version}.core" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
 
   # make sure this exists - might be only "a" while core is on "c"
-  echo "rename development/${version}.webtools  development/${version}.webtools.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
-  echo "rename development/${version2}.webtools development/${version}.webtools" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+  #echo "rename development/${version}.webtools  development/${version}.webtools.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+  #echo "rename development/${version2}.webtools development/${version}.webtools" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
 
   # rename the update site
-  echo "rename JBossTools-${version}.core  JBossTools-${version}.core.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
+  #echo "rename JBossTools-${version}.core  JBossTools-${version}.core.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
   echo "rename JBossTools-${version2}.core JBossTools-${version}.core" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
 
   # make sure this exists - might be only "a" while core is on "c"
-  echo "rename JBossTools-${version}.webtools  JBossTools-${version}.webtools.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
-  echo "rename JBossTools-${version2}.webtools JBossTools-${version}.webtools" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
+  #echo "rename JBossTools-${version}.webtools  JBossTools-${version}.webtools.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
+  #echo "rename JBossTools-${version2}.webtools JBossTools-${version}.webtools" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
 
   Also, over sftp, delete any old iterations (*.DELETEME) or previous respins that are no longer needed from 
 
@@ -157,8 +157,8 @@
              index.html files (absolute paths). Also pull a copy of the updated discovery jar (from http://download.jboss.org/jbosstools/discovery/development/${version}/plugins/).
              And update the pointer to the latest target platform, too.
 
-  oldTargetPlatform=4.30.5.Alpha6
-  newTargetPlatform=4.30.5.Final
+  oldTargetPlatform=4.30.5.Final
+  newTargetPlatform=4.31.5.Final
 
   topic="release-target-platform-${newTargetPlatform}"; branch=master; gw1
 
@@ -371,7 +371,7 @@ Be sure to also update the listing to the latest release version (eg., CR1 -> Fi
   git clone https://github.com/jbosstools/jbosstools-maven-plugins
 
   # now tag multiple projects in a single step, replacing existing tags if already exist
-  jbt_branch=jbosstools-4.1.0.1.Finalx
+  jbt_branch=jbosstools-4.1.0.x
   version=4.1.0.1.Final
   for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins; do
     echo "====================================================================="
@@ -386,6 +386,9 @@ Be sure to also update the listing to the latest release version (eg., CR1 -> Fi
     popd >/dev/null 
     echo "====================================================================="
     echo ""
+  done
+  for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins; do
+    echo ">>> https://github.com/jbosstools/jbosstools-${d}/tree/jbosstools-${version}"
   done
 
 15. Send email, prepare blogs & announcements

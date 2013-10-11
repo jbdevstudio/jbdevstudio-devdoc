@@ -130,7 +130,7 @@
 
 7. Publish new Web Tools site:
 
-  ** SKIP FOR 4.1.1.x until GA **
+  ** SKIP FOR 4.1.1.x UNTIL GA **
 
   alias   ga='git add'
   alias   stat='git status'
@@ -161,12 +161,12 @@
   ** If this is the first milestone release, ensure that upstream project Web Tools (WTP) knows to include this new URL in their server adapter wizard. New bugzilla required! **
 
 
-8. [8 files] Update composite site metadata (absolute path), Central directory file (absolute path, from http://download.jboss.org/jbosstools/discovery/development/${version}/), and 
-             index.html files (absolute paths). Also pull a copy of the updated discovery jar (from http://download.jboss.org/jbosstools/discovery/development/${version}/plugins/).
-             And update the pointer to the latest target platform, too.
+8. [4 files] Update latest released target platform site.
 
-  oldTargetPlatform=4.30.5.Alpha6
-  newTargetPlatform=4.30.5.Final
+  ** MAY NOT NEED TO DO THIS AGAIN UNTIL AFTER GA **
+
+  oldTargetPlatform=4.31.0.Final
+  newTargetPlatform=4.31.0.Final
 
   topic="release-target-platform-${newTargetPlatform}"; branch=master; gw1
 
@@ -194,9 +194,16 @@
   scpr ~/tru/download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/composite*.xml $TOOLS/targetplatforms/jbosstoolstarget/kepler/
   scpr ~/tru/download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/kepler/composite*.xml $TOOLS/targetplatforms/jbdevstudiotarget/kepler/
 
-  # -------
+  Ensure that the following files exist:
 
-  previous=4.1.0.Final
+  http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/
+  http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/compositeArtifacts.xml & compositeContent.xml
+  http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/extras/compositeArtifacts.xml & compositeContent.xml
+
+9. Update composite site metadata (absolute path), Central directory file (absolute path, from http://download.jboss.org/jbosstools/discovery/development/${version}/), and 
+             index.html files (absolute paths). Also pull a copy of the updated discovery jar (from http://download.jboss.org/jbosstools/discovery/development/${version}/plugins/).
+
+  previous=4.1.1.Alpha1
   version=4.1.1.Alpha2
   version2=4.1.1.Alpha2 # no a, b, c if renamed above 
 
@@ -247,12 +254,6 @@
   git add ${newJar}
   ci "release ${version2} to http://download.jboss.org/jbosstools/updates/development/kepler/; add new discovery plugin ${newJar} + update jbosstools-directory.xml" .
   gw2;gw3;gw4
-
-If this is the pre-Final build, ensure that the following files exist:
-
-  http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/
-  http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/compositeArtifacts.xml & compositeContent.xml
-  http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/extras/compositeArtifacts.xml & compositeContent.xml
 
   Make sure directory.xml points at a real jar:
     http://download.jboss.org/jbosstools/updates/development/kepler/jbosstools-directory.xml 
@@ -307,6 +308,8 @@ c. magnolia pages
 --------------------------------------------
 
 11. Update Eclipse Marketplace (add/remove features)
+
+** SKIP FOR 4.1.1.x UNTIL GA **
 
   Compare list of features here:  http://download.jboss.org/jbosstools/updates/JBossTools-4.1.1.Alpha2.core/site.properties (see CoreTools.category.features)
   with features here:       https://marketplace.eclipse.org/node/xxxxxx/edit

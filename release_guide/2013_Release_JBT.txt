@@ -421,13 +421,13 @@ Body:
 
 JBoss Tools ${version} is now available.
 
-This is a development release aimed at Eclipse 4.3.0 (Kepler) users.
+This is a development release aimed at Eclipse 4.3 (Kepler R or SR1) users.
 
 Eclipse Marketplace:
 
 https://marketplace.eclipse.org/content/jboss-tools-kepler
 
-Update Sites:
+Update Site:
 
 http://download.jboss.org/jbosstools/updates/development/kepler/
 
@@ -443,6 +443,13 @@ Requirement Site / Target Platform:
 
 http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/
 http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/kepler/ << TODO: JBDS-2623
+
+Central:
+
+This release includes changes to JBoss Central. If you would like to see these updates, launch Eclipse with these commandline -vmargs (or add them to eclipse.ini):
+
+  -Djboss.discovery.directory.url=http://download.jboss.org/jbosstools/updates/development/kepler/jbosstools-directory.xml
+  -Djboss.discovery.site.url=http://download.jboss.org/jbosstools/updates/development/kepler/ 
 
 --
 

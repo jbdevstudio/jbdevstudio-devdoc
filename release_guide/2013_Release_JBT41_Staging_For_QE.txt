@@ -115,7 +115,7 @@ SEND 2 emails:
 
 version=4.1.1.Beta1a # a, b, c...
 respin="respin-a"
-TARGET_PLATFORM_VERSION_MIN=4.30.5.Final
+TARGET_PLATFORM_VERSION_MIN=4.31.0.Final
 TARGET_PLATFORM_VERSION_MAX=4.31.1.Alpha1
 version2=7.1.0.Beta1 # no respin suffix here
 version3=4.1.1.Beta1 # no respin suffix here
@@ -131,10 +131,11 @@ As always, these are not FINAL bits, but preliminary results for QE testing. Not
 
 Target Platforms:
 
-Add one of these URLs to your Eclipse before attempting to install JBoss Tools, in order to resolve all dependencies. Both should work equally well.
+http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/ (JBoss Tools - current release)
+http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MAX} (JBoss Tools - upcoming milestone)
+http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/kepler/ (JBoss Central - latest version)
 
-http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MIN}/
-http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MAX}/
+(This is loaded automatically into Eclipse when installing JBoss Tools. Provided here simply for reference.)
 
 
 Update Sites:

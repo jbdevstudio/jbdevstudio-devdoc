@@ -23,11 +23,21 @@ Feel free to add more names / issues / servers / workflows as needed. ~nboldt
 	
 == https://devstudio.jboss.com == 
 	
+	devstudio.jboss.com is an alias for devstudiovip.proxy.prod.ext.phx2.redhat.com, which has address 10.4.127.7. 
+	It is managed by servicedesk (even if they say it is managed by eng-ops).
+
 	bandwidth issues: servicedesk@redhat.com, mgalgoci@redhat.com (Matt Galgoci)
 		Example: ticket INC000000366322, https://remedy.corp.redhat.com/arsys/forms/remedy.corp.redhat.com/HPD:Help+Desk/Best+Practice+View/
 		Contacts:
 			mgalgoci@redhat.com (Matt Galgoci)
 			tbenning@redhat.com (Thomas Benninger)
+
+	symlink or folder creation: servicedesk@redhat.com
+		Example: ticket RITM0028728, RITM0015285, RITM0014468
+		Contacts: 
+			Vladimir Vasilev (vvasilev@, eng-ops@)
+			Sydney Jones (syjones@, servicedesk@)
+			Jason Kimbrough (servicedesk@)
 
 	httpd server logs: ???
 

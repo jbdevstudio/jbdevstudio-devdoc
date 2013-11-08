@@ -33,14 +33,14 @@
   rm -f /tmp/index.html
 
   # end up with somtehing like this:
-  hibernatetools-Update-4.1.1.Beta1_2013-10-02_14-08-05-B444.zip :: 78M
-  hibernatetools-Update-4.1.1.Beta1_2013-10-02_14-08-05-B444.zip.MD5
+  hibernatetools-Update-4.1.1.Beta1_2013-11-02_11-05-10-B511.zip :: 78M
+  hibernatetools-Update-4.1.1.Beta1_2013-11-02_11-05-10-B511.zip.MD5
 
-  jbosstools-Sources-4.1.1.Beta1_2013-10-02_14-08-05-B444.zip :: 87M
-  jbosstools-Sources-4.1.1.Beta1_2013-10-02_14-08-05-B444.zip.MD5
+  jbosstools-Sources-4.1.1.Beta1_2013-11-02_11-05-10-B511.zip :: 83M
+  jbosstools-Sources-4.1.1.Beta1_2013-11-02_11-05-10-B511.zip.MD5
 
-  jbosstools-Update-4.1.1.Beta1_2013-10-02_14-08-05-B444.zip :: 412M
-  jbosstools-Update-4.1.1.Beta1_2013-10-02_14-08-05-B444.zip.MD5
+  jbosstools-Update-4.1.1.Beta1_2013-11-02_11-05-10-B511.zip :: 404M
+  jbosstools-Update-4.1.1.Beta1_2013-11-02_11-05-10-B511.zip.MD5
 
 2. Pull files to SF after logging in via SSH (Downloaded: 8 files, 353M in 4m 22s (1.35 MB/s)):
 
@@ -65,8 +65,8 @@
   version2=4.1.1.Beta1
   cd /home/nboldt/truu/doc/release_guide/ # in devstudio SVN
   prev=$(find . -name "zz_Release_Notes_4.1*"); prev=${prev:2}; echo $prev
-  sublime zz_Release_Notes_4.1*.html # or use gedit, vim, etc.
-  git mv zz_Release_Notes_4.1*.html zz_Release_Notes_${version2}.readme.html
+  sublime zz_Release_Notes_4.1.1*.html # or use gedit, vim, etc.
+  git mv zz_Release_Notes_4.1.1*.html zz_Release_Notes_${version2}.readme.html
   # for milestones
   scp /home/nboldt/truu/doc/release_guide/zz_Release_Notes_${version2}.readme.html "nickboldt,jboss@frs.sourceforge.net:/home/frs/project/j/jb/jboss/JBossTools/JBossTools4.1.1.x/"
   # or, for Final builds
@@ -166,7 +166,7 @@
   ** MAY NOT NEED TO DO THIS AGAIN UNTIL AFTER GA **
 
   oldTargetPlatform=4.31.0.Final
-  newTargetPlatform=4.31.0.Final
+  newTargetPlatform=4.31.1.Alpha1
 
   topic="release-target-platform-${newTargetPlatform}"; branch=master; gw1
 
@@ -198,7 +198,7 @@
 
   http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/
   http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/compositeArtifacts.xml & compositeContent.xml
-  http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/extras/compositeArtifacts.xml & compositeContent.xml
+  http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/kepler/compositeArtifacts.xml & compositeContent.xml
 
 9. Update composite site metadata (absolute path), Central directory file (absolute path, from http://download.jboss.org/jbosstools/discovery/development/${version}/), and 
              index.html files (absolute paths). Also pull a copy of the updated discovery jar (from http://download.jboss.org/jbosstools/discovery/development/${version}/plugins/).

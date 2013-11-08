@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bookmarks>
    <site url="http://download.jboss.org/jbosstools/updates/stable/kepler/" selected="true" name=""/>
-   <site url="http://download.jboss.org/jbosstools/updates/kepler/" selected="true" name=""/>
-   <site url="http://download.jboss.org/jbosstools/updates/kepler/extras/" selected="true" name=""/>
+   <site url="http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/" selected="true" name=""/>
+   <site url="http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/kepler/" selected="true" name=""/>
 
    <!--<site url="http://download.jboss.org/jbosstools/updates/development/kepler/soa-tooling/" selected="true" name=""/>
    <site url="http://download.jboss.org/jbosstools/updates/kepler/soa-tooling/" selected="true" name=""/> -->

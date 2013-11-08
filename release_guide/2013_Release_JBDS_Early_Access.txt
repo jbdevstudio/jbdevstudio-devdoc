@@ -96,6 +96,7 @@
   topic="release-${version}";branch=master; gw1
 
   # check in / sync changes
+  # TODO be sure to not overwrite integration-stack deltas (staging and development may not be the same)!
   scpr ~/truu/devstudio.jboss.com/updates/${SRC_SITE}/* ~/truu/devstudio.jboss.com/updates/${DESTSITE}/
 
   cd ~/truu/devstudio.jboss.com/updates/${DESTSITE}/discovery/
@@ -157,7 +158,7 @@
   git clone https://github.com/jbdevstudio/jbdevstudio-devdoc
 
   # now tag multiple projects in a single step, replacing existing tags if already exist
-  jbt_branch=jbosstools-4.1.1.Alpha2x
+  jbt_branch=jbosstools-4.1.1.Beta1x
   version=7.1.0.Beta1
   for d in product ci website artwork devdoc; do
     echo "====================================================================="
@@ -281,7 +282,7 @@ Content is here:
 
 http://www.qa.jboss.com/binaries/RHDS/builds/development/${version2}.installer/
 
-When pushed, please reply to this thread so that QE can review it for push to production.
+When pushed, please reply so that QE can review it for push to production.
 
 Thanks in advance,
 

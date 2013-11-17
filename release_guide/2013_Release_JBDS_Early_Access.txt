@@ -7,8 +7,8 @@
 
   screen
 
-  version=7.1.0.Beta1
-  version2=7.1.0.Beta1; # a, b, c, ...
+  version=7.1.0.CR1
+  version2=7.1.0.CR1; # a, b, c, ...
   dev=10.16.88.146; # dev01.mw.lab.eng.bos.redhat.com
   cd /mnt/devstudio/earlyaccess/builds/development/
   mkdir -p /mnt/devstudio/earlyaccess/builds/development/${version}
@@ -19,8 +19,8 @@
   # cp /mnt/devstudio/earlyaccess/builds/development/7.0.*-eap/.htaccess /mnt/devstudio/earlyaccess/builds/development/${version2}-eap/
 
   # clean out old installers & update sites from previous milestones; rename update sites from "a,b,c" to ""
-  version=7.1.0.Beta1
-  version2=7.1.0.Beta1; # a, b, c, ...
+  version=7.1.0.CR1
+  version2=7.1.0.CR1; # a, b, c, ...
   cd /mnt/devstudio/updates/7.0.0/
   if [[ ${version} != ${version2} ]]; then 
     mv ${version}.core ${version}.core.DELETEME
@@ -48,8 +48,8 @@
   # "stat" is short for "git status"; "gd" is short for "git diff"; "ga" is short for "git add"
 
   cd ~/truu/devstudio.jboss.com/updates/7.0-staging
-  version=7.1.0.Beta1
-  version2=7.0.0.Beta1; # a, b, c, ...
+  version=7.1.0.CR1
+  version2=7.0.0.CR1; # a, b, c, ...
   now=`date +%s000`
   for d in composite*.xml index.html central/core/index.html ; do
     sed -i -e "s#${version2}#${version}#g" $d
@@ -69,8 +69,8 @@
   alias   scpr='rsync -aPrz --rsh=ssh'
   alias   ci='git commit -m'
   
-  version=7.1.0.Beta1
-  version2=7.1.0.Beta1; # a, b, ...
+  version=7.1.0.CR1
+  version2=7.1.0.CR1; # a, b, ...
   cd ~/truu/devstudio.jboss.com/earlyaccess
   wget http://www.qa.jboss.com/binaries/RHDS/builds/development/${version2}.installer/${version}.html
   echo "<html><head></head><body onload=\"document.location.href='../${version}.html'\"></body></html>" > 7.0/index.html
@@ -89,7 +89,7 @@
 #  7.0-development for /7.0-development/
 #  7.0-staging for /7.0-staging/
 
-  version=7.1.0.Beta1
+  version=7.1.0.CR1
   SRC_SITE=7.0-staging
   DESTSITE=7.0-development # or 7.0/ for a GA release
 
@@ -158,8 +158,8 @@
   git clone https://github.com/jbdevstudio/jbdevstudio-devdoc
 
   # now tag multiple projects in a single step, replacing existing tags if already exist
-  jbt_branch=jbosstools-4.1.1.Beta1x
-  version=7.1.0.Beta1
+  jbt_branch=jbosstools-4.1.1.CR1x
+  version=7.1.0.CR1
   for d in product ci website artwork devdoc; do
     echo "====================================================================="
     echo "Tagging jbdevstudio-${d} from branch ${jbt_branch} as tag ${version}..."
@@ -177,7 +177,7 @@
 
 8. Commit updates to release guide (including this document):
 
-  version=7.1.0.Beta1
+  version=7.1.0.CR1
   cd ~/truu/doc/release_guide
   topic="release-${version}";branch=master; gw1
   ci "update release guide for ${version}" *2013*JBDS*
@@ -188,8 +188,8 @@
   ssh to dev01.mw.lab.eng.bos.redhat.com, sudo to hudson user, then
 
   cd ~/RHDS/builds/development/
-  mv 7.1.0.Beta1x.installer OLD/
-  mv 7.1.0.Beta1x.installer 7.1.0.Beta1.installer
+  mv 7.1.0.CR1x.installer OLD/
+  mv 7.1.0.CR1x.installer 7.1.0.CR1.installer
   # repeat for updates/development and discovery/development
 
   #TODO: add note abouut also renaming/moving update and discovery sites
@@ -209,8 +209,8 @@ jbds-pm-list <jbds-pm-list@redhat.com>
 "external-exadel-list@redhat.com" <external-exadel-list@redhat.com>
 jboss-announce@redhat.com (optional for major milestones/releases)
 
-version=7.1.0.Beta1
-version2=7.1.0.Beta1 # a, b, c...
+version=7.1.0.CR1
+version2=7.1.0.CR1 # a, b, c...
 echo "
 Subject: 
 
@@ -260,8 +260,8 @@ https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.plugin.syst
 # Michelle Murray <mmurray@redhat.com>
 # Jiri Pallich <jpallich@redhat.com>
 
-version=7.1.0.Beta1
-version2=7.1.0.Beta1 # a, b, c...
+version=7.1.0.CR1
+version2=7.1.0.CR1 # a, b, c...
 echo "
 Subject: 
 

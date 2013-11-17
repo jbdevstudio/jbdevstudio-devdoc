@@ -218,7 +218,7 @@ JBoss Central (Public, Staging):
 To test this version of Central, add this to your ~/jbdevstudio/studio/jbdevstudio.ini file after the -vmargs line:
 
 -Djboss.discovery.directory.url=https://devstudio.jboss.com/updates/7.0-staging/devstudio-directory.xml
-     -Djboss.discovery.site.url=https://devstudio.jboss.com/updates/7.0-staging/
+     -Djboss.discovery.site.url=https://devstudio.jboss.com/updates/7.0-staging/central/core/
 
 --
 

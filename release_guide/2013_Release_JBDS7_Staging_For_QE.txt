@@ -62,7 +62,7 @@
   # TODO: verify correct URL and filename for the target zip
   version=7.1.0.CR1 # a, b, c...
   cd /mnt/devstudio/updates/7.0.0
-  TARGET_PLATFORM_VERSION_MAX=4.31.1.Alpha1
+  TARGET_PLATFORM_VERSION_MAX=4.31.1.CR1
   scpr nboldt@dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MAX}/jbdevstudiotarget-${TARGET_PLATFORM_VERSION_MAX}.zip . 
   unzip -d ${version}.target-platform jbdevstudiotarget-${TARGET_PLATFORM_VERSION_MAX}.zip
   chmod -R g+w /mnt/devstudio/updates/${version}.target-platform 2>/dev/null
@@ -168,9 +168,9 @@
 # To: jbds-pm-list <jbds-pm-list@redhat.com>, "external-exadel-list@redhat.com" <external-exadel-list@redhat.com>
 
 version=7.1.0.CR1 # a, b, c...
-respin="respin-b"
-TARGET_PLATFORM_VERSION_MIN=4.30.5.Final
-TARGET_PLATFORM_VERSION_MAX=4.31.1.Alpha1
+respin="respin-"
+TARGET_PLATFORM_VERSION_MIN=4.30.6.CR1
+TARGET_PLATFORM_VERSION_MAX=4.31.1.CR1
 version2=7.1.0.CR1 # no respin suffix here
 version3=4.1.1.Beta1 # no respin suffix here
 echo "

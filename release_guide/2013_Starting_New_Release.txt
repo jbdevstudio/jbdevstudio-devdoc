@@ -1,0 +1,35 @@
+Checklist for starting a new release cycle
+
+* establish milestone dates, notify jbosstools-dev
+  https://docs.google.com/a/rhcollab.com/spreadsheet/ccc?key=0AnDiGX2szg-VdEltRWtxczBZXzNUU0FCTWlkaHZ6VWc#gid=37
+
+* enter dates in JIRA
+  https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions
+  https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
+
+* create new 4.40.x target platform
+  http://lists.jboss.org/pipermail/jbosstools-dev/2013-November/008335.html
+
+* get everyone building locally on latest available milestone from Eclipse.org (eg., Luna M2, M3)
+  http://lists.jboss.org/pipermail/jbosstools-dev/2013-November/008333.html
+
+* if incompatibilities are found between Eclipse X (eg., Kepler) and Eclipse X+1 (eg., Luna) [AND THEY WILL BE] then ensure that:
+  * code in master is fixed to compile with and install to new baseline (Luna) :: https://issues.jboss.org/browse/JBIDE-15639
+  * code in maintenance branch (eg., 4.1.x) is fixed to:
+    a) SUPPORT changes in Luna and therefore work on both, or
+    b) PREVENT installation onto incompatible baseline (eg., Luna) by setting upper bound Bundle-Require in appropriate MANIFEST.MF file(s) :: https://issues.jboss.org/browse/JBIDE-16082
+  * the above issues should be linked together so devs know that for changes in master there is an equivalent supporting/preventing change needed in 4.1.x
+
+* set _master jobs to build against new 4.40 (Luna) target platform
+
+* create new _42 and _80 jobs as copies of _master (disabled, using forthcoming 4.2.0.Alpha1x branch) for:
+  buildflow
+  projects
+  composites
+  aggregators
+  tests
+  install-grinder
+  JBDS installer
+  ...
+
+* ...

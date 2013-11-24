@@ -13,7 +13,7 @@
 
 1. Move the latest JBT & Web Tools nightly builds (no symlinks to avoid accidental cleanup):
 
-	version=4.1.1.CR1 # a, b, c...
+	version=4.1.1.CR1a # a, b, c...
 	branch=core/4.1.kepler
 	buildID1=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/nightly/${branch} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); buildID1=${buildID1%%/*}
 	echo "Latest build: ${buildID1}"
@@ -40,7 +40,7 @@
 
 2. Move the latest JBT, Web Tools, and Discovery update sites (no symlinks to avoid accidental overwrites):
 
-	version=4.1.1.CR1 # a, b, c...
+	version=4.1.1.CR1a # a, b, c...
   branch=core/4.1.kepler;   echo "rename nightly/${branch} JBossTools-${version}.core" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates  
   echo " >> http://download.jboss.org/jbosstools/updates/JBossTools-${version}.core/" | egrep ">>|${version}"
 
@@ -64,28 +64,28 @@
 
   # can run these in parallel 
 
-  version=4.1.1.CR1 # a, b, c...
+  version=4.1.1.CR1a # a, b, c...
   branch=core/4.1.kepler
   scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/JBossTools-${version}.core/* /tmp/JBossTools-${version}.core/
   scpr /tmp/JBossTools-${version}.core/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
   rm -fr /tmp/JBossTools-${version}.core/
   echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
 
-  version=4.1.1.CR1 # a, b, c...
+  version=4.1.1.CR1a # a, b, c...
   branch=coretests/4.1.kepler
   scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/JBossTools-${version}.coretests/* /tmp/JBossTools-${version}.coretests/
   scpr /tmp/JBossTools-${version}.coretests/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
   rm -fr /tmp/JBossTools-${version}.coretests/
   echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
 
-  version=4.1.1.CR1 # a, b, c...
+  version=4.1.1.CR1a # a, b, c...
   branch=webtools/4.1.kepler
   scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/JBossTools-${version}.webtools/* /tmp/JBossTools-${version}.webtools/
   scpr /tmp/JBossTools-${version}.webtools/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
   rm -fr /tmp/JBossTools-${version}.webtools/
   echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
 
-  version=4.1.1.CR1 # a, b, c...
+  version=4.1.1.CR1a # a, b, c...
   branch=core/4.1.kepler
   scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery/development/${version}/* /tmp/JBossTools-${version}.discovery/
   scpr /tmp/JBossTools-${version}.discovery/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery/nightly/${branch}/ --delete
@@ -115,12 +115,13 @@ SEND 2 emails:
 # 1. To:   "jbosstools-dev@lists.jboss.org"
 # 2. To:  jbds-pm-list <jbds-pm-list@redhat.com>, "external-exadel-list@redhat.com" <external-exadel-list@redhat.com>
 
-version=4.1.1.CR1 # a, b, c...
-respin="respin-"
+version=4.1.1.CR1a # a, b, c...
+respin="respin-a"
 TARGET_PLATFORM_VERSION_MIN=4.30.6.CR1
 TARGET_PLATFORM_VERSION_MAX=4.31.1.CR1
-version2=7.1.0.Beta1 # no respin suffix here
-version3=4.1.1.Beta1 # no respin suffix here
+TARGET_PLATFORM_CENTRAL_MAX=4.31.0.CR1-SNAPSHOT
+version2=7.1.0.CR1 # no respin suffix here
+version3=4.1.1.CR1 # no respin suffix here
 echo "
 Subject: 
 
@@ -131,11 +132,10 @@ Body:
 As always, these are not FINAL bits, but preliminary results for QE testing. Not for redistribution to customers. 
 
 
-Target Platforms:
+JBoss Tools Target Platforms:
 
 http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/ (JBoss Tools - current release)
 http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MAX} (JBoss Tools - upcoming milestone)
-http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/kepler/ (JBoss Central - latest version)
 
 (This is loaded automatically into Eclipse when installing JBoss Tools. Provided here simply for reference.)
 
@@ -156,7 +156,10 @@ http://download.jboss.org/jbosstools/builds/development/${version}.webtools/${bu
 
 JBoss Central:
 
-To test this version of Central, add this to your eclipse.ini file after the -vmargs line:
+http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/kepler/ (JBoss Central - current release)
+http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/${TARGET_PLATFORM_CENTRAL_MAX}/ (JBoss Central - upcoming milestone)
+
+To test the upcoming version of Central, add this to your eclipse.ini file after the -vmargs line:
 
 -Djboss.discovery.directory.url=http://download.jboss.org/jbosstools/discovery/development/${version}/jbosstools-directory.xml
      -Djboss.discovery.site.url=http://download.jboss.org/jbosstools/discovery/development/${version}/
@@ -180,6 +183,9 @@ https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.plugin.syst
 "
 if [[ $respin != "respin-" ]]; then
 echo " 
+
+--
+
 Changes prompting this $respin are:
 "'
 https://issues.jboss.org/issues/?jql=labels%20in%20%28%22'${respin}'%22%29%20and%20%28%28project%20in%20%28%22JBDS%22%29%20and%20fixversion%20in%20%28%22'${version2}'%22%29%29%20or%20%28project%20in%20%28%22JBIDE%22%2C%22TOOLSDOC%22%29%20and%20fixversion%20in%20%28%22'${version3}'%22%29%29%29

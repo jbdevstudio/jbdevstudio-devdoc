@@ -8,7 +8,7 @@
   screen
 
   version=7.1.0.CR1
-  version2=7.1.0.CR1; # a, b, c, ...
+  version2=7.1.0.CR1a; # a, b, c, ...
   dev=10.16.88.146; # dev01.mw.lab.eng.bos.redhat.com
   cd /mnt/devstudio/earlyaccess/builds/development/
   mkdir -p /mnt/devstudio/earlyaccess/builds/development/${version}
@@ -20,7 +20,7 @@
 
   # clean out old installers & update sites from previous milestones; rename update sites from "a,b,c" to ""
   version=7.1.0.CR1
-  version2=7.1.0.CR1; # a, b, c, ...
+  version2=7.1.0.CR1a; # a, b, c, ...
   cd /mnt/devstudio/updates/7.0.0/
   if [[ ${version} != ${version2} ]]; then 
     mv ${version}.core ${version}.core.DELETEME
@@ -49,7 +49,7 @@
 
   cd ~/truu/devstudio.jboss.com/updates/7.0-staging
   version=7.1.0.CR1
-  version2=7.0.0.CR1; # a, b, c, ...
+  version2=7.0.0.CR1a; # a, b, c, ...
   now=`date +%s000`
   for d in composite*.xml index.html central/core/index.html ; do
     sed -i -e "s#${version2}#${version}#g" $d
@@ -70,7 +70,7 @@
   alias   ci='git commit -m'
   
   version=7.1.0.CR1
-  version2=7.1.0.CR1; # a, b, ...
+  version2=7.1.0.CR1a; # a, b, ...
   cd ~/truu/devstudio.jboss.com/earlyaccess
   wget http://www.qa.jboss.com/binaries/RHDS/builds/development/${version2}.installer/${version}.html
   echo "<html><head></head><body onload=\"document.location.href='../${version}.html'\"></body></html>" > 7.0/index.html

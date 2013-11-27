@@ -32,4 +32,15 @@ Checklist for starting a new release cycle
   JBDS installer
   ...
 
+* create new 8.0.luna views: 
+
+  https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_8.0.luna/ 
+  https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/JBossTools/view/JBossTools_4.2.luna/
+
+* update swimlanes, support matrix
+
+  http://download.jboss.org/jbosstools/builds/cascade/
+  http://download.jboss.org/jbosstools/builds/cascade/swimlanes.html
+  https://community.jboss.org/wiki/MatrixOfSupportedPlatformsRuntimesAndTechnologiesInJBossToolsJBDS
+
 * ...

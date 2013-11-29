@@ -177,28 +177,48 @@
 
   ** MAY NOT NEED TO DO THIS AGAIN UNTIL AFTER GA **
 
-  oldTargetPlatform=4.31.1.Alpha1
-  newTargetPlatform=4.31.1.CR1
+  version=4.1.1.CR1
+
+  OLD_JBT_JBDS_TP=4.31.1.Alpha1
+  NEW_JBT_JBDS_TP=4.31.1.CR1
+
+  OLD_CENTRAL_TP=4.31.0.Alpha1-SNAPSHOT
+  NEW_CENTRAL_TP=4.31.0.Final-SNAPSHOT
 
   pushd ~/tru/download.jboss.org/
-  topic="release-target-platform-${newTargetPlatform}"; branch=master; gw1
+  topic="release-target-platform-for-${version}"; branch=master; gw1
 
+  # JBT
   pushd ~/tru/download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/
   now=`date +%s000`
   for d in composite*.xml; do
-  sed -i -e "s#${oldTargetPlatform}#${newTargetPlatform}#g" $d
+  sed -i -e "s#${OLD_JBT_JBDS_TP}#${NEW_JBT_JBDS_TP}#g" $d
   sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
   done
-  ci "release ${newTargetPlatform} to http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/" .
+  ci "release ${NEW_JBT_JBDS_TP} to http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/" .
   popd >/dev/null
 
+  # JBDS
   pushd ~/tru/download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/kepler/
   now=`date +%s000`
   for d in composite*.xml; do
-  sed -i -e "s#${oldTargetPlatform}#${newTargetPlatform}#g" $d
+  sed -i -e "s#${OLD_JBT_JBDS_TP}#${NEW_JBT_JBDS_TP}#g" $d
   sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
   done
-  ci "release ${newTargetPlatform} to http://download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/kepler/" .
+  ci "release ${NEW_JBT_JBDS_TP} to http://download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/kepler/" .
+  popd >/dev/null
+
+  # JBoss Central
+  # CAUTION! DO THIS ONLY IF COMPATIBLE w/ previous .Final release (or last milestone if no Final yet)! 
+  # This will make the latest Central site live and could cause update problems if there are incompatibilities (eg., gwt e42 -> gwt e43).
+  # you might want to instead update updates/development/kepler/central/core/compositeContent.xml to point at a specific TP version
+  pushd ~/tru/download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/kepler/
+  now=`date +%s000`
+  for d in composite*.xml; do
+  sed -i -e "s#${OLD_CENTRAL_TP}#${NEW_CENTRAL_TP}#g" $d
+  sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
+  done
+  ci "release ${NEW_CENTRAL_TP} to http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/" .
   popd >/dev/null
 
   gw2;gw3;gw4
@@ -207,12 +227,13 @@
   # push updated target platforms to production
   scpr ~/tru/download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/composite*.xml $TOOLS/targetplatforms/jbosstoolstarget/kepler/
   scpr ~/tru/download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/kepler/composite*.xml $TOOLS/targetplatforms/jbdevstudiotarget/kepler/
-  # Ensure that the following files exist:
-  # http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/
-  # http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/compositeArtifacts.xml & compositeContent.xml
-  # http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/kepler/compositeArtifacts.xml & compositeContent.xml
+  scpr ~/tru/download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/kepler/composite*.xml $TOOLS/targetplatforms/jbtcentraltarget/kepler/
+  # Ensure that the following files exist and are correct
   echo " >> http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/compositeArtifacts.xml"
   echo " >> http://download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/kepler/compositeArtifacts.xml"
+  echo " >> http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/kepler/compositeArtifacts.xml"
+  echo " >> http://download.jboss.org/jbosstools/updates/development/kepler/central/core/compositeArtifacts.xml"
+
 
 9. Update composite site metadata (absolute path), Central directory file (absolute path, from http://download.jboss.org/jbosstools/discovery/development/${version}/), and 
              index.html files (absolute paths). Also pull a copy of the updated discovery jar (from http://download.jboss.org/jbosstools/discovery/development/${version}/plugins/).
@@ -449,19 +470,12 @@ http://www.jboss.org/tools/download
 http://www.jboss.org/tools/download/dev/4_1_x
 http://www.jboss.org/tools/download/installation/update_4_1
 
-Requirement Site / Target Platform:
 
-(This is loaded automatically into Eclipse when installing JBoss Tools from the URLs above. Provided here simply for reference.)
+JBoss Central:
 
-http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/
-http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/kepler/ << TODO: JBDS-2623
-
-Central:
-
-This release includes changes to JBoss Central. If you would like to see these updates, launch Eclipse with these commandline -vmargs (or add them to eclipse.ini):
+This release includes changes to JBoss Central. To see these updates, launch Eclipse with this extra -vmarg in your eclipse.ini:
 
   -Djboss.discovery.directory.url=http://download.jboss.org/jbosstools/updates/development/kepler/jbosstools-directory.xml
-  -Djboss.discovery.site.url=http://download.jboss.org/jbosstools/updates/development/kepler/ 
 
 --
 
@@ -478,13 +492,27 @@ http://docs.jboss.org/tools/whatsnew/
 Schedule / Upcoming Releases:
 
 https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.plugin.system.project%3Aversions-panel
+"
 
----------
+== EMAIL TEMPLATE -- send one email ==
+
+1. To:
+"jbosstools-dev@lists.jboss.org" <jbosstools-dev@lists.jboss.org>
+
+version1=jbosstools-4.1.1.x
+version2=jbosstools-4.1.1.CR1
+
+echo "
+Subject:
+
+ACTION REQUIRED: Project leads, please tag your projects [ branch ${version1} -> tag ${version2} ] 
+
+Body:
 
 Project leads, please tag your projects!
 
-  co jbosstools-${version}x
-  git tag jbosstools-${version}
-  git push origin jbosstools-${version}
+  co ${version1}
+  git tag ${version2}
+  git push origin ${version2}
 
 "

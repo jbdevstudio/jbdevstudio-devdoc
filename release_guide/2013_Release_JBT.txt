@@ -115,12 +115,20 @@
   echo "rename development/${version2}.core development/${version}.core" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
 
   # make sure this exists - might be only "a" while core is on "c"
+  echo "rename development/${version}.coretests  development/${version}.coretests.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+  echo "rename development/${version2}.coretests development/${version}.coretests" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+
+  # make sure this exists - might be only "a" while core is on "c"
   echo "rename development/${version}.webtools  development/${version}.webtools.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
   echo "rename development/${version2}.webtools development/${version}.webtools" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
 
   # rename the update site
   echo "rename JBossTools-${version}.core  JBossTools-${version}.core.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
   echo "rename JBossTools-${version2}.core JBossTools-${version}.core" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
+
+  # make sure this exists - might be only "a" while core is on "c"
+  echo "rename JBossTools-${version}.coretests  JBossTools-${version}.coretests.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
+  echo "rename JBossTools-${version2}.coretests JBossTools-${version}.coretests" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
 
   # make sure this exists - might be only "a" while core is on "c"
   echo "rename JBossTools-${version}.webtools  JBossTools-${version}.webtools.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
@@ -172,6 +180,7 @@
   oldTargetPlatform=4.31.1.Alpha1
   newTargetPlatform=4.31.1.CR1
 
+  pushd ~/tru/download.jboss.org/
   topic="release-target-platform-${newTargetPlatform}"; branch=master; gw1
 
   pushd ~/tru/download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/
@@ -193,16 +202,17 @@
   popd >/dev/null
 
   gw2;gw3;gw4
+  popd >/dev/null
 
   # push updated target platforms to production
   scpr ~/tru/download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/composite*.xml $TOOLS/targetplatforms/jbosstoolstarget/kepler/
   scpr ~/tru/download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/kepler/composite*.xml $TOOLS/targetplatforms/jbdevstudiotarget/kepler/
-
-  Ensure that the following files exist:
-
-  http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/
-  http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/compositeArtifacts.xml & compositeContent.xml
-  http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/kepler/compositeArtifacts.xml & compositeContent.xml
+  # Ensure that the following files exist:
+  # http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/
+  # http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/compositeArtifacts.xml & compositeContent.xml
+  # http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/kepler/compositeArtifacts.xml & compositeContent.xml
+  echo " >> http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/compositeArtifacts.xml"
+  echo " >> http://download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/kepler/compositeArtifacts.xml"
 
 9. Update composite site metadata (absolute path), Central directory file (absolute path, from http://download.jboss.org/jbosstools/discovery/development/${version}/), and 
              index.html files (absolute paths). Also pull a copy of the updated discovery jar (from http://download.jboss.org/jbosstools/discovery/development/${version}/plugins/).
@@ -253,25 +263,31 @@
 
   # check in / sync changes - 4 updated files, 1 new jar, 1 deleted jar
   stat .; gd .
-  scpr ~/tru/download.jboss.org/jbosstools/updates/development/kepler/* $TOOLS/updates/development/kepler/
   # TODO: only add the new jar + updated directory.xml if this is Alpha/Beta/CR toward a .0.Final, or Beta/CR toward a .x.Final (skip Alphas toward .x.Final)
   git add ${newJar}
   ci "release ${version2} to http://download.jboss.org/jbosstools/updates/development/kepler/; add new discovery plugin ${newJar} + update jbosstools-directory.xml" .
   gw2;gw3;gw4
+  scpr ~/tru/download.jboss.org/jbosstools/updates/development/kepler/* $TOOLS/updates/development/kepler/
 
-  Make sure directory.xml points at a real jar:
-    http://download.jboss.org/jbosstools/updates/development/kepler/jbosstools-directory.xml 
-    -> http://download.jboss.org/jbosstools/updates/development/kepler/plugins/org.jboss.tools.central.discovery_1.2.0.Final-v20130626-1621-B250.jar
-    --> to http://download.jboss.org/jbosstools/updates/development/kepler/central/core/
-  http://download.jboss.org/jbosstools/updates/development/kepler/compositeArtifacts.xml & compositeContent.xml
-  http://download.jboss.org/jbosstools/updates/development/kepler/central/core/compositeArtifacts.xml & compositeContent.xml
+  # Make sure directory.xml points at a real jar:
+  #   http://download.jboss.org/jbosstools/updates/development/kepler/jbosstools-directory.xml 
+  #   -> http://download.jboss.org/jbosstools/updates/development/kepler/plugins/org.jboss.tools.central.discovery_1.2.0.Final-v20130626-1621-B250.jar
+  firefox \
+    http://download.jboss.org/jbosstools/updates/development/kepler/ \
+    http://download.jboss.org/jbosstools/updates/development/kepler/compositeArtifacts.xml \
+    http://download.jboss.org/jbosstools/updates/development/kepler/central/core/compositeArtifacts.xml \
+    http://download.jboss.org/jbosstools/updates/development/kepler/jbosstools-directory.xml \
+    http://download.jboss.org/jbosstools/updates/development/kepler/${newJar}
+  # ensure jar's plugin.xml points at to http://download.jboss.org/jbosstools/updates/development/kepler/central/core/
+  bc ~/tmp/${newJar/plugins\//} ~/tmp
 
-If this is the Final build, ensure that the following files exist (copy content from /development/kepler/ so that both the milestone and the release have nearly the same content):
-
-  http://download.jboss.org/jbosstools/updates/stable/kepler/jbosstools-directory.xml
-    -> must point at a real plugin, eg., to http://download.jboss.org/jbosstools/discovery/stable/4.1.1.CR1/plugins/org.jboss.tools.central.discovery_1.2.0.Final-v20130.....jar
-  http://download.jboss.org/jbosstools/updates/stable/kepler/composite*.xml
-  http://download.jboss.org/jbosstools/updates/stable/kepler/central/core/composite*.xml
+# If this is the Final build, ensure that the following files exist (copy content from /development/kepler/ so that both the milestone and the release have nearly the same content):
+  firefox \
+    http://download.jboss.org/jbosstools/updates/stable/kepler/ \
+    http://download.jboss.org/jbosstools/updates/stable/kepler/compositeArtifacts.xml \
+    http://download.jboss.org/jbosstools/updates/stable/kepler/central/core/compositeArtifacts.xml \
+    http://download.jboss.org/jbosstools/updates/stable/kepler/jbosstools-directory.xml \
+    http://download.jboss.org/jbosstools/updates/stable/kepler/${newJar}
 
   # and push new/updated files to server too
   scpr ~/tru/download.jboss.org/jbosstools/updates/stable/* $TOOLS/updates/stable/
@@ -284,15 +300,7 @@ If this is the Final build, ensure that the following files exist (copy content 
 
 9. Review changes:
 
-a. composite sites and Central directory file
-
-  http://download.jboss.org/jbosstools/updates/development/kepler/
-  http://download.jboss.org/jbosstools/updates/development/kepler/jbosstools-directory.xml
-
-  http://download.jboss.org/jbosstools/updates/stable/kepler/
-  http://download.jboss.org/jbosstools/updates/stable/kepler/jbosstools-directory.xml
-
-b. files on SF
+a. files on SF
 
   https://sourceforge.net/projects/jboss/files/JBossTools/JBossTools4.1.1.x/
 
@@ -300,7 +308,7 @@ c. magnolia pages
 
   https://www.jboss.org/author/tools/download
   https://www.jboss.org/author/tools/download/dev
-  https://www.jboss.org/author/tools/download/stable/4_1
+  https://www.jboss.org/author/tools/download/stable
   https://www.jboss.org/author/tools/download/installation/update_4_1
 
 ----

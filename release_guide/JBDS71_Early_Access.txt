@@ -180,7 +180,7 @@
   version=7.1.0.CR1
   cd ~/truu/doc/release_guide
   topic="release-${version}";branch=master; gw1
-  ci "update release guide for ${version}" *2013*JBDS*
+  ci "update release guide for ${version}" JBDS71*
   g2;gw3;gw4
 
 9. Move installers from "a" or "b" folder to base folder; purge old stuff from OLD/ folder\

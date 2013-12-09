@@ -400,7 +400,7 @@ Be sure to also update the listing to the latest release version (eg., CR1 -> Fi
   version=4.1.1.CR1
   cd ~/truu/doc/release_guide
   topic="release-${version}";branch=master; gw1
-  ci "update release guide for ${version}" *2013*JBT*
+  ci "update release guide for ${version}" JBT41*
   gw2;gw3;gw4
 
 13. tag git

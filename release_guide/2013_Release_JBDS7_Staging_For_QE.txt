@@ -168,7 +168,7 @@
 # To: jbds-pm-list <jbds-pm-list@redhat.com>, "external-exadel-list@redhat.com" <external-exadel-list@redhat.com>
 
 version=7.1.0.CR2 # a, b, c...
-respin="respin-a"
+respin="respin-"
 TARGET_PLATFORM_VERSION_MIN=4.30.6.Final
 TARGET_PLATFORM_VERSION_MAX=4.31.1.Final
 version2=7.1.0.CR2 # no respin suffix here

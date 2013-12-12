@@ -188,8 +188,8 @@
   ssh to dev01.mw.lab.eng.bos.redhat.com, sudo to hudson user, then
 
   cd ~/RHDS/builds/development/
-  mv 7.1.0.GAx.installer OLD/
-  mv 7.1.0.GAx.installer 7.1.0.GA.installer
+  mv 7.1.0.CR7x.installer OLD/
+  mv 7.1.0.CR7x.installer 7.1.0.GA.installer
   # repeat for updates/development and discovery/development
 
   #TODO: add note abouut also renaming/moving update and discovery sites

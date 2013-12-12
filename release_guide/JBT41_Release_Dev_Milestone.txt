@@ -10,8 +10,8 @@
 1. Move/rename 6 files (3 zips, 3 md5sums) [JBT 3.2.x was 3 zips, 3 md5sums = 6 files] (no longer includes SOA Tooling zip/md5 file) into http://download.jboss.org/jbosstools/builds/development/sf.net/
 
   stream=41
-  version=4.1.1.CR1
-  version2=4.1.1.CR1a; # a, b...
+  version=4.1.1.Final # name to use in filenames
+  version2=4.1.1.CR2; # a, b... (name to change)
   buildID1=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/development/${version2}.core/ 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); buildID1=${buildID1%%/*}
   echo "Latest build: ${buildID1}"
 
@@ -37,20 +37,20 @@
   rm -f /tmp/index.html
 
   # end up with somtehing like this:
-  hibernatetools-Update-4.1.1.CR1_2013-11-24_01-06-56-B575.zip :: 78M
-  hibernatetools-Update-4.1.1.CR1_2013-11-24_01-06-56-B575.zip.MD5
+  hibernatetools-Update-4.1.1.Final_2013-12-08_01-06-33-B605.zip :: 78M
+  hibernatetools-Update-4.1.1.Final_2013-12-08_01-06-33-B605.zip.MD5
 
-  jbosstools-Sources-4.1.1.CR1_2013-11-24_01-06-56-B575.zip :: 93M
-  jbosstools-Sources-4.1.1.CR1_2013-11-24_01-06-56-B575.zip.MD5
+  jbosstools-Sources-4.1.1.Final_2013-12-08_01-06-33-B605.zip :: 93M
+  jbosstools-Sources-4.1.1.Final_2013-12-08_01-06-33-B605.zip.MD5
 
-  jbosstools-Update-4.1.1.CR1_2013-11-24_01-06-56-B575.zip :: 418M
-  jbosstools-Update-4.1.1.CR1_2013-11-24_01-06-56-B575.zip.MD5
+  jbosstools-Update-4.1.1.Final_2013-12-08_01-06-33-B605.zip :: 418M
+  jbosstools-Update-4.1.1.Final_2013-12-08_01-06-33-B605.zip.MD5
 
 2. Pull files to SF after logging in via SSH (Downloaded: 8 files, 353M in 4m 22s (1.35 MB/s)):
 
   #ssh -t nickboldt,jboss@shell.sourceforge.net create # if not done above already!
-  version=4.1.1.x # if this is a Final or build, use 4.1.x instead of 4.1.1.x
-  version2=4.1.1.CR1
+  version=4.1.x # if this is a Final or build, use 4.1.x instead of 4.1.1.x
+  version2=4.1.1.Final
   mkdir -p /home/users/n/ni/nickboldt/jboss/JBossTools/JBossTools${version}
   cd /home/users/n/ni/nickboldt/jboss/JBossTools/JBossTools${version}
   wget http://download.jboss.org/jbosstools/builds/development/sf.net/${version2} -k -O /tmp/index.html
@@ -62,11 +62,11 @@
   
 3. Create release notes file & rename, then upload to sf.net:
     https://issues.jboss.org/secure/ConfigureReport!default.jspa?selectedProjectId=10020&projectOrFilterId=project-10020&projectOrFilterName=Tools%20%28JBoss%20Tools%29&reportKey=org.jboss.labs.jira.plugin.release-notes-report-plugin:releasenotes
-  --> select release ("4.1.1.CR1"), type of issues ("All"), and style ("HTML").
+  --> select release ("4.1.1.Final"), type of issues ("All"), and style ("HTML").
   --> select text and paste into file.
 
-  version=4.1.1.x # if this is a Final build, use 4.1.x instead of 4.1.1.x
-  version2=4.1.1.CR1
+  version=4.1.x # if this is a Final build, use 4.1.x instead of 4.1.1.x
+  version2=4.1.1.Final
   cd /home/nboldt/truu/doc/release_guide/ # in devstudio SVN
   prev=$(find . -name "zz_Release_Notes_4.1*"); prev=${prev:2}; echo $prev
   sublime zz_Release_Notes_4.1.1*.html # or use gedit, vim, etc.
@@ -103,8 +103,8 @@
 
 6. (ONLY if necessary) Move Milestonex to Milestone
 
-  version=4.1.1.CR1
-  version2=4.1.1.CR1a # a, b, c, d...
+  version=4.1.1.Final
+  version2=4.1.1.CR2 # a, b, c, d...
 
   # rename discovery site, http://download.jboss.org/jbosstools/discovery/development/${version2}/
   echo "rename development/${version}  development/${version}.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery
@@ -152,6 +152,7 @@
 
   previous=4.1.0.Final
   version=4.1.1.Final # only use a, b suffix if did not perform rename in step 6 above
+  version2=4.1.1.Final # a, b, c, d...
   #echo "rename webtools/kepler webtools/kepler.`date +%Y%m%d-%H%M`" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/
   echo "rename webtools/kepler webtools/kepler_${previous}"         | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/
   echo "rename JBossTools-${version}.webtools webtools/kepler"      | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/
@@ -166,7 +167,7 @@
   stat .; gd .
   topic="release-${version2}"; branch=master; gw1
   ci "release ${version} (${version2}) to http://download.jboss.org/jbosstools/updates/webtools/kepler/" index.html site.xml
-  gw2;gw3;gw4
+  gw3;gw4
 
   Also, over sftp, delete any old iterations or respins that are no longer needed.
 
@@ -177,13 +178,13 @@
 
   ** MAY NOT NEED TO DO THIS AGAIN UNTIL AFTER GA **
 
-  version=4.1.1.CR1
+  version=4.1.1.Final
 
-  OLD_JBT_JBDS_TP=4.31.1.Alpha1
-  NEW_JBT_JBDS_TP=4.31.1.CR1
+  OLD_JBT_JBDS_TP=4.31.1.CR1
+  NEW_JBT_JBDS_TP=4.31.1.Final
 
-  OLD_CENTRAL_TP=4.31.0.Alpha1-SNAPSHOT
-  NEW_CENTRAL_TP=4.31.0.Final-SNAPSHOT
+  OLD_CENTRAL_TP=4.31.0.Final-SNAPSHOT
+  NEW_CENTRAL_TP=4.31.0.Final
 
   pushd ~/tru/download.jboss.org/
   topic="release-target-platform-for-${version}"; branch=master; gw1
@@ -221,7 +222,7 @@
   ci "release ${NEW_CENTRAL_TP} to http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/" .
   popd >/dev/null
 
-  gw2;gw3;gw4
+  gw3;gw4
   popd >/dev/null
 
   # push updated target platforms to production
@@ -238,9 +239,9 @@
 9. Update composite site metadata (absolute path), Central directory file (absolute path, from http://download.jboss.org/jbosstools/discovery/development/${version}/), and 
              index.html files (absolute paths). Also pull a copy of the updated discovery jar (from http://download.jboss.org/jbosstools/discovery/development/${version}/plugins/).
 
-  previous=4.1.1.Beta1
-  version=4.1.1.CR1
-  version2=4.1.1.CR1 # no a, b, c if renamed above 
+  previous=4.1.1.CR1
+  version=4.1.1.Final
+  version2=4.1.1.Final # no a, b, c if renamed above 
 
   branch=master; topic="release-development-${version2}"; gw1
   cd ~/tru/download.jboss.org/jbosstools/updates/development/kepler/
@@ -255,7 +256,7 @@
   sed -i -e "s#href=\"#href=\"http://download.jboss.org/jbosstools/updates/JBossTools-${version2}.core/#g" -e "s#href=\"http://download.jboss.org/jbosstools/updates/JBossTools-${version2}.core/http#href=\"http#g" index.html
   
   # update XML
-  version=4.1.1.CR1
+  version=4.1.1.Final
   cd ~/tru/download.jboss.org/jbosstools/updates/development/kepler/
   rm -f jbosstools-directory.xml; wget -nc http://download.jboss.org/jbosstools/discovery/development/${version}/jbosstools-directory.xml
   #newJar=plugins/org.jboss.tools.central.discovery_1.0.0.v20120612-0053-H99-Final.jar
@@ -266,21 +267,21 @@
   popd >/dev/null
   
   # IF THIS IS pre-Final, ensure that your plugin points to the STAGING URL, not the RELEASE one:
-  unzip -q -d ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}{_,}
-  pushd ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}_ >/dev/null 
-  sed -i "s#http://download.jboss.org/jbosstools/updates/stable/kepler/central/core/#http://download.jboss.org/jbosstools/updates/development/kepler/central/core/#g" plugin.xml
-  zip -u ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar} plugin.xml
-  popd >/dev/null
-  rm -fr ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}_
-
-  # IF THIS IS Final, ensure that your plugin points to the RELEASE URL, not the STAGING one:
   #unzip -q -d ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}{_,}
   #pushd ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}_ >/dev/null 
-  #sed -i "s#http://download.jboss.org/jbosstools/updates/development/kepler/central/core/#http://download.jboss.org/jbosstools/updates/stable/kepler/central/core/#g" plugin.xml
-  ## *** make sure we do not point at http://download.jboss.org/jbosstools/discovery/development/${version} instead
+  #sed -i "s#http://download.jboss.org/jbosstools/updates/stable/kepler/central/core/#http://download.jboss.org/jbosstools/updates/development/kepler/central/core/#g" plugin.xml
   #zip -u ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar} plugin.xml
   #popd >/dev/null
   #rm -fr ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}_
+
+  # IF THIS IS Final, ensure that your plugin points to the RELEASE URL, not the STAGING one:
+  unzip -q -d ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}{_,}
+  pushd ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}_ >/dev/null 
+  sed -i "s#http://download.jboss.org/jbosstools/updates/development/kepler/central/core/#http://download.jboss.org/jbosstools/updates/stable/kepler/central/core/#g" plugin.xml
+  ## *** make sure we do not point at http://download.jboss.org/jbosstools/discovery/development/${version} instead
+  zip -u ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar} plugin.xml
+  popd >/dev/null
+  rm -fr ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}_
 
   # check in / sync changes - 4 updated files, 1 new jar, 1 deleted jar
   stat .; gd .
@@ -295,9 +296,9 @@
   #   -> http://download.jboss.org/jbosstools/updates/development/kepler/plugins/org.jboss.tools.central.discovery_1.2.0.Final-v20130626-1621-B250.jar
   firefox \
     http://download.jboss.org/jbosstools/updates/development/kepler/ \
-    http://download.jboss.org/jbosstools/updates/development/kepler/compositeArtifacts.xml \
-    http://download.jboss.org/jbosstools/updates/development/kepler/central/core/compositeArtifacts.xml \
-    http://download.jboss.org/jbosstools/updates/development/kepler/jbosstools-directory.xml \
+    view-source:http://download.jboss.org/jbosstools/updates/development/kepler/compositeArtifacts.xml \
+    view-source:http://download.jboss.org/jbosstools/updates/development/kepler/central/core/compositeArtifacts.xml \
+    view-source:http://download.jboss.org/jbosstools/updates/development/kepler/jbosstools-directory.xml \
     http://download.jboss.org/jbosstools/updates/development/kepler/${newJar}
   # ensure jar's plugin.xml points at to http://download.jboss.org/jbosstools/updates/development/kepler/central/core/
   bc ~/tmp/${newJar/plugins\//} ~/tmp
@@ -305,9 +306,9 @@
 # If this is the Final build, ensure that the following files exist (copy content from /development/kepler/ so that both the milestone and the release have nearly the same content):
   firefox \
     http://download.jboss.org/jbosstools/updates/stable/kepler/ \
-    http://download.jboss.org/jbosstools/updates/stable/kepler/compositeArtifacts.xml \
-    http://download.jboss.org/jbosstools/updates/stable/kepler/central/core/compositeArtifacts.xml \
-    http://download.jboss.org/jbosstools/updates/stable/kepler/jbosstools-directory.xml \
+    view-source:http://download.jboss.org/jbosstools/updates/stable/kepler/compositeArtifacts.xml \
+    view-source:http://download.jboss.org/jbosstools/updates/stable/kepler/central/core/compositeArtifacts.xml \
+    view-source:http://download.jboss.org/jbosstools/updates/stable/kepler/jbosstools-directory.xml \
     http://download.jboss.org/jbosstools/updates/stable/kepler/${newJar}
 
   # and push new/updated files to server too
@@ -323,7 +324,7 @@
 
 a. files on SF
 
-  https://sourceforge.net/projects/jboss/files/JBossTools/JBossTools4.1.1.x/
+  https://sourceforge.net/projects/jboss/files/JBossTools/JBossTools4.1.x/
 
 c. magnolia pages
 
@@ -344,7 +345,7 @@ c. magnolia pages
 
 ** SKIP FOR 4.1.1.x UNTIL GA **
 
-  Compare list of features here:  http://download.jboss.org/jbosstools/updates/JBossTools-4.1.1.CR1.core/site.properties (see CoreTools.category.features)
+  Compare list of features here:  http://download.jboss.org/jbosstools/updates/JBossTools-4.1.1.Final.core/site.properties (see CoreTools.category.features)
   with features here:       https://marketplace.eclipse.org/node/xxxxxx/edit
 
   Currently, there are 43 features:
@@ -397,7 +398,7 @@ Be sure to also update the listing to the latest release version (eg., CR1 -> Fi
 
 12. Commit updates to release guide (including this document):
 
-  version=4.1.1.CR1
+  version=4.1.1.Final
   cd ~/truu/doc/release_guide
   topic="release-${version}";branch=master; gw1
   ci "update release guide for ${version}" JBT41*
@@ -416,7 +417,7 @@ Be sure to also update the listing to the latest release version (eg., CR1 -> Fi
 
   # now tag multiple projects in a single step, replacing existing tags if already exist
   jbt_branch=jbosstools-4.1.1.x
-  version=4.1.1.CR1
+  version=4.1.1.Final
   for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins; do
     echo "====================================================================="
     echo "Tagging jbosstools-${d} from branch ${jbt_branch} as tag ${version}..."
@@ -444,7 +445,7 @@ jbds-pm-list <jbds-pm-list@redhat.com>
 "external-exadel-list@redhat.com" <external-exadel-list@redhat.com>
 jboss-announce@redhat.com (optional for major milestones/releases)
 
-version=4.1.1.CR1
+version=4.1.1.Final
 echo "
 Subject:
 
@@ -500,7 +501,7 @@ https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.plugin.syst
 "jbosstools-dev@lists.jboss.org" <jbosstools-dev@lists.jboss.org>
 
 version1=jbosstools-4.1.1.x
-version2=jbosstools-4.1.1.CR1
+version2=jbosstools-4.1.1.Final
 
 echo "
 Subject:

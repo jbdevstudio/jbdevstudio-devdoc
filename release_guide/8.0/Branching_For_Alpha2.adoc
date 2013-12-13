@@ -7,13 +7,17 @@ WARNING: Branching JBT and JBDS is a long process that requires several steps, w
 
 TIP: when we mention branch, we assume it has a name like +jbosstools-4.2.0.Alpha2x+. First 3 digits are the targeted version of JBoss Tools, then the build alias (+Alpha2+) is the name of upcoming milestone, and then we append a +x+ to anticipate respins on this branch.
 
-Release target platform
------------------------
+Release and use "Core" target-platform
+--------------------------------------
 
 Make sure that the target-platforms in parent pom are released (not SNAPSHOTs). In order to release target-platforms, please read https://github.com/jbosstools/jbosstools-devdoc/blob/master/building/target_platforms/target_platforms_releases.md
 
 WARNING: this step requires about 2 days (require feedback, long builds).
 
+Release Discovery target-platform
+---------------------------------
+
+The discovery site points to the site created by the build of jbtcentral target-platform, which is part of the +jbosstools-discovery+ repository. Similarly to Core target-platforms, make sure this one gets released and that the discovery site consumes it.
 
 Update parent pom
 -----------------

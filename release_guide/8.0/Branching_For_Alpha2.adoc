@@ -1,0 +1,243 @@
+HOWTO branch JBT/JBDS for 8.0.0.Alpha2
+======================================
+
+WARNING: Some conventions have been updated since Alpha1, see https://issues.jboss.org/browse/JBIDE-16302
+
+WARNING: Branching JBT and JBDS is a long process that requires several steps, which can be long (several days). So make sure you start the process early enough according the the expected delivery date. One week seems to be good.
+
+TIP: when we mention branch, we assume it has a name like +jbosstools-4.2.0.Alpha2x+. First 3 digits are the targeted version of JBoss Tools, then the build alias (+Alpha2+) is the name of upcoming milestone, and then we append a +x+ to anticipate respins on this branch.
+
+Release and use "Core" target-platform
+--------------------------------------
+
+Make sure that the target-platforms in parent pom are released (not SNAPSHOTs). In order to release target-platforms, please read https://github.com/jbosstools/jbosstools-devdoc/blob/master/building/target_platforms/target_platforms_releases.md
+
+WARNING: this step requires about 2 days (require feedback, long builds).
+
+Release Discovery target-platform
+---------------------------------
+
+The discovery site points to the site created by the build of jbtcentral target-platform, which is part of the +jbosstools-discovery+ repository. Similarly to Core target-platforms, make sure this one gets released and that the discovery site consumes it.
+
+Update parent pom
+-----------------
+
+Create a new branch of +jbosstools-build+ repostiory (for example +jbosstools-4.2.0.Alpha2x+)
+
+On *master*, set +<version>+ and +BUILD_ALIAS+ to new milestone (eg Beta2 -> CR1)::
+* https://github.com/jbosstools/jbosstools-build/commit/3b579c2357c14b2fa8ed35689c766ef65b912596 +
+Then respin::
+* https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-build.parent_master/ +
+
+On *branch*, set +<jbosstools-site-stream>+ to the right site stream (eg 'master' -> '4.2.luna')::
+* https://github.com/jbosstools/jbosstools-build/commit/f447b5c48c2cd1e1886999792bba6c28c5a4b7c8 +
+Then respin::
+* https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-build.parent_4.2.luna)
+
+
+Notice project leads and branch components
+------------------------------------------
+
+In order to make sure we branch stuff that works enough, it is necessary to have project leads performing the following changes::
+. fix root pom *on master* to point at latest parent pom:  Ensure project root poms point at the version of the parent pom to be used in the branch (eg., CR1), for example https://github.com/jbosstools/jbosstools-base/commit/5c54ae3cb24b7dba7e4d4137e479d21feabc9daf
+. build locally from *master* and verify correct version of target-platform is used when building. A failing build is a Blocker and needs to be announced on mailing-lists and related bugs to get fixed before branching.
+. commit updates on *master*
+. create *branches*
+.. all the jbosstools-* repos here: https://github.com/jbosstools/
+.. all the jbdevstudio-* repos here: https://github.com/jbdevstudio/
+. Update root pom for the component on *master* to reference the newer version of parent pom (as it is on master branch as well)
+. send email confirmation
+
+The best way to do that is to use the following scripts to create Jiras for every component::
+* https://github.com/jbdevstudio/jbdevstudio-ci/blob/master/bin/createTaskJIRAs.py
+* https://github.com/jbdevstudio/jbdevstudio-ci/blob/master/bin/createTaskJIRAs.py.examples.txt
+
+Follow created JIRAs with care and make sure they get processed in time.
+
+
+
+Releng projects
+---------------
+
+First, verify on *master* that the following files contain the right version for JBDS:
+
+* https://github.com/jbdevstudio/jbdevstudio-product/blob/master/product/pom.xml
+* https://github.com/jbdevstudio/jbdevstudio-product/blob/master/site/com.jboss.jbds.product
+* https://github.com/jbdevstudio/jbdevstudio-product/blob/master/plugins/com.jboss.jbds.product/
+
+Then, verify they build locally, with a simple +mvn clean verify+, and look at the related CI jobs on https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_8.0.luna/ to make sure they're building correctly and are good to be branched.
+
+Then, *Branch* "releng" projects (+jbosstools-build-sites+ & +jbdevstudio-product+ & +jbosstools-discovery+).
+
+.Then, on *master*, update aggregators and product definition to newer parent pom
+* https://github.com/jbosstools/jbosstools-build-sites/commit/6d2c8bfd453d92e625598eb23fc8afb2af24d45a
+* https://github.com/jbdevstudio/jbdevstudio-product/commit/fa415268fbcd459c9d305c1f84cf258e5d932f3b
+
+.and respin:
+* https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-composite-install_master/
+* https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-build-sites.aggregate.site_master
+* https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-build-sites.aggregate.webtools-site_master/
+* https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-build-sites.aggregate.coretests-site_master/
+* https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/devstudio.product_master/
+
+NOTE: Master branch is now ready for the next stream, and changes/builds on master won't affect the milestone
+
+Clear sites
+-----------
+
+[sources,bash]
+----
+me@local$ ssh dev01.mw.lab.eng.bos.redhat.com
+me@dev01$ sudo su - hudson
+hudson@dev01$ cd ~/STATIC/jbds/builds
+hudson@dev01$ rm -fr staging/*_4.2.luna staging.previous/*_4.2.luna
+----
+
+[sources,bash]
+----
+me@local$ sftp tools@filemgmt.jboss.org
+sftp> cd /downloads_htdocs/tools/builds/staging.previous/
+sftp> rm -fr *_4.2.luna
+sftp> cd /downloads_htdocs/tools/builds/staging/
+sftp> rm -fr *_4.2.luna
+----
+
+	
+Enable branch jobs
+------------------
+
+Enable CI jobs for the branch. Make sure that
+
+* jobs reference the right Git branch for the repository
+* Jobs have +<disabled>false</disabled>+ in the their config.
+
+A suggested approach is to use the https://github.com/jbdevstudio/jbdevstudio-ci/blob/master/pom-sync.xml file. Configure it to *pull* the content of the branch view, run it with +mvn clean install -f pom-sync.xml+ then you can import the directory as a project in Eclipse or wherever and use Find and Replace on the whole project to edit the +config.xml+ files describing the jobs. When you're done, edit the +pom-sync.xml+ in *push* more, and re-run +mvn clean install -f pom-sync.xml+.
+
+Another approach, based on scripts:
+
+[sources,bash]
+----
+# NOTE: ~/truu/jbdevstudio-ci is a symlink on my local machine to this folder in github: https://github.com/jbdevstudio/jbdevstudio-ci/
+# "gw1" uses special aliases/scripts/shortcuts. Basically, we want to follow correct github workflows so that commits are pushed to user's fork, then later pull-requested (and the PR applied)
+# "gw2" will create the PR, "gw3" will apply it, and "gw4" will delete the topic branch locally and in my fork
+# the 4 steps are captured here: https://gist.github.com/nickboldt/4111850
+# "stat" is short for "git status"; "gd" is short for "git diff"; "ga" is short for "git add"
+topic="enable-branch-jobs";branch=master; gw1
+hudpull -DviewFilter=view/DevStudio/view/DevStudio_7.0.kepler/ -DregexFilter=".*" # update local cache of jobs from server
+cd ~/truu/jbdevstudio-ci/cache/https/jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_7.0.kepler/job
+ci "update jobs" .; gp # ensure server copy and SVN copy are in sync; omit target platform and xulrunner
+# now enable jobs
+for c in $(find.sh . config.xml "disabled>true<" "" "" -q); do 
+  if [[ $(echo $c | grep -v "xulrunner|target-platform") ]]; then
+    sed -i -e "s#disabled>true<#disabled>false<#g" $c
+  fi
+done
+# check in changes
+stat .
+ci "enable stable branch jobs" .
+# push to server
+hudpush -DviewFilter=view/DevStudio/view/DevStudio_7.0.kepler/ -DregexFilter=".*" # update server configs from local cache
+# commit to github
+gw2;gw3;gw4
+# Set correct git branch
+topic="switch-to-correct-branch";branch=master; gw1
+for c in $(find.sh . config.xml "Beta2x" "" "" -q); do if [[ $(echo $c | grep -v "xulrunner") ]]; then sed -i -e "s#jbosstools-4.1.0.Beta2x#jbosstools-4.1.x#g" $c; fi; done
+hudpush -DviewFilter=view/DevStudio/view/DevStudio_7.0.kepler/ -DregexFilter=".*" # update server configs from local cache
+stat .
+ci "set correct git source to jbosstools-4.1.x branch" .
+# commit to github
+gw2;gw3;gw4
+----
+
+Configure JBT/JBDS stable branch .aggregate jobs 
+------------------------------------------------
+
+Edit the following jobs::
+* https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-build-sites.aggregate.site_4.2.luna/configure
+* https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-build-sites.aggregate.webtools-site_4.2.luna/configure
+* https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-build-sites.aggregate.coretests-site_4.2.luna/configure
+* https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/devstudio.product_master/configure
+
+For JBT::
+* Set build variable +RELEASE=NO+ (+Yes+ for Final)
+* Set build variable +update.site.description=Development Milestone+ (+Stable Release+ for Final)
+* Update Jenkins job description if applicable
+
+For JBDS::
+* Add +-DBUILD_ALIAS=GA+ to MAVEN_FLAGS (if a GA build)
+* Set build variable +RELEASE=No+ (+Yes+ for GA)
+* Set build variable +update.site.description=Development Milestone+ (+Stable Release+ for GA)
+* Update Jenkins job description if applicable
+
+TIP: Jenkins use first given value as default value, so that setting RELEASE=NO as default is just a matter of reordering possible values for RELEASE and make "No" the first one.
+
+Kick buildflow job for the new branch
+-------------------------------------
+
+Run https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_8.0.luna/job/jbosstools-buildflow_4.2.luna/ , it should trigger all jobs in https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_8.0.luna/, in the right order of dependencies.
+
+
+Notify the team
+---------------
+
+____
+*To* jbosstools-dev@lists.jboss.org +
+*Subject* JBoss Tools is branched for 4.2.0.Alpha2 +
+*Body* +
+----
+Branches:
+* https://github.com/jbosstools/jbosstools-base/tree/jbosstools-4.2.0.Alpha2x
+* https://github.com/jbosstools/jbosstools-central/tree/jbosstools-4.2.0.Alpha2x
+* ...
+
+Jobs:
+* http://hudson.jboss.org/hudson/view/JBossTools/view/JBossTools_4.1.kepler/
+
+Note that we are *code frozen* for 4.2.0.Alpha2, which means only urgent fixes should be done in the branch, associated w/ a JIRA. 
+
+Trunk remains open for new development work.
+*OR (depending in whether we're CR or not)*
+Trunk is open for BUGFIXES ONLY.
+
+Where applicable, please remember to commit changes in BOTH trunk and the new branch.
+----
+____
+
+And another:
+
+____
+*To* jbds-pm-list@redhat.com, external-exadel-list@redhat.com +
+*Subject* JBoss Tools & Dev Studio are branched for 4.2.0.Alpha2 / 8.0.0.Alpha2 +
+*Body* +
+----
+Branches:
+* https://github.com/jbosstools/jbosstools-base/tree/jbosstools-4.2.0.Alpha2x
+* https://github.com/jbosstools/jbosstools-central/tree/jbosstools-4.2.0.Alpha2x
+* ...
+* https://github.com/jbdevstudio/jbdevstudio-central/tree/jbosstools-4.2.0.Alpha2x
+
+Jobs:
+* https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_8.0.luna/
+* http://hudson.jboss.org/hudson/view/JBossTools/view/JBossTools_4.2.kepler/
+
+Note that we are *code frozen* for 4.2.0.Alpha2 / 8.0.0.Alpha2, which means only urgent fixes should be done in the branch, associated w/ a JIRA. 
+
+Trunk remains open for new development work.
+*OR (in case we're in CR)*
+Trunk is open for BUGFIXES ONLY.
+
+Where applicable, please remember to commit changes in BOTH trunk and the new branch.
+----
+____
+
+Babysit Jenkins jobs
+--------------------
+
+Make sure everything builds fine. Open Jiras and nag via mail and IRC to make sure issues are taken care of by the right people. Take a look at output of +devstudio.versionwatch_80+ and +jbosstools-install-grinder.install-tests.matrix_4.2.luna+. Those 2 jobs might reveal some issues that require a respin.
+
+When everything is building
+---------------------------
+
+Once you get satisfying output for the aggregation sites (in http://download.jboss.org/jbosstools/updates/nightly/core/4.2.luna/ ) and for the product (in http://www.qa.jboss.com/binaries/RHDS/builds/staging/devstudio.product_80/ ), disable all Jenkins jobs to make sure you don't produce new binaries without good reason.
+
+Then, you can start the process of promoting to QE.

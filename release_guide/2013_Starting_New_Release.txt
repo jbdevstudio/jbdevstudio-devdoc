@@ -43,4 +43,35 @@ Checklist for starting a new release cycle
   http://download.jboss.org/jbosstools/builds/cascade/swimlanes.html
   https://community.jboss.org/wiki/MatrixOfSupportedPlatformsRuntimesAndTechnologiesInJBossToolsJBDS
 
-* ...
+* create placeholder (empty) sites:
+
+  http://download.jboss.org/jbosstools/updates/webtools/luna/
+
+  http://download.jboss.org/jbosstools/updates/development/luna/
+  http://download.jboss.org/jbosstools/updates/development/luna/integration-stack/
+  http://download.jboss.org/jbosstools/updates/development/luna/central/core/
+  http://download.jboss.org/jbosstools/updates/development/luna/central/integration-stack/
+
+  http://download.jboss.org/jbosstools/updates/stable/luna/
+  http://download.jboss.org/jbosstools/updates/stable/luna/integration-stack/
+  http://download.jboss.org/jbosstools/updates/stable/luna/central/core/
+  http://download.jboss.org/jbosstools/updates/stable/luna/central/integration-stack/
+
+  https://devstudio.jboss.com/updates/8.0-staging/
+  https://devstudio.jboss.com/updates/8.0-staging/integration-stack/
+  https://devstudio.jboss.com/updates/8.0-staging/extras/ (deprecated?)
+  https://devstudio.jboss.com/updates/8.0-staging/central/core/
+  https://devstudio.jboss.com/updates/8.0-staging/central/integration-stack/
+
+  https://devstudio.jboss.com/updates/8.0-development/
+  https://devstudio.jboss.com/updates/8.0-development/integration-stack/
+  https://devstudio.jboss.com/updates/8.0-development/extras/ (deprecated?)
+  https://devstudio.jboss.com/updates/8.0-development/central/core/
+  https://devstudio.jboss.com/updates/8.0-development/central/integration-stack/
+
+  https://devstudio.jboss.com/updates/8.0/
+  https://devstudio.jboss.com/updates/8.0/integration-stack/
+  https://devstudio.jboss.com/updates/8.0/extras/ (deprecated?)
+  https://devstudio.jboss.com/updates/8.0/central/core/
+  https://devstudio.jboss.com/updates/8.0/central/integration-stack/
+

@@ -59,19 +59,16 @@ Checklist for starting a new release cycle
 
   https://devstudio.jboss.com/updates/8.0-staging/
   https://devstudio.jboss.com/updates/8.0-staging/integration-stack/
-  https://devstudio.jboss.com/updates/8.0-staging/extras/ (deprecated?)
-  https://devstudio.jboss.com/updates/8.0-staging/central/core/
+  ttps://devstudio.jboss.com/updates/8.0-staging/central/core/
   https://devstudio.jboss.com/updates/8.0-staging/central/integration-stack/
 
   https://devstudio.jboss.com/updates/8.0-development/
   https://devstudio.jboss.com/updates/8.0-development/integration-stack/
-  https://devstudio.jboss.com/updates/8.0-development/extras/ (deprecated?)
-  https://devstudio.jboss.com/updates/8.0-development/central/core/
+  ttps://devstudio.jboss.com/updates/8.0-development/central/core/
   https://devstudio.jboss.com/updates/8.0-development/central/integration-stack/
 
   https://devstudio.jboss.com/updates/8.0/
   https://devstudio.jboss.com/updates/8.0/integration-stack/
-  https://devstudio.jboss.com/updates/8.0/extras/ (deprecated?)
   https://devstudio.jboss.com/updates/8.0/central/core/
   https://devstudio.jboss.com/updates/8.0/central/integration-stack/
 

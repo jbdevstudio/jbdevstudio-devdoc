@@ -7,6 +7,12 @@ WARNING: Branching JBT and JBDS is a long process that requires several steps, w
 
 TIP: when we mention branch, we assume it has a name like +jbosstools-4.2.0.Alpha2x+. First 3 digits are the targeted version of JBoss Tools, then the build alias (+Alpha2+) is the name of upcoming milestone, and then we append a +x+ to anticipate respins on this branch.
 
+Pre-branching checklist
+-----------------------
+
+. Components all build fine on CI.
+. Sites in jbosstools-build-sites/aggregate/*/pom.xml reference the right stream of dependencies as expected in target-platforms. See for example https://github.com/jbosstools/jbosstools-build-sites/commit/1d88496feaf92db8b488e1a645cb9c39ecc718fe
+
 Release and use "Core" target-platform
 --------------------------------------
 

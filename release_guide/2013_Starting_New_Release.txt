@@ -64,7 +64,7 @@ Checklist for starting a new release cycle
 
   https://devstudio.jboss.com/updates/8.0-development/
   https://devstudio.jboss.com/updates/8.0-development/integration-stack/
-  ttps://devstudio.jboss.com/updates/8.0-development/central/core/
+  https://devstudio.jboss.com/updates/8.0-development/central/core/
   https://devstudio.jboss.com/updates/8.0-development/central/integration-stack/
 
   https://devstudio.jboss.com/updates/8.0/

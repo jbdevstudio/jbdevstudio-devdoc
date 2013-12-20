@@ -9,9 +9,9 @@
  
 1. Move/rename 6 files (3 zips, 3 md5sums) [JBT 3.2.x was 3 zips, 3 md5sums = 6 files] (no longer includes SOA Tooling zip/md5 file) into http://download.jboss.org/jbosstools/builds/development/sf.net/
 
-  stream=42
+  stream=42 # TODO change this to 4.2.luna to adhere to mistria's new naming convention
   version=4.2.0.Alpha1
-  version2=4.2.0.Alpha1a; # a, b...
+  version2=4.2.0.Alpha1; # a, b...
   buildID1=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/development/${version2}.core/ 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); buildID1=${buildID1%%/*}
   echo "Latest build: ${buildID1}"
 
@@ -36,15 +36,15 @@
   done
   rm -f /tmp/index.html
 
-  # end up with somtehing like this:
-  hibernatetools-Update-4.2.0.Alpha1_2013-11-24_01-06-56-B575.zip :: 78M
-  hibernatetools-Update-4.2.0.Alpha1_2013-11-24_01-06-56-B575.zip.MD5
+  # end up with something like this:
+  hibernatetools-Update-4.2.0.Alpha1_2013-12-11_01-09-15-B32.zip :: 77M
+  hibernatetools-Update-4.2.0.Alpha1_2013-12-11_01-09-15-B32.zip.MD5
 
-  jbosstools-Sources-4.2.0.Alpha1_2013-11-24_01-06-56-B575.zip :: 93M
-  jbosstools-Sources-4.2.0.Alpha1_2013-11-24_01-06-56-B575.zip.MD5
+  jbosstools-Sources-4.2.0.Alpha1_2013-12-11_01-09-15-B32.zip :: 93M
+  jbosstools-Sources-4.2.0.Alpha1_2013-12-11_01-09-15-B32.zip.MD5
 
-  jbosstools-Update-4.2.0.Alpha1_2013-11-24_01-06-56-B575.zip :: 418M
-  jbosstools-Update-4.2.0.Alpha1_2013-11-24_01-06-56-B575.zip.MD5
+  jbosstools-Update-4.2.0.Alpha1_2013-12-11_01-09-15-B32.zip :: 417M
+  jbosstools-Update-4.2.0.Alpha1_2013-12-11_01-09-15-B32.zip.MD5
 
 2. Pull files to SF after logging in via SSH (Downloaded: 8 files, 353M in 4m 22s (1.35 MB/s)):
 
@@ -104,7 +104,7 @@
 6. (ONLY if necessary) Move Milestonex to Milestone
 
   version=4.2.0.Alpha1
-  version2=4.2.0.Alpha1a # a, b, c, d...
+  version2=4.2.0.Alpha1 # a, b, c, d...
 
   # rename discovery site, http://download.jboss.org/jbosstools/discovery/development/${version2}/
   echo "rename development/${version}  development/${version}.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery

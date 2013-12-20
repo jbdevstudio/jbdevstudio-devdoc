@@ -415,7 +415,7 @@ Be sure to also update the listing to the latest release version (eg., CR1 -> Fi
   git clone https://github.com/jbosstools/jbosstools-maven-plugins
 
   # now tag multiple projects in a single step, replacing existing tags if already exist
-  jbt_branch=jbosstools-4.2.0.x
+  jbt_branch=jbosstools-4.2.0.Alpha1x
   version=4.2.0.Alpha1
   for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins; do
     echo "====================================================================="
@@ -499,7 +499,7 @@ https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.plugin.syst
 1. To:
 "jbosstools-dev@lists.jboss.org" <jbosstools-dev@lists.jboss.org>
 
-version1=jbosstools-4.2.0.x
+version1=jbosstools-4.2.0.Alpha1x
 version2=jbosstools-4.2.0.Alpha1
 
 echo "
@@ -514,5 +514,9 @@ Project leads, please tag your projects!
   co ${version1}
   git tag ${version2}
   git push origin ${version2}
+
+You do not need to reply to this email. Simply comment in this JIRA when tagging is complete:
+
+https://issues.jboss.org/browse/JBIDE-16317 (replace with correct JIRA #)
 
 "

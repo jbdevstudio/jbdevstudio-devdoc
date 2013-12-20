@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bookmarks>
+   <site url="http://download.jboss.org/jbosstools/updates/development/luna/" selected="true" name=""/>
+   <site url="http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/luna/" selected="true" name=""/>
+   <site url="http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/luna/" selected="true" name=""/>
+
+   <!--<site url="http://download.jboss.org/jbosstools/updates/development/luna/integration-stack/" selected="true" name=""/>
+   <site url="http://download.jboss.org/jbosstools/updates/luna/integration-stack/" selected="true" name=""/> -->
+</bookmarks>

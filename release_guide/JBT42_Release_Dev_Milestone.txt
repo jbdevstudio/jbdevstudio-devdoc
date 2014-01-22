@@ -15,8 +15,12 @@
   buildID1=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/development/${version2}.core/ 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); buildID1=${buildID1%%/*}
   echo "Latest build: ${buildID1}"
 
+# TODO: Hibernate tools zip is now built here:
+# https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-build-sites.aggregate.hibernatetools-site_4.2.luna/
+# And located here:
+# http://download.jboss.org/jbosstools/builds/staging/jbosstools-build-sites.aggregate.hibernatetools-site_master/all/jbosstools-build-sites.aggregate.hibernatetools-site_master-Update-SNAPSHOT.zip
+
   echo "mkdir development/sf.net/${version}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
-  # omit hibernate tools zip and see if anyone notices
   #echo "rename development/${version2}.core/${buildID1}/components/jbosstools-hibernate_${stream}-Update-SNAPSHOT.zip                   development/sf.net/${version}/hibernatetools-Update-${version}_${buildID1}.zip"     | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
   #echo "rename development/${version2}.core/${buildID1}/components/jbosstools-hibernate_${stream}-Update-SNAPSHOT.zip.MD5               development/sf.net/${version}/hibernatetools-Update-${version}_${buildID1}.zip.MD5" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
   echo "rename development/${version2}.core/${buildID1}/all/jbosstools-build-sites.aggregate.site_${stream}-Update-${buildID1}.zip      development/sf.net/${version}/jbosstools-Update-${version}_${buildID1}.zip"         | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds

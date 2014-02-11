@@ -19,11 +19,11 @@
   # can do these next 3 steps in parallel
   
   version=8.0.0.Alpha2 # a, b, c...
-  scpr /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_71/installer/* /qa/services/http/binaries/RHDS/builds/development/${version}.installer/
+  scpr /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/installer/* /qa/services/http/binaries/RHDS/builds/development/${version}.installer/
   cd /qa/services/http/binaries/RHDS/builds/development/; find . -maxdepth 1 -type d -name "${version}*" | grep ${version}; find . -maxdepth 1 -type d -name "${version}*" | sed "s#\.# >> http://www.qa.jboss.com/binaries/RHDS/builds/development#" | egrep ">>|${version}"
 
   version=8.0.0.Alpha2 # a, b, c...
-  scpr /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_71/all/repo/* /qa/services/http/binaries/RHDS/updates/development/${version}.core/
+  scpr /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/all/repo/* /qa/services/http/binaries/RHDS/updates/development/${version}.core/
   cd /qa/services/http/binaries/RHDS/updates/development/; find . -maxdepth 1 -type d -name "${version}*" | grep ${version}; find . -maxdepth 1 -type d -name "${version}*" | sed "s#\.# >> http://www.qa.jboss.com/binaries/RHDS/updates/development#" | egrep ">>|${version}"
 
   # Make sure that the parameters fed into the Discovery job are correct; respin if necessary.

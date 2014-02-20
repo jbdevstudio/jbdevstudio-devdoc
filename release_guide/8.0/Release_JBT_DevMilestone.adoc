@@ -305,6 +305,8 @@ Go to the following URLs and update the link to "latest development build".
 * https://www.jboss.org/author/tools/download/stable
 * https://www.jboss.org/author/tools/download/installation/update_4_2
 
+When publishing a new Development Milestone, simply replace all references to previous one.
+
 When you're done, publish those pages: go to https://www.jboss.org/author/ and publish
 
 == Update Eclipse Marketplace (add/remove features)
@@ -368,7 +370,7 @@ version=4.2.0.Alpha2
 for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins; do
   echo "====================================================================="
   echo "Tagging jbosstools-${d} from branch ${jbt_branch} as tag ${version}..."
-  pushd ~/jbosstools-${d}
+  pushd jbosstools-${d}
   git stash
   git pull origin
   git fetch -t -p

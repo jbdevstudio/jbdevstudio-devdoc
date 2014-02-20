@@ -112,34 +112,19 @@ A graphical sftp client such as FileZilla seems to be the easiest way to perform
 
 ==== Publish Site
 
+Webtools site is expected to be found in +http://download.jboss.org/tools/updates/webtools/${eclipseTrain}+ (where eclipseTrain is for example "luna"). So, with a sftp client, on filemgmt.jboss.org
+
+1. Rename +/downloads_htdocs/tools/updates/webtools/${eclipseTrain}+ into +/downloads_htdocs/tools/updates/webtools/${eclipseTrain}_${previousVersion}+, with ${previous} being the name of previous release (for example 4.2.0.Alpha1 when releasing 4.2.0.Alpha2)
+1. Move last build in +/downloads_htdocs/tools/updates/JBossTools-${version}.webtools+ to +/downloads_htdocs/tools/updates/webtools/${eclipseTrain}+
+
+Here is an example of a script doing that
 [source,bash]
 ----
-  alias   ga='git add'
-  alias   stat='git status'
-  alias   gd='git diff --color=always -w'
-  alias   scpr='rsync -aPrz --rsh=ssh'
-  alias   ci='git commit -m'
+version=4.2.0.Alpha1
+previous=4.2.0.Alpha
 
-  previous=4.1.0.Final
-  version=4.1.1.Final # only use a, b suffix if did not perform rename in step 6 above
-  version2=4.1.1.Final # a, b, c, d...
-  #echo "rename webtools/kepler webtools/kepler.`date +%Y%m%d-%H%M`" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/
-  echo "rename webtools/kepler webtools/kepler_${previous}"         | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/
-  echo "rename JBossTools-${version}.webtools webtools/kepler"      | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/
-  cd ~/tru/download.jboss.org/jbosstools/updates/webtools/kepler/
-  rm -f index.html site.xml
-  # sometimes the website is slow to refresh, so pull over sftp instead 
-  #wget -N http://download.jboss.org/jbosstools/updates/webtools/kepler/index.html
-  #wget -N http://download.jboss.org/jbosstools/updates/webtools/kepler/site.xml
-  scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/webtools/kepler/index.html .
-  scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/webtools/kepler/site.xml .
-
-  stat .; gd .
-  topic="release-${version2}"; branch=master; gw1
-  ci "release ${version} (${version2}) to http://download.jboss.org/jbosstools/updates/webtools/kepler/" index.html site.xml
-  gw3;gw4
-
-  Also, over sftp, delete any old iterations or respins that are no longer needed.
+echo "rename webtools/kepler webtools/kepler_${previous}"         | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/
+echo "rename JBossTools-${version}.webtools webtools/kepler"      | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/
 ----
 
 ==== Notify webtools project
@@ -148,155 +133,164 @@ If this is the first milestone release, ensure that upstream project Web Tools (
 
 === Update target-platforms
 
+This is only necessary if this new milestone uses a new target-platform. In case there is no change in target-platform between this milestone/release and the previous one, you can ignore those steps.
+
+==== "Normal" targets
+
+Those change happen by editing files on the +jbosstools-download.jboss.org+ repository, and then synchronizing them with the actual content on download.jboss.org using this CI job: https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-download.jboss.org-rsync-from-git/
+
+So, assuming you are editing the jbosstools-download.jboss.org repository, here are the things to do:
+
+* Replace *target-platform version* and update *p2.timestamp* in +jbosstools/targetplatforms/jbosstoolstarget/${eclipseTrain}/composite*.xml+ files to reference the release of Target-Platform that was used to build this release (It's the TARGET_PLATFORM_MAXIMUM defined in the parent pom)
+* Same thing for +jbosstools/targetplatforms/jbdevstudiotarget/${eclipseTrain}/composite*.xml+
+
+Here is a script doing that, from the +download.jboss.org+ folder.
 [source,bash]
 ----
-  ** MAY NOT NEED TO DO THIS AGAIN UNTIL AFTER GA **
+version=4.2.0.Alpha2
+newTP=4.40.0.Alpha2
+eclipseTrain=luna
 
-  version=4.1.1.Final
+oldTP=4.40.0.Alpha1
 
-  OLD_JBT_JBDS_TP=4.31.1.CR1
-  NEW_JBT_JBDS_TP=4.31.1.Final
+now=`date +%s000`
 
-  OLD_CENTRAL_TP=4.31.0.Final-SNAPSHOT
-  NEW_CENTRAL_TP=4.31.0.Final
-
-  pushd ~/tru/download.jboss.org/
-  topic="release-target-platform-for-${version}"; branch=master; gw1
-
-  # JBT
-  pushd ~/tru/download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/
-  now=`date +%s000`
-  for d in composite*.xml; do
-  sed -i -e "s#${OLD_JBT_JBDS_TP}#${NEW_JBT_JBDS_TP}#g" $d
+pushd jbosstools/targetplatforms/jbosstoolstarget/${eclipseTrain}
+for d in composite*.xml; do
+  sed -i -e "s#${oldTP}#${newTP}#g" $d
   sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
-  done
-  ci "release ${NEW_JBT_JBDS_TP} to http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/" .
-  popd >/dev/null
+done
+popd
 
-  # JBDS
-  pushd ~/tru/download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/kepler/
-  now=`date +%s000`
-  for d in composite*.xml; do
-  sed -i -e "s#${OLD_JBT_JBDS_TP}#${NEW_JBT_JBDS_TP}#g" $d
+pushd jbosstools/targetplatforms/jbdevstudiotarget/${eclipseTrain}/
+for d in composite*.xml; do
+  sed -i -e "s#${oldTP}#${newTP}#g" $d
   sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
-  done
-  ci "release ${NEW_JBT_JBDS_TP} to http://download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/kepler/" .
-  popd >/dev/null
+done
+----
 
-  # JBoss Central
-  # CAUTION! DO THIS ONLY IF COMPATIBLE w/ previous .Final release (or last milestone if no Final yet)! 
-  # This will make the latest Central site live and could cause update problems if there are incompatibilities (eg., gwt e42 -> gwt e43).
-  # you might want to instead update updates/development/kepler/central/core/compositeContent.xml to point at a specific TP version
-  pushd ~/tru/download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/kepler/
-  now=`date +%s000`
-  for d in composite*.xml; do
+When this is done
+
+1. Commit your changes locally
+2. Push your changes to the public repository
+3. Run the CI job to sync with download.jboss.org https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-download.jboss.org-rsync-from-git/
+4. Check the changes are available on download.jboss.org (read composite*.xml files)
+
+==== Central Target-Platform
+
+*If* target-platform is compatible with previous release consuming them, then update +jbosstools/targetplatforms/jbdevstudiotarget/${eclipseTrain}/composite*.xml+ to point to this target-platform. This can be done similarly as explained above:
+
+[source,bash]
+----
+pushd jbosstools/targetplatforms/jbtcentraltarget/${eclipseTrain}/
+for d in composite*.xml; do
   sed -i -e "s#${OLD_CENTRAL_TP}#${NEW_CENTRAL_TP}#g" $d
   sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
-  done
-  ci "release ${NEW_CENTRAL_TP} to http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/" .
-  popd >/dev/null
-
-  gw3;gw4
-  popd >/dev/null
-
-  # push updated target platforms to production
-  scpr ~/tru/download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/composite*.xml $TOOLS/targetplatforms/jbosstoolstarget/kepler/
-  scpr ~/tru/download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/kepler/composite*.xml $TOOLS/targetplatforms/jbdevstudiotarget/kepler/
-  scpr ~/tru/download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/kepler/composite*.xml $TOOLS/targetplatforms/jbtcentraltarget/kepler/
-  # Ensure that the following files exist and are correct
-  echo " >> http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/compositeArtifacts.xml"
-  echo " >> http://download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/kepler/compositeArtifacts.xml"
-  echo " >> http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/kepler/compositeArtifacts.xml"
-  echo " >> http://download.jboss.org/jbosstools/updates/development/kepler/central/core/compositeArtifacts.xml"
+done
+popd
 ----
+
+*Else If* target-platform isn't compatible with previous release (for example introducing new incompatible feature - gwt.e42 -> gwt.e43), then don't change the composite, and instead, you'd should tweak the +updates/development/${eclipseTrain}/central/core/composite*.xml+ files to point at a specific TP version.
+
+In any case:
+
+* Commit changes
+* Push changes to remote repository
+* Synchronize with download.jboss.org by running https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-download.jboss.org-rsync-from-git/
 
 === Update composite, discovery and index.html
 
-Composite metadata (absolute path), Central directory file (absolute path, from http://download.jboss.org/jbosstools/discovery/development/${version}/), and 
-             index.html files (absolute paths). Also pull a copy of the updated discovery jar (from http://download.jboss.org/jbosstools/discovery/development/${version}/plugins/).
+Changes also happen on the +jbosstools-download.jboss.org+ repository, which is synchronized with download.jboss.org using https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-download.jboss.org-rsync-from-git/ .
 
+On this repository:
+
+* Update +jbosstools/updates/development/${eclipseTrain}/composite*.xml+ to use newer version and timestamp
+* Replace +jbosstools/updates/development/${eclipseTrain}/index.xml+ with the one you can fetch at +http://download.jboss.org/jbosstools/updates/JBossTools-${version}.core/index.html+
+* In the new +index.html+ replace relative paths by absolute paths. In order to do so, check for "href" occurrences
+
+As usual, a script to do that:
 [source,bash]
 ----
-  previous=4.1.1.CR1
-  version=4.1.1.Final
-  version2=4.1.1.Final # no a, b, c if renamed above 
+version=4.2.0.Alpha2
+eclipseTrain=luna
+previousVersion=4.2.0.Alpha1
 
-  branch=master; topic="release-development-${version2}"; gw1
-  cd ~/tru/download.jboss.org/jbosstools/updates/development/kepler/
+now=`date +%s000`
 
-  now=`date +%s000`
-  for d in composite*.xml; do
-  sed -i -e "s#${previous}#${version2}#g" $d
+pushd jbosstools/updates/development/${eclipseTrain}/
+for d in composite*.xml; do
+  sed -i -e "s#${previous}#${version}#g" $d
   sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
-  done
+done
 
-  rm -f index.html; wget -nc http://download.jboss.org/jbosstools/updates/JBossTools-${version2}.core/index.html
-  sed -i -e "s#href=\"#href=\"http://download.jboss.org/jbosstools/updates/JBossTools-${version2}.core/#g" -e "s#href=\"http://download.jboss.org/jbosstools/updates/JBossTools-${version2}.core/http#href=\"http#g" index.html
-  
-  # update XML
-  version=4.1.1.Final
-  cd ~/tru/download.jboss.org/jbosstools/updates/development/kepler/
-  rm -f jbosstools-directory.xml; wget -nc http://download.jboss.org/jbosstools/discovery/development/${version}/jbosstools-directory.xml
-  #newJar=plugins/org.jboss.tools.central.discovery_1.0.0.v20120612-0053-H99-Final.jar
-  newJar=$(cat jbosstools-directory.xml | grep entry | sed -e "s#.\+plugins/#plugins/#g" | sed -e "s#\.jar.\+#.jar#g"); echo $newJar
-  mkdir -p ~/tru/download.jboss.org/jbosstools/updates/development/kepler/plugins
-  pushd ~/tru/download.jboss.org/jbosstools/updates/development/kepler/plugins >/dev/null
-  wget http://download.jboss.org/jbosstools/discovery/development/${version}/${newJar}
-  popd >/dev/null
-  
-  # IF THIS IS pre-Final, ensure that your plugin points to the STAGING URL, not the RELEASE one:
-  #unzip -q -d ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}{_,}
-  #pushd ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}_ >/dev/null 
-  #sed -i "s#http://download.jboss.org/jbosstools/updates/stable/kepler/central/core/#http://download.jboss.org/jbosstools/updates/development/kepler/central/core/#g" plugin.xml
-  #zip -u ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar} plugin.xml
-  #popd >/dev/null
-  #rm -fr ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}_
-
-  # IF THIS IS Final, ensure that your plugin points to the RELEASE URL, not the STAGING one:
-  unzip -q -d ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}{_,}
-  pushd ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}_ >/dev/null 
-  sed -i "s#http://download.jboss.org/jbosstools/updates/development/kepler/central/core/#http://download.jboss.org/jbosstools/updates/stable/kepler/central/core/#g" plugin.xml
-  ## *** make sure we do not point at http://download.jboss.org/jbosstools/discovery/development/${version} instead
-  zip -u ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar} plugin.xml
-  popd >/dev/null
-  rm -fr ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}_
-
-  # check in / sync changes - 4 updated files, 1 new jar, 1 deleted jar
-  stat .; gd .
-  # TODO: only add the new jar + updated directory.xml if this is Alpha/Beta/CR toward a .0.Final, or Beta/CR toward a .x.Final (skip Alphas toward .x.Final)
-  git add ${newJar}
-  ci "release ${version2} to http://download.jboss.org/jbosstools/updates/development/kepler/; add new discovery plugin ${newJar} + update jbosstools-directory.xml" .
-  gw2;gw3;gw4
-  scpr ~/tru/download.jboss.org/jbosstools/updates/development/kepler/* $TOOLS/updates/development/kepler/
-
-  # Make sure directory.xml points at a real jar:
-  #   http://download.jboss.org/jbosstools/updates/development/kepler/jbosstools-directory.xml 
-  #   -> http://download.jboss.org/jbosstools/updates/development/kepler/plugins/org.jboss.tools.central.discovery_1.2.0.Final-v20130626-1621-B250.jar
-  firefox \
-    http://download.jboss.org/jbosstools/updates/development/kepler/ \
-    view-source:http://download.jboss.org/jbosstools/updates/development/kepler/compositeArtifacts.xml \
-    view-source:http://download.jboss.org/jbosstools/updates/development/kepler/central/core/compositeArtifacts.xml \
-    view-source:http://download.jboss.org/jbosstools/updates/development/kepler/jbosstools-directory.xml \
-    http://download.jboss.org/jbosstools/updates/development/kepler/${newJar}
-  # ensure jar's plugin.xml points at to http://download.jboss.org/jbosstools/updates/development/kepler/central/core/
-  bc ~/tmp/${newJar/plugins\//} ~/tmp
-
-# If this is the Final build, ensure that the following files exist (copy content from /development/kepler/ so that both the milestone and the release have nearly the same content):
-  firefox \
-    http://download.jboss.org/jbosstools/updates/stable/kepler/ \
-    view-source:http://download.jboss.org/jbosstools/updates/stable/kepler/compositeArtifacts.xml \
-    view-source:http://download.jboss.org/jbosstools/updates/stable/kepler/central/core/compositeArtifacts.xml \
-    view-source:http://download.jboss.org/jbosstools/updates/stable/kepler/jbosstools-directory.xml \
-    http://download.jboss.org/jbosstools/updates/stable/kepler/${newJar}
-
-  # and push new/updated files to server too
-  scpr ~/tru/download.jboss.org/jbosstools/updates/stable/* $TOOLS/updates/stable/
-  # "gw1" uses special aliases/scripts/shortcuts. Basically, we want to follow correct github workflows so that commits are pushed to user's fork, then later pull-requested (and the p-r applied)
-  branch=master; topic="release-stable-${version2}"; gw1
-  ci "release ${version} to http://download.jboss.org/jbosstools/updates/stable/kepler/; add new discovery plugin ${newJar} + update jbosstools-directory.xml" .
-  gw2;gw3;gw4
+rm -f index.html
+wget -nc http://download.jboss.org/jbosstools/updates/JBossTools-${version}.core/index.html
+sed -i -e "s#href=\"#href=\"http://download.jboss.org/jbosstools/updates/JBossTools-${version}.core/#g" -e "s#href=\"http://download.jboss.org/jbosstools/updates/JBossTools-${version}.core/http#href=\"http#g" index.html
+popd
 ----
 
+Then make the necessary updates for *discovery*
+
+* Replace +jbosstools/updates/development/${eclipseTrain}/jbosstools-directory.xml+ by +http://download.jboss.org/jbosstools/discovery/development/${version}/jbosstools-directory.xml+
+* Remove previous discovery jar in +plugins+
+* Fetch the jar listed in +jbosstools-directory.xml+ into the +http://download.jboss.org/jbosstools/discovery/development/${version}/plugins+ directory.
+* Verify that plugin.xml in the discovery jar contains the right URL:
+** If this is a *pre-final*, the plugin must point to *staging* URL, not release one. So URL should be +http://download.jboss.org/jbosstools/updates/development/${eclipseTrain}/central/core/+
+** IF this is a *Final*, the plugin must reference the *release* URL, not the staging one. So URL should look like +http://download.jboss.org/jbosstools/updates/stable/kepler/central/core/+
+
+Script:
+[source,bash]
+----
+version=4.2.0.Alpha2
+eclipseTrain=luna
+pushd jbosstools/updates/development/${eclipseTrain}/
+# Replace jbosstools-directory.xml by newest
+rm -f jbosstools-directory.xml
+wget -nc http://download.jboss.org/jbosstools/discovery/development/${version}/jbosstools-directory.xml
+# Get newest discovery plugins
+newJar=$(cat jbosstools-directory.xml | grep entry | sed -e "s#.\+plugins/#plugins/#g" | sed -e "s#\.jar.\+#.jar#g")
+echo $newJar
+mkdir -p plugins
+pushd plugins
+wget http://download.jboss.org/jbosstools/discovery/development/${version}/${newJar}
+popd
+ 
+# IF THIS IS pre-Final, ensure that your plugin points to the STAGING URL, not the RELEASE one:
+#unzip -q -d ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}{_,}
+#pushd ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}_ >/dev/null 
+#sed -i "s#http://download.jboss.org/jbosstools/updates/stable/kepler/central/core/#http://download.jboss.org/jbosstools/updates/development/kepler/central/core/#g" plugin.xml
+#zip -u ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar} plugin.xml
+#popd >/dev/null
+#rm -fr ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}_
+
+# IF THIS IS Final, ensure that your plugin points to the RELEASE URL, not the STAGING one:
+unzip -q -d jbosstools/updates/development/kepler/${newJar}{_,}
+pushd jbosstools/updates/development/kepler/${newJar}_
+sed -i "s#http://download.jboss.org/jbosstools/updates/development/kepler/central/core/#http://download.jboss.org/jbosstools/updates/stable/kepler/central/core/#g" plugin.xml
+## *** make sure we do not point at http://download.jboss.org/jbosstools/discovery/development/${version} instead
+zip -u jbosstools/updates/development/kepler/${newJar} plugin.xml
+popd
+rm -fr jbosstools/updates/development/kepler/${newJar}_
+----
+
+When all changes are done:
+
+* Commit them (should show 4 files changed, 1 jar deleted, 1 jar added)
+* Push to remote repo
+* Publish to download.jboss.org using the synchronization job https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-download.jboss.org-rsync-from-git/
+* Check the following URL show the right versions
+** For milestones
+*** http://download.jboss.org/jbosstools/updates/development/${eclipseTrain}/
+*** http://download.jboss.org/jbosstools/updates/development/${eclipseTrain}/compositeArtifacts.xml
+*** http://download.jboss.org/jbosstools/updates/development/${eclipseTrain}/central/core/compositeArtifacts.xml
+*** http://download.jboss.org/jbosstools/updates/development/${eclipseTrain}/jbosstools-directory.xml
+*** http://download.jboss.org/jbosstools/updates/development/${eclipseTrain}/plugins/${newJar}
+** Or, for Final builds
+*** http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/
+*** http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/compositeArtifacts.xml
+*** http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/central/core/compositeArtifacts.xml
+*** http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/jbosstools-directory.xml
+*** http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/plugins/${newJar}
 
 == Magnolia
 

@@ -1,0 +1,427 @@
+= Release JBoss Tools Development Milestone
+
+WARNING: this requires write access to the "jboss" area at sourceforge.
+
+----
+"gw1" uses special aliases/scripts/shortcuts. Basically, we want to follow correct github workflows so that commits are pushed to user's fork, then later pull-requested (and the PR applied)
+"gw2" will create the PR, "gw3" will apply it, and "gw4" will delete the topic branch locally and in my fork
+the 4 steps are captured here: https://gist.github.com/nickboldt/4111850
+"stat" is short for "git status"; "gd" is short for "git diff"; "ga" is short for "git add"
+----
+
+== Zips on sf.net
+
+Zips (recommanded for offline installation) are made available on sf.net. sf.net provides interesting metrics on download and other stuff.
+
+=== Prepare files
+
+On your local machine, using a SFTP client (or the script suggested above), move the files to publish to +http://download.jboss.org/jbosstools/builds/development/sf.net/+ and rename them to conform to pattern.
+
+[source,bash]
+----
+stream=4.2.luna
+version=4.2.0.Alpha2 # name to use in filenames ie fixVersion in JIRA
+echo "mkdir development/sf.net/${version}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+
+fullVersion=4.2.0.Alpha2b # Fully qualified version, including respin suffix
+coreBuildID=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/development/${version2}.core/ 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); buildID=${coreBuildID%%/*}
+echo "Latest build: ${corebuildID}"
+echo "rename development/${fullVersion}.core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-Update-${coreBuildID}.zip      development/sf.net/${version}/jbosstools-Update-${version}_${coreBuildID}.zip"         | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+echo "rename development/${fullVersion}.core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-Update-${coreBuildID}.zip.MD5  development/sf.net/${version}/jbosstools-Update-${version}_${coreBuildID}.zip.MD5"     | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+echo "rename development/${fullVersion}.core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-Sources-${coreBuildID}.zip     development/sf.net/${version}/jbosstools-Sources-${version}_${coreBuildID}.zip"        | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+echo "rename development/${fullVersion}.core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-Sources-${coreBuildID}.zip.MD5 development/sf.net/${version}/jbosstools-Sources-${version}_${coreBuildID}.zip.MD5"    | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+
+hibernateToolsFullVersion=4.2.0.Alpha2 #it is highly possible that hibernate tools didn't require a respin and hence have another fully qualified version
+hibernateToolsBuildID=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/development/${hibernateToolsFullVersion}.hibernatetools/ 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); hibernateToolsBuildID=${hibernateToolsBuildID%%/*}
+echo "Latest build: ${hibernateToolsBuildID}"
+echo "rename development/${hibernateToolsFullVersion}.hibernatetools/${hibernateToolsBuildID}/all/jbosstools-build-sites.aggregate.hibernatetools-site_${stream}-Update-${hibernateToolsBuildID}.zip development/sf.net/${version}/hibernatetools-Update-${version}_${hibernateToolsBuildID}.zip" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+echo "rename development/${hibernateToolsFullVersion}.hibernatetools/${hibernateToolsBuildID}/all/jbosstools-build-sites.aggregate.hibernatetools-site_${stream}-Update-${hibernateToolsBuildID}.zip.MD5 development/sf.net/${version}/hibernatetools-Update-${version}_${hibernateToolsBuildID}.zip.MD5" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+----
+
+=== Pull files to sf.net
+
+There are many ways to push files to sf.net (SFTP, SCP, SSH...). Any alternative that puts the files under +JBossTools/JBossTools${version}+ is fine. Here, we'll show a shell-based approach that allows to save a few minutes.
+
+First, connect to sf.net. Replace user by your sf.net id:
+
+[source,bash]
+----
+ssh -t user,jboss@shell.sourceforge.net create
+----
+
+Once granted a shell, download the files. 
+
+[source,bash]
+----
+branch=4.2.0.x # if this is a Final or build, use 4.1.x instead of 4.2.x
+version=4.2.0.Alpha2
+cd /home/frs/project/jboss/JBossTools/
+mkdir -p JBossTools${branch}
+cd JBossTools${branch}
+wget http://download.jboss.org/jbosstools/builds/development/sf.net/${version} -k -O /tmp/index.html
+for f in $(cat /tmp/index.html | egrep -v "C=D|title>|h1>" | grep "${version}" | sed 's#.\+href="\([^"]\+\)".\+#\1#g'); do
+  wget -nc $f
+done
+rm -f /tmp/index.html
+exit
+----
+  
+=== Release notes
+
+Go to https://issues.jboss.org/secure/ConfigureReport!default.jspa?selectedProjectId=10020&projectOrFilterId=project-10020&projectOrFilterName=Tools%20%28JBoss%20Tools%29&reportKey=org.jboss.labs.jira.plugin.release-notes-report-plugin:releasenotes . Then select the target release (4.2.0.Alpha2 for example), type of issues = "All", style = "HTML". Keep the URL of the report page (which looks like https://issues.jboss.org/secure/ConfigureReport.jspa?versions=12323827&sections=all&style=html&selectedProjectId=10020&reportKey=org.jboss.labs.jira.plugin.release-notes-report-plugin%3Areleasenotes&Next=Next )
+
+Then, still on sf.net, create a file +/home/fts/project/jboss/JBossTools/JBossTools${branch}/zz_Release_Notes_${version}.readme.html+. Edit this file as following
+
+[source,html]
+----
+<html>
+  <head>
+    <meta http-equiv="refresh" content="0, url=PUT_URL_HERE"/>
+  </head>
+</html>
+----
+
+=== bookmarks.xml
+
+Bookmarks.xml keeps links from sf.net to the actual JBoss Tools update sites.
+Still on sf.net, verify the following file (adapt it to the version you're pushing: +/home/frs/project/jboss/JBossTools/jbosstools4.2_bookmarks.xml+. In case you're starting a new stream, you probably need to update those files (for example rename from kepler to Luna).
+
+== Move sites
+
+These steps happens on filemgmt.jboss.org, in the jbosstools download area.
+
+=== (If is a respin) Remove respin suffix from sites
+
+Via sftp, remove older respins and remane the latest respin to remove its respin suffix. The principle is to keep only the latest respin to make it the actual release.
+
+Example: assuming you are publishing the 2nd respin of 4.2.0.Alpha2, then it's folder are called 4.2.0.Alpha2b, you'll have to::
+* Delete folders that are 4.2.0.Alpha and 4.2.0.Alpha2a if there is a 4.2.0.Alpha2b available, then
+* Rename folders that are 4.2.0.Alpha2b into 4.2.0.Alpha
+
+WARNING: ¡¡¡Do not delete a folder is there is no more recent respin!!!
+
+WARNING: The delete operation can take some time...
+
+A graphical sftp client such as FileZilla seems to be the easiest way to perform these operations. Looks in the following locations:
+
+* /downloads_htdocs/tools/discovery/development
+* /downloads_htdocs/tools/builds/development
+* /downloads_htdocs/tools/updates
+
+=== WebTools
+
+==== Publish Site
+
+[source,bash]
+----
+  alias   ga='git add'
+  alias   stat='git status'
+  alias   gd='git diff --color=always -w'
+  alias   scpr='rsync -aPrz --rsh=ssh'
+  alias   ci='git commit -m'
+
+  previous=4.1.0.Final
+  version=4.1.1.Final # only use a, b suffix if did not perform rename in step 6 above
+  version2=4.1.1.Final # a, b, c, d...
+  #echo "rename webtools/kepler webtools/kepler.`date +%Y%m%d-%H%M`" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/
+  echo "rename webtools/kepler webtools/kepler_${previous}"         | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/
+  echo "rename JBossTools-${version}.webtools webtools/kepler"      | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/
+  cd ~/tru/download.jboss.org/jbosstools/updates/webtools/kepler/
+  rm -f index.html site.xml
+  # sometimes the website is slow to refresh, so pull over sftp instead 
+  #wget -N http://download.jboss.org/jbosstools/updates/webtools/kepler/index.html
+  #wget -N http://download.jboss.org/jbosstools/updates/webtools/kepler/site.xml
+  scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/webtools/kepler/index.html .
+  scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/webtools/kepler/site.xml .
+
+  stat .; gd .
+  topic="release-${version2}"; branch=master; gw1
+  ci "release ${version} (${version2}) to http://download.jboss.org/jbosstools/updates/webtools/kepler/" index.html site.xml
+  gw3;gw4
+
+  Also, over sftp, delete any old iterations or respins that are no longer needed.
+----
+
+==== Notify webtools project
+
+If this is the first milestone release, ensure that upstream project Web Tools (WTP) knows to include this new URL in their server adapter wizard. New bugzilla required!
+
+=== Update target-platforms
+
+[source,bash]
+----
+  ** MAY NOT NEED TO DO THIS AGAIN UNTIL AFTER GA **
+
+  version=4.1.1.Final
+
+  OLD_JBT_JBDS_TP=4.31.1.CR1
+  NEW_JBT_JBDS_TP=4.31.1.Final
+
+  OLD_CENTRAL_TP=4.31.0.Final-SNAPSHOT
+  NEW_CENTRAL_TP=4.31.0.Final
+
+  pushd ~/tru/download.jboss.org/
+  topic="release-target-platform-for-${version}"; branch=master; gw1
+
+  # JBT
+  pushd ~/tru/download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/
+  now=`date +%s000`
+  for d in composite*.xml; do
+  sed -i -e "s#${OLD_JBT_JBDS_TP}#${NEW_JBT_JBDS_TP}#g" $d
+  sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
+  done
+  ci "release ${NEW_JBT_JBDS_TP} to http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/" .
+  popd >/dev/null
+
+  # JBDS
+  pushd ~/tru/download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/kepler/
+  now=`date +%s000`
+  for d in composite*.xml; do
+  sed -i -e "s#${OLD_JBT_JBDS_TP}#${NEW_JBT_JBDS_TP}#g" $d
+  sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
+  done
+  ci "release ${NEW_JBT_JBDS_TP} to http://download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/kepler/" .
+  popd >/dev/null
+
+  # JBoss Central
+  # CAUTION! DO THIS ONLY IF COMPATIBLE w/ previous .Final release (or last milestone if no Final yet)! 
+  # This will make the latest Central site live and could cause update problems if there are incompatibilities (eg., gwt e42 -> gwt e43).
+  # you might want to instead update updates/development/kepler/central/core/compositeContent.xml to point at a specific TP version
+  pushd ~/tru/download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/kepler/
+  now=`date +%s000`
+  for d in composite*.xml; do
+  sed -i -e "s#${OLD_CENTRAL_TP}#${NEW_CENTRAL_TP}#g" $d
+  sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
+  done
+  ci "release ${NEW_CENTRAL_TP} to http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/" .
+  popd >/dev/null
+
+  gw3;gw4
+  popd >/dev/null
+
+  # push updated target platforms to production
+  scpr ~/tru/download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/composite*.xml $TOOLS/targetplatforms/jbosstoolstarget/kepler/
+  scpr ~/tru/download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/kepler/composite*.xml $TOOLS/targetplatforms/jbdevstudiotarget/kepler/
+  scpr ~/tru/download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/kepler/composite*.xml $TOOLS/targetplatforms/jbtcentraltarget/kepler/
+  # Ensure that the following files exist and are correct
+  echo " >> http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/compositeArtifacts.xml"
+  echo " >> http://download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/kepler/compositeArtifacts.xml"
+  echo " >> http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/kepler/compositeArtifacts.xml"
+  echo " >> http://download.jboss.org/jbosstools/updates/development/kepler/central/core/compositeArtifacts.xml"
+----
+
+=== Update composite, discovery and index.html
+
+Composite metadata (absolute path), Central directory file (absolute path, from http://download.jboss.org/jbosstools/discovery/development/${version}/), and 
+             index.html files (absolute paths). Also pull a copy of the updated discovery jar (from http://download.jboss.org/jbosstools/discovery/development/${version}/plugins/).
+
+[source,bash]
+----
+  previous=4.1.1.CR1
+  version=4.1.1.Final
+  version2=4.1.1.Final # no a, b, c if renamed above 
+
+  branch=master; topic="release-development-${version2}"; gw1
+  cd ~/tru/download.jboss.org/jbosstools/updates/development/kepler/
+
+  now=`date +%s000`
+  for d in composite*.xml; do
+  sed -i -e "s#${previous}#${version2}#g" $d
+  sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
+  done
+
+  rm -f index.html; wget -nc http://download.jboss.org/jbosstools/updates/JBossTools-${version2}.core/index.html
+  sed -i -e "s#href=\"#href=\"http://download.jboss.org/jbosstools/updates/JBossTools-${version2}.core/#g" -e "s#href=\"http://download.jboss.org/jbosstools/updates/JBossTools-${version2}.core/http#href=\"http#g" index.html
+  
+  # update XML
+  version=4.1.1.Final
+  cd ~/tru/download.jboss.org/jbosstools/updates/development/kepler/
+  rm -f jbosstools-directory.xml; wget -nc http://download.jboss.org/jbosstools/discovery/development/${version}/jbosstools-directory.xml
+  #newJar=plugins/org.jboss.tools.central.discovery_1.0.0.v20120612-0053-H99-Final.jar
+  newJar=$(cat jbosstools-directory.xml | grep entry | sed -e "s#.\+plugins/#plugins/#g" | sed -e "s#\.jar.\+#.jar#g"); echo $newJar
+  mkdir -p ~/tru/download.jboss.org/jbosstools/updates/development/kepler/plugins
+  pushd ~/tru/download.jboss.org/jbosstools/updates/development/kepler/plugins >/dev/null
+  wget http://download.jboss.org/jbosstools/discovery/development/${version}/${newJar}
+  popd >/dev/null
+  
+  # IF THIS IS pre-Final, ensure that your plugin points to the STAGING URL, not the RELEASE one:
+  #unzip -q -d ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}{_,}
+  #pushd ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}_ >/dev/null 
+  #sed -i "s#http://download.jboss.org/jbosstools/updates/stable/kepler/central/core/#http://download.jboss.org/jbosstools/updates/development/kepler/central/core/#g" plugin.xml
+  #zip -u ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar} plugin.xml
+  #popd >/dev/null
+  #rm -fr ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}_
+
+  # IF THIS IS Final, ensure that your plugin points to the RELEASE URL, not the STAGING one:
+  unzip -q -d ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}{_,}
+  pushd ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}_ >/dev/null 
+  sed -i "s#http://download.jboss.org/jbosstools/updates/development/kepler/central/core/#http://download.jboss.org/jbosstools/updates/stable/kepler/central/core/#g" plugin.xml
+  ## *** make sure we do not point at http://download.jboss.org/jbosstools/discovery/development/${version} instead
+  zip -u ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar} plugin.xml
+  popd >/dev/null
+  rm -fr ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}_
+
+  # check in / sync changes - 4 updated files, 1 new jar, 1 deleted jar
+  stat .; gd .
+  # TODO: only add the new jar + updated directory.xml if this is Alpha/Beta/CR toward a .0.Final, or Beta/CR toward a .x.Final (skip Alphas toward .x.Final)
+  git add ${newJar}
+  ci "release ${version2} to http://download.jboss.org/jbosstools/updates/development/kepler/; add new discovery plugin ${newJar} + update jbosstools-directory.xml" .
+  gw2;gw3;gw4
+  scpr ~/tru/download.jboss.org/jbosstools/updates/development/kepler/* $TOOLS/updates/development/kepler/
+
+  # Make sure directory.xml points at a real jar:
+  #   http://download.jboss.org/jbosstools/updates/development/kepler/jbosstools-directory.xml 
+  #   -> http://download.jboss.org/jbosstools/updates/development/kepler/plugins/org.jboss.tools.central.discovery_1.2.0.Final-v20130626-1621-B250.jar
+  firefox \
+    http://download.jboss.org/jbosstools/updates/development/kepler/ \
+    view-source:http://download.jboss.org/jbosstools/updates/development/kepler/compositeArtifacts.xml \
+    view-source:http://download.jboss.org/jbosstools/updates/development/kepler/central/core/compositeArtifacts.xml \
+    view-source:http://download.jboss.org/jbosstools/updates/development/kepler/jbosstools-directory.xml \
+    http://download.jboss.org/jbosstools/updates/development/kepler/${newJar}
+  # ensure jar's plugin.xml points at to http://download.jboss.org/jbosstools/updates/development/kepler/central/core/
+  bc ~/tmp/${newJar/plugins\//} ~/tmp
+
+# If this is the Final build, ensure that the following files exist (copy content from /development/kepler/ so that both the milestone and the release have nearly the same content):
+  firefox \
+    http://download.jboss.org/jbosstools/updates/stable/kepler/ \
+    view-source:http://download.jboss.org/jbosstools/updates/stable/kepler/compositeArtifacts.xml \
+    view-source:http://download.jboss.org/jbosstools/updates/stable/kepler/central/core/compositeArtifacts.xml \
+    view-source:http://download.jboss.org/jbosstools/updates/stable/kepler/jbosstools-directory.xml \
+    http://download.jboss.org/jbosstools/updates/stable/kepler/${newJar}
+
+  # and push new/updated files to server too
+  scpr ~/tru/download.jboss.org/jbosstools/updates/stable/* $TOOLS/updates/stable/
+  # "gw1" uses special aliases/scripts/shortcuts. Basically, we want to follow correct github workflows so that commits are pushed to user's fork, then later pull-requested (and the p-r applied)
+  branch=master; topic="release-stable-${version2}"; gw1
+  ci "release ${version} to http://download.jboss.org/jbosstools/updates/stable/kepler/; add new discovery plugin ${newJar} + update jbosstools-directory.xml" .
+  gw2;gw3;gw4
+----
+
+
+== Magnolia
+
+Magnolia is the place where we can edit the content of the +http://jboss.org/tools+ site. You can log into it using user *tools*.
+
+WARNING: you need a password to get there. In case you don't have it, ask it to Nick, Mickael or Max
+
+Go to the following URLs and update the link to "latest development build".
+
+* https://www.jboss.org/author/tools/download
+* https://www.jboss.org/author/tools/download/dev
+* https://www.jboss.org/author/tools/download/stable
+* https://www.jboss.org/author/tools/download/installation/update_4_2
+
+When you're done, publish those pages: go to https://www.jboss.org/author/ and publish
+
+== Update Eclipse Marketplace (add/remove features)
+
+WARNING: Alpha versions are not published to market place. So ignore this step for Alpha versions
+
+=== If node doesn't exist yet
+
+This is usually the case of first Beta version.
+
+Create a new node on Marketplace, use content of +http://download.jboss.org/jbosstools/updates/JBossTools-<version>.core/site.properties+
+
+=== If node already exists
+
+Access it via +https://marketplace.eclipse.org/node/xxxxxx/edit+ and update the following things:
+
+* Title to match new version
+* Description to match new version
+* Update list of features, using content of +http://download.jboss.org/jbosstools/updates/JBossTools-<version>.core/site.properties+
+
+== Git tags
+
+=== Ask team to create tags
+
+Send mail to the team. Take care of replacing the following variables (using bash string substitution can help):
+
+* ${branch} the branch from where to tag, example *4.2.0.Alpha2x*
+* ${tag} the tag to create, for example *4.2.0.Alpha2*
+
+____
+*To:* "jbosstools-dev@lists.jboss.org" <jbosstools-dev@lists.jboss.org> +
+*Subject:* ACTION REQUIRED: Project leads, please tag your projects [ branch ${branch} -> tag ${tag} ]  +
+*Body:*
+----
+Project leads, please tag your projects!
+
+  git fetch origin ${branch}
+  git tag ${tag} FETCH_HEAD
+  git push origin ${tag}
+----
+____
+
+=== Create tags for build-related repositories
+
+Similarly to what's explained about, tag the following repositories:
+
+* https://github.com/jbosstools/jbosstools-build
+* https://github.com/jbosstools/jbosstools-build-ci
+* https://github.com/jbosstools/jbosstools-build-sites
+* https://github.com/jbosstools/jbosstools-devdoc
+* https://github.com/jbosstools/jbosstools-discovery
+* https://github.com/jbosstools/jbosstools-download.jboss.org
+* https://github.com/jbosstools/jbosstools-maven-plugins
+
+Here is a magic script for that, which runs from the location containing your git repositories:
+
+[source,bash]
+----
+jbt_branch=jbosstools-4.2.0.Alpha2x
+version=4.2.0.Alpha2
+for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins; do
+  echo "====================================================================="
+  echo "Tagging jbosstools-${d} from branch ${jbt_branch} as tag ${version}..."
+  pushd ~/jbosstools-${d}
+  git stash
+  git pull origin
+  git fetch -t -p
+  git checkout ${jbt_branch} && git tag -f jbosstools-${version} && git push origin jbosstools-${version}
+  git checkout master; git stash pop
+  echo ">>> https://github.com/jbosstools/jbosstools-${d}/tree/jbosstools-${version}"
+  popd >/dev/null 
+  echo "====================================================================="
+  echo ""
+done
+----
+
+== Announce
+
+Send announce. Take care of replacing the following variables (using bash string substitution can help):
+
+* ${version} example *4.2.0.Alpha2* (no respin suffix)
+
+____
+*To:* "jbosstools-dev@lists.jboss.org" <jbosstools-dev@lists.jboss.org> +
+and +
+*To:* jbds-pm-list <jbds-pm-list@redhat.com>, "external-exadel-list@redhat.com" <external-exadel-list@redhat.com>, jboss-announce@redhat.com +
+*Subject:* JBoss Tools ${version} is available +
+*Body:*
+----
+JBoss Tools ${version} is now available.
+
+This is a development release aimed at Eclipse 4.4.M5 (Luna M5) users.
+
+Eclipse Marketplace: https://marketplace.eclipse.org/content/jboss-tools-luna
+Update Site: http://download.jboss.org/jbosstools/updates/development/luna/
+Installation + Download Pages:
+* http://www.jboss.org/tools/download
+* http://www.jboss.org/tools/download/dev/4_2_x
+* http://www.jboss.org/tools/download/installation/update_4_2
+
+
+JBoss Central: This release includes changes to JBoss Central. To see these updates, launch Eclipse with this extra -vmarg in your eclipse.ini:
+* -Djboss.discovery.directory.url=http://download.jboss.org/jbosstools/updates/development/luna/jbosstools-directory.xml
+
+
+New + Noteworthy:
+Subject to change, the latest N&N is here:
+* http://htmlpreview.github.com/?https://raw.github.com/jbosstools/jbosstools-documentation/master/whatsnew/index.html
+* http://docs.jboss.org/tools/whatsnew/
+
+Schedule / Upcoming Releases:
+* https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.plugin.system.project%3Aversions-panel
+----
+____

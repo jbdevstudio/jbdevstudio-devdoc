@@ -3,6 +3,16 @@
 # the 4 steps are captured here: https://gist.github.com/nickboldt/4111850
 # "stat" is short for "git status"; "gd" is short for "git diff"; "ga" is short for "git add"
 
+
+##############################################################################
+#### 
+#### TODO JBIDE-13283 incorporate publishing to Akamai for update sites & zips: use
+#### http://download.jboss.org/jbosstools/static/releases/ instead of 
+#### http://download.jboss.org/jbosstools/updates/
+#### 
+##############################################################################
+
+
 0. Launch Sourceforge SSH session
 
  ssh -t nickboldt,jboss@shell.sourceforge.net create # wait until this is done, then see step 2.

@@ -275,6 +275,14 @@ rm -fr jbosstools/updates/development/kepler/${newJar}_
 
 When all changes are done:
 
+##############################################################################
+#### 
+#### TODO JBIDE-13283 incorporate publishing to Akamai for update sites & zips: use
+#### http://download.jboss.org/jbosstools/static/releases/ instead of 
+#### http://download.jboss.org/jbosstools/updates/
+#### 
+##############################################################################
+
 * Commit them (should show 4 files changed, 1 jar deleted, 1 jar added)
 * Push to remote repo
 * Publish to download.jboss.org using the synchronization job https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-download.jboss.org-rsync-from-git/

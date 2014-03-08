@@ -10,6 +10,16 @@ If you do not need it urgently, you can push files there simply by pushing a cha
 Discovery URLs
 --------------
 
+
+  ##############################################################################
+  #### 
+  #### TODO per Max: use 
+  #### http://download.jboss.org/jbosstools/updates/staging/<buildName> instead of 
+  #### http://download.jboss.org/jbosstools/updates/<buildName>
+  #### 
+  ##############################################################################
+
+
 Update the discovery job on *branch* ( https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_8.0.luna/job/jbosstools-discovery_4.2.luna/configure ) to publish to the right URL, according to JBT and JBDS versions::
 * Update property +JBT_UPDATE_SITE+ to http://download.jboss.org/jbosstools/updates/JBossTools-4.2.0.Alpha2.core/
 * Update property +JBDE_UPDATE_SITE+ to http://www.qa.jboss.com/binaries/RHDS/updates/development/8.0.0.Alpha2.core/
@@ -73,6 +83,19 @@ Move update sites to "updates"
 ------------------------------
 
 p2 repositories are expected to be under the +http://download.jboss.org/jbosstools/updates+ directory. Similarly to the build sites, we move them there.
+
+
+
+  ##############################################################################
+  #### 
+  #### TODO per Max: use 
+  #### http://download.jboss.org/jbosstools/updates/staging/<buildName> instead of 
+  #### http://download.jboss.org/jbosstools/updates/<buildName>
+  #### 
+  ##############################################################################
+
+
+
 [source,bash]
 ----
 stream=4.2.luna

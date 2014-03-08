@@ -42,6 +42,16 @@
 
 2. Move the latest JBT, Web Tools, and Discovery update sites (no symlinks to avoid accidental overwrites):
 
+
+  ##############################################################################
+  #### 
+  #### TODO per Max: use 
+  #### http://download.jboss.org/jbosstools/updates/staging/<buildName> instead of 
+  #### http://download.jboss.org/jbosstools/updates/<buildName>
+  #### 
+  ##############################################################################
+
+
 	version=4.1.2.CR1 # a, b, c...
   branch=core/4.1.kepler;   echo "rename nightly/${branch} JBossTools-${version}.core" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates  
   echo " >> http://download.jboss.org/jbosstools/updates/JBossTools-${version}.core/" | egrep ">>|${version}"

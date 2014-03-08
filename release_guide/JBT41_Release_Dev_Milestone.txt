@@ -116,6 +116,16 @@
   version=4.1.1.Final
   version2=4.1.1.CR2 # a, b, c, d...
 
+
+  ##############################################################################
+  #### 
+  #### TODO per Max: use 
+  #### http://download.jboss.org/jbosstools/updates/staging/<buildName> instead of 
+  #### http://download.jboss.org/jbosstools/updates/<buildName>
+  #### 
+  ##############################################################################
+
+
   # rename discovery site, http://download.jboss.org/jbosstools/discovery/development/${version2}/
   echo "rename development/${version}  development/${version}.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery
   echo "rename development/${version2} development/${version}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery
@@ -159,6 +169,16 @@
   alias   gd='git diff --color=always -w'
   alias   scpr='rsync -aPrz --rsh=ssh'
   alias   ci='git commit -m'
+
+
+  ##############################################################################
+  #### 
+  #### TODO per Max: use 
+  #### http://download.jboss.org/jbosstools/updates/staging/<buildName> instead of 
+  #### http://download.jboss.org/jbosstools/updates/<buildName>
+  #### 
+  ##############################################################################
+
 
   previous=4.1.0.Final
   version=4.1.1.Final # only use a, b suffix if did not perform rename in step 6 above

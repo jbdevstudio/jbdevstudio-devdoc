@@ -114,6 +114,17 @@ A graphical sftp client such as FileZilla seems to be the easiest way to perform
 
 Webtools site is expected to be found in +http://download.jboss.org/tools/updates/webtools/${eclipseTrain}+ (where eclipseTrain is for example "luna"). So, with a sftp client, on filemgmt.jboss.org
 
+
+
+  ##############################################################################
+  #### 
+  #### TODO per Max: use 
+  #### http://download.jboss.org/jbosstools/updates/staging/<buildName> instead of 
+  #### http://download.jboss.org/jbosstools/updates/<buildName>
+  #### 
+  ##############################################################################
+
+
 1. Rename +/downloads_htdocs/tools/updates/webtools/${eclipseTrain}+ into +/downloads_htdocs/tools/updates/webtools/${eclipseTrain}_${previousVersion}+, with ${previous} being the name of previous release (for example 4.2.0.Alpha1 when releasing 4.2.0.Alpha2)
 1. Move last build in +/downloads_htdocs/tools/updates/JBossTools-${version}.webtools+ to +/downloads_htdocs/tools/updates/webtools/${eclipseTrain}+
 
@@ -201,6 +212,17 @@ In any case:
 === Update composite, discovery and index.html
 
 Changes also happen on the +jbosstools-download.jboss.org+ repository, which is synchronized with download.jboss.org using https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-download.jboss.org-rsync-from-git/ .
+
+
+  ##############################################################################
+  #### 
+  #### TODO per Max: use 
+  #### http://download.jboss.org/jbosstools/updates/staging/<buildName> instead of 
+  #### http://download.jboss.org/jbosstools/updates/<buildName>
+  #### 
+  ##############################################################################
+
+
 
 On this repository:
 

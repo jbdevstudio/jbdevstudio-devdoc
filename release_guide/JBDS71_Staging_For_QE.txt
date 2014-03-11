@@ -4,8 +4,8 @@
 
   https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_7.0.kepler/job/jbosstools-discovery_41/configure
 
-    http://download.jboss.org/jbosstools/updates/JBossTools-4.1.2.CR1.core/ # a, b, c...
-    http://www.qa.jboss.com/binaries/RHDS/updates/development/7.1.1.CR1.core/ # a, b, c...
+    http://download.jboss.org/jbosstools/updates/staging/JBossTools-4.1.2.CR1a.core/ # a, b, c...
+    http://www.qa.jboss.com/binaries/RHDS/updates/development/7.1.1.CR1a.core/ # a, b, c...
 
   Respin.
 
@@ -18,17 +18,17 @@
 
   # can do these next 3 steps in parallel
   
-  version=7.1.1.CR1 # a, b, c...
+  version=7.1.1.CR1a # a, b, c...
   scpr /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_71/installer/* /qa/services/http/binaries/RHDS/builds/development/${version}.installer/
   cd /qa/services/http/binaries/RHDS/builds/development/; find . -maxdepth 1 -type d -name "${version}*" | grep ${version}; find . -maxdepth 1 -type d -name "${version}*" | sed "s#\.# >> http://www.qa.jboss.com/binaries/RHDS/builds/development#" | egrep ">>|${version}"
 
-  version=7.1.1.CR1 # a, b, c...
+  version=7.1.1.CR1a # a, b, c...
   scpr /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_71/all/repo/* /qa/services/http/binaries/RHDS/updates/development/${version}.core/
   cd /qa/services/http/binaries/RHDS/updates/development/; find . -maxdepth 1 -type d -name "${version}*" | grep ${version}; find . -maxdepth 1 -type d -name "${version}*" | sed "s#\.# >> http://www.qa.jboss.com/binaries/RHDS/updates/development#" | egrep ">>|${version}"
 
   # Make sure that the parameters fed into the Discovery job are correct; respin if necessary.
   # https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_7.0.kepler/job/jbosstools-discovery_41/
-  version=7.1.1.CR1 # a, b, c...
+  version=7.1.1.CR1a # a, b, c...
   scpr /qa/services/http/binaries/RHDS/discovery/nightly/core/4.1.kepler/* /qa/services/http/binaries/RHDS/discovery/development/${version}/
   # JBDS-2551 fix composite discovery site
   cd /qa/services/http/binaries/RHDS/discovery/development/${version}/
@@ -48,19 +48,19 @@
   
   (in parallel terminal connections!)
   
-  version=7.1.1.CR1 # a, b, c...
+  version=7.1.1.CR1a # a, b, c...
   cd /mnt/devstudio/updates/7.0.0
   scpr nboldt@dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/builds/staging/devstudio.product_71/all/repo/* ${version}.core/
   chmod -R g+w /mnt/devstudio/updates/${version}.core 2>/dev/null
   chgrp -R devstudio /mnt/devstudio/updates/${version}.core 2>/dev/null
 
-  #version=7.1.1.CR1 # a, b, c...
+  #version=7.1.1.CR1a # a, b, c...
   # cd /mnt/devstudio/updates/7.0.0
   #scpr nboldt@dev01.mw.lab.eng.bos.redhat.com:~/RHDS/updates/development/${version}.techpreview .
   #scpr nboldt@dev01.mw.lab.eng.bos.redhat.com:~/RHDS/updates/development/${version}.extras .
 
   # TODO: verify correct URL and filename for the target zip
-  version=7.1.1.CR1 # a, b, c...
+  version=7.1.1.CR1a # a, b, c...
   cd /mnt/devstudio/updates/7.0.0
   TARGET_PLATFORM_VERSION_MAX=4.32.0.Final
   scpr nboldt@dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MAX}/jbdevstudiotarget-${TARGET_PLATFORM_VERSION_MAX}.zip . 
@@ -83,8 +83,8 @@
   alias   ci='git commit -m'
 
   cd ~/truu/devstudio.jboss.com/updates/7.0-staging/
-  previous=7.1.0.GA # a, b, c...
-  version=7.1.1.CR1 # a, b, c...
+  previous=7.1.1.CR1 # a, b, c...
+  version=7.1.1.CR1a # a, b, c...
   topic="release-${version}-to-staging";branch=master; gw1
   now=`date +%s000`
   for d in *.*ml extras/*.*ml central/core/*.*ml; do
@@ -92,7 +92,7 @@
 
   # update https://devstudio.jboss.com/updates/7.0-staging/devstudio-directory.xml to point at new Core discovery jar.
   # Latest discovery site is here: http://www.qa.jboss.com/binaries/RHDS/discovery/development/${version}
-  version=7.1.1.CR1 # a, b, c...
+  version=7.1.1.CR1a # a, b, c...
   # get new plugin
   cd ~/truu/devstudio.jboss.com/updates/7.0-staging/discovery/
   #git rm -f com.jboss.jbds.central.discovery_*.jar
@@ -156,7 +156,7 @@
 7. Commit updated docs & push:
 
   cd ~/truu/doc/release_guide
-  version=7.1.1.CR1 # a, b, c...
+  version=7.1.1.CR1a # a, b, c...
   topic="release-${version}";branch=master; gw1
   ci "update release guide for release of ${version} for QE" .
   gw2;gw3;gw4
@@ -167,7 +167,7 @@
 
 # To: jbds-pm-list <jbds-pm-list@redhat.com>, "external-exadel-list@redhat.com" <external-exadel-list@redhat.com>
 
-version=7.1.1.CR1 # a, b, c...
+version=7.1.1.CR1a # a, b, c...
 respin="respin-"
 TARGET_PLATFORM_VERSION_MIN=4.30.6.Final
 TARGET_PLATFORM_VERSION_MAX=4.32.0.Final

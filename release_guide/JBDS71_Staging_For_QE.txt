@@ -159,7 +159,7 @@
   version=7.1.1.CR1b # a, b, c...
   topic="release-${version}";branch=master; gw1
   ci "update release guide for release of ${version} for QE" .
-  gw2;gw3;gw4
+  gw2;gw3;cd .;gw4
 
 --------------------------------------------
 

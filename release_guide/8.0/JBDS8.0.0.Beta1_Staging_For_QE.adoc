@@ -4,8 +4,8 @@
 
 In CI job that builds discovery site ( https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_8.0.luna/job/jbosstools-discovery_4.2.luna/configure ), update the configuration to use the latest URLs:
 
-* http://download.jboss.org/jbosstools/updates/JBossTools-4.2.0.Alpha2.core/ # a, b, c...
-* http://www.qa.jboss.com/binaries/RHDS/updates/development/8.0.0.Alpha2.core/ # a, b, c...
+* http://download.jboss.org/jbosstools/updates/JBossTools-4.2.0.Beta1.core/ # a, b, c...
+* http://www.qa.jboss.com/binaries/RHDS/updates/development/8.0.0.Beta1.core/ # a, b, c...
 
 Then, respin the job.
 
@@ -37,18 +37,19 @@ WARNING: Don't use symlinks are they are too risky to use. Those operations can 
 
 [source,bash]
 ----
-version=8.0.0.Alpha2a # a, b, c...
-
+version=8.0.0.Beta1 # a, b, c...
 rsync -aPrz /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/installer/* /qa/services/http/binaries/RHDS/builds/development/${version}.installer/
 cd /qa/services/http/binaries/RHDS/builds/development/
 find . -maxdepth 1 -type d -name "${version}*" | grep ${version}
 find . -maxdepth 1 -type d -name "${version}*" | sed "s#\.# >> http://www.qa.jboss.com/binaries/RHDS/builds/development#" | egrep ">>|${version}"
 
+version=8.0.0.Beta1 # a, b, c...
 rsync -aPrz /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/all/repo/* /qa/services/http/binaries/RHDS/updates/development/${version}.core/
 cd /qa/services/http/binaries/RHDS/updates/development/
 find . -maxdepth 1 -type d -name "${version}*" | grep ${version}
 find . -maxdepth 1 -type d -name "${version}*" | sed "s#\.# >> http://www.qa.jboss.com/binaries/RHDS/updates/development#" | egrep ">>|${version}"
 
+version=8.0.0.Beta1 # a, b, c...
 rsync -aPrz /qa/services/http/binaries/RHDS/discovery/nightly/core/4.2.luna/* /qa/services/http/binaries/RHDS/discovery/development/${version}/
 ----
 
@@ -69,7 +70,7 @@ find . -maxdepth 1 -type d -name "${version}*" | sed "s#\.# >> http://www.qa.jbo
 
 == Stage files to devstudio.jboss.com
 
-WARNING: Skip this test for Alpha1 and Alpha2
+WARNING: Skip this test for Alpha
 
 === Push content
 
@@ -87,7 +88,7 @@ Then, copy stuff from dev01 (CI build publishing to qa.jboss.org) to wallace
 [source,bash]
 ----
 isGA=false # or true in case you're doing a GA
-version=8.0.0.Alpha2a # a, b, c...
+version=8.0.0.Beta1 # a, b, c...
 cd /mnt/devstudio/updates/8.0.0
 
 rsync -aPrz --rsh=ssh dev01.mw.lab.eng.bos.redhat.com:~/RHDS/updates/development/${version}.core .
@@ -98,7 +99,7 @@ chgrp -R devstudio /mnt/devstudio/updates/${version}.core 2>/dev/null
 #rsync -aPrz --rsh=ssh dev01.mw.lab.eng.bos.redhat.com:~/RHDS/updates/development/${version}.extras .
 
 # TODO: verify correct URL and filename for the target zip
-TARGET_PLATFORM_VERSION_MAX=4.40.0.Alpha2
+TARGET_PLATFORM_VERSION_MAX=4.40.0.Beta1-SNAPSHOT
 rsync -aPrz --rsh=ssh dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MAX}/jbdevstudiotarget-${TARGET_PLATFORM_VERSION_MAX}.zip . 
 unzip -d ${version}.target-platform jbdevstudiotarget-${TARGET_PLATFORM_VERSION_MAX}.zip
 # Fix permissions
@@ -115,7 +116,7 @@ Then, update the composite files to have public URLs pointing to these artifacts
 isGA=false # or true in case you're doing a GA
 cd jbdevstudio-website/content/updates/8.0-staging/
 previous=7.1.0.GA # a, b, c...
-version=8.0.0.Alpha2a # a, b, c...
+version=8.0.0.Beta1 # a, b, c...
 
 now=`date +%s000`
 for d in *.*ml extras/*.*ml central/core/*.*ml; do
@@ -195,22 +196,26 @@ chgrp -R devstudio /mnt/devstudio/updates/8.0* 2>/dev/null
 In case something change, update relevant documentation in +jbdevstudio-devdoc+ repository. As this is a shared documentation, it's better to create a pull request and ask reviews from other potential users (Nick, Mickael, Max, Denis... and anyone else who can be interested). 
 
 
-== Notify team
-
-Send the following mail, taking care of replacing the following properties (using bash string replacement can help)
-
-* +${version}+ is the fully qualified version (eg +8.0.0.Alpha2b+)
-* +${TARGET_PLATFORM_VERSION_MIN}+ is the version of minimal compatible target-platform (eg +4.40.0.Alpha1+)
-* +${TARGET_PLATFORM_VERSION_MAX}+ is the version of maximal/recommended target-paltform. This is typically the version of target-platform that was used to create the installer and that is provided as referenced repository to resolve dependencies (eg +4.40.0.Alpha2+)
-* +${repin}+ is the (optional) respin entry key in JIRA (such as +respin-b+)
-* +${jbosstools-version-without-respin-suffix}+ is for example 4.2.0.Alpha2 when doing JBDS 8.0.0.Alpha2b (respin suffix is dropped). It matches fixVersion in JIRA.
-* +${devstudio-version-without-respin-suffix}+ is for example 8.0.0.Alpha2 when doing JBDS 8.0.0.Alpha2 (respin suffix dropped). It matches fixVersion is JIRA.
-
+== Notify the team (send 1 email)
 ____
-*To* jbds-pm-list <jbds-pm-list@redhat.com>, "external-exadel-list@redhat.com" <external-exadel-list@redhat.com> + 
-*Subject* JBDS ${version} Core bits available for QE testing +
-*Body*
+*To* jbds-pm-list@redhat.com, external-exadel-list@redhat.com +
+
+[source,bash]
 ----
+version=8.0.0.Beta1 # a, b, c...
+respin="respin-"
+TARGET_PLATFORM_VERSION_MIN=4.40.0.Beta1-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.40.0.Beta1-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.40.0.Beta1-SNAPSHOT
+version2=8.0.0.Beta1 # no respin suffix here
+version3=4.2.0.Beta1 # no respin suffix here
+echo "
+Subject: 
+
+JBDS ${version} Core bits available for QE testing
+
+Body:
+
 As always, these are not FINAL bits, but preliminary results for QE testing. Not for redistribution to customers. Links in this section are all internal (VPN required), except for the target platform.
 
 Universal Installers (Internal): http://www.qa.jboss.com/binaries/RHDS/builds/development/${version}.installer/
@@ -224,7 +229,7 @@ Target Platforms (Public):
 . http://download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MAX}/
 
 
-** SKIP THIS FOR Alpha1 and Alpha2 **
+** SKIP THIS FOR Alpha **
 --
 The sites below will take about 1 hour to appear. These are public-facing for staging purposes (no VPN required). 
 
@@ -236,11 +241,24 @@ JBoss Central (Public, Staging): To test this version of Central, add the follwo
     -Djboss.discovery.directory.url=https://devstudio.jboss.com/updates/8.0-staging/devstudio-directory.xml -Djboss.discovery.site.url=https://devstudio.jboss.com/updates/8.0-staging/central/core/
 --
 
+New + Noteworthy (subject to change): 
+* http://htmlpreview.github.com/?https://raw.github.com/jbosstools/jbosstools-documentation/master/whatsnew/index.html
+* http://docs.jboss.org/tools/whatsnew/
 Schedule / Upcoming Releases: https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.plugin.system.project%3Aversions-panel
 
 Note: if your DNS won't resolve it, use 10.16.89.17 instead of www.qa.jboss.com.
+"
+if [[ $respin != "respin-" ]]; then
+echo " 
 
-Chamges prompting this ${respin} are:
-https://issues.jboss.org/issues/?jql=labels%20in%20%28%22${respin}%22%29%20and%20%28%28project%20in%20%28%22JBDS%22%29%20and%20fixversion%20in%20%28%22${jbosstools-version-without-respin-suffix}%22%29%29%20or%20%28project%20in%20%28%22JBIDE%22%2C%22TOOLSDOC%22%29%20and%20fixversion%20in%20%28%22${devstudio-version-without-respin-suffix}%22%29%29%29
+--
+
+Changes prompting this $respin are:
+
+https://issues.jboss.org/issues/?jql=labels%20in%20%28%22${respin}%22%29%20and%20%28%28project%20in%20%28%22JBDS%22%29%20and%20fixversion%20in%20%28%22${version2}%22%29%29%20or%20%28project%20in%20%28%22JBIDE%22%2C%22TOOLSDOC%22%29%20and%20fixversion%20in%20%28%22${version3}%22%29%29%29
+"
+fi
+
+
 ----
 ____

@@ -187,7 +187,7 @@
 
 
   previous=4.1.1.Final
-  version=4.2.0.Final # only use a, b suffix if did not perform rename in step 6 above
+  version=4.2.0.Alpha1 # only use a, b suffix if did not perform rename in step 6 above
   #echo "rename webtools/luna webtools/luna.`date +%Y%m%d-%H%M`" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/
   echo "rename webtools/luna webtools/luna_${previous}"         | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/
   echo "rename JBossTools-${version}.webtools webtools/luna"      | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/

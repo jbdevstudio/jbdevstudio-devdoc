@@ -218,15 +218,27 @@ Body:
 
 As always, these are not FINAL bits, but preliminary results for QE testing. Not for redistribution to customers. Links in this section are all internal (VPN required), except for the target platform.
 
-Universal Installers (Internal): http://www.qa.jboss.com/binaries/RHDS/builds/development/${version}.installer/
-Update Sites (Internal): http://www.qa.jboss.com/binaries/RHDS/updates/development/${version}.core/
+Universal Installers (Internal): 
 
-JBoss Central (Internal): To test this version of Central, add the following JVM system properties to your ~/jbdevstudio/studio/jbdevstudio.ini file after the -vmargs line
+http://www.qa.jboss.com/binaries/RHDS/builds/development/${version}.installer/
+
+Update Sites (Internal): 
+
+http://www.qa.jboss.com/binaries/RHDS/updates/development/${version}.core/
+
+JBoss Central (Internal): 
+
+To test this version of Central, add the following JVM system properties to your ~/jbdevstudio/studio/jbdevstudio.ini file after the -vmargs line
    -Djboss.discovery.directory.url=http://www.qa.jboss.com/binaries/RHDS/discovery/development/${version}/devstudio-directory.xml -Djboss.discovery.site.url=http://www.qa.jboss.com/binaries/RHDS/discovery/development/${version}/
 
 Target Platforms (Public):
-. http://download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MIN}/
-. http://download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MAX}/
+
+* http://download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MAX}/ (upcoming milestone)
+
+Until the above target platform site is released, you will need to add it to Eclipse to resolve dependencies at install time. 
+Once released, dependencies will be found automatically from here:
+
+* http://download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/luna/ (latest release)
 
 
 ** SKIP THIS FOR Alpha **
@@ -234,17 +246,25 @@ Target Platforms (Public):
 The sites below will take about 1 hour to appear. These are public-facing for staging purposes (no VPN required). 
 
 Update Sites (Public, Staging):
+
 * https://devstudio.jboss.com/updates/8.0-staging/ (includes ${version} Core + Target Platform)
 * https://devstudio.jboss.com/updates/8.0-staging/central/core/ (includes ${version} Core + Target Platform + 3rd party site mirrors)
 
-JBoss Central (Public, Staging): To test this version of Central, add the follwoing JVM system properties to your ~/jbdevstudio/studio/jbdevstudio.ini file after the -vmargs line
+JBoss Central (Public, Staging): 
+
+To test this version of Central, add the follwoing JVM system properties to your ~/jbdevstudio/studio/jbdevstudio.ini file after the -vmargs line:
+
     -Djboss.discovery.directory.url=https://devstudio.jboss.com/updates/8.0-staging/devstudio-directory.xml -Djboss.discovery.site.url=https://devstudio.jboss.com/updates/8.0-staging/central/core/
 --
 
-New + Noteworthy (subject to change): 
+New + Noteworthy (subject to change):
+
 * http://htmlpreview.github.com/?https://raw.github.com/jbosstools/jbosstools-documentation/master/whatsnew/index.html
 * http://docs.jboss.org/tools/whatsnew/
-Schedule / Upcoming Releases: https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.plugin.system.project%3Aversions-panel
+
+Schedule / Upcoming Releases: 
+
+https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.plugin.system.project%3Aversions-panel
 
 Note: if your DNS won't resolve it, use 10.16.89.17 instead of www.qa.jboss.com.
 "

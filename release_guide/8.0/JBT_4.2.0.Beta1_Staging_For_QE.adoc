@@ -188,32 +188,44 @@ Body:
 As always, these are not FINAL bits, but preliminary results for QE testing. Not for redistribution to customers. 
 
 Update Sites:
+
 * http://download.jboss.org/jbosstools/updates/staging/JBossTools-${version}.core/
 * http://download.jboss.org/jbosstools/updates/staging/JBossTools-${version}.coretests/
 * http://download.jboss.org/jbosstools/updates/staging/JBossTools-${version}.hibernatetools/
 * http://download.jboss.org/jbosstools/updates/staging/JBossTools-${version}.webtools/
 
 Builds:
+
 * http://download.jboss.org/jbosstools/builds/development/${version}.core/${coreBuildID}
 * http://download.jboss.org/jbosstools/builds/development/${version}.coretests/${coretestsBuildID}
 * http://download.jboss.org/jbosstools/builds/development/${version}.hibernatetools/${hibernatetoolsBuildID}
 * http://download.jboss.org/jbosstools/builds/development/${version}.webtools/${webtoolsBuildID}
 
 JBoss Central:
-* http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/${TARGET_PLATFORM_CENTRAL_MAX}/ (JBoss Central - upcoming milestone)
+
+* http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/${TARGET_PLATFORM_CENTRAL_MAX}/ (upcoming milestone)
 
 To test the upcoming version of Central, add this to your eclipse.ini file after the -vmargs line:
  -Djboss.discovery.directory.url=http://download.jboss.org/jbosstools/discovery/development/${version}/jbosstools-directory.xml
  -Djboss.discovery.site.url=http://download.jboss.org/jbosstools/discovery/development/${version}/
 
-JBoss Tools Target Platforms (This is loaded automatically into Eclipse when installing JBoss Tools. Provided here simply for reference):
-* http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MAX} (JBoss Tools - upcoming milestone)
+Target Platforms:
+
+* http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MAX} (upcoming milestone)
+
+Until the above target platform site is released, you will need to add it to Eclipse to resolve dependencies at install time. 
+Once released, dependencies will be found automatically from here:
+
+* http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/luna/ (latest release)
 
 New + Noteworthy (subject to change): 
+
 * http://htmlpreview.github.com/?https://raw.github.com/jbosstools/jbosstools-documentation/master/whatsnew/index.html
 * http://docs.jboss.org/tools/whatsnew/
 
-Schedule / Upcoming Releases: https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.plugin.system.project%3Aversions-panel
+Schedule / Upcoming Releases: 
+
+https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.plugin.system.project%3Aversions-panel
 "
 if [[ $respin != "respin-" ]]; then
 echo " 

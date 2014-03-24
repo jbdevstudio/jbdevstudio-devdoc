@@ -1,5 +1,4 @@
-Publishing JBT update sites for QE
-==================================
+= Publishing JBT update sites for QE
 
 This document describe how to promote a valid build from a branch to QE so they can test us.
 
@@ -7,9 +6,7 @@ TIP:
 Note that +sftp://tools@filemgmt.jboss.org/downloads_htdocs/tools/+ maps to +http://download.jboss.org/jbosstools/+ +
 If you do not need it urgently, you can push files there simply by pushing a change into the following location: https://github.com/jbosstools/jbosstools-download.jboss.org/tree/master/jbosstools, a Jenkins job will be triggered to upload your change from Git repository to download.jboss.org (job is https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_All/job/jbosstools-download.jboss.org-rsync-from-svn/ )
 
-Discovery URLs
---------------
-
+== Update Discovery URLs
 
 Update the discovery job on *branch* ( https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_8.0.luna/job/jbosstools-discovery_4.2.luna/configure ) to publish to the right URL, according to JBT and JBDS versions::
 * Update property +JBT_UPDATE_SITE+ to http://download.jboss.org/jbosstools/updates/staging/JBossTools-4.2.0.Beta1.core/
@@ -17,8 +14,9 @@ Update the discovery job on *branch* ( https://jenkins.mw.lab.eng.bos.redhat.com
 
 Then Respin jobs and verify that sites were correctly populated
 
-Promote builds from "nightly" to "development"
-----------------------------------------------
+== Stage to download.jboss.org
+
+=== Promote builds from "nightly" to "development"
 
 *Development* where we store builds for staging. This contains build metadata. The URL for development sites pattern is +http://download.jboss.org/jbosstools/development/<version>.<siteName>/<buildId>::
 . *Core* site (which contains JBoss Tools): Move the most recent build available from +http://downloads.jboss.org/tools/build/nightly/core/4.2.luna+ to +http://downloads.jboss.org/tools/development/4.2.0.Beta1.core/+
@@ -70,8 +68,7 @@ echo " >> http://download.jboss.org/jbosstools/builds/development/${version}.web
 
 Then verify sites are correctly populated with build metadata. To do so, you can simply make sure that under each one of these build sites, you find a file /logs/GIT_REVISION.txt.
 
-Move update sites to "updates"
-------------------------------
+=== Stage update sites
 
 p2 repositories are expected to be under the +http://download.jboss.org/jbosstools/updates+ directory. Similarly to the build sites, we move them there.
 
@@ -97,7 +94,7 @@ echo "rename nightly/${site}/${stream} staging/JBossTools-${version}.${site}" | 
 echo " >> http://download.jboss.org/jbosstools/updates/staging/JBossTools-${version}.${site}/" | egrep ">>|${version}"
 ----
 
-And it is also necessary to populate the *discovery* sites for the version(cf 1st step)
+=== Stage discovery site (cf 1st step)
 
 [source,bash]
 ----
@@ -110,8 +107,7 @@ echo " >> http://download.jboss.org/jbosstools/discovery/development/${version}/
 
 Then verify those 4 sites are correctly populated.
 
-Preserve a copy of the nightly sites after the move
----------------------------------------------------
+=== Preserve a copy of the nightly sites after the move
 
 NOTE:
 This step is mandatory only because we dont have a good way to copy stuff remotely (sftp only allows rename). If we could be granted something more powerful with remote copies, we could copy stuff in previous steps instead of moving it, and this step would becomme useless.
@@ -163,7 +159,7 @@ dev01$ sudo su - hudson
   echo " >> http://download.jboss.org/jbosstools/discovery/nightly/${branch}/" | egrep ">>|${branch}"
 
 
-Notify the team (send 2 emails)
+== Notify the team (send 2 emails)
 ---------------
 
 *To* jbosstools-dev@lists.jboss.org +

@@ -1,5 +1,7 @@
 = Publishing JBDS Installers & update sites for QE
 
+This document describe how to promote a valid build from a branch to QE so they can test us.
+
 == Update discovery URLs
 
 In CI job that builds discovery site ( https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_8.0.luna/job/jbosstools-discovery_4.2.luna/configure ), update the configuration to use the latest URLs:
@@ -33,7 +35,7 @@ Then copy the last good JBDS artifacts:
 
 WARNING: Don't use symlinks are they are too risky to use. Those operations can be done in parallel (using multiple terminals is the easiest way)
 
-=== Push artifacts
+=== Push installers, update site, and discovery site
 
 [source,bash]
 ----
@@ -190,11 +192,9 @@ chmod -R g+w /mnt/devstudio/updates/8.0* 2>/dev/null
 chgrp -R devstudio /mnt/devstudio/updates/8.0* 2>/dev/null
 ----
 
-
 == Update documentation
 
 In case something change, update relevant documentation in +jbdevstudio-devdoc+ repository. As this is a shared documentation, it's better to create a pull request and ask reviews from other potential users (Nick, Mickael, Max, Denis... and anyone else who can be interested). 
-
 
 == Notify the team (send 1 email)
 ____

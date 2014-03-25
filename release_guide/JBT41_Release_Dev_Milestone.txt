@@ -210,10 +210,10 @@
 
   version=4.1.2.Final
 
-  OLD_JBT_JBDS_TP=4.31.1.CR1
-  NEW_JBT_JBDS_TP=4.31.1.Final
+  OLD_JBT_JBDS_TP=4.31.1.Final
+  NEW_JBT_JBDS_TP=4.32.0.Final
 
-  OLD_CENTRAL_TP=4.31.0.Final-SNAPSHOT
+  OLD_CENTRAL_TP=4.31.0.Final
   NEW_CENTRAL_TP=4.31.0.Final
 
   pushd ~/tru/download.jboss.org/

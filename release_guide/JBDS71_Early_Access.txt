@@ -7,8 +7,8 @@
 
   screen
 
-  version=7.1.0.GA
-  version2=7.1.0.GA; # a, b, c, ...
+  version=7.1.1.GA
+  version2=7.1.1.CR1c; # a, b, c, ...
   dev=10.16.88.146; # dev01.mw.lab.eng.bos.redhat.com
   cd /mnt/devstudio/earlyaccess/builds/development/
   mkdir -p /mnt/devstudio/earlyaccess/builds/development/${version}
@@ -19,8 +19,8 @@
   # cp /mnt/devstudio/earlyaccess/builds/development/7.0.*-eap/.htaccess /mnt/devstudio/earlyaccess/builds/development/${version2}-eap/
 
   # clean out old installers & update sites from previous milestones; rename update sites from "a,b,c" to ""
-  version=7.1.0.GA
-  version2=7.1.0.GA; # a, b, c, ...
+  version=7.1.1.GA
+  version2=7.1.1.CR1c; # a, b, c, ...
   cd /mnt/devstudio/updates/7.0.0/
   if [[ ${version} != ${version2} ]]; then 
     mv ${version}.core ${version}.core.DELETEME
@@ -48,8 +48,8 @@
   # "stat" is short for "git status"; "gd" is short for "git diff"; "ga" is short for "git add"
 
   cd ~/truu/devstudio.jboss.com/updates/7.0-staging
-  version=7.1.0.GA
-  version2=7.1.0.GA; # a, b, c, ...
+  version=7.1.1.GA
+  version2=7.1.1.CR1c; # a, b, c, ...
   now=`date +%s000`
   for d in composite*.xml index.html central/core/index.html ; do
     sed -i -e "s#${version2}#${version}#g" $d
@@ -69,8 +69,8 @@
   alias   scpr='rsync -aPrz --rsh=ssh'
   alias   ci='git commit -m'
   
-  version=7.1.0.GA
-  version2=7.1.0.GA; # a, b, ...
+  version=7.1.1.GA
+  version2=7.1.1.CR1c; # a, b, ...
   cd ~/truu/devstudio.jboss.com/earlyaccess
   wget http://www.qa.jboss.com/binaries/RHDS/builds/development/${version2}.installer/${version}.html
   echo "<html><head></head><body onload=\"document.location.href='../${version}.html'\"></body></html>" > 7.0/index.html
@@ -89,7 +89,7 @@
 #  7.0-development for /7.0-development/
 #  7.0-staging for /7.0-staging/
 
-  version=7.1.0.GA
+  version=7.1.1.GA
   SRC_SITE=7.0-staging
   DESTSITE=7.0-development # or 7.0/ for a GA release
 
@@ -158,7 +158,7 @@
   git clone https://github.com/jbdevstudio/jbdevstudio-devdoc
 
   # now tag multiple projects in a single step, replacing existing tags if already exist
-  jbt_branch=jbosstools-4.1.1.x
+  jbt_branch=jbosstools-4.1.x
   version=7.1.0.GA
   for d in product ci website artwork devdoc; do
     echo "====================================================================="

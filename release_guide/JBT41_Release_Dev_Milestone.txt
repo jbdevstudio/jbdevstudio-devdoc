@@ -79,8 +79,8 @@
   version2=4.1.2.Final
   cd /home/nboldt/truu/doc/release_guide/ # in devstudio SVN
   prev=$(find . -name "zz_Release_Notes_4.1*"); prev=${prev:2}; echo $prev
-  sublime zz_Release_Notes_4.1.1*.html # or use gedit, vim, etc.
-  git mv zz_Release_Notes_4.1.1*.html zz_Release_Notes_${version2}.readme.html
+  sublime zz_Release_Notes_4.1.2*.html # or use gedit, vim, etc.
+  git mv zz_Release_Notes_4.1.2*.html zz_Release_Notes_${version2}.readme.html
   # for milestones
   scp /home/nboldt/truu/doc/release_guide/zz_Release_Notes_${version2}.readme.html "nickboldt,jboss@frs.sourceforge.net:/home/frs/project/j/jb/jboss/JBossTools/JBossTools4.1.1.x/"
   # or, for Final builds
@@ -418,7 +418,7 @@ c. magnolia pages
 14. Update Eclipse Marketplace (add/remove features)
 
   Compare list of features here:  http://download.jboss.org/jbosstools/updates/JBossTools-4.1.2.Final.core/site.properties (see CoreTools.category.features)
-  with features here:       https://marketplace.eclipse.org/node/xxxxxx/edit
+  with features here:       https://marketplace.eclipse.org/node/xxxxxx/edit ( http://marketplace.eclipse.org/content/jboss-tools-kepler/edit )
 
   Currently, there are 43 features:
 
@@ -488,7 +488,7 @@ Be sure to also update the listing to the latest release version (eg., CR1 -> Fi
   git clone https://github.com/jbosstools/jbosstools-maven-plugins
 
   # now tag multiple projects in a single step, replacing existing tags if already exist
-  jbt_branch=jbosstools-4.1.1.x
+  jbt_branch=jbosstools-4.1.x
   version=4.1.2.Final
   for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins; do
     echo "====================================================================="

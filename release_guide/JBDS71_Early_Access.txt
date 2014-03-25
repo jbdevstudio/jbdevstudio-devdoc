@@ -213,8 +213,8 @@ jbds-pm-list <jbds-pm-list@redhat.com>
 "external-exadel-list@redhat.com" <external-exadel-list@redhat.com>
 jboss-announce@redhat.com (optional for major milestones/releases)
 
-version=7.1.0.GA
-version2=7.1.0.GA # a, b, c...
+version=7.1.1.GA
+version2=7.1.1.GA # a, b, c...
 echo "
 Subject: 
 
@@ -225,7 +225,7 @@ Body:
 
 JBDS ${version} Early Access installers are now available!
 
-https://devstudio.jboss.com/earlyaccess/
+https://devstudio.jboss.com/earlyaccess/${version}.html
 
 Note that bits may take a while to replicate from our staging server to publication. Please allow at least an hour before attempting to download them - if the page above still shows the previous milestone instead of ${version}, try again later.
 
@@ -264,8 +264,9 @@ https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.plugin.syst
 # Michelle Murray <mmurray@redhat.com>
 # Jiri Pallich <jpallich@redhat.com>
 
-version=7.1.0.GA
-version2=7.1.0.GA # a, b, c...
+version=7.1.1.GA
+version2=7.1.1.CR1c # a, b, c...
+version3=7.1.1.GA-v20140314-2145-B688
 echo "
 Subject: 
 
@@ -275,18 +276,30 @@ Body:
 
 JBDS ${version} (renamed from ${version2}) is available to push to CSP staging server, for subsequent smoke test & review by QE.
 
-Please include these 4 files:
+Please include these 5 files:
 
-jbdevstudio-product-eap-universal-${version}-*.jar
-jbdevstudio-product-universal-${version}-*.jar 
-jbdevstudio-product-Update-${version}-*.zip
-jbdevstudio-product-sources-${version}-*.zip
+* http://www.qa.jboss.com/binaries/RHDS/builds/stable/${version}.installer/jbdevstudio-product-universal-${version3}.jar 
+* http://www.qa.jboss.com/binaries/RHDS/builds/stable/${version}.installer/jbdevstudio-product-eap-universal-${version3}.jar
+* http://www.qa.jboss.com/binaries/RHDS/builds/stable/${version}.installer/jbdevstudio-product-sources-${version3}.zip
+* http://www.qa.jboss.com/binaries/RHDS/builds/stable/${version}.installer/jbdevstudio-product-Update-${version3}.zip
+* http://www.qa.jboss.com/binaries/RHDS/builds/stable/${version}.installer/jbdevstudio-product-Central-${version3}.zip
 
-Content is here:
+We will also need GoldenGate links for the 5 artifacts above, as they need to be linked from these pages:
 
-http://www.qa.jboss.com/binaries/RHDS/builds/development/${version2}.installer/
+* https://www.jboss.org/products/
+* https://www.jboss.org/products/devstudio
 
-When pushed, please reply so that QE can review it for push to production.
+Please note that the new CSP pages should include similar documentation to the previous release [1], [2], but with these string replacements / updates:
+
+* s/Eclipse 4.3.1/Eclipse 4.3.2/g
+* s/Kepler SR1/Kepler SR2/g
+* s/Kepler JEE bundle/Kepler SR2 JEE bundle/g
+* s/keplersr1/keplersr2/g
+
+[1] https://access.redhat.com/jbossnetwork/restricted/softwareDetail.html?softwareId=27063&product=jbossdeveloperstudio&version=7.1.0&downloadType=distributions
+[2] https://access.redhat.com/jbossnetwork/restricted/softwareDetail.html?softwareId=27073&product=jbossdeveloperstudio&version=7.1.0&downloadType=distributions
+
+When pushed, please reply so that QE can review the CSP pages & files for push to production.
 
 Thanks in advance,
 

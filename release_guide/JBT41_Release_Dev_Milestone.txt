@@ -109,50 +109,48 @@
 
   # for Final builds, copy dev/4_1 into stable/4_1, update other pages accordingly.
 
+  ##############################################################################
+  #### 
+  #### TODO: this step is obsoleted once the new website goes live. For now, submit a PR against this file:
+  #### 
+  #### https://github.com/jbosstools/jbosstools-website/blob/master/_config/products.yml
+  #### 
+  ##############################################################################
+
 ----
 
 6. (ONLY if necessary) Move Milestonex to Milestone
 
   version=4.1.2.Final
-  version2=4.1.2.Final # a, b, c, d...
-
-
-  ##############################################################################
-  #### 
-  #### TODO per Max: use 
-  #### http://download.jboss.org/jbosstools/updates/staging/<buildName> instead of 
-  #### http://download.jboss.org/jbosstools/updates/<buildName>
-  #### 
-  ##############################################################################
-
+  version2=4.1.2.CR1c # a, b, c, d...
 
   # rename discovery site, http://download.jboss.org/jbosstools/discovery/development/${version2}/
-  echo "rename development/${version}  development/${version}.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery
+  #echo "rename development/${version}  development/${version}.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery
   echo "rename development/${version2} development/${version}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery
 
   # rename the development build
-  echo "rename development/${version}.core  development/${version}.core.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+  #echo "rename development/${version}.core  development/${version}.core.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
   echo "rename development/${version2}.core development/${version}.core" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
 
   # make sure this exists - might be only "a" while core is on "c"
-  echo "rename development/${version}.coretests  development/${version}.coretests.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+  #echo "rename development/${version}.coretests  development/${version}.coretests.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
   echo "rename development/${version2}.coretests development/${version}.coretests" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
 
   # make sure this exists - might be only "a" while core is on "c"
-  echo "rename development/${version}.webtools  development/${version}.webtools.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+  #echo "rename development/${version}.webtools  development/${version}.webtools.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
   echo "rename development/${version2}.webtools development/${version}.webtools" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
 
   # rename the update site
-  echo "rename JBossTools-${version}.core  JBossTools-${version}.core.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
-  echo "rename JBossTools-${version2}.core JBossTools-${version}.core" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
+  #echo "rename JBossTools-${version}.core  JBossTools-${version}.core.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
+  echo "rename staging/JBossTools-${version2}.core JBossTools-${version}.core" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
 
   # make sure this exists - might be only "a" while core is on "c"
-  echo "rename JBossTools-${version}.coretests  JBossTools-${version}.coretests.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
-  echo "rename JBossTools-${version2}.coretests JBossTools-${version}.coretests" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
+  #echo "rename JBossTools-${version}.coretests  JBossTools-${version}.coretests.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
+  echo "rename staging/JBossTools-${version2}.coretests JBossTools-${version}.coretests" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
 
   # make sure this exists - might be only "a" while core is on "c"
-  echo "rename JBossTools-${version}.webtools  JBossTools-${version}.webtools.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
-  echo "rename JBossTools-${version2}.webtools JBossTools-${version}.webtools" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
+  #echo "rename JBossTools-${version}.webtools  JBossTools-${version}.webtools.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
+  echo "rename staging/JBossTools-${version2}.webtools JBossTools-${version}.webtools" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
 
   Also, over sftp, delete any old iterations (*.DELETEME) or previous respins that are no longer needed from 
 
@@ -162,25 +160,13 @@
 
 7. Publish new Web Tools site:
 
-  ** SKIP FOR 4.1.1.x UNTIL GA **
-
   alias   ga='git add'
   alias   stat='git status'
   alias   gd='git diff --color=always -w'
-  alias   scpr='rsync -aPrz --rsh=ssh'
+  alias   scpr='rsync -Przlt --rsh=ssh --protocol=28'
   alias   ci='git commit -m'
 
-
-  ##############################################################################
-  #### 
-  #### TODO per Max: use 
-  #### http://download.jboss.org/jbosstools/updates/staging/<buildName> instead of 
-  #### http://download.jboss.org/jbosstools/updates/<buildName>
-  #### 
-  ##############################################################################
-
-
-  previous=4.1.0.Final
+  previous=4.1.1.Final
   version=4.1.2.Final # only use a, b suffix if did not perform rename in step 6 above
   version2=4.1.2.Final # a, b, c, d...
   #echo "rename webtools/kepler webtools/kepler.`date +%Y%m%d-%H%M`" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/
@@ -197,14 +183,31 @@
   stat .; gd .
   topic="release-${version2}"; branch=master; gw1
   ci "release ${version} (${version2}) to http://download.jboss.org/jbosstools/updates/webtools/kepler/" index.html site.xml
-  gw3;gw4
+  gw2;gw3;gw4
 
   Also, over sftp, delete any old iterations or respins that are no longer needed.
 
   ** If this is the first milestone release, ensure that upstream project Web Tools (WTP) knows to include this new URL in their server adapter wizard. New bugzilla required! **
 
 
-8. [4 files] Update latest released target platform site.
+8. Move release content from /updates/ into Akamai /static/releases/ folder, then symlink it back
+
+  version=4.1.2.Final
+  cd ~/tru/download.jboss.org/jbosstools/updates/
+  echo "rename updates/JBossTools-${version}.core static/releases/JBossTools-${version}.core" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/
+  echo "rename updates/JBossTools-${version}.coretests static/releases/JBossTools-${version}.coretests" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/
+  ln -s ../static/releases/JBossTools-${version}.core/
+  ln -s ../static/releases/JBossTools-${version}.coretests/
+  git add JBossTools-${version}.core JBossTools-${version}.coretests
+  alias   scpr='rsync -Przlt --rsh=ssh --protocol=28'
+  scpr JBossTools-${version}.core JBossTools-${version}.coretests $TOOLS/updates/
+
+  stat .; gd .
+  topic="link-akamai-${version2}"; branch=master; gw1
+  ci "move Akamai content from updates/ into static/releases/; then symlink" JBossTools-${version}.core JBossTools-${version}.coretests
+  gw2;gw3;gw4
+
+9. [4 files] Update latest released target platform site.
 
   ** MAY NOT NEED TO DO THIS AGAIN UNTIL AFTER GA **
 
@@ -252,7 +255,7 @@
   ci "release ${NEW_CENTRAL_TP} to http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/" .
   popd >/dev/null
 
-  gw3;gw4
+  gw2;gw3;gw4
   popd >/dev/null
 
   # push updated target platforms to production
@@ -265,11 +268,51 @@
   echo " >> http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/kepler/compositeArtifacts.xml"
   echo " >> http://download.jboss.org/jbosstools/updates/development/kepler/central/core/compositeArtifacts.xml"
 
+10. Move release content from /updates/ into Akamai /static/releases/ folder, then symlink it back
 
-9. Update composite site metadata (absolute path), Central directory file (absolute path, from http://download.jboss.org/jbosstools/discovery/development/${version}/), and 
+  NEW_JBT_JBDS_TP=4.32.0.Final
+  NEW_CENTRAL_TP=4.31.0.Final
+  alias   scpr='rsync -Przlt --rsh=ssh --protocol=28'
+
+  cd ~/tru/download.jboss.org/jbosstools/targetplatforms
+  topic="mirror-target-platforms-to-akamai-for-${version}"; branch=master; gw1
+
+  ##############################################################################
+  #### 
+  #### TODO: This step doesn't work yet. 
+  #### 
+  #### See: https://issues.jboss.org/browse/JBIDE-13283
+  #### 
+  ##############################################################################
+
+  # TODO: fix typo - directory should be "jbosstoolstarget" not "jbosstoolstargets" so it's consistent with http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/
+  # TODO: make dir static/targetplatforms/jbosstoolstargets/ writeable
+  # echo "rename jbosstoolstarget/${NEW_JBT_JBDS_TP} static/targetplatforms/jbosstoolstargets/${NEW_JBT_JBDS_TP}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/
+  # cd jbosstoolstarget; ln -s ../static/targetplatforms/jbosstoolstargets/${NEW_JBT_JBDS_TP}/; cd -
+  # git add jbosstoolstargets/${NEW_JBT_JBDS_TP}
+  # scpr ${NEW_JBT_JBDS_TP} $TOOLS/targetplatforms/jbosstoolstarget
+
+  # TODO: create static/targetplatforms/jbdevstudiotarget folder so there's somewhere to put the new TP; make dir writeable
+  # echo "rename jbdevstudiotarget/${NEW_JBT_JBDS_TP} static/targetplatforms/jbdevstudiotarget/${NEW_JBT_JBDS_TP}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/
+  # cd jbdevstudiotarget; ln -s ../static/targetplatforms/jbdevstudiotarget/${NEW_JBT_JBDS_TP}/; cd -
+  # git add jbdevstudiotarget/${NEW_JBT_JBDS_TP}
+  # scpr ${NEW_JBT_JBDS_TP} $TOOLS/targetplatforms/jbdevstudiotarget
+
+  # TODO: create static/targetplatforms/jbtcentraltarget folder so there's somewhere to put the new TP; make dir writeable
+  # echo "rename jbdevstudiotarget/${NEW_CENTRAL_TP} static/targetplatforms/jbdevstudiotarget/${NEW_CENTRAL_TP}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/
+  # cd jbtcentraltarget; ln -s ../static/targetplatforms/jbtcentraltarget/${NEW_JBT_JBDS_TP}/; cd -
+  # git add jbtcentraltarget/${NEW_JBT_JBDS_TP}
+  # scpr ${NEW_CENTRAL_TP} $TOOLS/targetplatforms/jbtcentraltarget
+
+  stat .; gd .
+  ci "move Akamai content from updates/ into static/releases/; then symlink" .
+  gw2;gw3;gw4
+
+
+11. Update composite site metadata (absolute path), Central directory file (absolute path, from http://download.jboss.org/jbosstools/discovery/development/${version}/), and 
              index.html files (absolute paths). Also pull a copy of the updated discovery jar (from http://download.jboss.org/jbosstools/discovery/development/${version}/plugins/).
 
-  previous=4.1.1.CR1
+  previous=4.1.1.Final
   version=4.1.2.Final
   version2=4.1.2.Final # no a, b, c if renamed above 
 
@@ -333,7 +376,8 @@
   # ensure jar's plugin.xml points at to http://download.jboss.org/jbosstools/updates/development/kepler/central/core/
   bc ~/tmp/${newJar/plugins\//} ~/tmp
 
-# If this is the Final build, ensure that the following files exist (copy content from /development/kepler/ so that both the milestone and the release have nearly the same content):
+# If this is the Final build, ensure that the following files exist (copy/merge content from /development/kepler/ so that both the milestone and the release have nearly the same content):
+# TODO: MAKE SURE YOU DON'T LOSE THE JBTIS discovery plugin from directory.xml!
   firefox \
     http://download.jboss.org/jbosstools/updates/stable/kepler/ \
     view-source:http://download.jboss.org/jbosstools/updates/stable/kepler/compositeArtifacts.xml \
@@ -350,7 +394,7 @@
   
 ----
 
-9. Review changes:
+12. Review changes:
 
 a. files on SF
 
@@ -365,15 +409,13 @@ c. magnolia pages
 
 ----
 
-10. Publish magnolia pages
+13. Publish magnolia pages
 
   https://www.jboss.org/author/
 
 --------------------------------------------
 
-11. Update Eclipse Marketplace (add/remove features)
-
-** SKIP FOR 4.1.1.x UNTIL GA **
+14. Update Eclipse Marketplace (add/remove features)
 
   Compare list of features here:  http://download.jboss.org/jbosstools/updates/JBossTools-4.1.2.Final.core/site.properties (see CoreTools.category.features)
   with features here:       https://marketplace.eclipse.org/node/xxxxxx/edit
@@ -426,7 +468,7 @@ org.jboss.tools.wtp.runtimes.tomcat.feature,
 
 Be sure to also update the listing to the latest release version (eg., CR1 -> Final)
 
-12. Commit updates to release guide (including this document):
+14. Commit updates to release guide (including this document):
 
   version=4.1.2.Final
   cd ~/truu/doc/release_guide
@@ -434,7 +476,7 @@ Be sure to also update the listing to the latest release version (eg., CR1 -> Fi
   ci "update release guide for ${version}" JBT41*
   gw2;gw3;gw4
 
-13. tag git
+15. tag git
 
   # if not already cloned, the do this:
   git clone https://github.com/jbosstools/jbosstools-build
@@ -463,7 +505,7 @@ Be sure to also update the listing to the latest release version (eg., CR1 -> Fi
     echo ""
   done
 
-15. Send email, prepare blogs & announcements
+16. Send email, prepare blogs & announcements
 
 == EMAIL TEMPLATE -- send two emails ==
 
@@ -530,7 +572,7 @@ https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.plugin.syst
 1. To:
 "jbosstools-dev@lists.jboss.org" <jbosstools-dev@lists.jboss.org>
 
-version1=jbosstools-4.1.1.x
+version1=jbosstools-4.1.x
 version2=jbosstools-4.1.2.Final
 
 echo "

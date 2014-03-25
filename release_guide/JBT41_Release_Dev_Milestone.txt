@@ -505,7 +505,11 @@ Be sure to also update the listing to the latest release version (eg., CR1 -> Fi
     echo ""
   done
 
-16. Send email, prepare blogs & announcements
+16. Release JIRA:
+
+https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions
+
+17. Send email, prepare blogs & announcements
 
 == EMAIL TEMPLATE -- send two emails ==
 
@@ -527,7 +531,7 @@ Body:
 
 JBoss Tools ${version} is now available.
 
-This is a development release aimed at Eclipse 4.3 (Kepler R or SR1) users.
+This is a development/stable release aimed at Eclipse 4.3 (Kepler R, SR1 or SR2) users.
 
 Eclipse Marketplace:
 
@@ -536,11 +540,13 @@ https://marketplace.eclipse.org/content/jboss-tools-kepler
 Update Site:
 
 http://download.jboss.org/jbosstools/updates/development/kepler/
+http://download.jboss.org/jbosstools/updates/stable/kepler/
 
 Installation + Download Pages:
 
 http://www.jboss.org/tools/download
 http://www.jboss.org/tools/download/dev/4_1_x
+http://www.jboss.org/tools/download/stable/4_1
 http://www.jboss.org/tools/download/installation/update_4_1
 
 

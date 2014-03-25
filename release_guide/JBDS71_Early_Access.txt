@@ -196,8 +196,12 @@
 
 10. Update Marketplace entry (CR1 -> GA)
 
+11. Release JIRA:
 
-11. Send email
+https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions
+https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
+
+12. Send email
 
 == Email Template -- send two emails ==
 

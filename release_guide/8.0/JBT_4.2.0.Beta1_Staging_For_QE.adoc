@@ -12,6 +12,16 @@ Use:
   * http://download.jboss.org/jbosstools/targetplatforms/
 ====
 
+[CAUTION]
+====
+JBIDE-16871 For *Beta2* filename refactoring is coming, so all files/paths will be lowercase. +
+Use:
+
+  * jbostools instead of JBossTools
+  * update instead of Update
+  * etc.
+====
+
 This document describe how to provide a valid JBoss Tools build to QE so they can test us.
 
 [NOTE]

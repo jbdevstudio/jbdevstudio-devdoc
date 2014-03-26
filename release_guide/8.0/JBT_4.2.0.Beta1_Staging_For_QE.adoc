@@ -1,18 +1,43 @@
 = Publishing JBT update sites for QE
 
-This document describe how to promote a valid build from a branch to QE so they can test us.
+[IMPORTANT]
+====
+JBIDE-13283 use Akamai publishing for update sites, target platforms & zips. +
+Use:
 
-TIP:
+  * http://download.jboss.org/jbosstools/static/releases/ instead of 
+  * http://download.jboss.org/jbosstools/updates/ +
+  and
+  * http://download.jboss.org/jbosstools/static/targetplatforms/ instead of 
+  * http://download.jboss.org/jbosstools/targetplatforms/
+====
+
+This document describe how to provide a valid JBoss Tools build to QE so they can test us.
+
+[NOTE]
+====
 Note that +sftp://tools@filemgmt.jboss.org/downloads_htdocs/tools/+ maps to +http://download.jboss.org/jbosstools/+ +
-If you do not need it urgently, you can push files there simply by pushing a change into the following location: https://github.com/jbosstools/jbosstools-download.jboss.org/tree/master/jbosstools, a Jenkins job will be triggered to upload your change from Git repository to download.jboss.org (job is https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_All/job/jbosstools-download.jboss.org-rsync-from-svn/ )
+
+If you do not need it urgently, you can push files there simply by pushing a change into the following location: https://github.com/jbosstools/jbosstools-download.jboss.org/tree/master/jbosstools
+
+A Jenkins job can then be triggered to sync changes to download.jboss.org: https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-download.jboss.org-rsync-from-svn/
+====
 
 == Update Discovery URLs
 
-Update the discovery job on *branch* ( https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_8.0.luna/job/jbosstools-discovery_4.2.luna/configure ) to publish to the right URL, according to JBT and JBDS versions::
+[[update-discovery-urls]]
+Update the *stable branch* discovery job [1] to publish to the right URL, according to JBT and JBDS versions +
+
 * Update property +JBT_UPDATE_SITE+ to http://download.jboss.org/jbosstools/updates/staging/JBossTools-4.2.0.Beta1.core/
 * Update property +JBDS_UPDATE_SITE+ to http://www.qa.jboss.com/binaries/RHDS/updates/development/8.0.0.Beta1.core/
 
-Then Respin jobs and verify that sites were correctly populated
+Then respin the job and verify that sites were correctly populated:
+
+* http://download.jboss.org/jbosstools/discovery/nightly/core/4.2.luna/
+* http://www.qa.jboss.com/binaries/RHDS/discovery/nightly/core/4.2.luna/
+
+[1] https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_8.0.luna/job/jbosstools-discovery_4.2.luna/configure
+
 
 == Stage to download.jboss.org
 
@@ -94,7 +119,11 @@ echo "rename nightly/${site}/${stream} staging/JBossTools-${version}.${site}" | 
 echo " >> http://download.jboss.org/jbosstools/updates/staging/JBossTools-${version}.${site}/" | egrep ">>|${version}"
 ----
 
-=== Stage discovery site (cf 1st step)
+Then verify those 4 sites are correctly populated.
+
+=== Stage discovery site 
+
+WARNING: Make sure you performed the step <<update-discovery-urls,Update Discovery URLs>> above.
 
 [source,bash]
 ----
@@ -105,7 +134,7 @@ echo "rename nightly/core/${stream} development/${version}" | sftp tools@filemgm
 echo " >> http://download.jboss.org/jbosstools/discovery/development/${version}/" | egrep ">>|${version}"
 ----
 
-Then verify those 4 sites are correctly populated.
+Then verify the site is correctly populated.
 
 === Preserve a copy of the nightly sites after the move
 
@@ -116,11 +145,14 @@ First, run it as +hudson+ user from a ci machine
 ----
 local$ ssh dev01.mw.lab.eng.bos.redhat.com
 dev01$ sudo su - hudson
+dev01$ # set up command prompt and load aliases
+dev01$ . /home/hudson/config_repository/scripts/jbds/prompt.sh 
 ----
  
+  # if you didn't run prompt.sh above, you'll need this
   alias   scpr=rsync -aPrz --rsh=ssh --protocol=28
 
-  # can run these in parallel 
+  # can run 5 steps these in parallel 
 
   version=4.2.0.Beta1 # a, b, c...
   branch=core/4.2.luna
@@ -160,10 +192,10 @@ dev01$ sudo su - hudson
 
 
 == Notify the team (send 2 emails)
----------------
 
+____
 *To* jbosstools-dev@lists.jboss.org +
-*To* jbds-pm-list@redhat.com, external-exadel-list@redhat.com +
+*To* jbds-pm-list@redhat.com, external-exadel-list@redhat.com 
 
 [source,bash]
 ----
@@ -235,8 +267,4 @@ https://issues.jboss.org/issues/?jql=labels%20in%20%28%22${respin}%22%29%20and%2
 fi
 
 ----
-
 ____
-
-And send a copy of this mail to jbds-pm-list@redhat.com and external-exadel-list@redhat.com
-

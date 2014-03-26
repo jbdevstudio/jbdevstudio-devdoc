@@ -1,6 +1,18 @@
 = Publishing JBDS Installers & update sites for QE
 
-This document describe how to promote a valid build from a branch to QE so they can test us.
+[IMPORTANT]
+====
+JBIDE-13283 use Akamai publishing for update sites, target platforms & zips. +
+Use:
+
+  * http://download.jboss.org/jbosstools/static/releases/ instead of 
+  * http://download.jboss.org/jbosstools/updates/ +
+  and
+  * http://download.jboss.org/jbosstools/static/targetplatforms/ instead of 
+  * http://download.jboss.org/jbosstools/targetplatforms/
+====
+
+This document describe how to provide a valid JBoss Developer Studio build to QE so they can test us.
 
 == Update discovery URLs
 
@@ -147,7 +159,7 @@ pushd jbdevstudio-website/content/updates/8.0-staging/${newJar}_ >/dev/null
 if [ "$isGA" = true ]; then
   sed -i "s#https://devstudio.jboss.com/updates/8.0-staging/central/core/#https://devstudio.jboss.com/updates/8.0/central/core/#g" plugin.xml
   sed -i "s#https://devstudio.jboss.com/updates/8.0-development/central/core/#https://devstudio.jboss.com/updates/8.0/central/core/#g" plugin.xml
-else  # plugin points to the STAGING URL, not the RELEASE one:
+else  # plugin points to the STAGING URL, not the RELEASE one
   sed -i "s#https://devstudio.jboss.com/updates/8.0/central/core/#https://devstudio.jboss.com/updates/8.0-staging/central/core/#g" plugin.xml
   sed -i "s#https://devstudio.jboss.com/updates/8.0-development/central/core/#https://devstudio.jboss.com/updates/8.0-staging/central/core/#g" plugin.xml
 fi

@@ -1,0 +1,378 @@
+= Release JBoss Developer Studio Development Milestone
+
+[IMPORTANT]
+====
+JBIDE-13283 use Akamai publishing for update sites, target platforms & zips. +
+Use:
+
+  * http://download.jboss.org/jbosstools/static/releases/ instead of 
+  * http://download.jboss.org/jbosstools/updates/ +
+  and
+  * http://download.jboss.org/jbosstools/static/targetplatforms/ instead of 
+  * http://download.jboss.org/jbosstools/targetplatforms/
+====
+
+This document describe how to publish a valid JBoss Developer Studio build to production after being verified by QE.
+
+WARNING: This requires write access to wallace.redhat.com, but in future will require access to devstudio@filemgmt.jboss.org.
+
+CAUTION: TODO: when releasing GA make sure to :%s/development/stable/g and :%s/8.0-staging/8.0/g in product/features/com.jboss.jbds.product.feature/p2.inf
+
+== SSH to wallace.redhat.com, then fetch installers & zips
+
+[source,bash]
+----
+screen
+
+version=8.0.0.Beta1
+version2=8.0.0.Beta1a; # a, b, c, ...
+dev=10.16.88.146; # dev01.mw.lab.eng.bos.redhat.com
+cd /mnt/devstudio/earlyaccess/builds/development/
+mkdir -p /mnt/devstudio/earlyaccess/builds/development/${version}
+touch ${version}-eap__No.eap.builds.will.be.released
+rsync -aPrz --rsh=ssh --exclude="*-eap-*" nboldt@${dev}:~/RHDS/builds/development/${version2}.installer/jbdevstudio-product* ${version}/
+
+# clean out old installers & update sites from previous milestones; rename update sites from "a,b,c" to ""
+version=8.0.0.Beta1
+version2=8.0.0.Beta1a; # a, b, c, ...
+cd /mnt/devstudio/updates/8.0.0/
+if [[ ${version} != ${version2} ]]; then 
+  mv ${version}.core ${version}.core.DELETEME
+  mv ${version}.target-platform ${version}.target-platform.DELETEME
+  mv ${version2}.core ${version}.core
+  mv ${version2}.target-platform ${version}.target-platform
+fi
+# TODO: do not run this next line if the above step fails!
+rm -fr ${version}?.core ${version}?.target-platform *.DELETEME
+
+# only applies if we staged installers for QE (eg., CR builds?); if you did not, then skip this step
+#cd /mnt/devstudio/earlyaccess/builds/development
+#if [[ ${version} != ${version2} ]]; then 
+#  mv ${version} ${version}.DELETEME
+#  mv ${version2} ${version}
+#fi  
+#rm -fr *.DELETEME
+----
+
+== Rename milestones from Foo1b to Foo1; fix html pages in 8.0-staging
+
+[source,bash]
+----
+# NOTE: ~/truu/devstudio.jboss.com is a symlink on my local machine to this folder in github: https://github.com/jbdevstudio/jbdevstudio-website/tree/master/content
+# "gw1" uses special aliases/scripts/shortcuts. Basically, we want to follow correct github workflows so that commits are pushed to user's fork, then later pull-requested (and the PR applied)
+# "gw2" will create the PR, "gw3" will apply it, and "gw4" will delete the topic branch locally and in my fork
+# the 4 steps are captured here: https://gist.github.com/nickboldt/4111850
+alias   ga='git add'
+alias   stat='git status'
+alias   gd='git diff --color=always -w'
+alias   scpr='rsync -aPrz --rsh=ssh'
+alias   ci='git commit -m'
+
+cd ~/truu/devstudio.jboss.com/updates/8.0-staging
+version=8.0.0.Beta1
+version2=8.0.0.Beta1a; # a, b, c, ...
+now=`date +%s000`
+for d in composite*.xml index.html central/core/index.html ; do
+  sed -i -e "s#${version2}#${version}#g" $d
+  sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
+done
+
+# commit to github   
+topic="release-${version2}";branch=master; gw1
+ci "rename ${version2} to ${version}" .
+gw2;gw3;gw4
+----
+
+== Update https://devstudio.jboss.com/earlyaccess/ *.html
+
+[source,bash]
+----
+version=8.0.0.Beta1
+version2=8.0.0.Beta1a; # a, b, ...
+# sources in https://github.com/jbdevstudio/jbdevstudio-website/tree/master/content/earlyaccess
+cd ~/truu/devstudio.jboss.com/earlyaccess
+wget http://www.qa.jboss.com/binaries/RHDS/builds/development/${version2}.installer/${version}.html
+echo "<html><head></head><body onload=\"document.location.href='../${version}.html'\"></body></html>" > 8.0/index.html
+
+# commit to github   
+topic="release-${version}";branch=master; gw1
+ga ${version}.html; ci "new early access build - ${version} (${version2})" .
+gw2;gw3;gw4
+
+scpr ${version}.html 8.0 nboldt@wallace.redhat.com:/mnt/devstudio/earlyaccess/
+----
+
+== Update https://devstudio.jboss.com/updates/8.0*/devstudio-directory.xml to point at new discovery jar(s) from staging.
+
+[IMPORTANT]
+====
+TODO for CR1 and GA: VERIFY CONTENTS OF DISCOVERY JAR ARE CORRECTLY POINTING AT
+
+*  8.0 for /8.0/
+*  8.0-development for /8.0-development/
+*  8.0-staging for /8.0-staging/
+====
+
+[source,bash]
+----
+
+isGA=false # or true in case you're doing a GA
+version=8.0.0.Beta1
+SRC_SITE=8.0-staging
+DESTSITE=8.0-development # or 8.0/ for a GA release
+
+topic="release-${version}";branch=master; gw1
+
+# check in / sync changes
+scpr ~/truu/devstudio.jboss.com/updates/${SRC_SITE}/* ~/truu/devstudio.jboss.com/updates/${DESTSITE}/
+
+cd ~/truu/devstudio.jboss.com/updates/${DESTSITE}/discovery/
+#git rm -f com.jboss.jbds.central.discovery_*.jar
+wget -q -nc http://www.qa.jboss.com/binaries/RHDS/discovery/development/${version}/devstudio-directory.xml
+newJar=$(cat devstudio-directory.xml | grep entry | sed -e "s#.\+plugins#plugins#g" | sed -e "s#\.jar.\+#.jar#g"); echo $newJar
+wget -q -nc http://www.qa.jboss.com/binaries/RHDS/discovery/development/${version}/${newJar}
+newJar=${newJar/plugins/discovery}; echo $newJar
+rm -f ~/truu/devstudio.jboss.com/updates/${DESTSITE}/discovery/devstudio-directory.xml
+
+# update XML
+cd ~/truu/devstudio.jboss.com/updates/${DESTSITE}/
+sed -i -e "s#discovery/com.jboss.jbds.central.discovery_.\+\.jar#${newJar}#g" devstudio-directory.xml
+
+unzip -q -d ~/truu/devstudio.jboss.com/updates/${DESTSITE}/${newJar}{_,}
+pushd ~/truu/devstudio.jboss.com/updates/${DESTSITE}/${newJar}_ >/dev/null 
+
+if [ "$isGA" = true ]; then
+  sed -i "s#https://devstudio.jboss.com/updates/8.0-staging/central/core/#https://devstudio.jboss.com/updates/8.0/central/core/#g" plugin.xml
+  sed -i "s#https://devstudio.jboss.com/updates/8.0-development/central/core/#https://devstudio.jboss.com/updates/8.0/central/core/#g" plugin.xml
+else  # plugin points to the STAGING URL, not the RELEASE one
+  sed -i "s#https://devstudio.jboss.com/updates/8.0-staging/central/#https://devstudio.jboss.com/updates/8.0-development/central/#g" plugin.xml
+  sed -i "s#https://devstudio.jboss.com/updates/8.0/central/#https://devstudio.jboss.com/updates/8.0-development/central/#g" plugin.xml
+fi
+
+zip -u ~/truu/devstudio.jboss.com/updates/${DESTSITE}/${newJar} plugin.xml
+popd >/dev/null
+rm -fr ~/truu/devstudio.jboss.com/updates/${DESTSITE}/${newJar}_
+----
+
+[CAUTION]
+====
+Be sure to not overwrite integration-stack deltas (staging and development may not be the same)!
+====
+
+[source,bash]
+----
+# check in / sync changes
+ga ${newJar}; stat .
+gd .
+
+cd ~/truu/devstudio.jboss.com/updates/
+ga ${DESTSITE}
+ci "release ${version} from ${SRC_SITE} to ${DESTSITE}" . 
+gw2;gw3;gw4
+
+# push both staging and development folders to wallace
+scpr ~/truu/devstudio.jboss.com/updates/${DESTSITE} ~/truu/devstudio.jboss.com/updates/${SRC_SITE} $WALL/updates/
+----
+
+== Fix file permissions on wallace (pull from dev01):
+
+[source,bash]
+----
+  ssh nboldt@wallace "
+    chmod -R g+w       /mnt/devstudio/updates/8.0* /mnt/devstudio/earlyaccess 2>/dev/null;
+    chgrp -R devstudio /mnt/devstudio/updates/8.0* /mnt/devstudio/earlyaccess 2>/dev/null
+  "
+----
+
+== After 30-60 mins, review Early Access site:
+
+[source,bash]
+----
+  firefox https://devstudio.jboss.com/earlyaccess/
+----
+
+== Tag Git
+
+[source,bash]
+----
+  # if not already cloned, the do this:
+  git clone https://github.com/jbdevstudio/jbdevstudio-product
+  git clone https://github.com/jbdevstudio/jbdevstudio-ci
+  git clone https://github.com/jbdevstudio/jbdevstudio-website
+  git clone https://github.com/jbdevstudio/jbdevstudio-artwork
+  git clone https://github.com/jbdevstudio/jbdevstudio-devdoc
+
+  # now tag multiple projects in a single step, replacing existing tags if already exist
+  jbt_branch=jbosstools-4.2.0.Beta1x
+  version=8.0.0.Beta1
+  for d in product ci website artwork devdoc; do
+    echo "====================================================================="
+    echo "Tagging jbdevstudio-${d} from branch ${jbt_branch} as tag ${version}..."
+    pushd ~/truu/jbdevstudio-${d}
+    git stash
+    git pull origin
+    git fetch -t -p
+    git checkout ${jbt_branch} && git tag -f jbdevstudio-${version} && git push origin jbdevstudio-${version}
+    git checkout master; git stash pop
+    echo ">>> https://github.com/jbdevstudio/jbdevstudio-${d}/tree/jbdevstudio-${version}"
+    popd >/dev/null 
+    echo "====================================================================="
+    echo ""
+  done
+----
+
+== Commit updates to release guide (including this document):
+
+[source,bash]
+----
+  version=8.0.0.Beta1
+  cd ~/truu/doc/release_guide
+  topic="release-${version}";branch=master; gw1
+  ci "update release guide for ${version}" JBDS71*
+  g2;gw3;gw4
+----
+
+== Move installers from "a" or "b" folder to base folder; purge old stuff from OLD/ folder\
+
+  ssh to dev01.mw.lab.eng.bos.redhat.com, sudo to hudson user, then
+
+[source,bash]
+----
+  cd ~/RHDS/builds/development/
+  mv 8.0.0.CR7x.installer OLD/
+  mv 8.0.0.CR7x.installer 8.0.0.CR7.installer
+  # repeat for updates/development and discovery/development
+----
+
+WARNING: For stable releases, move content from RHDS/{builds,updates,discovery}/development into RHDS/{builds,updates,discovery}/stable, then symlink it back so it appears in both places.
+
+== Update Marketplace entry
+
+WARNING: Alpha versions are not published to market place. So ignore this step for Alpha versions.
+
+=== If node doesn't exist yet
+
+This is usually the case of first Beta version.
+
+Create a new node on Marketplace, listing the single "BYOE" feature: com.jboss.devstudio.core.feature
+
+=== If node already exists
+
+Access it via +https://marketplace.eclipse.org/node/xxxxxx/edit+ and update the following things:
+
+* Title to match new version
+* Description to match new version & dependencies
+
+== Release JIRA:
+
+Launch the config pages for JBIDE and JBDS and using the gear icons, release the milestone version in JIRA. 
+
+Note: If there are unresolved issues with a fixversion set to the current milestone, make sure those issues will not be lost / forgotten. You may want to send an email to jbosstools-dev@ reminding people to close out their JIRAs or move them to the next milestone fixversion.
+
+[source,bash]
+----
+firefox https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
+  https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
+----
+
+
+== Notify the team (send 2 emails)
+
+____
+
+*To* jbosstools-dev@lists.jboss.org +
+*To* jbds-pm-list@redhat.com, external-exadel-list@redhat.com, jboss-announce@redhat.com (optional for major milestones/releases)+
+
+[source,bash]
+----
+version=8.0.0.Beta1
+version2=8.0.0.Beta1a # a, b, c...
+echo "
+Subject: 
+
+JBDS ${version} on Early Access
+
+Body:
+
+JBDS ${version} Early Access installers are now available!
+
+https://devstudio.jboss.com/earlyaccess/${version}.html
+
+Note that bits may take a while to replicate from our staging server to publication. Please allow at least an hour before attempting to download them - if the page above still shows the previous milestone instead of ${version}, try again later.
+
+--
+
+JBoss Central
+
+JBDS Central should be looking to this URL to resolve content listed on the Software/Update tab (can be changed in studio/jbdevstudio.ini):
+
+  -Djboss.discovery.directory.url=https://devstudio.jboss.com/updates/8.0-development/devstudio-directory.xml
+       -Djboss.discovery.site.url=https://devstudio.jboss.com/updates/8.0-development/
+
+--
+
+Eclipse Marketplace
+
+https://marketplace.eclipse.org/content/red-hat-jboss-developer-studio-kepler
+
+--
+
+Schedule / Upcoming Releases:
+
+https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.plugin.system.project%3Aversions-panel
+
+"
+----
+____
+
+
+== Announce internally for push to CSP staging site
+
+____
+*To* jbds-pm-list@redhat.com, release-engineering@redhat.com +
+*Cc* cobrien@redhat.com, ldimaggi@redhat.com, mmurray@redhat.com, jpallich@redhat.com +
+
+[source,bash]
+----
+version=8.0.0.Beta1
+version2=8.0.0.Beta1a # a, b, c...
+version3=8.0.0.Beta1-v20140314-2145-B688
+echo "
+Subject: 
+
+JBDS ${version} available for push to CSP staging server
+
+Body:
+
+JBDS ${version} (renamed from ${version2}) is available to push to CSP staging server, for subsequent smoke test & review by QE.
+
+Please include these 5 files:
+
+* http://www.qa.jboss.com/binaries/RHDS/builds/stable/${version}.installer/jbdevstudio-product-universal-${version3}.jar 
+* http://www.qa.jboss.com/binaries/RHDS/builds/stable/${version}.installer/jbdevstudio-product-eap-universal-${version3}.jar
+* http://www.qa.jboss.com/binaries/RHDS/builds/stable/${version}.installer/jbdevstudio-product-sources-${version3}.zip
+* http://www.qa.jboss.com/binaries/RHDS/builds/stable/${version}.installer/jbdevstudio-product-Update-${version3}.zip
+* http://www.qa.jboss.com/binaries/RHDS/builds/stable/${version}.installer/jbdevstudio-product-Central-${version3}.zip
+
+We will also need GoldenGate links for the 5 artifacts above, as they need to be linked from these pages:
+
+* https://www.jboss.org/products/
+* https://www.jboss.org/products/devstudio
+
+Please note that the new CSP pages should include similar documentation to the previous release [1], [2], but with these string replacements / updates:
+
+* s/Eclipse 4.3.1/Eclipse 4.4/g
+* s/Kepler SR1/Luna M6/g
+* s/Kepler JEE bundle/Luna M6 JEE bundle/g
+* s/keplersr1/lunam6/g
+
+[1] https://access.redhat.com/jbossnetwork/restricted/softwareDetail.html?softwareId=27063&product=jbossdeveloperstudio&version=7.1.0&downloadType=distributions
+[2] https://access.redhat.com/jbossnetwork/restricted/softwareDetail.html?softwareId=27073&product=jbossdeveloperstudio&version=7.1.0&downloadType=distributions
+
+When pushed, please reply so that QE can review the CSP pages & files for push to production.
+
+Thanks in advance,
+
+"
+----
+____

@@ -2,7 +2,7 @@
 
 [IMPORTANT]
 ====
-JBIDE-13283 use Akamai publishing for update sites, target platforms & zips. +
+JBIDE-13283, JBDS-2730 use Akamai publishing for update sites, target platforms & zips. +
 Use:
 
   * http://download.jboss.org/jbosstools/static/releases/ instead of 
@@ -128,16 +128,13 @@ A graphical sftp client such as FileZilla seems to be the easiest way to perform
 
 Webtools site is expected to be found in +http://download.jboss.org/tools/updates/webtools/${eclipseTrain}+ (where eclipseTrain is for example "luna"). So, with a sftp client, on filemgmt.jboss.org
 
+[IMPORTANT]
+====
+Use staging for QE builds:
 
-
-  ##############################################################################
-  #### 
-  #### TODO per Max: use 
-  #### http://download.jboss.org/jbosstools/updates/staging/<buildName> instead of 
-  #### http://download.jboss.org/jbosstools/updates/<buildName>
-  #### 
-  ##############################################################################
-
+  * http://download.jboss.org/jbosstools/updates/staging/<buildName> instead of 
+  * http://download.jboss.org/jbosstools/updates/<buildName>
+====
 
 1. Rename +/downloads_htdocs/tools/updates/webtools/${eclipseTrain}+ into +/downloads_htdocs/tools/updates/webtools/${eclipseTrain}_${previousVersion}+, with ${previous} being the name of previous release (for example 4.2.0.Alpha1 when releasing 4.2.0.Beta1)
 1. Move last build in +/downloads_htdocs/tools/updates/JBossTools-${version}.webtools+ to +/downloads_htdocs/tools/updates/webtools/${eclipseTrain}+
@@ -227,16 +224,13 @@ In any case:
 
 Changes also happen on the +jbosstools-download.jboss.org+ repository, which is synchronized with download.jboss.org using https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-download.jboss.org-rsync-from-git/ .
 
+[IMPORTANT]
+====
+Use staging for QE builds:
 
-  ##############################################################################
-  #### 
-  #### TODO per Max: use 
-  #### http://download.jboss.org/jbosstools/updates/staging/<buildName> instead of 
-  #### http://download.jboss.org/jbosstools/updates/<buildName>
-  #### 
-  ##############################################################################
-
-
+  * http://download.jboss.org/jbosstools/updates/staging/<buildName> instead of 
+  * http://download.jboss.org/jbosstools/updates/<buildName>
+====
 
 On this repository:
 
@@ -311,13 +305,17 @@ rm -fr jbosstools/updates/development/kepler/${newJar}_
 
 When all changes are done:
 
-##############################################################################
-#### 
-#### TODO JBIDE-13283 incorporate publishing to Akamai for update sites & zips: use
-#### http://download.jboss.org/jbosstools/static/releases/ instead of 
-#### http://download.jboss.org/jbosstools/updates/
-#### 
-##############################################################################
+[IMPORTANT]
+====
+JBIDE-13283 use Akamai publishing for update sites, target platforms & zips. +
+Use:
+
+  * http://download.jboss.org/jbosstools/static/releases/ instead of 
+  * http://download.jboss.org/jbosstools/updates/ +
+  and
+  * http://download.jboss.org/jbosstools/static/targetplatforms/ instead of 
+  * http://download.jboss.org/jbosstools/targetplatforms/
+====
 
 * Commit them (should show 4 files changed, 1 jar deleted, 1 jar added)
 * Push to remote repo

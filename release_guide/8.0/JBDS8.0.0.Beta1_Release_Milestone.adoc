@@ -2,7 +2,7 @@
 
 [IMPORTANT]
 ====
-JBIDE-13283 use Akamai publishing for update sites, target platforms & zips. +
+JBIDE-13283, JBDS-2730 use Akamai publishing for update sites, target platforms & zips. +
 Use:
 
   * http://download.jboss.org/jbosstools/static/releases/ instead of 
@@ -232,7 +232,7 @@ scpr ~/truu/devstudio.jboss.com/updates/${DESTSITE} ~/truu/devstudio.jboss.com/u
   g2;gw3;gw4
 ----
 
-== Move installers from "a" or "b" folder to base folder; purge old stuff from OLD/ folder\
+== Move installers from "a" or "b" folder to base folder; purge old stuff from OLD/ folder
 
   ssh to dev01.mw.lab.eng.bos.redhat.com, sudo to hudson user, then
 

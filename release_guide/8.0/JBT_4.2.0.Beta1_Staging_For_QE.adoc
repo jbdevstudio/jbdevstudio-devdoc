@@ -2,7 +2,7 @@
 
 [IMPORTANT]
 ====
-JBIDE-13283 use Akamai publishing for update sites, target platforms & zips. +
+JBIDE-13283, JBDS-2730 use Akamai publishing for update sites, target platforms & zips. +
 Use:
 
   * http://download.jboss.org/jbosstools/static/releases/ instead of 

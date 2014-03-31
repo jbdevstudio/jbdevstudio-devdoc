@@ -61,19 +61,19 @@ WARNING: Don't use symlinks are they are too risky to use. Those operations can 
 
 [source,bash]
 ----
-version=8.0.0.Beta1 # a, b, c...
+version=8.0.0.Beta1a # a, b, c...
 rsync -aPrz /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/installer/* /qa/services/http/binaries/RHDS/builds/development/${version}.installer/
 cd /qa/services/http/binaries/RHDS/builds/development/
 find . -maxdepth 1 -type d -name "${version}*" | grep ${version}
 find . -maxdepth 1 -type d -name "${version}*" | sed "s#\.# >> http://www.qa.jboss.com/binaries/RHDS/builds/development#" | egrep ">>|${version}"
 
-version=8.0.0.Beta1 # a, b, c...
+version=8.0.0.Beta1a # a, b, c...
 rsync -aPrz /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/all/repo/* /qa/services/http/binaries/RHDS/updates/development/${version}.core/
 cd /qa/services/http/binaries/RHDS/updates/development/
 find . -maxdepth 1 -type d -name "${version}*" | grep ${version}
 find . -maxdepth 1 -type d -name "${version}*" | sed "s#\.# >> http://www.qa.jboss.com/binaries/RHDS/updates/development#" | egrep ">>|${version}"
 
-version=8.0.0.Beta1 # a, b, c...
+version=8.0.0.Beta1a # a, b, c...
 rsync -aPrz /qa/services/http/binaries/RHDS/discovery/nightly/core/4.2.luna/* /qa/services/http/binaries/RHDS/discovery/development/${version}/
 ----
 
@@ -112,7 +112,7 @@ Then, copy stuff from dev01 (CI build publishing to qa.jboss.org) to wallace
 [source,bash]
 ----
 isGA=false # or true in case you're doing a GA
-version=8.0.0.Beta1 # a, b, c...
+version=8.0.0.Beta1a # a, b, c...
 cd /mnt/devstudio/updates/8.0.0
 
 rsync -aPrz --rsh=ssh dev01.mw.lab.eng.bos.redhat.com:~/RHDS/updates/development/${version}.core .
@@ -123,7 +123,7 @@ chgrp -R devstudio /mnt/devstudio/updates/${version}.core 2>/dev/null
 #rsync -aPrz --rsh=ssh dev01.mw.lab.eng.bos.redhat.com:~/RHDS/updates/development/${version}.extras .
 
 # TODO: verify correct URL and filename for the target zip
-TARGET_PLATFORM_VERSION_MAX=4.40.0.Beta1-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.40.0.Beta1
 rsync -aPrz --rsh=ssh dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MAX}/jbdevstudiotarget-${TARGET_PLATFORM_VERSION_MAX}.zip . 
 unzip -d ${version}.target-platform jbdevstudiotarget-${TARGET_PLATFORM_VERSION_MAX}.zip
 # Fix permissions
@@ -138,19 +138,20 @@ Then, update the composite files to have public URLs pointing to these artifacts
 [source,bash]
 ----
 isGA=false # or true in case you're doing a GA
-cd jbdevstudio-website/content/updates/8.0-staging/
 previous=7.1.0.GA # a, b, c...
-version=8.0.0.Beta1 # a, b, c...
+version=8.0.0.Beta1a # a, b, c...
 
+pushd jbdevstudio-website/content/updates/8.0-staging/
 now=`date +%s000`
 for d in *.*ml extras/*.*ml central/core/*.*ml; do
   # update composite timestamp
   sed -i -e "s#${previous}#${version}#g" -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
 done
+popd
 
 # update https://devstudio.jboss.com/updates/8.0-staging/devstudio-directory.xml to point at new Core discovery jar.
 # Latest discovery site is here: http://www.qa.jboss.com/binaries/RHDS/discovery/development/${version}
-cd jbdevstudio-website/content/updates/8.0-staging/discovery/
+pushd jbdevstudio-website/content/updates/8.0-staging/discovery/
 wget -q -nc http://www.qa.jboss.com/binaries/RHDS/discovery/development/${version}/devstudio-directory.xml
 newJar=$(cat devstudio-directory.xml | grep entry | sed -e "s#.\+plugins#plugins#g" | sed -e "s#\.jar.\+#.jar#g")
 echo $newJar
@@ -158,13 +159,14 @@ wget -q -nc http://www.qa.jboss.com/binaries/RHDS/discovery/development/${versio
 newJar=${newJar/plugins/discovery}
 echo $newJar
 rm -f jbdevstudio-website/content/updates/8.0-staging/discovery/devstudio-directory.xml
+popd
 
 # update XML
-cd jbdevstudio-website/content/updates/8.0-staging/
+pushd jbdevstudio-website/content/updates/8.0-staging/
 sed -i -e "s#discovery/com.jboss.jbds.central.discovery_.\+\.jar#${newJar}#g" devstudio-directory.xml
   
-unzip -q -d jbdevstudio-website/content/updates/8.0-staging/${newJar}{_,}
-pushd jbdevstudio-website/content/updates/8.0-staging/${newJar}_ >/dev/null 
+unzip -q -d ${newJar}{_,}
+pushd ${newJar}_ 
 
 if [ "$isGA" = true ]; then
   sed -i "s#https://devstudio.jboss.com/updates/8.0-staging/central/core/#https://devstudio.jboss.com/updates/8.0/central/core/#g" plugin.xml
@@ -173,12 +175,13 @@ else  # plugin points to the STAGING URL, not the RELEASE one
   sed -i "s#https://devstudio.jboss.com/updates/8.0/central/core/#https://devstudio.jboss.com/updates/8.0-staging/central/core/#g" plugin.xml
   sed -i "s#https://devstudio.jboss.com/updates/8.0-development/central/core/#https://devstudio.jboss.com/updates/8.0-staging/central/core/#g" plugin.xml
 fi
+popd
 
-zip -u jbdevstudio-website/content/8.0-staging/${newJar} plugin.xml
-popd >/dev/null
-rm -fr jbdevstudio-website/content/updates/8.0-staging/${newJar}_
+zip -u ${newJar} plugin.xml
+rm -fr ${newJar}_
+popd
 
-if [ "$isGA" = true ];  # new plugin is also in 8.0/ and 8.0-development/ as well as 8.0-staging/
+if [ "$isGA" = true ]; then # new plugin is also in 8.0/ and 8.0-development/ as well as 8.0-staging/
   cp -f jbdevstudio-website/content/updates/8.0-staging/${newJar} jbdevstudio-website/content/updates/8.0-development/${newJar}
   cp -f jbdevstudio-website/content/updates/8.0-staging/devstudio-directory.xml jbdevstudio-website/content/updates/8.0-development/devstudio-directory.xml
 
@@ -187,20 +190,28 @@ if [ "$isGA" = true ];  # new plugin is also in 8.0/ and 8.0-development/ as wel
 fi
 
 # check in / sync changes
+pushd jbdevstudio-website/content/updates/8.0-staging/
 git add ${newJar}
 git status .
 git diff --color=always -w .
+# TODO: make sure you're using a PR & topic branch!
 git commit -m "release ${version} for QE: add new discovery plugin ${newJar} + update devstudio-directory.xml + update HTML pages" . discovery/*.jar
+# TODO: make sure you've merged in others' changes!
 git push origin master # in case of doubt, prefer pushing to a local repostiory and using a pull-request to ask for review
+popd
 
 rsync -aPrz --rsh=ssh jbdevstudio-website/content/updates/8.0-staging/* wallace.intranet.prod.int.rdu2.redhat.com:/mnt/devstudio/updates/8.0-staging/
 
 if [ "$isGA" = true ]; then
-  cd jbdevstudio-website/content/updates/8.0/
+  pushd jbdevstudio-website/content/updates/8.0/
   git add ${newJar}
   git status .
   gd diff --color=always -w .
+  # TODO: make sure you're using a PR & topic branch!
   git commit "release ${version} for QE: add new discovery plugin ${newJar} + update devstudio-directory.xml" . discovery/*.jar
+  # TODO: make sure you've merged in others' changes!
+  git push origin master # in case of doubt, prefer pushing to a local repostiory and using a pull-request to ask for review
+  popd
   rsync -aPrz --rsh=ssh jbdevstudio-website/updates/8.0/*  wallace.intranet.prod.int.rdu2.redhat.com:/mnt/devstudio/updates/8.0/
 fi
 ----
@@ -210,8 +221,10 @@ fi
 Then, fix permissions. From machine +wallace.intranet.prod.int.rdu2.redhat.com+
 [source,bash]
 ----
-chmod -R g+w /mnt/devstudio/updates/8.0* 2>/dev/null
-chgrp -R devstudio /mnt/devstudio/updates/8.0* 2>/dev/null
+ssh wallace.intranet.prod.int.rdu2.redhat.com "\
+  chmod -R g+w /mnt/devstudio/updates/8.0* 2>/dev/null && \
+  chgrp -R devstudio /mnt/devstudio/updates/8.0* 2>/dev/null \
+"
 ----
 
 == Update documentation
@@ -224,11 +237,11 @@ ____
 
 [source,bash]
 ----
-version=8.0.0.Beta1 # a, b, c...
-respin="respin-"
-TARGET_PLATFORM_VERSION_MIN=4.40.0.Beta1-SNAPSHOT
-TARGET_PLATFORM_VERSION_MAX=4.40.0.Beta1-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.40.0.Beta1-SNAPSHOT
+version=8.0.0.Beta1a # a, b, c...
+respin="respin-a"
+TARGET_PLATFORM_VERSION_MIN=4.40.0.Beta1
+TARGET_PLATFORM_VERSION_MAX=4.40.0.Beta1
+TARGET_PLATFORM_CENTRAL_MAX=4.40.0.Beta2-SNAPSHOT
 version2=8.0.0.Beta1 # no respin suffix here
 version3=4.2.0.Beta1 # no respin suffix here
 echo "

@@ -49,11 +49,11 @@ me@dev01$ sudo su - hudson
 hudson@dev01$ ...
 ----
 
-Then copy the last good JBDS artifacts:
+Then copy the latest JBDS artifacts:
 
-* core update site
-* discovery site
 * installer
+* update site
+* discovery site
 
 WARNING: Don't use symlinks are they are too risky to use. Those operations can be done in parallel (using multiple terminals is the easiest way)
 
@@ -61,6 +61,9 @@ WARNING: Don't use symlinks are they are too risky to use. Those operations can 
 
 [source,bash]
 ----
+
+# can run 3 steps these in parallel 
+
 version=8.0.0.Beta1a # a, b, c...
 rsync -aPrz /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/installer/* /qa/services/http/binaries/RHDS/builds/development/${version}.installer/
 cd /qa/services/http/binaries/RHDS/builds/development/
@@ -111,24 +114,22 @@ Then, copy stuff from dev01 (CI build publishing to qa.jboss.org) to wallace
 
 [source,bash]
 ----
-isGA=false # or true in case you're doing a GA
-version=8.0.0.Beta1a # a, b, c...
-cd /mnt/devstudio/updates/8.0.0
 
-rsync -aPrz --rsh=ssh dev01.mw.lab.eng.bos.redhat.com:~/RHDS/updates/development/${version}.core .
-chmod -R g+w /mnt/devstudio/updates/${version}.core 2>/dev/null
-chgrp -R devstudio /mnt/devstudio/updates/${version}.core 2>/dev/null
+  # can run 2 steps these in parallel 
 
-#rsync -aPrz --rsh=ssh dev01.mw.lab.eng.bos.redhat.com:~/RHDS/updates/development/${version}.techpreview .
-#rsync -aPrz --rsh=ssh dev01.mw.lab.eng.bos.redhat.com:~/RHDS/updates/development/${version}.extras .
+  version=8.0.0.Beta1a # a, b, c...
+  rsync -aPrz --rsh=ssh dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/all/repo/* /mnt/devstudio/updates/8.0.0/${version}.core/
+  chmod -R g+w /mnt/devstudio/updates/${version}.core 2>/dev/null
+  chgrp -R devstudio /mnt/devstudio/updates/${version}.core 2>/dev/null
 
-# TODO: verify correct URL and filename for the target zip
-TARGET_PLATFORM_VERSION_MAX=4.40.0.Beta1
-rsync -aPrz --rsh=ssh dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MAX}/jbdevstudiotarget-${TARGET_PLATFORM_VERSION_MAX}.zip . 
-unzip -d ${version}.target-platform jbdevstudiotarget-${TARGET_PLATFORM_VERSION_MAX}.zip
-# Fix permissions
-chmod -R g+w /mnt/devstudio/updates/${version}.target-platform 2>/dev/null
-chgrp -R devstudio /mnt/devstudio/updates/${version}.target-platform 2>/dev/null
+  version=8.0.0.Beta1a # a, b, c...
+  # TODO: verify correct URL and filename for the target zip
+  TARGET_PLATFORM_VERSION_MAX=4.40.0.Beta1
+  rsync -aPrz --rsh=ssh dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MAX}/jbdevstudiotarget-${TARGET_PLATFORM_VERSION_MAX}.zip /mnt/devstudio/updates/8.0.0/
+  pushd /mnt/devstudio/updates/8.0.0; unzip -d ${version}.target-platform jbdevstudiotarget-${TARGET_PLATFORM_VERSION_MAX}.zip; popd
+  chmod -R g+w /mnt/devstudio/updates/${version}.target-platform 2>/dev/null
+  chgrp -R devstudio /mnt/devstudio/updates/${version}.target-platform 2>/dev/null
+
 ----
 
 === Update composite discovery files

@@ -62,7 +62,7 @@ Here is a script that does this:
 [source,bash]
 ----
 stream=4.2.luna
-version=4.2.0.Beta1a # a, b, c...
+version=4.2.0.Beta1b # a, b, c...
 
 site=core
 # Retrieve latest build and remove trailing slash
@@ -110,7 +110,7 @@ p2 repositories are expected to be under the +http://download.jboss.org/jbosstoo
 [source,bash]
 ----
 stream=4.2.luna
-version=4.2.0.Beta1a  # a, b, c...
+version=4.2.0.Beta1b  # a, b, c...
 
 site=core
 echo "rename nightly/${site}/${stream} staging/JBossTools-${version}.${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates  
@@ -138,7 +138,7 @@ WARNING: Make sure you performed the step <<update-discovery-urls,Update Discove
 [source,bash]
 ----
 stream=4.2.luna
-version=4.2.0.Beta1a # a, b, c...
+version=4.2.0.Beta1b # a, b, c...
 
 echo "rename nightly/core/${stream} development/${version}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery/
 echo " >> http://download.jboss.org/jbosstools/discovery/development/${version}/" | egrep ">>|${version}"
@@ -164,28 +164,28 @@ dev01$ . /home/hudson/config_repository/scripts/jbds/prompt.sh
 
   # can run 5 steps these in parallel 
 
-  version=4.2.0.Beta1a # a, b, c...
+  version=4.2.0.Beta1b # a, b, c...
   branch=core/4.2.luna
   scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/JBossTools-${version}.core/* /tmp/JBossTools-${version}.core/
   scpr /tmp/JBossTools-${version}.core/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
   rm -fr /tmp/JBossTools-${version}.core/
   echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
 
-  version=4.2.0.Beta1a # a, b, c...
+  version=4.2.0.Beta1b # a, b, c...
   branch=coretests/4.2.luna
   scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/JBossTools-${version}.coretests/* /tmp/JBossTools-${version}.coretests/
   scpr /tmp/JBossTools-${version}.coretests/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
   rm -fr /tmp/JBossTools-${version}.coretests/
   echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
 
-  version=4.2.0.Beta1a # a, b, c...
+  version=4.2.0.Beta1b # a, b, c...
   branch=hibernatetools/4.2.luna
   scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/JBossTools-${version}.hibernatetools/* /tmp/JBossTools-${version}.hibernatetools/
   scpr /tmp/JBossTools-${version}.hibernatetools/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
   rm -fr /tmp/JBossTools-${version}.hibernatetools/
   echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
 
-  version=4.2.0.Beta1a # a, b, c...
+  version=4.2.0.Beta1b # a, b, c...
   branch=webtools/4.2.luna
   scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/JBossTools-${version}.webtools/* /tmp/JBossTools-${version}.webtools/
   scpr /tmp/JBossTools-${version}.webtools/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
@@ -193,7 +193,7 @@ dev01$ . /home/hudson/config_repository/scripts/jbds/prompt.sh
   echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
 
   # now, discovery site
-  version=4.2.0.Beta1a # a, b, c...
+  version=4.2.0.Beta1b # a, b, c...
   branch=core/4.2.luna
   scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery/development/${version}/* /tmp/JBossTools-${version}.discovery/
   scpr /tmp/JBossTools-${version}.discovery/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery/nightly/${branch}/ --delete
@@ -209,8 +209,8 @@ ____
 
 [source,bash]
 ----
-version=4.2.0.Beta1a # a, b, c...
-respin="respin-a"
+version=4.2.0.Beta1b # a, b, c...
+respin="respin-b"
 TARGET_PLATFORM_VERSION_MIN=4.40.0.Beta1
 TARGET_PLATFORM_VERSION_MAX=4.40.0.Beta1
 TARGET_PLATFORM_CENTRAL_MAX=4.40.0.Beta2-SNAPSHOT

@@ -64,19 +64,19 @@ WARNING: Don't use symlinks are they are too risky to use. Those operations can 
 
 # can run 3 steps these in parallel 
 
-version=8.0.0.Beta1a # a, b, c...
+version=8.0.0.Beta1b # a, b, c...
 rsync -aPrz /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/installer/* /qa/services/http/binaries/RHDS/builds/development/${version}.installer/
 cd /qa/services/http/binaries/RHDS/builds/development/
 find . -maxdepth 1 -type d -name "${version}*" | grep ${version}
 find . -maxdepth 1 -type d -name "${version}*" | sed "s#\.# >> http://www.qa.jboss.com/binaries/RHDS/builds/development#" | egrep ">>|${version}"
 
-version=8.0.0.Beta1a # a, b, c...
+version=8.0.0.Beta1b # a, b, c...
 rsync -aPrz /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/all/repo/* /qa/services/http/binaries/RHDS/updates/development/${version}.core/
 cd /qa/services/http/binaries/RHDS/updates/development/
 find . -maxdepth 1 -type d -name "${version}*" | grep ${version}
 find . -maxdepth 1 -type d -name "${version}*" | sed "s#\.# >> http://www.qa.jboss.com/binaries/RHDS/updates/development#" | egrep ">>|${version}"
 
-version=8.0.0.Beta1a # a, b, c...
+version=8.0.0.Beta1b # a, b, c...
 rsync -aPrz /qa/services/http/binaries/RHDS/discovery/nightly/core/4.2.luna/* /qa/services/http/binaries/RHDS/discovery/development/${version}/
 ----
 
@@ -117,18 +117,18 @@ Then, copy stuff from dev01 (CI build publishing to qa.jboss.org) to wallace
 
   # can run 2 steps these in parallel 
 
-  version=8.0.0.Beta1a # a, b, c...
+  version=8.0.0.Beta1b # a, b, c...
   rsync -aPrz --rsh=ssh dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/all/repo/* /mnt/devstudio/updates/8.0.0/${version}.core/
-  chmod -R g+w /mnt/devstudio/updates/${version}.core 2>/dev/null
-  chgrp -R devstudio /mnt/devstudio/updates/${version}.core 2>/dev/null
+  chmod -R g+w /mnt/devstudio/updates/8.0.0/${version}.core 2>/dev/null
+  chgrp -R devstudio /mnt/devstudio/updates/8.0.0/${version}.core 2>/dev/null
 
-  version=8.0.0.Beta1a # a, b, c...
+  version=8.0.0.Beta1b # a, b, c...
   # TODO: verify correct URL and filename for the target zip
   TARGET_PLATFORM_VERSION_MAX=4.40.0.Beta1
   rsync -aPrz --rsh=ssh dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MAX}/jbdevstudiotarget-${TARGET_PLATFORM_VERSION_MAX}.zip /mnt/devstudio/updates/8.0.0/
   pushd /mnt/devstudio/updates/8.0.0; unzip -d ${version}.target-platform jbdevstudiotarget-${TARGET_PLATFORM_VERSION_MAX}.zip; popd
-  chmod -R g+w /mnt/devstudio/updates/${version}.target-platform 2>/dev/null
-  chgrp -R devstudio /mnt/devstudio/updates/${version}.target-platform 2>/dev/null
+  chmod -R g+w /mnt/devstudio/updates/8.0.0/${version}.target-platform 2>/dev/null
+  chgrp -R devstudio /mnt/devstudio/updates/8.0.0/${version}.target-platform 2>/dev/null
 
 ----
 
@@ -139,9 +139,10 @@ Then, update the composite files to have public URLs pointing to these artifacts
 [source,bash]
 ----
 isGA=false # or true in case you're doing a GA
-previous=7.1.0.GA # a, b, c...
-version=8.0.0.Beta1a # a, b, c...
+previous=8.0.0.Beta1a # a, b, c...
+version=8.0.0.Beta1b # a, b, c...
 
+#TODO: make sure you're the correct folder here!
 pushd jbdevstudio-website/content/updates/8.0-staging/
 now=`date +%s000`
 for d in *.*ml extras/*.*ml central/core/*.*ml; do
@@ -238,8 +239,8 @@ ____
 
 [source,bash]
 ----
-version=8.0.0.Beta1a # a, b, c...
-respin="respin-a"
+version=8.0.0.Beta1b # a, b, c...
+respin="respin-b"
 TARGET_PLATFORM_VERSION_MIN=4.40.0.Beta1
 TARGET_PLATFORM_VERSION_MAX=4.40.0.Beta1
 TARGET_PLATFORM_CENTRAL_MAX=4.40.0.Beta2-SNAPSHOT

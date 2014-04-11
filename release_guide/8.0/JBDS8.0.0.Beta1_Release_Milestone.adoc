@@ -236,16 +236,21 @@ Create a new node on Marketplace, listing the single "BYOE" feature: com.jboss.d
 
 === If node already exists
 
-Access it via +https://marketplace.eclipse.org/node/xxxxxx/edit+ and update the following things:
+Access it via +http://marketplace.eclipse.org/content/red-hat-jboss-developer-studio-luna/edit+ and update the following things:
 
 * Title to match new version
 * Description to match new version & dependencies
+* Notes / warnings (if applicable, eg., JDK 7/8 issues)
 
 == Release JIRA:
 
 Launch the config pages for JBIDE and JBDS and using the gear icons, release the milestone version in JIRA. 
 
-Note: If there are unresolved issues with a fixversion set to the current milestone, make sure those issues will not be lost / forgotten. You may want to send an email to jbosstools-dev@ reminding people to close out their JIRAs or move them to the next milestone fixversion.
+Note: If there are unresolved issues with a fixversion set to the current milestone, make sure those issues will not be lost / forgotten. 
+
+Send an email to jbosstools-dev@, external-exadel-list@ and jbds-pm-list@ reminding people to close out their JIRAs or move them to the next milestone fixversion.
+
+Sample email: http://lists.jboss.org/pipermail/jbosstools-dev/2014-April/008799.html
 
 [source,bash]
 ----
@@ -272,7 +277,7 @@ JBDS ${version} on Early Access
 
 Body:
 
-JBDS ${version} Early Access is available on Early Access!
+JBDS ${version} is available on Early Access!
 
 https://www.jboss.org/products/devstudio#earlyaccess
 https://devstudio.jboss.com/updates/8.0-development/

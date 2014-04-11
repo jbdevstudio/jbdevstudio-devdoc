@@ -28,23 +28,15 @@ WARNING: This requires write access to wallace.redhat.com, but in future will re
 
 CAUTION: TODO: when releasing GA make sure to :%s/development/stable/g and :%s/8.0-staging/8.0/g in product/features/com.jboss.jbds.product.feature/p2.inf
 
-== SSH to wallace.redhat.com, then fetch installers & zips
+== SSH to wallace.redhat.com, then fetch zips if not already there
 
 [source,bash]
 ----
 screen
 
+# clean out old update sites from previous milestones; rename update sites from "a,b,c" to ""
 version=8.0.0.Beta1
-version2=8.0.0.Beta1a; # a, b, c, ...
-dev=10.16.88.146; # dev01.mw.lab.eng.bos.redhat.com
-cd /mnt/devstudio/earlyaccess/builds/development/
-mkdir -p /mnt/devstudio/earlyaccess/builds/development/${version}
-touch ${version}-eap__No.eap.builds.will.be.released
-rsync -aPrz --rsh=ssh --exclude="*-eap-*" nboldt@${dev}:~/RHDS/builds/development/${version2}.installer/jbdevstudio-product* ${version}/
-
-# clean out old installers & update sites from previous milestones; rename update sites from "a,b,c" to ""
-version=8.0.0.Beta1
-version2=8.0.0.Beta1a; # a, b, c, ...
+version2=8.0.0.Beta1b; # a, b, c, ...
 cd /mnt/devstudio/updates/8.0.0/
 if [[ ${version} != ${version2} ]]; then 
   mv ${version}.core ${version}.core.DELETEME
@@ -54,14 +46,6 @@ if [[ ${version} != ${version2} ]]; then
 fi
 # TODO: do not run this next line if the above step fails!
 rm -fr ${version}?.core ${version}?.target-platform *.DELETEME
-
-# only applies if we staged installers for QE (eg., CR builds?); if you did not, then skip this step
-#cd /mnt/devstudio/earlyaccess/builds/development
-#if [[ ${version} != ${version2} ]]; then 
-#  mv ${version} ${version}.DELETEME
-#  mv ${version2} ${version}
-#fi  
-#rm -fr *.DELETEME
 ----
 
 == Rename milestones from Foo1b to Foo1; fix html pages in 8.0-staging
@@ -80,7 +64,7 @@ alias   ci='git commit -m'
 
 cd ~/truu/devstudio.jboss.com/updates/8.0-staging
 version=8.0.0.Beta1
-version2=8.0.0.Beta1a; # a, b, c, ...
+version2=8.0.0.Beta1b; # a, b, c, ...
 now=`date +%s000`
 for d in composite*.xml index.html central/core/index.html ; do
   sed -i -e "s#${version2}#${version}#g" $d
@@ -93,24 +77,15 @@ ci "rename ${version2} to ${version}" .
 gw2;gw3;gw4
 ----
 
-== Update https://devstudio.jboss.com/earlyaccess/ *.html
+== Update https://www.jboss.org/author/products/devstudio
 
-[source,bash]
-----
-version=8.0.0.Beta1
-version2=8.0.0.Beta1a; # a, b, ...
-# sources in https://github.com/jbdevstudio/jbdevstudio-website/tree/master/content/earlyaccess
-cd ~/truu/devstudio.jboss.com/earlyaccess
-wget http://www.qa.jboss.com/binaries/RHDS/builds/development/${version2}.installer/${version}.html
-echo "<html><head></head><body onload=\"document.location.href='../${version}.html'\"></body></html>" > 8.0/index.html
+Log in to magnolia using the "marketing" login.
 
-# commit to github   
-topic="release-${version}";branch=master; gw1
-ga ${version}.html; ci "new early access build - ${version} (${version2})" .
-gw2;gw3;gw4
+Release Engineering will provide you with the new file paths to use when linking to jars and zips. 
 
-scpr ${version}.html 8.0 nboldt@wallace.redhat.com:/mnt/devstudio/earlyaccess/
-----
+For example: https://engineering.redhat.com/trac/rcm/wiki/Middleware/ReleaseNotes/JBDS/8.0.0
+
+Review your changes w/ Max & Len before publishing them. 
 
 == Update https://devstudio.jboss.com/updates/8.0*/devstudio-directory.xml to point at new discovery jar(s) from staging.
 
@@ -194,13 +169,6 @@ scpr ~/truu/devstudio.jboss.com/updates/${DESTSITE} ~/truu/devstudio.jboss.com/u
   "
 ----
 
-== After 30-60 mins, review Early Access site:
-
-[source,bash]
-----
-  firefox https://devstudio.jboss.com/earlyaccess/
-----
-
 == Tag Git
 
 [source,bash]
@@ -236,9 +204,9 @@ scpr ~/truu/devstudio.jboss.com/updates/${DESTSITE} ~/truu/devstudio.jboss.com/u
 [source,bash]
 ----
   version=8.0.0.Beta1
-  cd ~/truu/doc/release_guide
+  cd ~/truu/doc/release_guide/8.0
   topic="release-${version}";branch=master; gw1
-  ci "update release guide for ${version}" JBDS71*
+  ci "update release guide for ${version}" .
   g2;gw3;gw4
 ----
 
@@ -296,7 +264,7 @@ ____
 [source,bash]
 ----
 version=8.0.0.Beta1
-version2=8.0.0.Beta1a # a, b, c...
+version2=8.0.0.Beta1b # a, b, c...
 echo "
 Subject: 
 
@@ -304,20 +272,21 @@ JBDS ${version} on Early Access
 
 Body:
 
-JBDS ${version} Early Access installers are now available!
+JBDS ${version} Early Access is available on Early Access!
 
-https://devstudio.jboss.com/earlyaccess/${version}.html
+https://www.jboss.org/products/devstudio#earlyaccess
+https://devstudio.jboss.com/updates/8.0-development/
 
-Note that bits may take a while to replicate from our staging server to publication. Please allow at least an hour before attempting to download them - if the page above still shows the previous milestone instead of ${version}, try again later.
+Note that the update site may take a while to replicate from our staging server to publication. Please allow at least an hour before attempting to install from the site - if the page above still shows the previous milestone instead of ${version}, try again later.
 
 --
 
 JBoss Central
 
-JBDS Central should be looking to this URL to resolve content listed on the Software/Update tab (can be changed in studio/jbdevstudio.ini):
+JBDS Central should be looking to this URL to resolve content listed on the Software/Update tab. If it is not, you can change this in studio/jbdevstudio.ini:
 
   -Djboss.discovery.directory.url=https://devstudio.jboss.com/updates/8.0-development/devstudio-directory.xml
-       -Djboss.discovery.site.url=https://devstudio.jboss.com/updates/8.0-development/
+  -Djboss.discovery.site.url=https://devstudio.jboss.com/updates/8.0-development/central/core/
 
 --
 

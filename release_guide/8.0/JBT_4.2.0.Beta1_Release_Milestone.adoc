@@ -114,7 +114,7 @@ Still on sf.net, verify the following file (adapt it to the version you're pushi
 
 These steps happens on filemgmt.jboss.org, in the jbosstools download area.
 
-=== (If is a respin) Remove respin suffix from sites
+=== (If publishing a respin) Remove respin suffix from sites
 
 Via sftp, remove older respins and rename the latest respin to remove its respin (a, b) suffix. 
 The principle is to keep only the latest respin and make it the actual release.
@@ -127,39 +127,39 @@ Example: assuming you are publishing the 2nd respin of 4.2.0.Beta1, then its fol
   version2=4.2.0.Beta1b # a, b, c, d...
 
   # rename discovery site, http://download.jboss.org/jbosstools/discovery/development/${version2}/
-  #echo "rename development/${version}  development/${version}.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery
+  echo "rename development/${version}  development/${version}.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery
   echo "rename development/${version2} development/${version}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery
 
   # rename the development build
-  #echo "rename development/${version}.core  development/${version}.core.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+  echo "rename development/${version}.core  development/${version}.core.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
   echo "rename development/${version2}.core development/${version}.core" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
 
   # TODO: make sure this exists - might be only "a" while core is on "c"
-  #echo "rename development/${version}.coretests  development/${version}.coretests.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+  echo "rename development/${version}.coretests  development/${version}.coretests.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
   echo "rename development/${version2}.coretests development/${version}.coretests" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
 
   # TODO: make sure this exists - might be only "a" while core is on "c"
-  #echo "rename development/${version}.webtools  development/${version}.webtools.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+  echo "rename development/${version}.webtools  development/${version}.webtools.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
   echo "rename development/${version2}.webtools development/${version}.webtools" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
 
   # TODO: make sure this exists - might be only "a" while core is on "c"
-  #echo "rename development/${version}.hibernatetools  development/${version}.hibernatetools.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+  echo "rename development/${version}.hibernatetools  development/${version}.hibernatetools.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
   echo "rename development/${version2}.hibernatetools development/${version}.hibernatetools" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
 
   # rename the update site
-  #echo "rename JBossTools-${version}.core  JBossTools-${version}.core.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging
+  echo "rename JBossTools-${version}.core  JBossTools-${version}.core.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging
   echo "rename staging/JBossTools-${version2}.core JBossTools-${version}.core" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
 
   # TODO: make sure this exists - might be only "a" while core is on "c"
-  #echo "rename JBossTools-${version}.coretests  JBossTools-${version}.coretests.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging
+  echo "rename JBossTools-${version}.coretests  JBossTools-${version}.coretests.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging
   echo "rename staging/JBossTools-${version2}.coretests JBossTools-${version}.coretests" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
 
   # TODO: make sure this exists - might be only "a" while core is on "c"
-  #echo "rename JBossTools-${version}.webtools  JBossTools-${version}.webtools.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging
+  echo "rename JBossTools-${version}.webtools  JBossTools-${version}.webtools.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging
   echo "rename staging/JBossTools-${version2}.webtools JBossTools-${version}.webtools" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
 
   # TODO: make sure this exists - might be only "a" while core is on "c"
-  #echo "rename JBossTools-${version}.hibernatetools  JBossTools-${version}.hibernatetools.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging
+  echo "rename JBossTools-${version}.hibernatetools  JBossTools-${version}.hibernatetools.DELETEME" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging
   echo "rename staging/JBossTools-${version2}.hibernatetools JBossTools-${version}.hibernatetools" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
 ----
 

@@ -41,6 +41,11 @@ Zips (recommanded for offline installation) are made available on sf.net. sf.net
 
 On your local machine, using a SFTP client (or the script suggested above), move the files to publish to +http://download.jboss.org/jbosstools/builds/development/sf.net/+ and rename them to conform to pattern.
 
+[CAUTION]
+====
+JBIDE-16632 For *Beta2* verify source zip actually contains github sources for the projects, not just from jbosstools-build-sites! Should be about 40MB, not 30KB!
+====
+
 [source,bash]
 ----
 stream=4.2.luna
@@ -186,7 +191,7 @@ Use staging for QE builds:
 ====
 
 1. Rename +/downloads_htdocs/tools/updates/webtools/${eclipseTrain}+ into +/downloads_htdocs/tools/updates/webtools/${eclipseTrain}_${previousVersion}+, with ${previous} being the name of previous release (for example 4.2.0.Alpha1 when releasing 4.2.0.Beta1)
-1. Move last build in +/downloads_htdocs/tools/updates/JBossTools-${version}.webtools+ to +/downloads_htdocs/tools/updates/webtools/${eclipseTrain}+
+1. Move last build in +/downloads_htdocs/tools/updates/staging/JBossTools-${version}.webtools+ to +/downloads_htdocs/tools/updates/webtools/${eclipseTrain}+
 
 Here is an example of a script doing that:
 [source,bash]
@@ -218,26 +223,22 @@ So, assuming you are editing the jbosstools-download.jboss.org repository, here 
 Here is a script doing that, from the +download.jboss.org+ folder.
 [source,bash]
 ----
-version=4.2.0.Beta1
-newTP=4.40.0.Beta1
 eclipseTrain=luna
-
-oldTP=4.40.0.Alpha1
-
 now=`date +%s000`
 
-pushd jbosstools/targetplatforms/jbosstoolstarget/${eclipseTrain}
-for d in composite*.xml; do
-  sed -i -e "s#${oldTP}#${newTP}#g" $d
-  sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
-done
-popd
+oldTP=4.40.0.Alpha2
+newTP=4.40.0.Beta1
 
-pushd jbosstools/targetplatforms/jbdevstudiotarget/${eclipseTrain}/
-for d in composite*.xml; do
-  sed -i -e "s#${oldTP}#${newTP}#g" $d
-  sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
-done
+pushd jbosstools/targetplatforms/
+  for f in jbosstoolstarget/${eclipseTrain} jbdevstudiotarget/${eclipseTrain}; do
+    pushd ${f};
+      for d in composite*.xml; do
+        sed -i -e "s#${oldTP}#${newTP}#g" $d
+        sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
+      done
+    popd
+  done
+popd
 ----
 
 When this is done
@@ -253,11 +254,21 @@ When this is done
 
 [source,bash]
 ----
-pushd jbosstools/targetplatforms/jbtcentraltarget/${eclipseTrain}/
-for d in composite*.xml; do
-  sed -i -e "s#${OLD_CENTRAL_TP}#${NEW_CENTRAL_TP}#g" $d
-  sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
-done
+eclipseTrain=luna
+now=`date +%s000`
+
+oldTP=4.40.0.Beta1
+newTP=4.40.0.Beta1a
+
+pushd jbosstools/targetplatforms/
+  for f in jbtcentraltarget/${eclipseTrain}; do
+    pushd ${f};
+      for d in composite*.xml; do
+        sed -i -e "s#${oldTP}#${newTP}#g" $d
+        sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
+      done
+    popd
+  done
 popd
 ----
 
@@ -284,7 +295,7 @@ Use staging for QE builds:
 On this repository:
 
 * Update +jbosstools/updates/development/${eclipseTrain}/composite*.xml+ to use newer version and timestamp
-* Replace +jbosstools/updates/development/${eclipseTrain}/index.xml+ with the one you can fetch at +http://download.jboss.org/jbosstools/updates/JBossTools-${version}.core/index.html+
+* Replace +jbosstools/updates/development/${eclipseTrain}/index.xml+ with the one you can fetch at +http://download.jboss.org/jbosstools/static/releases/JBossTools-${version}.core/index.html+
 * In the new +index.html+ replace relative paths by absolute paths. In order to do so, check for "href" occurrences
 
 As usual, a script to do that:
@@ -292,7 +303,7 @@ As usual, a script to do that:
 ----
 version=4.2.0.Beta1
 eclipseTrain=luna
-previousVersion=4.2.0.Alpha1
+previous=4.2.0.Alpha2
 
 now=`date +%s000`
 
@@ -303,8 +314,8 @@ for d in composite*.xml; do
 done
 
 rm -f index.html
-wget -nc http://download.jboss.org/jbosstools/updates/JBossTools-${version}.core/index.html
-sed -i -e "s#href=\"#href=\"http://download.jboss.org/jbosstools/updates/JBossTools-${version}.core/#g" -e "s#href=\"http://download.jboss.org/jbosstools/updates/JBossTools-${version}.core/http#href=\"http#g" index.html
+wget -nc http://download.jboss.org/jbosstools/static/releases/JBossTools-${version}.core/index.html
+sed -i -e "s#href=\"#href=\"http://download.jboss.org/jbosstools/static/releases/JBossTools-${version}.core/#g" -e "s#href=\"http://download.jboss.org/jbosstools/static/releases/JBossTools-${version}.core/http#href=\"http#g" index.html
 popd
 ----
 
@@ -322,7 +333,13 @@ Script:
 ----
 version=4.2.0.Beta1
 eclipseTrain=luna
-pushd jbosstools/updates/development/${eclipseTrain}/
+
+isFinal=false # or true in case you're doing a Final
+# set correct path for where you have project cloned on disk
+basedir=${HOME}/tru/jbosstools-download.jboss.org/ # or...
+basedir=`pwd`
+
+pushd ${basedir}/jbosstools/updates/development/${eclipseTrain}/
 # Replace jbosstools-directory.xml by newest
 rm -f jbosstools-directory.xml
 wget -nc http://download.jboss.org/jbosstools/discovery/development/${version}/jbosstools-directory.xml
@@ -334,22 +351,25 @@ pushd plugins
 wget http://download.jboss.org/jbosstools/discovery/development/${version}/${newJar}
 popd
  
-# IF THIS IS pre-Final, ensure that your plugin points to the STAGING URL, not the RELEASE one:
-#unzip -q -d ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}{_,}
-#pushd ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}_ >/dev/null 
-#sed -i "s#http://download.jboss.org/jbosstools/updates/stable/kepler/central/core/#http://download.jboss.org/jbosstools/updates/development/kepler/central/core/#g" plugin.xml
-#zip -u ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar} plugin.xml
-#popd >/dev/null
-#rm -fr ~/tru/download.jboss.org/jbosstools/updates/development/kepler/${newJar}_
+if [ "$isFinal" = true ]; then
+  # IF THIS IS Final, ensure that your plugin points to the RELEASE URL, not the STAGING one:
+  unzip -q -d ${basedir}/jbosstools/updates/development/${eclipseTrain}/${newJar}{_,}
+  pushd ${basedir}/jbosstools/updates/development/${eclipseTrain}/${newJar}_
+  sed -i "s#http://download.jboss.org/jbosstools/updates/development/${eclipseTrain}/central/core/#http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/central/core/#g" plugin.xml
+  ## *** make sure we do not point at http://download.jboss.org/jbosstools/discovery/development/${version} instead
+  zip -u ${basedir}/jbosstools/updates/development/${eclipseTrain}/${newJar} plugin.xml
+  popd
+  rm -fr ${basedir}/jbosstools/updates/development/${eclipseTrain}/${newJar}_
+else
+  # IF THIS IS pre-Final, ensure that your plugin points to the STAGING URL, not the RELEASE one:
+  unzip -q -d ${basedir}/jbosstools/updates/development/${eclipseTrain}/${newJar}{_,}
+  pushd ${basedir}//jbosstools/updates/development/${eclipseTrain}/${newJar}_ >/dev/null 
+  sed -i "s#http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/central/core/#http://download.jboss.org/jbosstools/updates/development/${eclipseTrain}/central/core/#g" plugin.xml
+  zip -u ${basedir}/jbosstools/updates/development/${eclipseTrain}/${newJar} plugin.xml
+  popd >/dev/null
+  rm -fr ${basedir}/jbosstools/updates/development/${eclipseTrain}/${newJar}_
+fi
 
-# IF THIS IS Final, ensure that your plugin points to the RELEASE URL, not the STAGING one:
-unzip -q -d jbosstools/updates/development/kepler/${newJar}{_,}
-pushd jbosstools/updates/development/kepler/${newJar}_
-sed -i "s#http://download.jboss.org/jbosstools/updates/development/kepler/central/core/#http://download.jboss.org/jbosstools/updates/stable/kepler/central/core/#g" plugin.xml
-## *** make sure we do not point at http://download.jboss.org/jbosstools/discovery/development/${version} instead
-zip -u jbosstools/updates/development/kepler/${newJar} plugin.xml
-popd
-rm -fr jbosstools/updates/development/kepler/${newJar}_
 ----
 
 When all changes are done:
@@ -383,22 +403,13 @@ Use:
 *** http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/jbosstools-directory.xml
 *** http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/plugins/${newJar}
 
-== Magnolia
+== Update jbosstools-website
 
-Magnolia is the place where we can edit the content of the +http://jboss.org/tools+ site. You can log into it using user *tools*.
+Provide a PR to add the latest JBT milestone to this listing:
 
-WARNING: you need a password to get there. In case you don't have it, ask it to Nick, Mickael or Max
+https://github.com/jbosstools/jbosstools-website/blob/master/_config/products.yml
 
-Go to the following URLs and update the link to "latest development build".
-
-* https://www.jboss.org/author/tools/download
-* https://www.jboss.org/author/tools/download/dev
-* https://www.jboss.org/author/tools/download/stable
-* https://www.jboss.org/author/tools/download/installation/update_4_2
-
-When publishing a new Development Milestone, simply replace all references to previous one.
-
-When you're done, publish those pages: go to https://www.jboss.org/author/ and publish
+Example: https://github.com/jbosstools/jbosstools-website/pull/106
 
 == Update Eclipse Marketplace (add/remove features)
 
@@ -408,21 +419,21 @@ WARNING: Alpha versions are not published to market place. So ignore this step f
 
 This is usually the case of first Beta version.
 
-Create a new node on Marketplace, use content of +http://download.jboss.org/jbosstools/updates/JBossTools-<version>.core/site.properties+
+Create a new node on Marketplace, use content of +http://download.jboss.org/jbosstools/static/releases/JBossTools-4.2.0.Beta1.core/site.properties+
 
 === If node already exists
 
-Access it via +https://marketplace.eclipse.org/node/xxxxxx/edit+ and update the following things:
+Access it via +https://marketplace.eclipse.org/content/jboss-tools-luna/edit+ and update the following things:
 
 * Title to match new version
 * Description to match new version & dependencies
-* Update list of features, using content of +http://download.jboss.org/jbosstools/updates/JBossTools-<version>.core/site.properties+
+* Update list of features, using content of +http://download.jboss.org/jbosstools/static/releases/JBossTools-4.2.0.Beta1.core/site.properties+
 
 == Git tags
 
 === Create tags for build-related repositories
 
-Similarly to what's explained about, tag the following repositories:
+Tag the following repositories:
 
 * https://github.com/jbosstools/jbosstools-build
 * https://github.com/jbosstools/jbosstools-build-ci
@@ -432,7 +443,7 @@ Similarly to what's explained about, tag the following repositories:
 * https://github.com/jbosstools/jbosstools-download.jboss.org
 * https://github.com/jbosstools/jbosstools-maven-plugins
 
-Here is a magic script for that, which runs from the location containing your git repositories:
+Assuming you have the above proejcts already cloned, this script will create the tags if run from the location with your git clones:
 
 [source,bash]
 ----
@@ -493,7 +504,7 @@ and +
 
 [source,bash]
 ----
-version=jbosstools-4.2.0.Beta1
+version=4.2.0.Beta1
 echo "
 Subject: 
 
@@ -503,19 +514,27 @@ Body:
 
 This is a development release aimed at Eclipse 4.4.M6 (Luna M6) users.
 
+
 Eclipse Marketplace: 
 
 https://marketplace.eclipse.org/content/jboss-tools-luna
+
 
 Update Site: 
 
 http://download.jboss.org/jbosstools/updates/development/luna/
 
-Installation + Download Pages:
 
-* http://www.jboss.org/tools/download
-* http://www.jboss.org/tools/download/dev/4_2_x
-* http://www.jboss.org/tools/download/installation/update_4_2
+Update Site Zips:
+
+* http://sourceforge.net/projects/jboss/files/JBossTools/JBossTools4.2.0.x/
+* http://download.jboss.org/jbosstools/builds/development/sf.net/${version}/
+
+
+Installation instructions:
+
+* http://tools.jboss.org/downloads/installation.html
+
 
 JBoss Central: 
 
@@ -534,5 +553,7 @@ Subject to change, the latest N&N is here:
 Schedule / Upcoming Releases:
 
 * https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.plugin.system.project%3Aversions-panel
+"
+
 ----
 ____

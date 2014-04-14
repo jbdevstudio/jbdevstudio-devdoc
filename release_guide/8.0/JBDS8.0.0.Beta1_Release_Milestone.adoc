@@ -273,37 +273,31 @@ version2=8.0.0.Beta1b # a, b, c...
 echo "
 Subject: 
 
-JBDS ${version} on Early Access
+JBoss Developer Studio ${version} on Early Access
 
 Body:
 
-JBDS ${version} is available on Early Access!
+JBoss Developer Studio ${version} is available on Early Access!
 
-https://www.jboss.org/products/devstudio#earlyaccess
-https://devstudio.jboss.com/updates/8.0-development/
+Download page and installer: https://www.jboss.org/products/devstudio#earlyaccess
+Update-site: https://devstudio.jboss.com/updates/8.0-development/
 
 Note that the update site may take a while to replicate from our staging server to publication. Please allow at least an hour before attempting to install from the site - if the page above still shows the previous milestone instead of ${version}, try again later.
 
 --
 
-JBoss Central
-
-JBDS Central should be looking to this URL to resolve content listed on the Software/Update tab. If it is not, you can change this in studio/jbdevstudio.ini:
+JBoss Central: JBDS Central should be looking to this URL to resolve content listed on the Software/Update tab. If it is not, you can change this in studio/jbdevstudio.ini:
 
   -Djboss.discovery.directory.url=https://devstudio.jboss.com/updates/8.0-development/devstudio-directory.xml
   -Djboss.discovery.site.url=https://devstudio.jboss.com/updates/8.0-development/central/core/
 
 --
 
-Eclipse Marketplace
-
-https://marketplace.eclipse.org/content/red-hat-jboss-developer-studio-kepler
+Eclipse Marketplace: https://marketplace.eclipse.org/content/red-hat-jboss-developer-studio-kepler
 
 --
 
-Schedule / Upcoming Releases:
-
-https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.plugin.system.project%3Aversions-panel
+Schedule / Upcoming Releases: https://issues.jboss.org/browse/JBDS#selectedTab=com.atlassian.jira.plugin.system.project%3Aversions-panel
 
 "
 ----

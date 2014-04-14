@@ -318,11 +318,11 @@ version3=8.0.0.Beta1-v20140408-2350-B93
 echo "
 Subject: 
 
-JBDS ${version} available for push to CSP staging server
+JBoss Developer Studio ${version} available for push to CSP staging server
 
 Body:
 
-JBDS ${version} (to be renamed from ${version2}) is available to push to CSP staging server, for subsequent smoke test & review by QE.
+JBoss Developer Studio ${version} (to be renamed from ${version2}) is available to push to CSP staging server, for subsequent smoke test & review by QE.
 
 Please include these 5 files:
 

@@ -503,7 +503,7 @@ Send email to team.
 ____
 *To:* "jbosstools-dev@lists.jboss.org" <jbosstools-dev@lists.jboss.org> +
 and +
-*To:* jbds-pm-list <jbds-pm-list@redhat.com>, "external-exadel-list@redhat.com" <external-exadel-list@redhat.com>, jboss-announce@redhat.com +
+*To:* "external-exadel-list@redhat.com" <external-exadel-list@redhat.com>, jboss-announce@redhat.com +
 
 [source,bash]
 ----

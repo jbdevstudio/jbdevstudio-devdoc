@@ -235,7 +235,7 @@ In case something change, update relevant documentation in +jbdevstudio-devdoc+ 
 
 == Notify the team (send 1 email)
 ____
-*To* jbds-pm-list@redhat.com, external-exadel-list@redhat.com +
+*To* external-exadel-list@redhat.com +
 
 [source,bash]
 ----

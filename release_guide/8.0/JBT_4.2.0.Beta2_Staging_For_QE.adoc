@@ -269,6 +269,10 @@ echo "
 Changes prompting this $respin are:
 
 https://issues.jboss.org/issues/?jql=labels%20in%20%28%22${respin}%22%29%20and%20%28%28project%20in%20%28%22JBDS%22%29%20and%20fixversion%20in%20%28%22${version2}%22%29%29%20or%20%28project%20in%20%28%22JBIDE%22%2C%22TOOLSDOC%22%29%20and%20fixversion%20in%20%28%22${version3}%22%29%29%29
+
+To test the upcoming version of Central, add this to your eclipse.ini file after the -vmargs line:
+ -Djboss.discovery.directory.url=http://download.jboss.org/jbosstools/discovery/development/${version}/jbosstools-directory.xml
+ -Djboss.discovery.site.url=http://download.jboss.org/jbosstools/discovery/development/${version}/
 "
 fi
 

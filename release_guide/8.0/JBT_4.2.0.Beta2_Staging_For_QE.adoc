@@ -46,7 +46,6 @@ Then respin the job and verify that sites were correctly populated:
 * http://download.jboss.org/jbosstools/discovery/nightly/core/4.2.luna/
 * http://www.qa.jboss.com/binaries/RHDS/discovery/nightly/core/4.2.luna/
 
-
 [1] https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_8.0.luna/job/jbosstools-discovery_4.2.luna/configure
 
 
@@ -205,7 +204,7 @@ dev01$ . /home/hudson/config_repository/scripts/jbds/prompt.sh
 
 ____
 *To* jbosstools-dev@lists.jboss.org +
-*To* jbds-pm-list@redhat.com, external-exadel-list@redhat.com 
+*To* external-exadel-list@redhat.com 
 
 [source,bash]
 ----
@@ -234,10 +233,10 @@ Update Sites:
 
 Builds:
 
-* http://download.jboss.org/jbosstools/builds/developmentjbosstools-${version}-build-core/${coreBuildID}
-* http://download.jboss.org/jbosstools/builds/developmentjbosstools-${version}-build-coretests/${coretestsBuildID}
-* http://download.jboss.org/jbosstools/builds/developmentjbosstools-${version}-build-hibernatetools/${hibernatetoolsBuildID}
-* http://download.jboss.org/jbosstools/builds/developmentjbosstools-${version}-build-webtools/${webtoolsBuildID}
+* http://download.jboss.org/jbosstools/builds/development/jbosstools-${version}-build-core/${coreBuildID}
+* http://download.jboss.org/jbosstools/builds/development/jbosstools-${version}-build-coretests/${coretestsBuildID}
+* http://download.jboss.org/jbosstools/builds/development/jbosstools-${version}-build-hibernatetools/${hibernatetoolsBuildID}
+* http://download.jboss.org/jbosstools/builds/development/jbosstools-${version}-build-webtools/${webtoolsBuildID}
 
 JBoss Central:
 

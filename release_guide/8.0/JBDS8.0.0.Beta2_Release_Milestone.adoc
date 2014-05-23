@@ -36,7 +36,7 @@ screen
 
 # clean out old update sites from previous milestones; rename update sites from "a,b,c" to ""
 version=8.0.0.Beta2
-version2=8.0.0.Beta2b; # a, b, c, ...
+version2=8.0.0.Beta2; # a, b, c, ...
 cd /mnt/devstudio/updates/8.0.0/
 if [[ ${version} != ${version2} ]]; then 
   mv ${version}.core ${version}.core.DELETEME
@@ -64,7 +64,7 @@ alias   ci='git commit -m'
 
 cd ~/truu/devstudio.jboss.com/updates/8.0-staging
 version=8.0.0.Beta2
-version2=8.0.0.Beta2b; # a, b, c, ...
+version2=8.0.0.Beta2; # a, b, c, ...
 now=`date +%s000`
 for d in composite*.xml index.html central/core/index.html ; do
   sed -i -e "s#${version2}#${version}#g" $d
@@ -269,7 +269,7 @@ ____
 [source,bash]
 ----
 version=8.0.0.Beta2
-version2=8.0.0.Beta2b # a, b, c...
+version2=8.0.0.Beta2 # a, b, c...
 echo "
 Subject: 
 
@@ -306,7 +306,7 @@ ____
 [source,bash]
 ----
 version=8.0.0.Beta2
-version2=8.0.0.Beta2b # a, b, c...
+version2=8.0.0.Beta2 # a, b, c...
 version3=8.0.0.Beta2-v20140408-2350-B93
 echo "
 Subject: 
@@ -319,11 +319,11 @@ JBoss Developer Studio ${version} (to be renamed from ${version2}) is available 
 
 Please include these 5 files:
 
-* http://www.qa.jboss.com/binaries/RHDS/builds/development/${version}.installer/jbdevstudio-product-universal-${version3}.jar 
-* http://www.qa.jboss.com/binaries/RHDS/builds/development/${version}.installer/jbdevstudio-product-eap-universal-${version3}.jar
-* http://www.qa.jboss.com/binaries/RHDS/builds/development/${version}.installer/jbdevstudio-product-sources-${version3}.zip
-* http://www.qa.jboss.com/binaries/RHDS/builds/development/${version}.installer/jbdevstudio-product-Update-${version3}.zip
-* http://www.qa.jboss.com/binaries/RHDS/builds/development/${version}.installer/jbdevstudio-product-Central-${version3}.zip
+* http://www.qa.jboss.com/binaries/RHDS/builds/development/${version}.installer/jboss-devstudio-${version3}-installer-standalone.jar 
+* http://www.qa.jboss.com/binaries/RHDS/builds/development/${version}.installer/jboss-devstudio-${version3}-installer-eap.jar
+* http://www.qa.jboss.com/binaries/RHDS/builds/development/${version}.installer/jboss-devstudio-${version3}-installer-src.zip
+* http://www.qa.jboss.com/binaries/RHDS/builds/development/${version}.installer/jboss-devstudio-${version3}-updatesite-core.zip
+* http://www.qa.jboss.com/binaries/RHDS/builds/development/${version}.installer/jboss-devstudio-${version3}-updatesite-central.zip
 
 We will also need GoldenGate links for the 5 artifacts above, as they need to be linked from these pages for Early Access:
 
@@ -332,17 +332,16 @@ We will also need GoldenGate links for the 5 artifacts above, as they need to be
 
 Only ONE of those artifacts [0] require sign in, as it bundles EAP. The rest are free. 
 
-[0] http://www.qa.jboss.com/binaries/RHDS/builds/development/${version}.installer/jbdevstudio-product-eap-universal-${version3}.jar
+[0] http://www.qa.jboss.com/binaries/RHDS/builds/development/${version}.installer/jboss-devstudio-${version3}-installer-eap.jar
 
-Please note that the new CSP pages should include similar documentation to the previous release [1], [2], but with these string replacements / updates:
+Please note that the new CSP pages should include similar documentation to the previous release [1] but with these string replacements / updates:
 
-* s/Eclipse 4.3.1/Eclipse 4.4/g
-* s/Kepler SR1/Luna M6/g
-* s/Kepler JEE bundle/Luna M6 JEE bundle/g
-* s/keplersr1/lunam6/g
+* s/Luna M6/Luna M7/g
+* s/Luna M6 JEE bundle/Luna M7 JEE bundle/g
+* s/lunam6/lunam7/g
+* s/Universal Binary/Installer/g
 
-[1] https://access.redhat.com/jbossnetwork/restricted/softwareDetail.html?softwareId=27063&product=jbossdeveloperstudio&version=7.1.0&downloadType=distributions
-[2] https://access.redhat.com/jbossnetwork/restricted/softwareDetail.html?softwareId=27073&product=jbossdeveloperstudio&version=7.1.0&downloadType=distributions
+[1] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html
 
 When pushed, please reply so that QE can review the CSP pages & files for push to production.
 

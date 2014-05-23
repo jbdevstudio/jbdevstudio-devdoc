@@ -38,7 +38,7 @@ A Jenkins job can then be triggered to sync changes to download.jboss.org: https
 [[update-discovery-urls]]
 Update the *stable branch* discovery job [1] to publish to the right URL, according to JBT and JBDS versions +
 
-* Update property +JBT_UPDATE_SITE+ to http://download.jboss.org/jbosstools/updates/staging/JBossTools-4.2.0.Beta2.core/
+* Update property +JBT_UPDATE_SITE+ to http://download.jboss.org/jbosstools/updates/staging/jbosstools-4.2.0.Beta2.core/
 * Update property +JBDS_UPDATE_SITE+ to http://www.qa.jboss.com/binaries/RHDS/updates/development/8.0.0.Beta2.core/
 
 Then respin the job and verify that sites were correctly populated:
@@ -55,9 +55,9 @@ Then respin the job and verify that sites were correctly populated:
 === Promote builds from "nightly" to "development"
 
 *Development* where we store builds for staging. This contains build metadata. The URL for development sites pattern is +http://download.jboss.org/jbosstools/development/<version>.<siteName>/<buildId>::
-. *Core* site (which contains JBoss Tools): Move the most recent build available from +http://downloads.jboss.org/tools/build/nightly/core/4.2.luna+ to +http://downloads.jboss.org/tools/development/4.2.0.Beta2.core/+
-. *Core Tests* site (which contains JBoss Tools tests): Move the most recent build available from +http://downloads.jboss.org/tools/build/nightly/coretests/4.2.luna+ to +http://downloads.jboss.org/tools/development/4.2.0.Beta2.coretests/+
-. *WebTools* site (which contains only WTP connectors for AS/WildFly/EAP): Move the most recent build available from +http://downloads.jboss.org/tools/build/nightly/webtools/4.2.luna+ to +http://downloads.jboss.org/tools/development/4.2.0.Beta2.webtools/+ 
+. *Core* site (which contains JBoss Tools): Move the most recent build available from +http://downloads.jboss.org/jbosstools/builds/nightly/core/4.2.luna+ to +http://downloads.jboss.org/jbosstools/builds/development/4.2.0.Beta2.core/+
+. *Core Tests* site (which contains JBoss Tools tests): Move the most recent build available from +http://downloads.jboss.org/jbosstools/builds/nightly/coretests/4.2.luna+ to +http://downloads.jboss.org/jbosstools/builds/development/4.2.0.Beta2.coretests/+
+. *WebTools* site (which contains only WTP connectors for AS/WildFly/EAP): Move the most recent build available from +http://downloads.jboss.org/jbosstools/builds/nightly/webtools/4.2.luna+ to +http://downloads.jboss.org/jbosstools/builds/development/4.2.0.Beta2.webtools/+ 
 
 Here is a script that does this:
 [source,bash]
@@ -71,35 +71,35 @@ coreBuildID=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/to
 coreBuildID=${coreBuildID%%/*}
 echo "Latest build for ${site}: ${coreBuildID}"
 # Create target directory and populate it
-echo "mkdir development/${version}.${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
-echo "rename nightly/${site}/${stream}/${coreBuildID} development/${version}.${site}/${coreBuildID}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+echo "mkdir development/jbosstools-${version}-build-${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+echo "rename nightly/${site}/${stream}/${coreBuildID} development/jbosstools-${version}-build-${site}/${coreBuildID}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
 
 site=coretests
 # Repeat operation
 coretestsBuildID=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/nightly/${site}/${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1)
 coretestsBuildID=${coretestsBuildID%%/*}
 echo "Latest build for ${site}: ${coretestsBuildID}"
-echo "mkdir development/${version}.${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
-echo "rename nightly/${site}/${stream}/${coretestsBuildID} development/${version}.${site}/${coretestsBuildID}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+echo "mkdir development/jbosstools-${version}-build-${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+echo "rename nightly/${site}/${stream}/${coretestsBuildID} development/jbosstools-${version}-build-${site}/${coretestsBuildID}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
   
 site=hibernatetools
 hibernatetoolsBuildID=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/nightly/${site}/${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1)
 hibernatetoolsBuildID=${hibernatetoolsBuildID%%/*}
 echo "Latest build for ${site}: ${hibernatetoolsBuildID}"
-echo "mkdir development/${version}.${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
-echo "rename nightly/${site}/${stream}/${hibernatetoolsBuildID} development/${version}.${site}/${hibernatetoolsBuildID}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+echo "mkdir development/jbosstools-${version}-build-${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+echo "rename nightly/${site}/${stream}/${hibernatetoolsBuildID} development/jbosstools-${version}-build-${site}/${hibernatetoolsBuildID}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
   
 site=webtools
 webtoolsBuildID=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/nightly/${site}/${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1)
 webtoolsBuildID=${webtoolsBuildID%%/*}
 echo "Latest build for ${site}: ${webtoolsBuildID}"
-echo "mkdir development/${version}.${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
-echo "rename nightly/${site}/${stream}/${webtoolsBuildID} development/${version}.${site}/${webtoolsBuildID}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+echo "mkdir development/jbosstools-${version}-build-${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+echo "rename nightly/${site}/${stream}/${webtoolsBuildID} development/jbosstools-${version}-build-${site}/${webtoolsBuildID}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
   
-echo " >> http://download.jboss.org/jbosstools/builds/development/${version}.core/${coreBuildID}" | egrep ">>|${version}"
-echo " >> http://download.jboss.org/jbosstools/builds/development/${version}.coretests/${coretestsBuildID}" | egrep ">>|${version}"
-echo " >> http://download.jboss.org/jbosstools/builds/development/${version}.hibernatetools/${hibernatetoolsBuildID}" | egrep ">>|${version}"
-echo " >> http://download.jboss.org/jbosstools/builds/development/${version}.webtools/${webtoolsBuildID}" | egrep ">>|${version}"
+echo " >> http://download.jboss.org/jbosstools/builds/developmentjbosstools-${version}-build-core/${coreBuildID}" | egrep ">>|${version}"
+echo " >> http://download.jboss.org/jbosstools/builds/developmentjbosstools-${version}-build-coretests/${coretestsBuildID}" | egrep ">>|${version}"
+echo " >> http://download.jboss.org/jbosstools/builds/developmentjbosstools-${version}-build-hibernatetools/${hibernatetoolsBuildID}" | egrep ">>|${version}"
+echo " >> http://download.jboss.org/jbosstools/builds/developmentjbosstools-${version}-build-webtools/${webtoolsBuildID}" | egrep ">>|${version}"
 ----
 
 Then verify sites are correctly populated with build metadata. To do so, you can simply make sure that under each one of these build sites, you find a file /logs/GIT_REVISION.txt.
@@ -114,20 +114,20 @@ stream=4.2.luna
 version=4.2.0.Beta2  # a, b, c...
 
 site=core
-echo "rename nightly/${site}/${stream} staging/JBossTools-${version}.${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates  
-echo " >> http://download.jboss.org/jbosstools/updates/staging/JBossTools-${version}.${site}/" | egrep ">>|${version}"
+echo "rename nightly/${site}/${stream} staging/jbosstools-${version}-updatesite-${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates  
+echo " >> http://download.jboss.org/jbosstools/updates/staging/jbosstools-${version}-updatesite-${site}/" | egrep ">>|${version}"
 
 site=coretests
-echo "rename nightly/${site}/${stream} staging/JBossTools-${version}.${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates  
-echo " >> http://download.jboss.org/jbosstools/updates/staging/JBossTools-${version}.${site}/" | egrep ">>|${version}"
+echo "rename nightly/${site}/${stream} staging/jbosstools-${version}-updatesite-${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates  
+echo " >> http://download.jboss.org/jbosstools/updates/staging/jbosstools-${version}-updatesite-${site}/" | egrep ">>|${version}"
 
 site=hibernatetools
-echo "rename nightly/${site}/${stream} staging/JBossTools-${version}.${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
-echo " >> http://download.jboss.org/jbosstools/updates/staging/JBossTools-${version}.${site}/" | egrep ">>|${version}"
+echo "rename nightly/${site}/${stream} staging/jbosstools-${version}-updatesite-${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
+echo " >> http://download.jboss.org/jbosstools/updates/staging/jbosstools-${version}-updatesite-${site}/" | egrep ">>|${version}"
 
 site=webtools
-echo "rename nightly/${site}/${stream} staging/JBossTools-${version}.${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
-echo " >> http://download.jboss.org/jbosstools/updates/staging/JBossTools-${version}.${site}/" | egrep ">>|${version}"
+echo "rename nightly/${site}/${stream} staging/jbosstools-${version}-updatesite-${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
+echo " >> http://download.jboss.org/jbosstools/updates/staging/jbosstools-${version}-updatesite-${site}/" | egrep ">>|${version}"
 ----
 
 Then verify those 4 sites are correctly populated.
@@ -167,38 +167,38 @@ dev01$ . /home/hudson/config_repository/scripts/jbds/prompt.sh
 
   version=4.2.0.Beta2 # a, b, c...
   branch=core/4.2.luna
-  scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/JBossTools-${version}.core/* /tmp/JBossTools-${version}.core/
-  scpr /tmp/JBossTools-${version}.core/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
-  rm -fr /tmp/JBossTools-${version}.core/
+  scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/jbosstools-${version}-updatesite-core/* /tmp/jbosstools-${version}-updatesite-core/
+  scpr /tmp/jbosstools-${version}-updatesite-core/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
+  rm -fr /tmp/jbosstools-${version}-updatesite-core/
   echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
 
   version=4.2.0.Beta2 # a, b, c...
   branch=coretests/4.2.luna
-  scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/JBossTools-${version}.coretests/* /tmp/JBossTools-${version}.coretests/
-  scpr /tmp/JBossTools-${version}.coretests/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
-  rm -fr /tmp/JBossTools-${version}.coretests/
+  scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/jbosstools-${version}-updatesite-coretests/* /tmp/jbosstools-${version}-updatesite-coretests/
+  scpr /tmp/jbosstools-${version}-updatesite-coretests/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
+  rm -fr /tmp/jbosstools-${version}-updatesite-coretests/
   echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
 
   version=4.2.0.Beta2 # a, b, c...
   branch=hibernatetools/4.2.luna
-  scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/JBossTools-${version}.hibernatetools/* /tmp/JBossTools-${version}.hibernatetools/
-  scpr /tmp/JBossTools-${version}.hibernatetools/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
-  rm -fr /tmp/JBossTools-${version}.hibernatetools/
+  scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/jbosstools-${version}-updatesite-hibernatetools/* /tmp/jbosstools-${version}-updatesite-hibernatetools/
+  scpr /tmp/jbosstools-${version}-updatesite-hibernatetools/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
+  rm -fr /tmp/jbosstools-${version}-updatesite-hibernatetools/
   echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
 
   version=4.2.0.Beta2 # a, b, c...
   branch=webtools/4.2.luna
-  scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/JBossTools-${version}.webtools/* /tmp/JBossTools-${version}.webtools/
-  scpr /tmp/JBossTools-${version}.webtools/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
-  rm -fr /tmp/JBossTools-${version}.webtools/
+  scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/jbosstools-${version}-updatesite-webtools/* /tmp/jbosstools-${version}-updatesite-webtools/
+  scpr /tmp/jbosstools-${version}-updatesite-webtools/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
+  rm -fr /tmp/jbosstools-${version}-updatesite-webtools/
   echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
 
   # now, discovery site
   version=4.2.0.Beta2 # a, b, c...
   branch=core/4.2.luna
-  scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery/development/${version}/* /tmp/JBossTools-${version}.discovery/
-  scpr /tmp/JBossTools-${version}.discovery/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery/nightly/${branch}/ --delete
-  rm -fr /tmp/JBossTools-${version}.discovery/
+  scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery/development/${version}/* /tmp/jbosstools-${version}-updatesite-discovery/
+  scpr /tmp/jbosstools-${version}-updatesite-discovery/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery/nightly/${branch}/ --delete
+  rm -fr /tmp/jbosstools-${version}-updatesite-discovery/
   echo " >> http://download.jboss.org/jbosstools/discovery/nightly/${branch}/" | egrep ">>|${branch}"
 
 == Notify the team (send 2 emails)
@@ -227,17 +227,17 @@ As always, these are not FINAL bits, but preliminary results for QE testing. Not
 
 Update Sites:
 
-* http://download.jboss.org/jbosstools/updates/staging/JBossTools-${version}.core/
-* http://download.jboss.org/jbosstools/updates/staging/JBossTools-${version}.coretests/
-* http://download.jboss.org/jbosstools/updates/staging/JBossTools-${version}.hibernatetools/
-* http://download.jboss.org/jbosstools/updates/staging/JBossTools-${version}.webtools/
+* http://download.jboss.org/jbosstools/updates/staging/jbosstools-${version}-updatesite-core/
+* http://download.jboss.org/jbosstools/updates/staging/jbosstools-${version}-updatesite-coretests/
+* http://download.jboss.org/jbosstools/updates/staging/jbosstools-${version}-updatesite-hibernatetools/
+* http://download.jboss.org/jbosstools/updates/staging/jbosstools-${version}-updatesite-webtools/
 
 Builds:
 
-* http://download.jboss.org/jbosstools/builds/development/${version}.core/${coreBuildID}
-* http://download.jboss.org/jbosstools/builds/development/${version}.coretests/${coretestsBuildID}
-* http://download.jboss.org/jbosstools/builds/development/${version}.hibernatetools/${hibernatetoolsBuildID}
-* http://download.jboss.org/jbosstools/builds/development/${version}.webtools/${webtoolsBuildID}
+* http://download.jboss.org/jbosstools/builds/developmentjbosstools-${version}-build-core/${coreBuildID}
+* http://download.jboss.org/jbosstools/builds/developmentjbosstools-${version}-build-coretests/${coretestsBuildID}
+* http://download.jboss.org/jbosstools/builds/developmentjbosstools-${version}-build-hibernatetools/${hibernatetoolsBuildID}
+* http://download.jboss.org/jbosstools/builds/developmentjbosstools-${version}-build-webtools/${webtoolsBuildID}
 
 JBoss Central:
 

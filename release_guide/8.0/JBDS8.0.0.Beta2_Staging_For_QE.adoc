@@ -28,8 +28,8 @@ This document describe how to provide a valid JBoss Developer Studio build to QE
 
 In CI job that builds discovery site ( https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_8.0.luna/job/jbosstools-discovery_4.2.luna/configure ), update the configuration to use the latest URLs:
 
-* http://download.jboss.org/jbosstools/updates/JBossTools-4.2.0.Beta2.core/ # a, b, c...
-* http://www.qa.jboss.com/binaries/RHDS/updates/development/8.0.0.Beta2.core/ # a, b, c...
+* http://download.jboss.org/jbosstools/updates/jbosstools-4.2.0.Beta2-updatesite-core/ # a, b, c...
+* http://www.qa.jboss.com/binaries/RHDS/updates/development/8.0.0.Beta2-updatesite-core/ # a, b, c...
 
 Then, respin the job.
 
@@ -71,7 +71,7 @@ find . -maxdepth 1 -type d -name "${version}*" | grep ${version}
 find . -maxdepth 1 -type d -name "${version}*" | sed "s#\.# >> http://www.qa.jboss.com/binaries/RHDS/builds/development#" | egrep ">>|${version}"
 
 version=8.0.0.Beta2 # a, b, c...
-rsync -aPrz /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/all/repo/* /qa/services/http/binaries/RHDS/updates/development/${version}.core/
+rsync -aPrz /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/all/repo/* /qa/services/http/binaries/RHDS/updates/development/${version}-updatesite-core/
 cd /qa/services/http/binaries/RHDS/updates/development/
 find . -maxdepth 1 -type d -name "${version}*" | grep ${version}
 find . -maxdepth 1 -type d -name "${version}*" | sed "s#\.# >> http://www.qa.jboss.com/binaries/RHDS/updates/development#" | egrep ">>|${version}"
@@ -86,8 +86,8 @@ rsync -aPrz /qa/services/http/binaries/RHDS/discovery/nightly/core/4.2.luna/* /q
 ----
 cd /qa/services/http/binaries/RHDS/discovery/development/${version}/
 for c in compositeContent.xml compositeArtifacts.xml; do 
-  sed -i -e "s#http://www.qa.jboss.com/binaries/RHDS/builds/staging/devstudio.product.\+/all/.\+/#http://www.qa.jboss.com/binaries/RHDS/updates/development/${version}.core/#" $c
-  sed -i -e "s#http://www.qa.jboss.com/binaries/RHDS/updates/development/${version}.core/repo/#http://www.qa.jboss.com/binaries/RHDS/updates/development/${version}.core/#" $c
+  sed -i -e "s#http://www.qa.jboss.com/binaries/RHDS/builds/staging/devstudio.product.\+/all/.\+/#http://www.qa.jboss.com/binaries/RHDS/updates/development/${version}-updatesite-core/#" $c
+  sed -i -e "s#http://www.qa.jboss.com/binaries/RHDS/updates/development/${version}-updatesite-core/repo/#http://www.qa.jboss.com/binaries/RHDS/updates/development/${version}-updatesite-core/#" $c
   cat $c | egrep "${version}"
 done
 cd /qa/services/http/binaries/RHDS/discovery/development/
@@ -118,9 +118,9 @@ Then, copy stuff from dev01 (CI build publishing to qa.jboss.org) to wallace
   # can run 2 steps these in parallel 
 
   version=8.0.0.Beta2 # a, b, c...
-  rsync -aPrz --rsh=ssh dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/all/repo/* /mnt/devstudio/updates/8.0.0/${version}.core/
-  chmod -R g+w /mnt/devstudio/updates/8.0.0/${version}.core 2>/dev/null
-  chgrp -R devstudio /mnt/devstudio/updates/8.0.0/${version}.core 2>/dev/null
+  rsync -aPrz --rsh=ssh dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/all/repo/* /mnt/devstudio/updates/8.0.0/${version}-updatesite-core/
+  chmod -R g+w /mnt/devstudio/updates/8.0.0/${version}-updatesite-core 2>/dev/null
+  chgrp -R devstudio /mnt/devstudio/updates/8.0.0/${version}-updatesite-core 2>/dev/null
 
   version=8.0.0.Beta2 # a, b, c...
   # TODO: verify correct URL and filename for the target zip
@@ -261,7 +261,7 @@ http://www.qa.jboss.com/binaries/RHDS/builds/development/${version}.installer/
 
 Update Sites (Internal): 
 
-http://www.qa.jboss.com/binaries/RHDS/updates/development/${version}.core/
+http://www.qa.jboss.com/binaries/RHDS/updates/development/${version}-updatesite-core/
 
 Target Platforms (Public):
 

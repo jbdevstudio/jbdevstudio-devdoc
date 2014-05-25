@@ -1,27 +1,5 @@
 = Publishing JBT update sites for QE
 
-[IMPORTANT]
-====
-JBIDE-13283, JBDS-2730 use Akamai publishing for update sites, target platforms & zips. +
-Use:
-
-  * http://download.jboss.org/jbosstools/static/releases/ instead of 
-  * http://download.jboss.org/jbosstools/updates/ +
-  and
-  * http://download.jboss.org/jbosstools/static/targetplatforms/ instead of 
-  * http://download.jboss.org/jbosstools/targetplatforms/
-====
-
-[CAUTION]
-====
-JBIDE-16871 For *Beta2* filename refactoring is coming, so all files/paths will be lowercase. +
-Use:
-
-  * jbostools instead of JBossTools
-  * update instead of Update
-  * etc.
-====
-
 This document describe how to provide a valid JBoss Tools build to QE so they can test us.
 
 [NOTE]
@@ -39,7 +17,7 @@ A Jenkins job can then be triggered to sync changes to download.jboss.org: https
 Update the *stable branch* discovery job [1] to publish to the right URL, according to JBT and JBDS versions +
 
 * Update property +JBT_UPDATE_SITE+ to http://download.jboss.org/jbosstools/updates/staging/jbosstools-4.2.0.Beta2-updatesite-core/
-* Update property +JBDS_UPDATE_SITE+ to http://www.qa.jboss.com/binaries/RHDS/updates/development/jboss-devstudio-8.0.0.Beta2-updatesite-core/
+* Update property +JBDS_UPDATE_SITE+ to http://www.qa.jboss.com/binaries/RHDS/updates/development/8.0.0.Beta2-updatesite-core/
 
 Then respin the job and verify that sites were correctly populated:
 
@@ -253,8 +231,8 @@ Once released, dependencies will be found automatically from here:
 
 New + Noteworthy (subject to change): 
 
-* http://htmlpreview.github.com/?https://raw.github.com/jbosstools/jbosstools-documentation/master/whatsnew/index.html
-* http://docs.jboss.org/tools/whatsnew/
+* https://github.com/jbosstools/jbosstools-website/tree/master/documentation/whatsnew
+* http://tools.jboss.org/documentation/whatsnew/
 
 Schedule / Upcoming Releases: 
 

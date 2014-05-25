@@ -144,6 +144,23 @@ rm -fr ~/truu/devstudio.jboss.com/updates/${DESTSITE}/${newJar}_
 Be sure to not overwrite integration-stack deltas (staging and development may not be the same)!
 ====
 
+=== Update latest target platform composite files
+
+[source,bash]
+----
+
+pushd jbdevstudio-website/content/updates/8.0-staging/extras/
+now=`date +%s000`
+
+oldTP=4.40.0.Beta1a
+newTP=4.40.0.Beta3-SNAPSHOT
+for d in composite*.xml; do
+  sed -i -e "s#${oldTP}#${newTP}#g" $d
+  sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
+done
+popd
+
+
 [source,bash]
 ----
 # check in / sync changes
@@ -258,12 +275,27 @@ firefox https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
   https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
 ----
 
+== Release the latest milestone to ide-config.properties
+
+Check out this file:
+
+http://download.jboss.org/jbosstools/configuration/ide-config.properties
+
+And update it it as required, so that the links for the latest milestone point to valid URLs, eg.,
+
+[source,bash]
+----
+jboss.discovery.directory.url|devstudio|8.0.0.Beta2=https://devstudio.jboss.com/updates/8.0-staging/devstudio-directory.xml
+jboss.discovery.site.url|devstudio|8.0.0.Beta2=https://devstudio.jboss.com/updates/8.0-staging/central/core/
+----
+
 
 == Notify the team (send 2 emails)
 
 ____
 
 *To* jbosstools-dev@lists.jboss.org +
+and +
 *To* external-exadel-list@redhat.com, jboss-announce@redhat.com (optional for major milestones/releases)+
 
 [source,bash]
@@ -301,6 +333,7 @@ ____
 
 ____
 *To* jbds-pm-list@redhat.com, release-engineering@redhat.com +
+and +
 *Cc* cobrien@redhat.com, ldimaggi@redhat.com, mmurray@redhat.com, jpallich@redhat.com +
 
 [source,bash]

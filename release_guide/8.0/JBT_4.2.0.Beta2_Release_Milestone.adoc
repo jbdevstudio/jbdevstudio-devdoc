@@ -495,9 +495,21 @@ Project leads, please tag your projects!
 ----
 ____
 
-== Announce availability of new release.
+== Release the latest milestone to ide-config.properties
 
-Send email to team.
+Check out this file:
+
+http://download.jboss.org/jbosstools/configuration/ide-config.properties
+
+And update it it as required, so that the links for the latest milestone point to valid URLs, eg.,
+
+[source,bash]
+----
+jboss.discovery.directory.url|jbosstools|4.2.0.Beta2=http://download.jboss.org/jbosstools/discovery/development/4.2.0.Beta2/jbosstools-directory.xml 
+jboss.discovery.site.url|jbosstools|4.2.0.Beta2=http://download.jboss.org/jbosstools/discovery/development/4.2.0.Beta2/ 
+----
+
+== Notify the team (send 2 emails)
 
 ____
 *To:* "jbosstools-dev@lists.jboss.org" <jbosstools-dev@lists.jboss.org> +

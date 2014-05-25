@@ -232,7 +232,7 @@ ssh wallace.intranet.prod.int.rdu2.redhat.com "\
 In case something change, update relevant documentation in +jbdevstudio-devdoc+ repository. As this is a shared documentation, it's better to create a pull request and ask reviews from other potential users (Nick, Mickael, Max, Denis... and anyone else who can be interested). 
 
 
-== Release the latest QE snapshot to Update ide-config.properties
+== Release the latest QE snapshot to ide-config.properties
 
 Check out this file:
 

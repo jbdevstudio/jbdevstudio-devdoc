@@ -179,7 +179,7 @@ dev01$ . /home/hudson/config_repository/scripts/jbds/prompt.sh
   echo " >> http://download.jboss.org/jbosstools/discovery/nightly/${branch}/" | egrep ">>|${branch}"
 
 
-== Release the latest QE snapshot to Update ide-config.properties
+== Release the latest QE snapshot to ide-config.properties
 
 Check out this file:
 
@@ -198,6 +198,7 @@ jboss.discovery.site.url|jbosstools|4.2.0.Beta2=http://download.jboss.org/jbosst
 
 ____
 *To* jbosstools-dev@lists.jboss.org +
+and +
 *To* external-exadel-list@redhat.com 
 
 [source,bash]

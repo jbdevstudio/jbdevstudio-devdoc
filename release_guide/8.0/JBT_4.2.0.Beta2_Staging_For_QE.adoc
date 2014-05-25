@@ -178,6 +178,22 @@ dev01$ . /home/hudson/config_repository/scripts/jbds/prompt.sh
   rm -fr /tmp/jbosstools-${version}-updatesite-discovery/
   echo " >> http://download.jboss.org/jbosstools/discovery/nightly/${branch}/" | egrep ">>|${branch}"
 
+
+== Release the latest QE snapshot to Update ide-config.properties
+
+Check out this file:
+
+http://download.jboss.org/jbosstools/configuration/ide-config.properties
+
+And update it it as required, so that the links for the latest milestone point to valid URLs, eg.,
+
+[source,bash]
+----
+jboss.discovery.directory.url|jbosstools|4.2.0.Beta2=http://download.jboss.org/jbosstools/discovery/development/4.2.0.Beta2/jbosstools-directory.xml 
+jboss.discovery.site.url|jbosstools|4.2.0.Beta2=http://download.jboss.org/jbosstools/discovery/development/4.2.0.Beta2/ 
+----
+
+
 == Notify the team (send 2 emails)
 
 ____

@@ -38,8 +38,8 @@ A Jenkins job can then be triggered to sync changes to download.jboss.org: https
 [[update-discovery-urls]]
 Update the *stable branch* discovery job [1] to publish to the right URL, according to JBT and JBDS versions +
 
-* Update property +JBT_UPDATE_SITE+ to http://download.jboss.org/jbosstools/updates/staging/jbosstools-4.2.0.Beta2.core/
-* Update property +JBDS_UPDATE_SITE+ to http://www.qa.jboss.com/binaries/RHDS/updates/development/8.0.0.Beta2.core/
+* Update property +JBT_UPDATE_SITE+ to http://download.jboss.org/jbosstools/updates/staging/jbosstools-4.2.0.Beta2-updatesite-core/
+* Update property +JBDS_UPDATE_SITE+ to http://www.qa.jboss.com/binaries/RHDS/updates/development/jboss-devstudio-8.0.0.Beta2-updatesite-core/
 
 Then respin the job and verify that sites were correctly populated:
 
@@ -95,10 +95,10 @@ echo "Latest build for ${site}: ${webtoolsBuildID}"
 echo "mkdir development/jbosstools-${version}-build-${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
 echo "rename nightly/${site}/${stream}/${webtoolsBuildID} development/jbosstools-${version}-build-${site}/${webtoolsBuildID}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
   
-echo " >> http://download.jboss.org/jbosstools/builds/developmentjbosstools-${version}-build-core/${coreBuildID}" | egrep ">>|${version}"
-echo " >> http://download.jboss.org/jbosstools/builds/developmentjbosstools-${version}-build-coretests/${coretestsBuildID}" | egrep ">>|${version}"
-echo " >> http://download.jboss.org/jbosstools/builds/developmentjbosstools-${version}-build-hibernatetools/${hibernatetoolsBuildID}" | egrep ">>|${version}"
-echo " >> http://download.jboss.org/jbosstools/builds/developmentjbosstools-${version}-build-webtools/${webtoolsBuildID}" | egrep ">>|${version}"
+echo " >> http://download.jboss.org/jbosstools/builds/development/jbosstools-${version}-build-core/${coreBuildID}" | egrep ">>|${version}"
+echo " >> http://download.jboss.org/jbosstools/builds/development/jbosstools-${version}-build-coretests/${coretestsBuildID}" | egrep ">>|${version}"
+echo " >> http://download.jboss.org/jbosstools/builds/development/jbosstools-${version}-build-hibernatetools/${hibernatetoolsBuildID}" | egrep ">>|${version}"
+echo " >> http://download.jboss.org/jbosstools/builds/development/jbosstools-${version}-build-webtools/${webtoolsBuildID}" | egrep ">>|${version}"
 ----
 
 Then verify sites are correctly populated with build metadata. To do so, you can simply make sure that under each one of these build sites, you find a file /logs/GIT_REVISION.txt.
@@ -212,7 +212,7 @@ version=4.2.0.Beta2 # a, b, c...
 respin="respin-"
 TARGET_PLATFORM_VERSION_MIN=4.40.0.Beta2
 TARGET_PLATFORM_VERSION_MAX=4.40.0.Beta2
-TARGET_PLATFORM_CENTRAL_MAX=4.40.0.Beta2-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.40.0.Beta3-SNAPSHOT
 version2=8.0.0.Beta2 # no respin suffix here
 version3=4.2.0.Beta2 # no respin suffix here
 echo "

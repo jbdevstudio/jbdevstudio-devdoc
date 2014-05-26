@@ -32,9 +32,10 @@ Then respin the job and verify that sites were correctly populated:
 === Promote builds from "nightly" to "development"
 
 *Development* where we store builds for staging. This contains build metadata. The URL for development sites pattern is +http://download.jboss.org/jbosstools/development/<version>.<siteName>/<buildId>::
-. *Core* site (which contains JBoss Tools): Move the most recent build available from +http://downloads.jboss.org/jbosstools/builds/nightly/core/4.2.luna+ to +http://downloads.jboss.org/jbosstools/builds/development/4.2.0.Beta2.core/+
-. *Core Tests* site (which contains JBoss Tools tests): Move the most recent build available from +http://downloads.jboss.org/jbosstools/builds/nightly/coretests/4.2.luna+ to +http://downloads.jboss.org/jbosstools/builds/development/4.2.0.Beta2.coretests/+
-. *WebTools* site (which contains only WTP connectors for AS/WildFly/EAP): Move the most recent build available from +http://downloads.jboss.org/jbosstools/builds/nightly/webtools/4.2.luna+ to +http://downloads.jboss.org/jbosstools/builds/development/4.2.0.Beta2.webtools/+ 
+. *Core* site (which contains JBoss Tools): Move the most recent build available from +http://downloads.jboss.org/jbosstools/builds/nightly/core/4.2.luna+ to +http://downloads.jboss.org/jbosstools/builds/development/jbosstools-4.2.0.Beta2-updatesite-core/+
+. *Core Tests* site (which contains JBoss Tools tests): Move the most recent build available from +http://downloads.jboss.org/jbosstools/builds/nightly/coretests/4.2.luna+ to +http://downloads.jboss.org/jbosstools/builds/development/jbosstools-4.2.0.Beta2-updatesite-coretests/+
+. *WebTools* site (which contains only WTP connectors for AS/WildFly/EAP): Move the most recent build available from +http://downloads.jboss.org/jbosstools/builds/nightly/webtools/4.2.luna+ to +http://downloads.jboss.org/jbosstools/builds/development/jbosstools-4.2.0.Beta2-updatesite-webtools/+ 
+. *Hibernate Tools* site (which contains Hibernate Tools, a subset of JBoss Tools): Move the most recent build available from +http://downloads.jboss.org/jbosstools/builds/nightly/hibernatetools/4.2.luna+ to +http://downloads.jboss.org/jbosstools/builds/development/jbosstools-4.2.0.Beta2-updatesite-hibernatetools/+
 
 Here is a script that does this:
 [source,bash]

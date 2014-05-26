@@ -39,13 +39,13 @@ version=8.0.0.Beta2
 version2=8.0.0.Beta2; # a, b, c, ...
 cd /mnt/devstudio/updates/8.0.0/
 if [[ ${version} != ${version2} ]]; then 
-  mv ${version}.core ${version}.core.DELETEME
-  mv ${version}.target-platform ${version}.target-platform.DELETEME
-  mv ${version2}.core ${version}.core
-  mv ${version2}.target-platform ${version}.target-platform
+  mv jboss-devstudio-${version}-updatesite-core jboss-devstudio-${version}-updatesite-core.DELETEME
+  mv jboss-devstudio-${version}-target-platform jboss-devstudio-${version}-target-platform.DELETEME
+  mv jboss-devstudio-${version2}-updatesite-core jboss-devstudio-${version}-updatesite-core
+  mv jboss-devstudio-${version2}-target-platform jboss-devstudio-${version}-target-platform
 fi
 # TODO: do not run this next line if the above step fails!
-rm -fr ${version}?.core ${version}?.target-platform *.DELETEME
+rm -fr jboss-devstudio-${version}?-updatesite-core ${version}?-target-platform *.DELETEME
 ----
 
 == Rename milestones from Foo1b to Foo1; fix html pages in 8.0-staging

@@ -190,9 +190,9 @@ And update it it as required, so that the links for the latest milestone point t
 
 [source,bash]
 ----
-jboss.discovery.directory.url|jbosstools|4.2.0.Beta2=http://download.jboss.org/jbosstools/discovery/development/4.2.0.Beta2/jbosstools-directory.xml
-jboss.discovery.site.url|jbosstools|4.2.0.Beta2=http://download.jboss.org/jbosstools/discovery/development/4.2.0.Beta2/
-jboss.discovery.earlyaccess.site.url|jbosstools|4.2.0.Beta2=http://download.jboss.org/jbosstools/discovery/development/4.2.0.Beta2/
+jboss.discovery.directory.url|jbosstools|4.2.0.Beta2=http://download.jboss.org/jbosstools/discovery/development/4.2.0.Beta2a/jbosstools-directory.xml
+jboss.discovery.site.url|jbosstools|4.2.0.Beta2=http://download.jboss.org/jbosstools/discovery/development/4.2.0.Beta2a/
+jboss.discovery.earlyaccess.site.url|jbosstools|4.2.0.Beta2=http://download.jboss.org/jbosstools/discovery/development/4.2.0.Beta2a/
 ----
 
 

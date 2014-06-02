@@ -41,7 +41,7 @@ Here is a script that does this:
 [source,bash]
 ----
 stream=4.2.luna
-version=4.2.0.Beta2 # a, b, c...
+version=4.2.0.Beta2a # a, b, c...
 
 site=core
 # Retrieve latest build and remove trailing slash
@@ -89,7 +89,7 @@ p2 repositories are expected to be under the +http://download.jboss.org/jbosstoo
 [source,bash]
 ----
 stream=4.2.luna
-version=4.2.0.Beta2  # a, b, c...
+version=4.2.0.Beta2a # a, b, c...
 
 site=core
 echo "rename nightly/${site}/${stream} staging/jbosstools-${version}-updatesite-${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates  
@@ -116,10 +116,13 @@ WARNING: Make sure you performed the step <<update-discovery-urls,Update Discove
 
 [source,bash]
 ----
+# note: nightly/earlyaccess includes one directory.xml file which lists both core and earlyaccess plugins, so use that
+# note: may have to manually fix the list of included sites in the composite*.xml as Central (core) site content will be missing
+# TODO: fix this in Jenkins to pass in 2 URLs for EXTRAS_SITE, not just 1 (so we have 4 URLs in the composite, not 3)
+# TODO: update doc in ~/tru/disco/README*.adoc to explain this 
 stream=4.2.luna
-version=4.2.0.Beta2 # a, b, c...
-
-echo "rename nightly/core/${stream} development/${version}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery/
+version=4.2.0.Beta2a # a, b, c...
+echo "rename nightly/earlyaccess/${stream} development/${version}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery/
 echo " >> http://download.jboss.org/jbosstools/discovery/development/${version}/" | egrep ">>|${version}"
 ----
 
@@ -143,28 +146,28 @@ dev01$ . /home/hudson/config_repository/scripts/jbds/prompt.sh
 
   # can run 5 steps these in parallel 
 
-  version=4.2.0.Beta2 # a, b, c...
+  version=4.2.0.Beta2a # a, b, c...
   branch=core/4.2.luna
   scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/jbosstools-${version}-updatesite-core/* /tmp/jbosstools-${version}-updatesite-core/
   scpr /tmp/jbosstools-${version}-updatesite-core/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
   rm -fr /tmp/jbosstools-${version}-updatesite-core/
   echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
 
-  version=4.2.0.Beta2 # a, b, c...
+  version=4.2.0.Beta2a # a, b, c...
   branch=coretests/4.2.luna
   scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/jbosstools-${version}-updatesite-coretests/* /tmp/jbosstools-${version}-updatesite-coretests/
   scpr /tmp/jbosstools-${version}-updatesite-coretests/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
   rm -fr /tmp/jbosstools-${version}-updatesite-coretests/
   echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
 
-  version=4.2.0.Beta2 # a, b, c...
+  version=4.2.0.Beta2a # a, b, c...
   branch=hibernatetools/4.2.luna
   scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/jbosstools-${version}-updatesite-hibernatetools/* /tmp/jbosstools-${version}-updatesite-hibernatetools/
   scpr /tmp/jbosstools-${version}-updatesite-hibernatetools/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
   rm -fr /tmp/jbosstools-${version}-updatesite-hibernatetools/
   echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
 
-  version=4.2.0.Beta2 # a, b, c...
+  version=4.2.0.Beta2a # a, b, c...
   branch=webtools/4.2.luna
   scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/jbosstools-${version}-updatesite-webtools/* /tmp/jbosstools-${version}-updatesite-webtools/
   scpr /tmp/jbosstools-${version}-updatesite-webtools/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
@@ -172,7 +175,7 @@ dev01$ . /home/hudson/config_repository/scripts/jbds/prompt.sh
   echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
 
   # now, discovery site
-  version=4.2.0.Beta2 # a, b, c...
+  version=4.2.0.Beta2a # a, b, c...
   branch=core/4.2.luna
   scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery/development/${version}/* /tmp/jbosstools-${version}-updatesite-discovery/
   scpr /tmp/jbosstools-${version}-updatesite-discovery/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery/nightly/${branch}/ --delete
@@ -190,8 +193,9 @@ And update it it as required, so that the links for the latest milestone point t
 
 [source,bash]
 ----
-jboss.discovery.directory.url|jbosstools|4.2.0.Beta2=http://download.jboss.org/jbosstools/discovery/development/4.2.0.Beta2/jbosstools-directory.xml 
-jboss.discovery.site.url|jbosstools|4.2.0.Beta2=http://download.jboss.org/jbosstools/discovery/development/4.2.0.Beta2/ 
+jboss.discovery.directory.url|jbosstools|4.2.0.Beta2=http://download.jboss.org/jbosstools/discovery/development/4.2.0.Beta2/jbosstools-directory.xml
+jboss.discovery.site.url|jbosstools|4.2.0.Beta2=http://download.jboss.org/jbosstools/discovery/development/4.2.0.Beta2/
+jboss.discovery.earlyaccess.site.url|jbosstools|4.2.0.Beta2=http://download.jboss.org/jbosstools/discovery/development/4.2.0.Beta2/
 ----
 
 
@@ -204,11 +208,12 @@ and +
 
 [source,bash]
 ----
-version=4.2.0.Beta2 # a, b, c...
-respin="respin-"
+version=4.2.0.Beta2a # a, b, c...
+respin="respin-a"
 TARGET_PLATFORM_VERSION_MIN=4.40.0.Beta2
 TARGET_PLATFORM_VERSION_MAX=4.40.0.Beta2
 TARGET_PLATFORM_CENTRAL_MAX=4.40.0.Beta3-SNAPSHOT
+TARGET_PLATFORM_EARLYACCESS_MAX=4.40.0.Beta3-SNAPSHOT
 version2=8.0.0.Beta2 # no respin suffix here
 version3=4.2.0.Beta2 # no respin suffix here
 echo "
@@ -237,6 +242,7 @@ Builds:
 JBoss Central:
 
 * http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/${TARGET_PLATFORM_CENTRAL_MAX}/ (upcoming milestone)
+* http://download.jboss.org/jbosstools/targetplatforms/jbtearlyaccesstarget/${TARGET_PLATFORM_EARLYACCESS_MAX}/ (upcoming milestone)
 
 Target Platforms:
 
@@ -268,6 +274,7 @@ https://issues.jboss.org/issues/?jql=labels%20in%20%28%22${respin}%22%29%20and%2
 To test the upcoming version of Central, add this to your eclipse.ini file after the -vmargs line:
  -Djboss.discovery.directory.url=http://download.jboss.org/jbosstools/discovery/development/${version}/jbosstools-directory.xml
  -Djboss.discovery.site.url=http://download.jboss.org/jbosstools/discovery/development/${version}/
+ -Djboss.discovery.earlyaccess.site.url=http://download.jboss.org/jbosstools/discovery/development/${version}/
 "
 fi
 

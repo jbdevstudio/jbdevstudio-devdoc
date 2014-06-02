@@ -120,7 +120,7 @@ pushd jbdevstudio-website/content/updates/8.0-staging/extras/
 now=`date +%s000`
 
 oldTP=4.40.0.Beta3-SNAPSHOT
-newTP=4.40.0.Beta3
+newTP=4.40.0.Beta3-SNAPSHOT
 for d in composite*.xml; do
   sed -i -e "s#${oldTP}#${newTP}#g" $d
   sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
@@ -152,20 +152,42 @@ popd
 # Latest discovery site is here: http://www.qa.jboss.com/binaries/RHDS/discovery/development/${version}
 pushd jbdevstudio-website/content/updates/8.0-staging/discovery/
 wget -q -nc http://www.qa.jboss.com/binaries/RHDS/discovery/development/${version}/devstudio-directory.xml
-newJar=$(cat devstudio-directory.xml | grep entry | sed -e "s#.\+plugins#plugins#g" | sed -e "s#\.jar.\+#.jar#g")
-echo $newJar
-wget -q -nc http://www.qa.jboss.com/binaries/RHDS/discovery/development/${version}/${newJar}
-newJar=${newJar/plugins/discovery}
-echo $newJar
-rm -f jbdevstudio-website/content/updates/8.0-staging/discovery/devstudio-directory.xml
+newJars=$(cat devstudio-directory.xml | grep entry | sed -e "s#.\+plugins#plugins#g" | sed -e "s#\.jar.\+#.jar#g")
+for newJar in $newJars; do 
+  wget -q -nc http://www.qa.jboss.com/binaries/RHDS/discovery/development/${version}/${newJar}
+  if [[ ! ${newJar##*.earlyaccess_*} ]]; then
+    newJarEA=${newJar/plugins/discovery}
+    echo "EA: $newJarEA"
+  else
+    newJarCore=${newJar/plugins/discovery}
+    echo "Core: $newJarCore"
+  fi
+done
+rm -f devstudio-directory.xml
 popd
 
 # update XML
 pushd jbdevstudio-website/content/updates/8.0-staging/
-sed -i -e "s#discovery/com.jboss.jbds.central.discovery_.\+\.jar#${newJar}#g" devstudio-directory.xml
+sed -i -e "s#discovery/com.jboss.jbds.central.discovery.earlyaccess_.\+\.jar#${newJarEA}#g" devstudio-directory.xml
+sed -i -e "s#discovery/com.jboss.jbds.central.discovery_.\+\.jar#${newJarCore}#g" devstudio-directory.xml
   
-unzip -q -d ${newJar}{_,}
-pushd ${newJar}_ 
+unzip -q -d ${newJarEA}{_,}
+pushd ${newJarEA}_ 
+
+if [ "$isGA" = true ]; then
+  sed -i "s#https://devstudio.jboss.com/updates/8.0-staging/central/earlyaccess/#https://devstudio.jboss.com/updates/8.0/central/earlyaccess/#g" plugin.xml
+  sed -i "s#https://devstudio.jboss.com/updates/8.0-development/central/earlyaccess/#https://devstudio.jboss.com/updates/8.0/central/earlyaccess/#g" plugin.xml
+else  # plugin points to the STAGING URL, not the RELEASE one
+  sed -i "s#https://devstudio.jboss.com/updates/8.0/central/earlyaccess/#https://devstudio.jboss.com/updates/8.0-staging/central/earlyaccess/#g" plugin.xml
+  sed -i "s#https://devstudio.jboss.com/updates/8.0-development/central/earlyaccess/#https://devstudio.jboss.com/updates/8.0-staging/central/earlyaccess/#g" plugin.xml
+fi
+popd
+
+zip -u ${newJarEA} plugin.xml
+rm -fr ${newJarEA}_
+
+unzip -q -d ${newJarCore}{_,}
+pushd ${newJarCore}_ 
 
 if [ "$isGA" = true ]; then
   sed -i "s#https://devstudio.jboss.com/updates/8.0-staging/central/core/#https://devstudio.jboss.com/updates/8.0/central/core/#g" plugin.xml
@@ -176,8 +198,9 @@ else  # plugin points to the STAGING URL, not the RELEASE one
 fi
 popd
 
-zip -u ${newJar} plugin.xml
-rm -fr ${newJar}_
+zip -u ${newJarCore} plugin.xml
+rm -fr ${newJarCore}_
+
 popd
 
 # don't do this until you're ready to release the content -- not for QE
@@ -192,7 +215,7 @@ popd
 
 # check in / sync changes
 pushd jbdevstudio-website/content/updates/8.0-staging/
-git add ${newJar}
+git add ${newJarEA} ${newJarCore}
 git status .
 git diff --color=always -w .
 # TODO: make sure you're using a PR & topic branch!
@@ -245,6 +268,7 @@ And update it it as required, so that the links for the latest milestone point t
 ----
 jboss.discovery.directory.url|devstudio|8.0.0.Beta2=https://devstudio.jboss.com/updates/8.0-staging/devstudio-directory.xml
 jboss.discovery.site.url|devstudio|8.0.0.Beta2=https://devstudio.jboss.com/updates/8.0-staging/central/core/
+jboss.discovery.earlyaccess.site.url|devstudio|8.0.0.Beta2=https://devstudio.jboss.com/updates/8.0-staging/central/earlyaccess/
 ----
 
 
@@ -318,15 +342,15 @@ Changes prompting this $respin are:
 
 https://issues.jboss.org/issues/?jql=labels%20in%20%28%22${respin}%22%29%20and%20%28%28project%20in%20%28%22JBDS%22%29%20and%20fixversion%20in%20%28%22${version2}%22%29%29%20or%20%28project%20in%20%28%22JBIDE%22%2C%22TOOLSDOC%22%29%20and%20fixversion%20in%20%28%22${version3}%22%29%29%29
 
-To test this version of Central, add the following JVM system properties to your ~/jbdevstudio/studio/jbdevstudio.ini file after the -vmargs line
-   -Djboss.discovery.directory.url=http://www.qa.jboss.com/binaries/RHDS/discovery/development/${version}/devstudio-directory.xml \
-   -Djboss.discovery.site.url=http://www.qa.jboss.com/binaries/RHDS/discovery/development/${version}/
-   -Djboss.discovery.earlyaccess.site.url=http://www.qa.jboss.com/binaries/RHDS/discovery/development/${version}/
+To test this version of Central, add the following JVM system properties to your ~/jbdevstudio/studio/jbdevstudio.ini file after the -vmargs line:
+  -Djboss.discovery.directory.url=http://www.qa.jboss.com/binaries/RHDS/discovery/development/${version}/devstudio-directory.xml
+  -Djboss.discovery.site.url=http://www.qa.jboss.com/binaries/RHDS/discovery/development/${version}/
+  -Djboss.discovery.earlyaccess.site.url=http://www.qa.jboss.com/binaries/RHDS/discovery/development/${version}/
 
 or, if available:
-    -Djboss.discovery.directory.url=https://devstudio.jboss.com/updates/8.0-staging/devstudio-directory.xml \
-    -Djboss.discovery.site.url=https://devstudio.jboss.com/updates/8.0-staging/central/core/
-    -Djboss.discovery.earlyaccess.site.url=https://devstudio.jboss.com/updates/8.0-staging/central/earlyaccess/
+  -Djboss.discovery.directory.url=https://devstudio.jboss.com/updates/8.0-staging/devstudio-directory.xml
+  -Djboss.discovery.site.url=https://devstudio.jboss.com/updates/8.0-staging/central/core/
+  -Djboss.discovery.earlyaccess.site.url=https://devstudio.jboss.com/updates/8.0-staging/central/earlyaccess/
 
 "
 fi

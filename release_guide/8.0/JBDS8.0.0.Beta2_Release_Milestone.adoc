@@ -114,6 +114,12 @@ scpr ~/truu/devstudio.jboss.com/updates/${SRC_SITE}/* ~/truu/devstudio.jboss.com
 cd ~/truu/devstudio.jboss.com/updates/${DESTSITE}/discovery/
 #git rm -f com.jboss.jbds.central.discovery_*.jar
 wget -q -nc http://www.qa.jboss.com/binaries/RHDS/discovery/development/${version}/devstudio-directory.xml
+
+###########################################################################################
+#TODO: FIX THIS - section is now broken (there are 2 new jars, not just 1)
+#See link:JBDS8.0.0.Beta2_Staging_For_QE.adoc[JBDS8.0.0.Beta2_Staging_For_QE.adoc line 155]
+###########################################################################################
+
 newJar=$(cat devstudio-directory.xml | grep entry | sed -e "s#.\+plugins#plugins#g" | sed -e "s#\.jar.\+#.jar#g"); echo $newJar
 wget -q -nc http://www.qa.jboss.com/binaries/RHDS/discovery/development/${version}/${newJar}
 newJar=${newJar/plugins/discovery}; echo $newJar
@@ -137,6 +143,12 @@ fi
 zip -u ~/truu/devstudio.jboss.com/updates/${DESTSITE}/${newJar} plugin.xml
 popd >/dev/null
 rm -fr ~/truu/devstudio.jboss.com/updates/${DESTSITE}/${newJar}_
+
+###########################################################################################
+#TODO: FIX THIS - section is now broken (there are 2 new jars, not just 1)
+#See link:JBDS8.0.0.Beta2_Staging_For_QE.adoc[JBDS8.0.0.Beta2_Staging_For_QE.adoc line 155]
+###########################################################################################
+
 ----
 
 [CAUTION]

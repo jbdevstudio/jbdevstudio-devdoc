@@ -183,6 +183,7 @@ else  # plugin points to the STAGING URL, not the RELEASE one
 fi
 popd
 
+# TODO: does this actually update the jar? Seems that it does not :(
 zip -u ${newJarEA} plugin.xml
 rm -fr ${newJarEA}_
 
@@ -198,6 +199,7 @@ else  # plugin points to the STAGING URL, not the RELEASE one
 fi
 popd
 
+# TODO: does this actually update the jar? Seems that it does not :(
 zip -u ${newJarCore} plugin.xml
 rm -fr ${newJarCore}_
 

@@ -173,7 +173,7 @@ dev01$ . /home/hudson/config_repository/scripts/jbds/prompt.sh
 
   # now, discovery site
   version=4.2.0.Beta2a # a, b, c...
-  branch=core/4.2.luna
+  branch=earlyaccess/4.2.luna
   scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery/development/${version}/* /tmp/jbosstools-${version}-updatesite-discovery/
   scpr /tmp/jbosstools-${version}-updatesite-discovery/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery/nightly/${branch}/ --delete
   rm -fr /tmp/jbosstools-${version}-updatesite-discovery/

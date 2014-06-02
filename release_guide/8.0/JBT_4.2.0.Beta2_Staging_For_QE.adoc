@@ -116,12 +116,9 @@ WARNING: Make sure you performed the step <<update-discovery-urls,Update Discove
 
 [source,bash]
 ----
-# note: nightly/earlyaccess includes one directory.xml file which lists both core and earlyaccess plugins, so use that
-# note: may have to manually fix the list of included sites in the composite*.xml as Central (core) site content will be missing
-# TODO: fix this in Jenkins to pass in 2 URLs for EXTRAS_SITE, not just 1 (so we have 4 URLs in the composite, not 3)
-# TODO: update doc in ~/tru/disco/README*.adoc to explain this 
 stream=4.2.luna
 version=4.2.0.Beta2a # a, b, c...
+# earlyaccess site includes one directory.xml file which lists both core and earlyaccess plugins, so use that instead of core site
 echo "rename nightly/earlyaccess/${stream} development/${version}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery/
 echo " >> http://download.jboss.org/jbosstools/discovery/development/${version}/" | egrep ">>|${version}"
 ----
@@ -210,8 +207,8 @@ and +
 ----
 version=4.2.0.Beta2a # a, b, c...
 respin="respin-a"
-TARGET_PLATFORM_VERSION_MIN=4.40.0.Beta2
-TARGET_PLATFORM_VERSION_MAX=4.40.0.Beta2
+TARGET_PLATFORM_VERSION_MIN=4.40.0.Beta3
+TARGET_PLATFORM_VERSION_MAX=4.40.0.Beta3
 TARGET_PLATFORM_CENTRAL_MAX=4.40.0.Beta3-SNAPSHOT
 TARGET_PLATFORM_EARLYACCESS_MAX=4.40.0.Beta3-SNAPSHOT
 version2=8.0.0.Beta2 # no respin suffix here

@@ -211,6 +211,15 @@ rsync -Pzrlt --rsh=ssh --protocol=28 ide-config.properties $TOOLS/configuration/
 
 ----
 
+== Disable jobs
+
+All stable branch jobs from the https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_8.0.luna/[8.0.luna view] should be disabled.
+
+Quick way to do so is with https://github.com/jbdevstudio/jbdevstudio-ci/blob/master/bin/toggleJenkinsJobs.py[toggleJenkinsJobs.py]. See https://github.com/jbdevstudio/jbdevstudio-ci/blob/master/bin/toggleJenkinsJobs.py.examples.txt[usage examples].
+
+Should a respin be needed, they can be re-enabled at that time.
+
+
 == Notify the team (send 2 emails)
 
 ____

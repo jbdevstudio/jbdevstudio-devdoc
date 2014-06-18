@@ -16,6 +16,15 @@ TODO:
 * in product/features/com.jboss.jbds.product.feature/p2.inf
 * when releasing GA make sure to :%s/development/stable/g and :%s/8.0-staging/8.0/g
 
+== Disable jobs
+
+All stable branch jobs from the https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_8.0.luna/[8.0.luna view] should be disabled.
+
+Quick way to do so is with https://github.com/jbdevstudio/jbdevstudio-ci/blob/master/bin/toggleJenkinsJobs.py[toggleJenkinsJobs.py]. See https://github.com/jbdevstudio/jbdevstudio-ci/blob/master/bin/toggleJenkinsJobs.py.examples.txt[usage examples].
+
+Should a respin be needed, they can be re-enabled at that time.
+
+
 == Stage to qa.jboss.org
 
 *qa.jboss.org* is actually mapped to folder +/qa/services/http/binaries/RHDS+ accessible from CI machines (such as dev01.mw.lab.eng.bos.redhat.com). So first connect to dev01.mw.lab.eng.bos.redhat.com as +hudson+ user (requires permissions).

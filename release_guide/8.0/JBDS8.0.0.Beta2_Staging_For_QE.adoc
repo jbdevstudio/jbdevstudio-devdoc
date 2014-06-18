@@ -347,7 +347,7 @@ Changes prompting this $respin are:
 
 https://issues.jboss.org/issues/?jql=labels%20in%20%28%22${respin}%22%29%20and%20%28%28project%20in%20%28%22JBDS%22%29%20and%20fixversion%20in%20%28%22${version2}%22%29%29%20or%20%28project%20in%20%28%22JBIDE%22%2C%22TOOLSDOC%22%29%20and%20fixversion%20in%20%28%22${version3}%22%29%29%29
 
-To test this version of Central, add the following JVM system properties to your ~/jbdevstudio/studio/jbdevstudio.ini file after the -vmargs line:
+To compare the upcoming version of Central (${version}) against an older version, add lines similar to these your ~/jbdevstudio/studio/jbdevstudio.ini file after the -vmargs line for the appropriate version & URLs:
   -Djboss.discovery.directory.url=http://www.qa.jboss.com/binaries/RHDS/discovery/development/${version}/devstudio-directory.xml
   -Djboss.discovery.site.url=http://www.qa.jboss.com/binaries/RHDS/discovery/development/${version}/
   -Djboss.discovery.earlyaccess.site.url=http://www.qa.jboss.com/binaries/RHDS/discovery/development/${version}/

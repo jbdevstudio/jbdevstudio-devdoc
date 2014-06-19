@@ -8,7 +8,7 @@ Use:
   * http://download.jboss.org/jbosstools/static/releases/ instead of 
   * http://download.jboss.org/jbosstools/updates/ +
   and
-  * http://download.jboss.org/jbosstools/static/targetplatforms/ instead of 
+  * http://download.jjirboss.org/jbosstools/static/targetplatforms/ instead of 
   * http://download.jboss.org/jbosstools/targetplatforms/
 ====
 
@@ -27,6 +27,23 @@ This document describe how to publish a valid JBoss Developer Studio build to pr
 WARNING: This requires write access to wallace.redhat.com, but in future will require access to devstudio@filemgmt.jboss.org.
 
 CAUTION: TODO: when releasing GA make sure to :%s/development/stable/g and :%s/8.0-staging/8.0/g in product/features/com.jboss.jbds.product.feature/p2.inf
+
+== Check if release in Jira is ready
+
+Note: If there are unresolved issues with a fixversion set to the current milestone, make sure those issues will not be lost / forgotten. 
+
+Send an email to jbosstools-dev@ and external-exadel-list@  reminding people to close out their JIRAs or move them to the next milestone fixversion.
+
+Should not continue doing release if there are any jira issues left. Only jiras allowed before release should be bookeping jiras or somehow
+agreed to be done during actual push of binaries.
+
+[source,bash]
+----
+firefox https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
+  https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
+----
+
+
 
 == SSH to wallace.redhat.com, then fetch zips if not already there
 
@@ -277,7 +294,7 @@ Launch the config pages for JBIDE and JBDS and using the gear icons, release the
 
 Note: If there are unresolved issues with a fixversion set to the current milestone, make sure those issues will not be lost / forgotten. 
 
-Send an email to jbosstools-dev@, external-exadel-list@ and jbds-pm-list@ reminding people to close out their JIRAs or move them to the next milestone fixversion.
+Send an email to jbosstools-dev@ and external-exadel-list@ reminding people to close out their JIRAs or move them to the next milestone fixversion.
 
 Sample email: http://lists.jboss.org/pipermail/jbosstools-dev/2014-April/008799.html
 
@@ -344,7 +361,7 @@ ____
 == Announce internally for push to CSP staging site
 
 ____
-*To* jbds-pm-list@redhat.com, release-engineering@redhat.com +
+*To* external-exadel-list@redhat.com, release-engineering@redhat.com +
 and +
 *Cc* cobrien@redhat.com, ldimaggi@redhat.com, mmurray@redhat.com, jpallich@redhat.com +
 

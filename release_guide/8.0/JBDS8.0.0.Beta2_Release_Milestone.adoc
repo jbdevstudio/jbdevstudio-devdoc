@@ -1,49 +1,10 @@
 = Release JBoss Developer Studio Development Milestone
 
-[IMPORTANT]
-====
-JBIDE-13283, JBDS-2730 use Akamai publishing for update sites, target platforms & zips. +
-Use:
-
-  * http://download.jboss.org/jbosstools/static/releases/ instead of 
-  * http://download.jboss.org/jbosstools/updates/ +
-  and
-  * http://download.jjirboss.org/jbosstools/static/targetplatforms/ instead of 
-  * http://download.jboss.org/jbosstools/targetplatforms/
-====
-
-[CAUTION]
-====
-JBIDE-16871 For *Beta2* filename refactoring is coming, so all files/paths will be lowercase. +
-Use:
-
-  * jbostools instead of JBossTools
-  * update instead of Update
-  * etc.
-====
-
 This document describe how to publish a valid JBoss Developer Studio build to production after being verified by QE.
 
 WARNING: This requires write access to wallace.redhat.com, but in future will require access to devstudio@filemgmt.jboss.org.
 
 CAUTION: TODO: when releasing GA make sure to :%s/development/stable/g and :%s/8.0-staging/8.0/g in product/features/com.jboss.jbds.product.feature/p2.inf
-
-== Check if release in Jira is ready
-
-Note: If there are unresolved issues with a fixversion set to the current milestone, make sure those issues will not be lost / forgotten. 
-
-Send an email to jbosstools-dev@ and external-exadel-list@  reminding people to close out their JIRAs or move them to the next milestone fixversion.
-
-Should not continue doing release if there are any jira issues left. Only jiras allowed before release should be bookeping jiras or somehow
-agreed to be done during actual push of binaries.
-
-[source,bash]
-----
-firefox https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
-  https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
-----
-
-
 
 == SSH to wallace.redhat.com, then fetch zips if not already there
 
@@ -53,13 +14,13 @@ screen
 
 # clean out old update sites from previous milestones; rename update sites from "a,b,c" to ""
 version=8.0.0.Beta2
-version2=8.0.0.Beta2; # a, b, c, ...
+versionWithRespin=8.0.0.Beta2d; # a, b, c, ...
 cd /mnt/devstudio/updates/8.0.0/
-if [[ ${version} != ${version2} ]]; then 
+if [[ ${version} != ${versionWithRespin} ]]; then 
   mv jboss-devstudio-${version}-updatesite-core jboss-devstudio-${version}-updatesite-core.DELETEME
   mv jboss-devstudio-${version}-target-platform jboss-devstudio-${version}-target-platform.DELETEME
-  mv jboss-devstudio-${version2}-updatesite-core jboss-devstudio-${version}-updatesite-core
-  mv jboss-devstudio-${version2}-target-platform jboss-devstudio-${version}-target-platform
+  mv jboss-devstudio-${versionWithRespin}-updatesite-core jboss-devstudio-${version}-updatesite-core
+  mv jboss-devstudio-${versionWithRespin}-target-platform jboss-devstudio-${version}-target-platform
 fi
 # TODO: do not run this next line if the above step fails!
 rm -fr jboss-devstudio-${version}?-updatesite-core ${version}?-target-platform *.DELETEME
@@ -69,7 +30,7 @@ rm -fr jboss-devstudio-${version}?-updatesite-core ${version}?-target-platform *
 
 [source,bash]
 ----
-# NOTE: ~/truu/devstudio.jboss.com is a symlink on my local machine to this folder in github: https://github.com/jbdevstudio/jbdevstudio-website/tree/master/content
+# NOTE: ${basedir} is a symlink on my local machine to this folder in github: https://github.com/jbdevstudio/jbdevstudio-website/tree/master/content
 # "gw1" uses special aliases/scripts/shortcuts. Basically, we want to follow correct github workflows so that commits are pushed to user's fork, then later pull-requested (and the PR applied)
 # "gw2" will create the PR, "gw3" will apply it, and "gw4" will delete the topic branch locally and in my fork
 # the 4 steps are captured here: https://gist.github.com/nickboldt/4111850
@@ -79,30 +40,46 @@ alias   gd='git diff --color=always -w'
 alias   scpr='rsync -aPrz --rsh=ssh'
 alias   ci='git commit -m'
 
-cd ~/truu/devstudio.jboss.com/updates/8.0-staging
+pushd ${basedir}/updates/8.0-staging
 version=8.0.0.Beta2
-version2=8.0.0.Beta2; # a, b, c, ...
+versionWithRespin=8.0.0.Beta2d; # a, b, c, ...
 now=`date +%s000`
 for d in composite*.xml index.html central/core/index.html ; do
-  sed -i -e "s#${version2}#${version}#g" $d
+  sed -i -e "s#${versionWithRespin}#${version}#g" $d
   sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
 done
 
 # commit to github   
-topic="release-${version2}";branch=master; gw1
-ci "rename ${version2} to ${version}" .
+topic="release-${versionWithRespin}";branch=master; gw1
+ci "rename ${versionWithRespin} to ${version}" .
 gw2;gw3;gw4
+
+# rsync updated files to server
+WALL=${USER}@wallace.intranet.prod.int.rdu2.redhat.com:/mnt/devstudio
+rsync -Pzrlt --rsh=ssh --protocol=28 ./* ${WALL}/updates/8.0-staging/
+popd
+
 ----
 
-== Update https://www.jboss.org/author/products/devstudio
+== Request an update to jboss.org/products/devstudio
 
-Log in to magnolia using the "marketing" login.
+The pages are now controlled via github via JIRAs and PRs:
 
-Release Engineering will provide you with the new file paths to use when linking to jars and zips. 
+https://www.jboss.org/products/devstudio/download/
+https://www.jboss.org/products/devstudio/overview/
 
-For example: https://engineering.redhat.com/trac/rcm/wiki/Middleware/ReleaseNotes/JBDS/8.0.0
+New JIRA: 
 
-Review your changes w/ Max & Len before publishing them. 
+https://issues.jboss.org/secure/CreateIssue.jspa?pid=12313621&issuetype=3
+
+Example past JIRA:
+
+https://issues.jboss.org/browse/DEVELOPER-733
+
+Submit pull request against this source:
+
+https://github.com/jboss-developer/www.jboss.org/blob/master/products/devstudio/_common/product.yml
+
 
 == Update https://devstudio.jboss.com/updates/8.0*/devstudio-directory.xml to point at new discovery jar(s) from staging.
 
@@ -123,48 +100,47 @@ version=8.0.0.Beta2
 SRC_SITE=8.0-staging
 DESTSITE=8.0-development # or 8.0/ for a GA release
 
+
+# set correct path for where you have project cloned on disk
+basedir=${HOME}/truu/jbdevstudio-website/content # or...
+basedir=`pwd`
+pushd ${basedir}
 topic="release-${version}";branch=master; gw1
 
 # check in / sync changes
-scpr ~/truu/devstudio.jboss.com/updates/${SRC_SITE}/* ~/truu/devstudio.jboss.com/updates/${DESTSITE}/
 
-cd ~/truu/devstudio.jboss.com/updates/${DESTSITE}/discovery/
-#git rm -f com.jboss.jbds.central.discovery_*.jar
-wget -q -nc http://www.qa.jboss.com/binaries/RHDS/discovery/development/${version}/devstudio-directory.xml
+scpr ${basedir}/updates/${SRC_SITE}/* ${basedir}/updates/${DESTSITE}/
+pushd ${basedir}/updates/${DESTSITE}/
 
-###########################################################################################
-#TODO: FIX THIS - section is now broken (there are 2 new jars, not just 1)
-#See link:JBDS8.0.0.Beta2_Staging_For_QE.adoc[JBDS8.0.0.Beta2_Staging_For_QE.adoc line 155]
-###########################################################################################
+newJars=$(cat devstudio-directory.xml | grep entry | grep -v "integration-stack" | sed -e "s#.\+discovery/#discovery/#g" | sed -e "s#\.jar.\+#.jar#g")
+for newJar in $newJars; do 
+  wget -q -nc http://www.qa.jboss.com/binaries/RHDS/discovery/development/${version}/${newJar}
+  if [[ ! ${newJar##*.earlyaccess_*} ]]; then
+    newJarEA=${newJar}
+    echo "EA: $newJarEA"
+  else
+    newJarCore=${newJar}
+    echo "Core: $newJarCore"
+  fi
+  git add $newJar
+done
 
-newJar=$(cat devstudio-directory.xml | grep entry | sed -e "s#.\+plugins#plugins#g" | sed -e "s#\.jar.\+#.jar#g"); echo $newJar
-wget -q -nc http://www.qa.jboss.com/binaries/RHDS/discovery/development/${version}/${newJar}
-newJar=${newJar/plugins/discovery}; echo $newJar
-rm -f ~/truu/devstudio.jboss.com/updates/${DESTSITE}/discovery/devstudio-directory.xml
+for newJar in ${newJarEA} ${newJarCore}; do
+  unzip -q -d ${basedir}/updates/${DESTSITE}/${newJar}{_,}
+  pushd ${basedir}/updates/${DESTSITE}/${newJar}_ >/dev/null 
+  if [ "$isGA" = true ]; then
+    sed -i "s#https://devstudio.jboss.com/updates/8.0-staging/central/core/#https://devstudio.jboss.com/updates/8.0/central/core/#g" plugin.xml
+    sed -i "s#https://devstudio.jboss.com/updates/8.0-development/central/core/#https://devstudio.jboss.com/updates/8.0/central/core/#g" plugin.xml
+  else  # plugin points to the STAGING URL, not the RELEASE one
+    sed -i "s#https://devstudio.jboss.com/updates/8.0-staging/central/#https://devstudio.jboss.com/updates/8.0-development/central/#g" plugin.xml
+    sed -i "s#https://devstudio.jboss.com/updates/8.0/central/#https://devstudio.jboss.com/updates/8.0-development/central/#g" plugin.xml
+  fi
+  zip -u ${basedir}/updates/${DESTSITE}/${newJar} plugin.xml
+  popd >/dev/null
+  rm -fr ${basedir}/updates/${DESTSITE}/${newJar}_
+done
 
-# update XML
-cd ~/truu/devstudio.jboss.com/updates/${DESTSITE}/
-sed -i -e "s#discovery/com.jboss.jbds.central.discovery_.\+\.jar#${newJar}#g" devstudio-directory.xml
-
-unzip -q -d ~/truu/devstudio.jboss.com/updates/${DESTSITE}/${newJar}{_,}
-pushd ~/truu/devstudio.jboss.com/updates/${DESTSITE}/${newJar}_ >/dev/null 
-
-if [ "$isGA" = true ]; then
-  sed -i "s#https://devstudio.jboss.com/updates/8.0-staging/central/core/#https://devstudio.jboss.com/updates/8.0/central/core/#g" plugin.xml
-  sed -i "s#https://devstudio.jboss.com/updates/8.0-development/central/core/#https://devstudio.jboss.com/updates/8.0/central/core/#g" plugin.xml
-else  # plugin points to the STAGING URL, not the RELEASE one
-  sed -i "s#https://devstudio.jboss.com/updates/8.0-staging/central/#https://devstudio.jboss.com/updates/8.0-development/central/#g" plugin.xml
-  sed -i "s#https://devstudio.jboss.com/updates/8.0/central/#https://devstudio.jboss.com/updates/8.0-development/central/#g" plugin.xml
-fi
-
-zip -u ~/truu/devstudio.jboss.com/updates/${DESTSITE}/${newJar} plugin.xml
-popd >/dev/null
-rm -fr ~/truu/devstudio.jboss.com/updates/${DESTSITE}/${newJar}_
-
-###########################################################################################
-#TODO: FIX THIS - section is now broken (there are 2 new jars, not just 1)
-#See link:JBDS8.0.0.Beta2_Staging_For_QE.adoc[JBDS8.0.0.Beta2_Staging_For_QE.adoc line 155]
-###########################################################################################
+popd
 
 ----
 
@@ -178,7 +154,10 @@ Be sure to not overwrite integration-stack deltas (staging and development may n
 [source,bash]
 ----
 
-pushd jbdevstudio-website/content/updates/8.0-staging/extras/
+basedir=${HOME}/truu/jbdevstudio-website/content # or...
+basedir=`pwd`
+
+pushd ${basedir}/updates/8.0-staging/extras/
 now=`date +%s000`
 
 oldTP=4.40.0.Beta1a
@@ -189,20 +168,18 @@ for d in composite*.xml; do
 done
 popd
 
-
-[source,bash]
-----
-# check in / sync changes
-ga ${newJar}; stat .
+# check in / sync changes in ${basedir}
+stat .
 gd .
 
-cd ~/truu/devstudio.jboss.com/updates/
+pushd ${basedir}/updates/
 ga ${DESTSITE}
 ci "release ${version} from ${SRC_SITE} to ${DESTSITE}" . 
+popd
 gw2;gw3;gw4
 
 # push both staging and development folders to wallace
-scpr ~/truu/devstudio.jboss.com/updates/${DESTSITE} ~/truu/devstudio.jboss.com/updates/${SRC_SITE} $WALL/updates/
+scpr ${basedir}/updates/${DESTSITE} ${basedir}/updates/${SRC_SITE} $WALL/updates/
 ----
 
 == Fix file permissions on wallace (pull from dev01):
@@ -210,8 +187,8 @@ scpr ~/truu/devstudio.jboss.com/updates/${DESTSITE} ~/truu/devstudio.jboss.com/u
 [source,bash]
 ----
   ssh nboldt@wallace "
-    chmod -R g+w       /mnt/devstudio/updates/8.0* /mnt/devstudio/earlyaccess 2>/dev/null;
-    chgrp -R devstudio /mnt/devstudio/updates/8.0* /mnt/devstudio/earlyaccess 2>/dev/null
+    chmod -R g+w       /mnt/devstudio/updates/8.0* 2>/dev/null;
+    chgrp -R devstudio /mnt/devstudio/updates/8.0* 2>/dev/null
   "
 ----
 
@@ -263,8 +240,8 @@ scpr ~/truu/devstudio.jboss.com/updates/${DESTSITE} ~/truu/devstudio.jboss.com/u
 [source,bash]
 ----
   cd ~/RHDS/builds/development/
-  mv 8.0.0.CR7x.installer OLD/
-  mv 8.0.0.CR7x.installer 8.0.0.CR7.installer
+  mv 8.0.0.CR7x-build-core OLD/
+  mv 8.0.0.CR7x-build-core 8.0.0.CR7-build-core
   # repeat for updates/development and discovery/development
 ----
 
@@ -294,7 +271,7 @@ Launch the config pages for JBIDE and JBDS and using the gear icons, release the
 
 Note: If there are unresolved issues with a fixversion set to the current milestone, make sure those issues will not be lost / forgotten. 
 
-Send an email to jbosstools-dev@ and external-exadel-list@ reminding people to close out their JIRAs or move them to the next milestone fixversion.
+Send an email to jbosstools-dev@, external-exadel-list@ and jbds-pm-list@ reminding people to close out their JIRAs or move them to the next milestone fixversion.
 
 Sample email: http://lists.jboss.org/pipermail/jbosstools-dev/2014-April/008799.html
 
@@ -314,8 +291,8 @@ And update it it as required, so that the links for the latest milestone point t
 
 [source,bash]
 ----
-jboss.discovery.directory.url|devstudio|8.0.0.Beta2=https://devstudio.jboss.com/updates/8.0-staging/devstudio-directory.xml
-jboss.discovery.site.url|devstudio|8.0.0.Beta2=https://devstudio.jboss.com/updates/8.0-staging/central/core/
+jboss.discovery.directory.url|devstudio|8.0.0.Beta2=https://devstudio.jboss.com/updates/8.0-development/devstudio-directory.xml
+jboss.discovery.site.url|devstudio|8.0.0.Beta2=https://devstudio.jboss.com/updates/8.0-development/central/core/
 ----
 
 
@@ -330,7 +307,7 @@ and +
 [source,bash]
 ----
 version=8.0.0.Beta2
-version2=8.0.0.Beta2 # a, b, c...
+versionWithRespin=8.0.0.Beta2d # a, b, c...
 echo "
 Subject: 
 
@@ -361,15 +338,15 @@ ____
 == Announce internally for push to CSP staging site
 
 ____
-*To* external-exadel-list@redhat.com, release-engineering@redhat.com +
+*To* release-engineering@redhat.com +
 and +
 *Cc* cobrien@redhat.com, ldimaggi@redhat.com, mmurray@redhat.com, jpallich@redhat.com +
 
 [source,bash]
 ----
 version=8.0.0.Beta2
-version2=8.0.0.Beta2 # a, b, c...
-version3=8.0.0.Beta2-v20140408-2350-B93
+versionWithRespin=8.0.0.Beta2d # a, b, c...
+version3=8.0.0.Beta2-v20140617-2058-B166
 echo "
 Subject: 
 
@@ -377,24 +354,24 @@ JBoss Developer Studio ${version} available for push to CSP staging server
 
 Body:
 
-JBoss Developer Studio ${version} (to be renamed from ${version2}) is available to push to CSP staging server, for subsequent smoke test & review by QE.
+JBoss Developer Studio ${version} (to be renamed from ${versionWithRespin}) is available to push to CSP staging server, for subsequent smoke test & review by QE.
 
 Please include these 5 files:
 
-* http://www.qa.jboss.com/binaries/RHDS/builds/development/${version}.installer/jboss-devstudio-${version3}-installer-standalone.jar 
-* http://www.qa.jboss.com/binaries/RHDS/builds/development/${version}.installer/jboss-devstudio-${version3}-installer-eap.jar
-* http://www.qa.jboss.com/binaries/RHDS/builds/development/${version}.installer/jboss-devstudio-${version3}-installer-src.zip
-* http://www.qa.jboss.com/binaries/RHDS/builds/development/${version}.installer/jboss-devstudio-${version3}-updatesite-core.zip
-* http://www.qa.jboss.com/binaries/RHDS/builds/development/${version}.installer/jboss-devstudio-${version3}-updatesite-central.zip
+* http://www.qa.jboss.com/binaries/RHDS/builds/development/${versionWithRespin}-build-core/jboss-devstudio-${version3}-installer-standalone.jar 
+* http://www.qa.jboss.com/binaries/RHDS/builds/development/${versionWithRespin}-build-core/jboss-devstudio-${version3}-installer-eap.jar
+* http://www.qa.jboss.com/binaries/RHDS/builds/development/${versionWithRespin}-build-core/jboss-devstudio-${version3}-installer-src.zip
+* http://www.qa.jboss.com/binaries/RHDS/builds/development/${versionWithRespin}-build-core/jboss-devstudio-${version3}-updatesite-core.zip
+* http://www.qa.jboss.com/binaries/RHDS/builds/development/${versionWithRespin}-build-core/jboss-devstudio-${version3}-updatesite-central.zip
 
 We will also need GoldenGate links for the 5 artifacts above, as they need to be linked from these pages for Early Access:
 
-* https://www.jboss.org/products/
-* https://www.jboss.org/products/devstudio
+* https://www.jboss.org/products/devstudio/overview/
+* https://www.jboss.org/products/devstudio/download/
 
 Only ONE of those artifacts [0] require sign in, as it bundles EAP. The rest are free. 
 
-[0] http://www.qa.jboss.com/binaries/RHDS/builds/development/${version}.installer/jboss-devstudio-${version3}-installer-eap.jar
+[0] http://www.qa.jboss.com/binaries/RHDS/builds/development/${versionWithRespin}-build-core/jboss-devstudio-${version3}-installer-eap.jar
 
 Please note that the new CSP pages should include similar documentation to the previous release [1] but with these string replacements / updates:
 

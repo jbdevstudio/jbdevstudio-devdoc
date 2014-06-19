@@ -207,6 +207,7 @@ ci "release JBT 4.2.0.Beta2d to QE: link to latest dev milestone discovery site"
 gw2; gw3; gw4
 
 # push updated file to server
+TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 rsync -Pzrlt --rsh=ssh --protocol=28 ide-config.properties $TOOLS/configuration/ide-config.properties
 
 ----

@@ -16,19 +16,7 @@ Send an email to jbosstools-dev@ and external-exadel-list@  reminding people to 
 
 Sample email: http://lists.jboss.org/pipermail/jbosstools-dev/2014-April/008799.html
 
-DO NOT proceed with the release if there are any unresolved issues. Only JIRAS allowed before release should be bookeping JIRAs or issues that cannot be closed until the push is complete.
-
-[source,bash]
-----
-firefox https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
-  https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
-----
-
-== Release JIRA:
-
-If there are no unresolved issues, release the milestone version in JIRA.
-
-Launch the config pages for JBIDE and JBDS and using the gear icons, release the milestone version in JIRA. 
+DO NOT proceed with the release if there are any unresolved issues. Only JIRAs allowed before release should be bookeping JIRAs or issues that cannot be closed until the push is complete.
 
 [source,bash]
 ----
@@ -316,6 +304,18 @@ And update it it as required, so that the links for the latest milestone point t
 ----
 jboss.discovery.directory.url|devstudio|8.0.0.Beta2=https://devstudio.jboss.com/updates/8.0-development/devstudio-directory.xml
 jboss.discovery.site.url|devstudio|8.0.0.Beta2=https://devstudio.jboss.com/updates/8.0-development/central/core/
+----
+
+== Release JIRA
+
+If there are no unresolved issues, release the milestone version in JIRA.
+
+Launch the config pages for JBIDE and JBDS and using the gear icons, release the milestone version in JIRA. 
+
+[source,bash]
+----
+firefox https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
+  https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
 ----
 
 

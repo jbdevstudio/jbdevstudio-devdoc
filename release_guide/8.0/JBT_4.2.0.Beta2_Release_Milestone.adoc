@@ -1,18 +1,26 @@
 = Release JBoss Tools Development Milestone
 
-[CAUTION]
-====
-JBIDE-16871 For *Beta2* filename refactoring is coming, so all files/paths will be lowercase. +
-Use:
-
-  * jbostools instead of JBossTools
-  * update instead of Update
-  * etc.
-====
-
 This document describe how to publish a valid JBoss Tools build to production after being verified by QE.
 
 WARNING: this requires write access to http://sourceforge.net/projects/jboss/files/JBossTools/
+
+== Verify that all JIRAs assigned to the current milestone are resolved
+
+Launch the config pages for JBIDE and JBDS and using the gear icons, release the milestone version in JIRA. 
+
+Note: If there are unresolved issues with a fixversion set to the current milestone, make sure those issues will not be lost / forgotten. 
+
+Send an email to jbosstools-dev@ and external-exadel-list@  reminding people to close out their JIRAs or move them to the next milestone fixversion.
+
+Sample email: http://lists.jboss.org/pipermail/jbosstools-dev/2014-April/008799.html
+
+DO NOT proceed with the release if there are any unresolved issues. Only JIRAs allowed before release should be bookeping JIRAs or issues that cannot be closed until the push is complete.
+
+[source,bash]
+----
+firefox https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
+  https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
+----
 
 == Summary
 
@@ -589,6 +597,20 @@ TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 rsync -Pzrlt --rsh=ssh --protocol=28 ide-config.properties $TOOLS/configuration/ide-config.properties
 
 ----
+
+
+== Release JIRA
+
+If there are no unresolved issues, release the milestone version in JIRA.
+
+Launch the config pages for JBIDE and JBDS and using the gear icons, release the milestone version in JIRA. 
+
+[source,bash]
+----
+firefox https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
+  https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
+----
+
 
 == Notify the team (send 2 emails)
 

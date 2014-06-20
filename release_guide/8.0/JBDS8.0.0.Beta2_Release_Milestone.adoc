@@ -6,6 +6,36 @@ WARNING: This requires write access to wallace.redhat.com, but in future will re
 
 CAUTION: TODO: when releasing GA make sure to :%s/development/stable/g and :%s/8.0-staging/8.0/g in product/features/com.jboss.jbds.product.feature/p2.inf
 
+== Verify that all JIRAs assigned to the current milestone are resolved
+
+Launch the config pages for JBIDE and JBDS and using the gear icons, release the milestone version in JIRA. 
+
+Note: If there are unresolved issues with a fixversion set to the current milestone, make sure those issues will not be lost / forgotten. 
+
+Send an email to jbosstools-dev@ and external-exadel-list@  reminding people to close out their JIRAs or move them to the next milestone fixversion.
+
+Sample email: http://lists.jboss.org/pipermail/jbosstools-dev/2014-April/008799.html
+
+DO NOT proceed with the release if there are any unresolved issues. Only JIRAS allowed before release should be bookeping JIRAs or issues that cannot be closed until the push is complete.
+
+[source,bash]
+----
+firefox https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
+  https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
+----
+
+== Release JIRA:
+
+If there are no unresolved issues, release the milestone version in JIRA.
+
+Launch the config pages for JBIDE and JBDS and using the gear icons, release the milestone version in JIRA. 
+
+[source,bash]
+----
+firefox https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
+  https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
+----
+
 == SSH to wallace.redhat.com, then fetch zips if not already there
 
 [source,bash]
@@ -273,21 +303,6 @@ Access it via +http://marketplace.eclipse.org/content/red-hat-jboss-developer-st
 * Description to match new version & dependencies
 * Notes / warnings (if applicable, eg., JDK 7/8 issues)
 
-== Release JIRA:
-
-Launch the config pages for JBIDE and JBDS and using the gear icons, release the milestone version in JIRA. 
-
-Note: If there are unresolved issues with a fixversion set to the current milestone, make sure those issues will not be lost / forgotten. 
-
-Send an email to jbosstools-dev@, external-exadel-list@ and jbds-pm-list@ reminding people to close out their JIRAs or move them to the next milestone fixversion.
-
-Sample email: http://lists.jboss.org/pipermail/jbosstools-dev/2014-April/008799.html
-
-[source,bash]
-----
-firefox https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
-  https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
-----
 
 == Release the latest milestone to ide-config.properties
 

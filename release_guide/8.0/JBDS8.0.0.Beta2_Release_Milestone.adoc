@@ -339,7 +339,9 @@ Body:
 
 JBoss Developer Studio ${version} is available on Early Access!
 
-Download page and installer: https://www.jboss.org/products/devstudio/download/
+Download page and installer: 
+* https://tools.jboss.org/downloads/devstudio/luna/${version}.html
+* https://www.jboss.org/products/devstudio/overview/
 
 Update site: https://devstudio.jboss.com/updates/8.0-development/
 

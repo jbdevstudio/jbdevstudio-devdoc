@@ -247,6 +247,14 @@ scpr ${basedir}/updates/${DESTSITE} ${basedir}/updates/${SRC_SITE} $WALL/updates
 
 WARNING: For stable releases, move content from RHDS/{builds,updates,discovery}/development into RHDS/{builds,updates,discovery}/stable, then symlink it back so it appears in both places.
 
+== Update jbosstools-website
+
+Provide a PR to add the latest JBT milestone to this listing:
+
+https://github.com/jbosstools/jbosstools-website/blob/master/_config/products.yml
+
+Example: https://github.com/jbosstools/jbosstools-website/pull/####
+
 == Update Marketplace entry
 
 WARNING: Alpha versions are not published to market place. So ignore this step for Alpha versions.
@@ -307,7 +315,6 @@ and +
 [source,bash]
 ----
 version=8.0.0.Beta2
-versionWithRespin=8.0.0.Beta2d # a, b, c...
 echo "
 Subject: 
 
@@ -317,7 +324,8 @@ Body:
 
 JBoss Developer Studio ${version} is available on Early Access!
 
-Download page and installer: https://www.jboss.org/products/devstudio#earlyaccess
+Download page and installer: https://www.jboss.org/products/devstudio/download/
+
 Update site: https://devstudio.jboss.com/updates/8.0-development/
 
 Note that the update site may take a while to replicate from our staging server to publication. Please allow at least an hour before attempting to install from the site - if the page above still shows the previous milestone instead of ${version}, try again later.

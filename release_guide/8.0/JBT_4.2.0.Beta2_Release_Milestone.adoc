@@ -205,7 +205,7 @@ A graphical sftp client such as FileZilla or FireFTP (plugin for Firefox) is the
 * /downloads_htdocs/tools/builds/development/
 * /downloads_htdocs/tools/updates/staging/
 
-----
+
 === WebTools
 
 ==== Publish Site

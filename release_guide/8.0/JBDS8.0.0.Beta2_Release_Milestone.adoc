@@ -210,6 +210,18 @@ scpr ${basedir}/updates/${DESTSITE} ${basedir}/updates/${SRC_SITE} $WALL/updates
   "
 ----
 
+== JBoss Central Early Access site must now be rebuilt 
+
+(This step is only required if it was skipped when releasing JBoss Tools. You should have already done it there.)
+
+Since Beta2, JBoss Central includes part of JBoss Tools, in order to make it avaiable in JBDS. 
+Therefore, once JBoss Tools is released, you must rebuild the Early Access site to include the final bits for that milestone.
+
+1. Update jbosstools-discovery/jbtearlyaccesstarget/multiple/jbtearlyaccess-multiple.target
+2. Run verifyTarget.sh to pull in the latest versions of the IUs and verify the TP can be resolved to disk
+3. Kick this job https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-centraltarget_4.2.luna/
+4. Send announcement email (?)
+
 == Tag Git
 
 [source,bash]

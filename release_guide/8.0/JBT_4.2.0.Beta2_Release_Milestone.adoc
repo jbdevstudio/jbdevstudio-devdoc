@@ -34,12 +34,15 @@ Here are some generalities site promotion/release process. It's not an exhaustiv
 ... Re-run necessary jobs
 ... Go To 1
 .. If QE approves, release is accepted and promoted
+... JIRA is checked to ensure all JIRAs for this milestone are resolved
 ... Zips get published on sourceforge
 ... Site moves from 'updates/staging' with respin label to 'static/releases' without respin label
 ... Links to 'updates/luna' are replaced to link to new version
 ... JBoss Tools website is updated
+... JBoss Central Early Access site is rebuilt ** NEW **
 ... Git repositories are tagged
 ... Eclipse Marketplace entries are created or updated
+... JIRA version can be released
 ... Interested parties are notified
 
 
@@ -498,6 +501,17 @@ Access it via +https://marketplace.eclipse.org/content/jboss-tools-luna/edit+ an
 * Title to match new version
 * Description to match new version & dependencies
 * Update list of features, using content of +http://download.jboss.org/jbosstools/static/releases/jbosstools-4.2.0.Beta2-updatesite-core/site.properties+
+
+
+== JBoss Central Early Access site must now be rebuilt 
+
+Since Beta2, JBoss Central includes part of JBoss Tools, in order to make it avaiable in JBDS. 
+Therefore, once JBoss Tools is released, you must rebuild the Early Access site to include the final bits for that milestone.
+
+1. Update jbosstools-discovery/jbtearlyaccesstarget/multiple/jbtearlyaccess-multiple.target
+2. Run verifyTarget.sh to pull in the latest versions of the IUs and verify the TP can be resolved to disk
+3. Kick this job https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-centraltarget_4.2.luna/
+4. Send announcement email (?)
 
 == Git tags
 

@@ -1,3 +1,5 @@
+
+
 = JBoss Tools Integration Stack Release Process
 
 == Introduction
@@ -8,7 +10,10 @@ The Integration Stack is an aggregation of Eclipse features and plugins comprise
 
 Click https://mojo.redhat.com/docs/DOC-946223 for a quick overview/ presentation of the Integration Stack.
 
+[NOTE]
+----
 Note:  Many steps require privileged access to JBoss servers, Developer Studio servers or nexus.
+----
 
 == Update Process
 
@@ -84,10 +89,17 @@ Target artifacts drawn from org.jboss.tools.targetplatforms:
 
 Ultimately the target platform dependencies are merged like this:
 
-    integration-stack specific target dependencies:    integration-stack-base.target
-    JBoss Tools core target dependencies:              + core-base.target
-    JBoss Tools unified core target dependencies:      + jbosstools-unified....target = aggregate-base.target
-    community-specific target dependencies:            + community.target             = aggregate-full.target
+[source,bash]
+-------------------
+ integration-stack specific target dependencies: integration-stack-base.target
+ JBoss Tools core target dependencies:           + core-base.target
+ JBoss Tools unified core target dependencies:   + jbosstools-unified....target 
+                                                   --------------------
+                                                   aggregate-base.target
+ community-specific target dependencies:         + community.target             
+                                                   --------------------
+                                                   aggregate-full.target
+-------------------
 
 If an IS component causes a new target dependency, this JBTIS TP build procedure must be executed.  The result is a new JBTIS TP in nexus.  That must then be used by the requesting component POM which will produce a new component update site.  That update site must then be referenced by the JBTIS Aggregate/Discovery procedure.  For example, if Teiid has a new target platform dependency it would be necessary to first build JBTIS TP, then rebuild Teiid, then build JBTIS - modifying the aggregate composites to reference the new Teiid update site.
 
@@ -174,32 +186,36 @@ mvn -U -s ~/.m2/settings-staging.xml -DuseReleaseProfile=true -Pjboss-release cl
 # Now promote from staging to release nexus (log into sonatype nexus with your favourite browser)  
  https://repository.jboss.org/nexus/index.html#stagingRepositories  
  
-# Look for jboss_releases_staging_profile-nnnn - the Maven deploy from the previous step should have populated it.  
+# Look for jboss_releases_staging_profile-nnnn - the Maven deploy from the previous step 
+# should have populated it.  
 # Check the box to the left  
 # Select the 'Close' button to finalize for release or select the 'Drop' button to delete the repo  
 # Once the close has completed - click 'Refresh'
 ----
 
-*** This completes the JBTIS TP build/ release process.
+*This completes the JBTIS Target Platform build/ release process.*
 
 === JBTIS Aggregate/ Discovery Build/ Release Process
 This section describes the process of building and releasing the actual JBTIS aggregate p2 update site and the JBoss Central update site.  The project architecture is as follows:
 
-     jbosstools
+[source,bash]
+----
+ jbosstools
+ JBTIS - Community side.  Mylyn discovery and Equinox P2 update site generation.
 
-     JBTIS - Community side.  Mylyn discovery and Equinox P2 update site generation.
      discovery
-
      JBTIS JBoss Tools Central Integration Stack discovery update generation.
-     generation
 
-     Create the Mylyn directory XML.
-     org.jboss.tools.central.discovery.integration-stack
+        generation
+        Create the Mylyn directory XML.
 
-     Create the JBoss Tools central discovery update plugin.  Specifies connector descriptors, installation units, etc.
+        org.jboss.tools.central.discovery.integration-stack
+        Create the JBoss Tools central discovery update plugin.  Specifies connector 
+        descriptors, installation units, etc.
+
      site
-
      JBTIS composite artifacts, content and P2 update categories.
+----
 
 Git ref: https://github.com/jbosstools/jbosstools-integration-stack/tree/master/jbosstools
 
@@ -301,10 +317,15 @@ This is the JBTIS community project sources only.  Individual components manage 
 mkdir -p ~/temp/release;  cd ~/temp/release  
   
 rsync -arzq --protocol=28 tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/staging/JBTIS-aggregate-disc/all/JBTIS-aggregate-disc-Sources-SNAPSHOT.zip .  
+
 rsync -arzq --protocol=28 tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/staging/JBTIS-aggregate-disc/all/JBTIS-aggregate-disc-Sources-SNAPSHOT.zip.MD5 .  
+
 mv JBTIS-aggregate-disc-Sources-SNAPSHOT.zip jbosstools-integration-stack-sources-4.1.5.Final.zip  
+
 mv JBTIS-aggregate-disc-Sources-SNAPSHOT.zip.MD5 jbosstools-integration-stack-sources-4.1.5.Final.zip.MD5  
+
 rsync -arzq --protocol=28 jbosstools-integration-stack-sources-4.1.5.Final.zip tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/stable/kepler/integration-stack/aggregate  
+
 rsync -arzq --protocol=28 jbosstools-integration-stack-sources-4.1.5.Final.zip.MD5 tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/stable/kepler/integration-stack/aggregate 
 ----
 
@@ -388,9 +409,12 @@ Edit the resulting report, merging in the release notes fragments from the updat
 
 Clone and modify any jbosstools website component features ascii doc files.  Also modify 'whatsnew' and download links.
 
-Ref Git: https://github.com/jbosstools/jbosstools-website.
+Ref Git: https://github.com/jbosstools/jbosstools-website
+
 Ref: http://tools.jboss.org/features/
+
 Ref: http://tools.jboss.org/whatsnew/jbosstools/4.1.2.Final.html
+
 Ref: http://tools.jboss.org/downloads/jbosstools_is/kepler
 
 Build and verify the website before committing and issuing a PR.
@@ -415,7 +439,7 @@ cd /home/pleacu/git-clone/jbosstools-website/blog
 cp 2014-04-14-JBTIS-4.1.5.Final.adoc 2014-??-??-JBTIS-4.?.?.Final.adoc 
 ----
 
-*** This completes the JBTIS aggregate/ discovery build/ release process.
+*This completes the JBTIS aggregate/ discovery build/ release process.*
 
 == Production JBDSIS Build
 
@@ -461,20 +485,24 @@ http://www.qa.jboss.com/binaries/RHDS/targetplatforms/jbdsistarget/7.0.1.GA/
 
 This section describes the process of building and releasing the actual JBDSIS aggregate p2 update site and the JBoss Central update site.  The project architecture is as follows:
  
-	devstudio
-	JBDSIS - Production side.  Mylyn discovery and Equinox P2 update site generation.
+[source,bash]
+----
+ devstudio
+ JBDSIS - Production side.  Mylyn discovery and Equinox P2 update site generation.
 
-	discovery
-	JBDSIS JBoss Tools Central Integration Stack discovery update generation.
+    discovery
+    JBDSIS JBoss Tools Central Integration Stack discovery update generation.
+
 	com.jboss.jbds.central.discovery.integration-stack
-
-	Create the JBoss Tools central discovery update plugin.  Specifies connector descriptors, installation units, etc.
+	Create the JBoss Tools central discovery update plugin.  Specifies connector descriptors, 
+        installation units, etc.
 
 	generation
 	Create the Mylyn directory XML.
-	site
 
-	JBDSIS P2 update categories.  Composite content drawn from JBTIS.
+    site
+    JBDSIS P2 update categories.  Composite content drawn from JBTIS.
+----
 
 Git ref: https://github.com/jbosstools/jbosstools-integration-stack/tree/master/devstudio
  
@@ -484,50 +512,186 @@ As an example, lets build JBDSIS 7.0.2.CR1 for Kepler using the 4.1.x specific J
 
 https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBDSIS-aggregate-disc-7.0.x
 
-[source,bash]
-----
+Note the community JBTIS aggregate composite site from which this build draws its content.  As with the JBTIS build, the build type is selectable - make sure you select the correct parameter there as it affects the site index.html and the discovery site.
 
-----
+* Tag a label onto the GIT sources associated with any build committed to a milestone or release.  It is a required parameter to the configuration.  (i.e. JBDSIS-7.0.2.GA)
+* Label the Jenkins build and set 'keep forever".
 
+==== Publish the Production IS Components
 
-[source,bash]
-----
+There exists a separate Jenkins job to move the build artifacts out of the JBoss tools staging area into a JBoss tools update area.  In this example the JBDSIS 7.0.2.CR2 development release is published.
 
-----
+Match the build type to the aggregate build type from the previous section.  Match the target folder to the aggregate build version string.
 
+Verify:
 
-[source,bash]
-----
-----
+http://www.qa.jboss.com/binaries/RHDS/updates/development/kepler/integration-stack/aggregate/7.0.2.CR2/
+ 
+==== Publish and Push the JBTIS Aggregate p2 Update Site
 
-
-[source,bash]
-----
-----
-
+In this example we'll use the development 7.0.2.CR2 build from the previous step.    Update the production aggregate Eclipse p2 repository as well as the offline .zip file
 
 [source,bash]
 ----
+ssh wallace.redhat.com  
+rsync -aPrz --rsh=ssh pleacu@dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/updates/development/kepler/integration-stack/aggregate/7.0.2.CR2/*   
+     /mnt/devstudio/updates/7.0.0/7.0.2.CR2.jbds-is/  
+     
+# Copy the p2 update site zip (devstudio-integration-stack-aggregate-7.0.2.CR2-SNAPSHOT.zip) to the devstudio update area:  
+rsync --rsh=ssh pleacu@dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/updates/development/kepler/integration-stack/aggregate/devstudio-integration-stack-aggregate-7.0.2.CR2.zip   
+
+/mnt/devstudio/updates/7.0.0/jbdevstudio-integration-stack-updatesite-7.0.2.CR2.zip
 ----
 
+Note that  a stable build will be retrieved from a corresponding stable path.  If you update stable make sure to update development as well.
+
+Clone jbdevstudio-website and update the composites in both the integration-stack directory and integration-stack/aggregate to reflect the new version and then update the timestamps.
+
+Git ref: https://github.com/jbdevstudio/jbdevstudio-website
+
+[NOTE]
+----
+Note: Don't forget to update index.html!
+----
 
 [source,bash]
 ----
+# Update https://devstudio.jboss.com/updates/7.0-development/integration-stack/compositeContent.xml, compositeArtifacts.xml, index.html  
+ cd /home/pleacu/git-clone/jbdevstudio-website/content/updates/7.0-development/integration-stack  
+# update compositeArtifacts.xml,  compositeContent.xml, index.html  
+# edit composite*.xml - also change timestamp!  
+vi compositeArtifacts.xml  
+<esc> :call ReplaceTimestamp()  
+<esc> :wq!
 ----
 
-
-[source,bash]
-----
-----
-
-
-[source,bash]
-----
-----
-
+Commit and issue a PR.  Once the PR is merged, push the changes to the devstudio tools server:
 
 [source,bash]
 ----
+cd /home/pleacu/git-clone/PR/jbdevstudio-website/content/updates/7.0-development/integration-stack  
+sftp wallace.redhat.com:/mnt/devstudio/updates/7.0-development/integration-stack  
+sftp> put compositeArtifacts.xml  
+sftp> put compositeContent.xml     
+sftp> put index.html  
+sftp> bye
 ----
 
+Update the QE test staging area:
+
+[source,bash]
+----
+ssh dev01.mw.lab.eng.bos.redhat.com  
+sudo su - hudson  
+cp -r /qa/services/http/binaries/RHDS/updates/development/kepler/integration-stack/aggregate/7.0.2.CR2  
+     /qa/services/http/binaries/RHDS/builds/staging/jbdsis-7.0.2-updatesite/ 
+----
+
+Note: If you updated a stable version, update the development version with the same bits.  That way development is never behind stable.
+
+==== Test Eclipse p2 Update
+
+[source,bash]
+----
+Start jbdevstudio or eclipse-with-jbds, then:  
+    Help > Install New Software...  
+    Add...  
+    - use this for 'Location:'  
+    https://devstudio.jboss.com/updates/7.0-development/integration-stack/  
+----
+
+==== Test JBDSIS JBoss Central Discovery Update
+
+[source,bash]
+----
+./jbdevstudio -vmargs -Djboss.discovery.directory.url=http://www.qa.jboss.com/binaries/RHDS/discovery/integration/integration-stack/7.0.2.CR2/devstudio-integration-stack-directory.xml  
+      -Djboss.discovery.site.url=http://www.qa.jboss.com/binaries/RHDS/discovery/integration/integration-stack/7.0.2.CR2
+----
+
+==== Test JBDSIS Offline Install
+
+To install JBDSIS in a completely offline way, you need three zips or jars to act as update sites:
+
+* JBDS target platform zip
+* JBDS installer or update site zip
+* JBDS IS update site zip
+
+Retrieve the offline JBDS zips:
+
+https://devstudio.jboss.com/updates/7.0/#offline
+
+If you dont' already have installFromTarget.sh, see this:
+
+https://gist.github.com/nickboldt/e899f4e22a0654af667e
+
+Install JBDS into ~/offline, then:
+
+[source,bash]
+----
+~/bin/installFromTarget.sh -ECLIPSE ~/offline/studio/ -INSTALL_PLAN  
+'jar:file:///home/pleacu/install/jbdevstudio-integration-stack-updatesite-7.0.2.CR1.zip!/,jar:file:///home/pleacu/install/jbdevstudio-updatesite-7.1.1.GA-v20140314-2145-B688.zip!/,jar:file:///home/pleacu/install/jbdevstudiotarget-4.32.0.Final.zip!/'  
+----
+
+==== Publish and Push the JBDSIS JBoss Central Discovery Jar
+
+ 
+Note: Only perform this task with a .GA JBDSIS
+
+[source,bash]
+----
+# Copy the JBDSIS central jar into position  
+ cd ~/temp/disc  
+ wget http://www.qa.jboss.com/binaries/RHDS/discovery/integration/integration-stack/7.0.1.GA/com.jboss.jbds.central.discovery.integration-stack_7.0.1.GA-v20140409-1834-B7.jar  
+ sftp wallace.redhat.com:/mnt/devstudio/updates/7.0/discovery  
+ put com.jboss.jbds.central.discovery.integration-stack_7.0.1.GA-v20140409-1834-B7.jar  
+ bye 
+----
+
+Clone jbdevstudio-website and update the JBDSIS JBoss Central JAR file and devstudio-directory discovery XML file.  Update the composites and index.html in the 7.0/integration-stack, 7.0/central/integration-stack and 7.0 discovery directory then push the files to the devstudio server.
+
+Git ref: https://github.com/jbdevstudio/jbdevstudio-website
+
+[source,bash]
+----
+# Go live!  
+cd /home/pleacu/git-clone/jbdevstudio-website/content/updates/7.0/discovery  
+cp ~/temp/disc/com.jboss.jbds.central.discovery.integration-stack_7.0.2.GA-v20140409-1834-B7.jar .  
+cd ..  
+
+# edit devstudio-directory.xml - add:  
+<entry url="discovery/com.jboss.jbds.central.discovery.integration-stack_7.0.1.GA-v20140409-1834-B7.jar" permitCategories="true"/>  
+      
+cd /home/pleacu/git-clone/jbdevstudio-website/content/updates/7.0/integration-stack  
+
+# update compositeArtifacts.xml, compositeContent.xml, index.html - versions and timestamps  
+cd /home/pleacu/git-clone/PR/jbdevstudio-website/content/updates/7.0/integration-stack  
+sftp wallace.redhat.com:/mnt/devstudio/updates/7.0/integration-stack  
+   sftp> put compositeArtifacts.xml  
+   sftp> put compositeContent.xml  
+   sftp> put index.html  
+      
+cd /home/pleacu/git-clone/jbdevstudio-website/content/updates/7.0/central/integration-stack  
+sftp wallace.redhat.com:/mnt/devstudio/updates/7.0/central/integration-stack/  
+   sftp> put compositeArtifacts.xml  
+   sftp> put compositeContent.xml  
+   sftp> put index.html  
+      
+cd /home/pleacu/git-clone/jbdevstudio-website/content/updates/7.0/discovery  
+sftp wallace.redhat.com:/mnt/devstudio/updates/7.0/discovery  
+   sftp> put com.jboss.jbds.central.discovery.integration-stack_7.0.1.GA-v20140409-1834-B7.jar  
+      
+cd /home/pleacu/git-clone/jbdevstudio-website/content/updates/7.0  
+sftp wallace.redhat.com:/mnt/devstudio/updates/7.0  
+   sftp> put devstudio-directory.xml
+----
+
+==== Update the Customer Support Portal
+
+Generate a ticket with engineering services.  Ref: https://engineering.redhat.com/rt/Ticket/Display.html?id=296645
+
+Update the JBDS site - e.g:
+
+https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=7.1.1
+
+*This completes the JBDSIS aggregate/ discovery build/ release process.*
 ____

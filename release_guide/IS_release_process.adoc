@@ -1,5 +1,4 @@
 
-
 = JBoss Tools Integration Stack Release Process
 
 == Introduction
@@ -32,7 +31,10 @@ https://github.com/jbosstools/jbosstools-integration-stack/blob/master/target-pl
 https://github.com/jbosstools/jbosstools-integration-stack/blob/master/target-platform/core-base.target
 https://github.com/jbosstools/jbosstools-integration-stack/blob/master/target-platform/community.target
 
+[NOTE]
+----
 Note: The Github source branch jbosstools-4.1.x should be used for JBTIS 4.1.x (Kepler) builds.
+----
 
 == Build/ Publish Process
 
@@ -287,7 +289,10 @@ put compositeContent.xml
 bye 
 ----
 
+[NOTE]
+----
 Note: If you updated a stable version, update the development version with the same bits along with the development composites.  That way development is never behind stable.  e.g.
+----
 
 [source,bash]
 ----
@@ -371,11 +376,14 @@ cp ~/temp/disc/org.jboss.tools.central.discovery.integration-stack_4.1.5.Final-v
 # edit ../jbosstools-directory.xml: update org.jboss.tools.central.discovery.integration-stack_4.1.5.Final-v20140409-0146-B11.jar 
 ----
 
+[NOTE]
+----
 Note: If committing a stable discovery jar/ directory XML - repeat the steps into the development directory (e.g.):
 
     /home/pleacu/git-clone/jbosstools-download.jboss.org/jbosstools/updates/development/kepler/plugins
 
 Commit and issue a PR to http://download.jboss.org/jbosstools.  Once the PR has been merged, manually push the updated jar and jbosstools-directory.xml onto the JBoss server.
+----
 
 [source,bash]
 ----
@@ -587,7 +595,10 @@ cp -r /qa/services/http/binaries/RHDS/updates/development/kepler/integration-sta
      /qa/services/http/binaries/RHDS/builds/staging/jbdsis-7.0.2-updatesite/ 
 ----
 
+[NOTE]
+----
 Note: If you updated a stable version, update the development version with the same bits.  That way development is never behind stable.
+----
 
 ==== Test Eclipse p2 Update
 
@@ -635,7 +646,10 @@ Install JBDS into ~/offline, then:
 ==== Publish and Push the JBDSIS JBoss Central Discovery Jar
 
  
+[NOTE]
+----
 Note: Only perform this task with a .GA JBDSIS
+----
 
 [source,bash]
 ----

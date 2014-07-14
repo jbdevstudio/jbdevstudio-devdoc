@@ -222,12 +222,10 @@ See https://github.com/jbdevstudio/jbdevstudio-ci/blob/master/bin/toggleJenkinsJ
 Should a respin be needed, they can be re-enabled at that time.
 
 
-== Notify the team (send 2 emails)
+== Notify the team
 
 ____
 *To* jbosstools-dev@lists.jboss.org +
-and +
-*To* external-exadel-list@redhat.com 
 
 [source,bash]
 ----
@@ -246,26 +244,10 @@ JBoss Tools Core ${version} bits available for QE testing
 
 Body:
 
-As always, these are not FINAL bits, but preliminary results for QE testing. Not for redistribution to customers. 
+As always, these are not FINAL bits, but preliminary results for QE testing. Not the final build and thus not for normal users. 
 
-Update Sites:
-
+Primary updatesite:
 * http://download.jboss.org/jbosstools/updates/staging/jbosstools-${version}-updatesite-core/
-* http://download.jboss.org/jbosstools/updates/staging/jbosstools-${version}-updatesite-coretests/
-* http://download.jboss.org/jbosstools/updates/staging/jbosstools-${version}-updatesite-hibernatetools/
-* http://download.jboss.org/jbosstools/updates/staging/jbosstools-${version}-updatesite-webtools/
-
-Builds:
-
-* http://download.jboss.org/jbosstools/builds/development/jbosstools-${version}-build-core/${coreBuildID}
-* http://download.jboss.org/jbosstools/builds/development/jbosstools-${version}-build-coretests/${coretestsBuildID}
-* http://download.jboss.org/jbosstools/builds/development/jbosstools-${version}-build-hibernatetools/${hibernatetoolsBuildID}
-* http://download.jboss.org/jbosstools/builds/development/jbosstools-${version}-build-webtools/${webtoolsBuildID}
-
-JBoss Central:
-
-* http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/${TARGET_PLATFORM_CENTRAL_MAX}/ (upcoming milestone)
-* http://download.jboss.org/jbosstools/targetplatforms/jbtearlyaccesstarget/${TARGET_PLATFORM_EARLYACCESS_MAX}/ (upcoming milestone)
 
 Target Platforms:
 
@@ -293,6 +275,24 @@ echo "
 Changes prompting this $respin are:
 
 https://issues.jboss.org/issues/?jql=labels%20in%20%28%22${respin}%22%29%20and%20%28%28project%20in%20%28%22JBDS%22%29%20and%20fixversion%20in%20%28%22${version2}%22%29%29%20or%20%28project%20in%20%28%22JBIDE%22%2C%22TOOLSDOC%22%29%20and%20fixversion%20in%20%28%22${version3}%22%29%29%29
+
+Supporting update Sites:
+
+* http://download.jboss.org/jbosstools/updates/staging/jbosstools-${version}-updatesite-coretests/
+* http://download.jboss.org/jbosstools/updates/staging/jbosstools-${version}-updatesite-hibernatetools/
+* http://download.jboss.org/jbosstools/updates/staging/jbosstools-${version}-updatesite-webtools/
+
+Builds:
+
+* http://download.jboss.org/jbosstools/builds/development/jbosstools-${version}-build-core/${coreBuildID}
+* http://download.jboss.org/jbosstools/builds/development/jbosstools-${version}-build-coretests/${coretestsBuildID}
+* http://download.jboss.org/jbosstools/builds/development/jbosstools-${version}-build-hibernatetools/${hibernatetoolsBuildID}
+* http://download.jboss.org/jbosstools/builds/development/jbosstools-${version}-build-webtools/${webtoolsBuildID}
+
+JBoss Central:
+
+* http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/${TARGET_PLATFORM_CENTRAL_MAX}/ (upcoming milestone)
+* http://download.jboss.org/jbosstools/targetplatforms/jbtearlyaccesstarget/${TARGET_PLATFORM_EARLYACCESS_MAX}/ (upcoming milestone)
 
 To compare the upcoming version of Central (${version}) against an older version, add lines similar to these your eclipse.ini file after the -vmargs line for the appropriate version & URLs:
  -Djboss.discovery.directory.url=http://download.jboss.org/jbosstools/discovery/development/${version}/jbosstools-directory.xml

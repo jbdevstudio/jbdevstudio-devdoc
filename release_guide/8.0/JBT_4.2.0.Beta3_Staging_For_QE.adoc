@@ -244,12 +244,13 @@ JBoss Tools Core ${version} bits available for QE testing
 
 Body:
 
-As always, these are not FINAL bits, but preliminary results for QE testing. Not the final build and thus not for normal users. 
+As always, these are not FINAL bits, but preliminary results for QE & community testing. Not for use by customers or end users. 
 
-Primary updatesite:
+Update site:
+
 * http://download.jboss.org/jbosstools/updates/staging/jbosstools-${version}-updatesite-core/
 
-Target Platforms:
+Target platforms:
 
 * http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MAX} (upcoming milestone)
 
@@ -258,14 +259,28 @@ Once released, dependencies will be found automatically from here:
 
 * http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/luna/ (latest release)
 
-New + Noteworthy (subject to change): 
+New + noteworthy (subject to change): 
 
 * https://github.com/jbosstools/jbosstools-website/tree/master/documentation/whatsnew
 * http://tools.jboss.org/documentation/whatsnew/
 
-Schedule / Upcoming Releases: 
+Schedule: 
 
 https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.plugin.system.project%3Aversions-panel
+
+--
+
+Additional update sites & builds:
+
+* http://download.jboss.org/jbosstools/updates/staging/jbosstools-${version}-updatesite-coretests/
+* http://download.jboss.org/jbosstools/updates/staging/jbosstools-${version}-updatesite-hibernatetools/
+* http://download.jboss.org/jbosstools/updates/staging/jbosstools-${version}-updatesite-webtools/
+
+* http://download.jboss.org/jbosstools/builds/development/jbosstools-${version}-build-core/${coreBuildID}
+* http://download.jboss.org/jbosstools/builds/development/jbosstools-${version}-build-coretests/${coretestsBuildID}
+* http://download.jboss.org/jbosstools/builds/development/jbosstools-${version}-build-hibernatetools/${hibernatetoolsBuildID}
+* http://download.jboss.org/jbosstools/builds/development/jbosstools-${version}-build-webtools/${webtoolsBuildID}
+
 "
 if [[ $respin != "respin-" ]]; then
 echo " 
@@ -275,19 +290,6 @@ echo "
 Changes prompting this $respin are:
 
 https://issues.jboss.org/issues/?jql=labels%20in%20%28%22${respin}%22%29%20and%20%28%28project%20in%20%28%22JBDS%22%29%20and%20fixversion%20in%20%28%22${version2}%22%29%29%20or%20%28project%20in%20%28%22JBIDE%22%2C%22TOOLSDOC%22%29%20and%20fixversion%20in%20%28%22${version3}%22%29%29%29
-
-Supporting update Sites:
-
-* http://download.jboss.org/jbosstools/updates/staging/jbosstools-${version}-updatesite-coretests/
-* http://download.jboss.org/jbosstools/updates/staging/jbosstools-${version}-updatesite-hibernatetools/
-* http://download.jboss.org/jbosstools/updates/staging/jbosstools-${version}-updatesite-webtools/
-
-Builds:
-
-* http://download.jboss.org/jbosstools/builds/development/jbosstools-${version}-build-core/${coreBuildID}
-* http://download.jboss.org/jbosstools/builds/development/jbosstools-${version}-build-coretests/${coretestsBuildID}
-* http://download.jboss.org/jbosstools/builds/development/jbosstools-${version}-build-hibernatetools/${hibernatetoolsBuildID}
-* http://download.jboss.org/jbosstools/builds/development/jbosstools-${version}-build-webtools/${webtoolsBuildID}
 
 JBoss Central:
 

@@ -124,7 +124,6 @@ chgrp -R devstudio /mnt/devstudio/updates/8.0.0/jboss-devstudio-${version}-targe
 
 [source,bash]
 ----
-
 pushd jbdevstudio-website/content/updates/8.0-staging/extras/
 now=`date +%s000`
 
@@ -135,6 +134,7 @@ for d in composite*.xml; do
   sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
 done
 popd
+----
 
 === Update composite discovery files
 

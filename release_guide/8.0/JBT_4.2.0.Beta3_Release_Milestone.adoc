@@ -140,6 +140,8 @@ These steps happens on filemgmt.jboss.org, in the jbosstools download area.
 
 === If publishing a respin, remove respin suffix from sites
 
+# TODO: for CR1, put content into staging/luna/ instead of just staging/
+
 The goal of this task is to make latest respin is available in the 'updates/staging/${version}' location, without respin attribute.
 
 Via sftp, remove older respins and rename the latest respin to remove its respin (a, b) suffix. 
@@ -172,6 +174,8 @@ The principle is to keep only the latest respin and make it the actual release.
     echo "rename development/jbosstools-${version}-build-hibernatetools  development/jbosstools-${version}-build-hibernatetools.DELETEME" | sftp ${TOOLS}/builds
     echo "rename development/jbosstools-${versionWithRespin}-build-hibernatetools development/jbosstools-${version}-build-hibernatetools" | sftp ${TOOLS}/builds
 
+    # TODO: for CR1, put content into staging/luna/ instead of just staging/
+
     # rename the update site
     echo "rename updates/staging/jbosstools-${version}-updatesite-core  updates/staging/jbosstools-${version}-updatesite-core.DELETEME" | sftp ${TOOLS}
     echo "rename updates/staging/jbosstools-${versionWithRespin}-updatesite-core static/releases/jbosstools-${version}-updatesite-core" | sftp ${TOOLS}
@@ -189,6 +193,8 @@ The principle is to keep only the latest respin and make it the actual release.
     echo "rename updates/staging/jbosstools-${version}-updatesite-hibernatetools  updates/staging/jbosstools-${version}-updatesite-hibernatetools.DELETEME" | sftp ${TOOLS}
     echo "rename updates/staging/jbosstools-${versionWithRespin}-updatesite-hibernatetools static/releases/jbosstools-${version}-updatesite-hibernatetools" | sftp ${TOOLS}
   else
+    # TODO: for CR1, put content into staging/luna/ instead of just staging/
+
     # if there were no respins, then version = versionWithRespin
     echo "rename updates/staging/jbosstools-${version}-updatesite-core           static/releases/jbosstools-${version}-updatesite-core"           | sftp ${TOOLS}
     echo "rename updates/staging/jbosstools-${version}-updatesite-coretests      static/releases/jbosstools-${version}-updatesite-coretests"      | sftp ${TOOLS}
@@ -215,6 +221,8 @@ A graphical sftp client such as FileZilla or FireFTP (plugin for Firefox) is the
 
 Webtools site is expected to be found in +http://download.jboss.org/tools/updates/webtools/${eclipseTrain}+ (where eclipseTrain is for example "luna"). So, with a sftp client, on filemgmt.jboss.org
 
+# TODO: for CR1, put content into staging/luna/ instead of just staging/
+
 1. Rename +/downloads_htdocs/tools/updates/webtools/${eclipseTrain}+ into +/downloads_htdocs/tools/updates/webtools/${eclipseTrain}_${previousVersion}+, with ${previous} being the name of previous release (for example 4.2.0.Alpha1 when releasing 4.2.0.Beta3)
 1. Move last build in +/downloads_htdocs/tools/updates/staging/jbosstools-${version}-updatesite-webtools+ to +/downloads_htdocs/tools/updates/webtools/${eclipseTrain}+
 
@@ -225,6 +233,8 @@ previous=4.2.0.Beta2
 versionWithRespin=4.2.0.Beta3b
 eclipseTrain=luna
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
+
+# TODO: for CR1, put content into staging/luna/ instead of just staging/
 
 echo "rename webtools/${eclipseTrain} webtools/${eclipseTrain}_${previous}"                        | sftp ${TOOLS}/updates/
 echo "rename staging/jbosstools-${versionWithRespin}-updatesite-webtools webtools/${eclipseTrain}" | sftp ${TOOLS}/updates/
@@ -452,6 +462,8 @@ if [ "$isFinal" = true ]; then
 fi  
 
 ----
+
+# TODO: for CR1, put content into staging/luna/ instead of just staging/
 
 * Check the following URLs show the right versions and reference content under the 'static/releases' directory (not 'updates/${version}' nor 'updates/staging/*'
 

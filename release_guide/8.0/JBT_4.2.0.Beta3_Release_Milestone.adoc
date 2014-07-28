@@ -518,6 +518,8 @@ http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/plugins/ &
 
 == Update jbosstools-website
 
+# TODO: make sure that JBDS is released before doing this to prevent the blog announcement from going out too early
+
 Provide a PR to add the latest JBT & JBDS milestones to this listing:
 
 https://github.com/jbosstools/jbosstools-website/blob/master/_config/products.yml

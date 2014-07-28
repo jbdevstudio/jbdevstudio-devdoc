@@ -262,7 +262,7 @@ Therefore, once JBoss Tools is released, you must rebuild the Early Access site 
   cd ~/truu/doc/release_guide/8.0
   topic="release-${version}";branch=master; gw1
   ci "update release guide for ${version}" .
-  g2;gw3;gw4
+  gw2;gw3;gw4
 ----
 
 == Move installers from "a" or "b" folder to base folder; purge old stuff from OLD/ folder

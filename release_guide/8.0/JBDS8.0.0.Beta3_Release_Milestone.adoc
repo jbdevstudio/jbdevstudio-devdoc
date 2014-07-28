@@ -32,7 +32,7 @@ screen
 
 # clean out old update sites from previous milestones; rename update sites from "a,b,c" to ""
 version=8.0.0.Beta3
-versionWithRespin=8.0.0.Beta3b; # a, b, c, ...
+versionWithRespin=8.0.0.Beta3c; # a, b, c, ...
 cd /mnt/devstudio/updates/8.0.0/
 if [[ ${version} != ${versionWithRespin} ]]; then 
   mv jboss-devstudio-${version}-updatesite-core jboss-devstudio-${version}-updatesite-core.DELETEME
@@ -41,7 +41,7 @@ if [[ ${version} != ${versionWithRespin} ]]; then
   mv jboss-devstudio-${versionWithRespin}-target-platform jboss-devstudio-${version}-target-platform
 fi
 # TODO: do not run this next line if the above step fails!
-rm -fr jboss-devstudio-${version}?-updatesite-core ${version}?-target-platform *.DELETEME
+rm -fr jboss-devstudio-${version}?-updatesite-core jboss-devstudio-${version}?-target-platform *.DELETEME
 ----
 
 == Rename milestones from Foo1b to Foo1; fix html pages in 8.0-staging
@@ -60,9 +60,9 @@ alias   ci='git commit -m'
 
 pushd ${basedir}/updates/8.0-staging
 version=8.0.0.Beta3
-versionWithRespin=8.0.0.Beta3b; # a, b, c, ...
+versionWithRespin=8.0.0.Beta3c; # a, b, c, ...
 now=`date +%s000`
-for d in composite*.xml index.html central/core/index.html ; do
+for d in composite*.xml index.html central/index.html central/core/index.html central/earlyaccess/index.html; do
   sed -i -e "s#${versionWithRespin}#${version}#g" $d
   sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
 done
@@ -384,7 +384,7 @@ and +
 [source,bash]
 ----
 version=8.0.0.Beta3
-versionWithRespin=8.0.0.Beta3b # a, b, c...
+versionWithRespin=8.0.0.Beta3c # a, b, c...
 version3=8.0.0.Beta3-v20140617-2058-B166
 echo "
 Subject: 

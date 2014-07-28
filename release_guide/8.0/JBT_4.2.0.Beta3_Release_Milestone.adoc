@@ -2,6 +2,8 @@
 
 This document describe how to publish a valid JBoss Tools build to production after being verified by QE.
 
+With distractions (email, IRC), this process took ~90 mins for the Beta3 release. 
+
 WARNING: this requires write access to http://sourceforge.net/projects/jboss/files/JBossTools/
 
 == Verify that all JIRAs assigned to the current milestone are resolved
@@ -63,8 +65,8 @@ JBIDE-16632 As of *Beta2* verify source zip actually contains github sources for
 ----
 stream=4.2.luna
 version=4.2.0.Beta3 # name to use in filenames ie fixVersion in JIRA
-versionWithRespin=4.2.0.jbosstools-4.2.0.Beta3b # Fully qualified version, including respin suffix
-hibernateToolsVersionWithRespin=4.2.0.Beta3b #it is possible that hibernate tools didn't require the same # of respins, so might have a different version
+versionWithRespin=4.2.0.Beta3c # Fully qualified version, including respin suffix
+hibernateToolsVersionWithRespin=4.2.0.Beta3c # it is possible that hibernate tools didn't require the same # of respins, so might have a different version
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 echo "mkdir development/sf.net/${version}" | sftp ${TOOLS}/builds
 
@@ -102,7 +104,7 @@ Once granted a shell, create the release notes page and download the zips
 [source,bash]
 ----
 # get URL from step above
-URL="https://issues.jboss.org/secure/ConfigureReport.jspa?versions=12324058&sections=all&style=html&selectedProjectId=10020&reportKey=org.jboss.labs.jira.plugin.release-notes-report-plugin%3Areleasenotes&Next=Next"
+URL="https://issues.jboss.org/secure/ConfigureReport.jspa?versions=12324896&sections=all&style=html&selectedProjectId=10020&reportKey=org.jboss.labs.jira.plugin.release-notes-report-plugin%3Areleasenotes&Next=Next"
 
 branch=4.2.0.x # if this is a Final or build, use 4.1.x instead of 4.2.x
 version=4.2.0.Beta3
@@ -142,7 +144,7 @@ These steps happens on filemgmt.jboss.org, in the jbosstools download area.
 
 # TODO: for CR1, put content into staging/luna/ instead of just staging/
 
-The goal of this task is to make latest respin is available in the 'updates/staging/${version}' location, without respin attribute.
+The goal of this task is to make latest respin is available in the 'updates/development/${version}' location, without respin attribute.
 
 Via sftp, remove older respins and rename the latest respin to remove its respin (a, b) suffix. 
 The principle is to keep only the latest respin and make it the actual release.
@@ -150,7 +152,7 @@ The principle is to keep only the latest respin and make it the actual release.
 [source,bash]
 ----
   version=4.2.0.Beta3
-  versionWithRespin=4.2.0.Beta3b # a, b, c, d...
+  versionWithRespin=4.2.0.Beta3c # a, b, c, d...
   TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 
   if [[ ${versionWithRespin} != ${version} ]]; then
@@ -230,7 +232,7 @@ Here is an example of a script doing that:
 [source,bash]
 ----
 previous=4.2.0.Beta2
-versionWithRespin=4.2.0.Beta3b
+versionWithRespin=4.2.0.Beta3c
 eclipseTrain=luna
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 
@@ -306,8 +308,8 @@ WARNING: TODO: JBIDE-17826 - latest Central/EA TP may now be in an "a" or "b" fo
 eclipseTrain=luna
 now=`date +%s000`
 
-oldTP=4.40.0.Beta3
-newTP=4.40.0.Beta4
+oldTP=4.40.0.Beta3-SNAPSHOT
+newTP=4.40.0.Beta4b-SNAPSHOT
 
 pushd jbosstools-download.jboss.org/jbosstools/targetplatforms/
   for f in jbtcentral jbtearlyaccess; do
@@ -324,12 +326,36 @@ popd
 *Else If* Target Platform isn't compatible with previous release (for example introducing new incompatible feature - gwt.e42 -> gwt.e43), then don't change the composite, and instead, you
 should tweak the +updates/development/${eclipseTrain}/central/core/composite*.xml+ files to point at a specific TP version.
 
-In any case, when this is done:
+When all changes are done:
 
-1. Commit your changes locally
-2. Push your changes to the public repository
-3. Run the CI job to sync with download.jboss.org https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-download.jboss.org-rsync-from-git/
-4. Check the changes are available on download.jboss.org (read composite*.xml files)
+* Commit them (should show 2 files change for each of 4 target platforms = 8 files)
+* Push to remote repo
+* Publish to download.jboss.org using the synchronization job https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-download.jboss.org-rsync-from-git/
+
+[source,bash]
+----
+
+eclipseTrain=luna
+
+# set correct path for where you have project cloned on disk
+basedir=${HOME}/tru/jbosstools-download.jboss.org/ # or...
+basedir=`pwd`
+TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
+
+pushd ${basedir}/jbosstools/targetplatforms 
+  for f in jbosstools jbdevstudio jbtcentral jbtearlyaccess; do
+    rsync -Pzrlt --rsh=ssh --protocol=28 ${f}target/${eclipseTrain}/* ${TOOLS}/targetplatforms/${f}target/${eclipseTrain}/
+  done
+popd
+
+eclipseTrain=luna
+google-chrome \
+http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${eclipseTrain}/compositeContent.xml \
+http://download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/${eclipseTrain}/compositeContent.xml \
+http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/${eclipseTrain}/compositeContent.xml \
+http://download.jboss.org/jbosstools/targetplatforms/jbtearlyaccesstarget/${eclipseTrain}/compositeContent.xml &
+
+----
 
 === Update composite, discovery and index.html
 
@@ -492,11 +518,11 @@ http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/plugins/ &
 
 == Update jbosstools-website
 
-Provide a PR to add the latest JBT milestone to this listing:
+Provide a PR to add the latest JBT & JBDS milestones to this listing:
 
 https://github.com/jbosstools/jbosstools-website/blob/master/_config/products.yml
 
-Example: https://github.com/jbosstools/jbosstools-website/pull/106
+Example: https://github.com/jbosstools/jbosstools-website/pull/193
 
 == Update Eclipse Marketplace (add/remove features)
 
@@ -522,12 +548,8 @@ Access it via +https://marketplace.eclipse.org/content/jboss-tools-luna/edit+ an
 WARNING: TODO: JBIDE-17826 - latest Central/EA TP may now be in an "a" or "b" folder so make sure you get the right one!
 
 Since Beta3, JBoss Central includes part of JBoss Tools, in order to make it avaiable in JBDS. 
-Therefore, once JBoss Tools is released, you must rebuild the Early Access site to include the final bits for that milestone.
-
-1. Update jbosstools-discovery/jbtearlyaccesstarget/multiple/jbtearlyaccess-multiple.target
-2. Run verifyTarget.sh to pull in the latest versions of the IUs and verify the TP can be resolved to disk
-3. Kick this job https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-centraltarget_4.2.luna/
-4. Send announcement email (?)
+Therefore, once JBoss Tools is released, you must rebuild the Early Access site to include the final bits for that milestone, 
+*IF THIS WAS NOT ALREADY DONE* when link:JBT_4.2.0.Beta3_Staging_For_QE.adoc[Staging JBT For QE]
 
 == Git tags
 
@@ -607,16 +629,16 @@ And update it it as required, so that the links for the latest milestone point t
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru/jbosstools-download.jboss.org/jbosstools/configuration
 version=4.2.0.Beta3 # name to use in filenames ie fixVersion in JIRA
-versionWithRespin=4.2.0.Beta3b # Fully qualified version, including respin suffix
+versionWithRespin=4.2.0.Beta3c # Fully qualified version, including respin suffix
 
 topic=release-jbosstools-${versionWithRespin}-to-production; branch=master; gw1
 
 st ide-config.properties # or use another editor if not Sublime Text (st)
 
-# replace existing lines with these to make the 4.2.0.Beta3b stuff live
-jboss.discovery.directory.url|jbosstools|4.2.0.Beta3=http://download.jboss.org/jbosstools/discovery/development/4.2.0.Beta3/jbosstools-directory.xml
-jboss.discovery.site.url|jbosstools|4.2.0.Beta3=http://download.jboss.org/jbosstools/discovery/development/4.2.0.Beta3/
-jboss.discovery.earlyaccess.site.url|jbosstools|4.2.0.Beta3=http://download.jboss.org/jbosstools/discovery/development/4.2.0.Beta3/
+# remove existing lines with these to make the 4.2.0.Beta3c stuff live as the lastest for 4.2.0 in development/luna
+#jboss.discovery.directory.url|jbosstools|4.2.0.Beta3=http://download.jboss.org/jbosstools/discovery/development/4.2.0.Beta3/jbosstools-directory.xml
+#jboss.discovery.site.url|jbosstools|4.2.0.Beta3=http://download.jboss.org/jbosstools/discovery/development/4.2.0.Beta3/
+#jboss.discovery.earlyaccess.site.url|jbosstools|4.2.0.Beta3=http://download.jboss.org/jbosstools/discovery/development/4.2.0.Beta3/
 
 # commit the change and push to master
 ci "release JBT ${version} (${versionWithRespin}) to production: link to latest dev milestone discovery site" ide-config.properties
@@ -652,7 +674,7 @@ and +
 [source,bash]
 ----
 version=4.2.0.Beta3
-eclipseVersion="Eclipse 4.4 Luna M7"
+eclipseVersion="Eclipse 4.4 Luna"
 echo "
 Subject: 
 

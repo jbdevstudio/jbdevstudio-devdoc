@@ -73,7 +73,7 @@ e.g.  http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.1.8.Fin
 
 The JBoss Tools Integration Stack Target Platform project also creates one repository:
 
-e.g.  http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.2.0.Alpha4/REPO/
+e.g.  http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.2.0.Alpha6/REPO/
 
 The integration-stack base target dependencies are deployed to the JBoss nexus releases repository for use by the integration stack component projects.
 
@@ -115,7 +115,7 @@ As an example, the JBDS core target dependencies need to be updated from 4.2.0.B
 ----
 # Clone the jbosstools-integration-stack locally.  
 # Modify jbosstools-integration-stack/target-platform/core-base.target  
-# Clone or otherwise retrieve the verifyTarget.sh bash scriipt from  
+# Clone or otherwise retrieve the verifyTarget.sh bash script from  
 https://github.com/jbosstools/jbosstools-build-ci/blob/master/util/verifyTarget.sh  
   
 ./verifyTarget.sh -x -b ~/git-clone/jbosstools-integration-stack/target-platform -p target-platform  
@@ -143,15 +143,17 @@ Given a successful build from the previous step, make the JBTIS TP public.  This
 ----
 # Copy the TP locally from staging  
 cd ~/temp; mkdir -p tp; cd tp  
-scp -r tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/staging/JBTIS-target-platform/4.2.0.Alpha4 .  
+scp -r tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/staging/JBTIS-target-platform/4.2.0.Alpha6 .  
  
 # Now copy the TP files onto jbosstools   
-scp -r 4.2.0.Alpha4 tools@filemgmt.jboss.org:/downloads_htdocs/tools/targetplatforms/jbtistarget/ 
+scp -r 4.2.0.Alpha6 tools@filemgmt.jboss.org:/downloads_htdocs/tools/targetplatforms/jbtistarget/ 
 ----
 
 Update the jbosstools target platform composites.  Remember to update the timestamps (vim :call ReplaceTimestamp()):
+----
 https://github.com/jbosstools/jbosstools-download.jboss.org/blob/master/jbosstools/targetplatforms/jbtistarget/luna/compositeArtifacts.xml
 https://github.com/jbosstools/jbosstools-download.jboss.org/blob/master/jbosstools/targetplatforms/jbtistarget/luna/compositeContents.xml
+----
 Once the PR has been issued and merged to https://github.com/jbosstools/jbosstools-download.jboss.org, push the changes to the download.jboss.org server. (Applying the PR is only the first half of getting these live.)
 
 [source,bash]
@@ -164,36 +166,44 @@ bye
 ----
 
 Verify:
-
-http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.2.0.Alpha4/
+----
+http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.2.0.Alpha6/
 http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/luna/
+----
 
 ==== Promote the Published JBTIS Target Platform Components to Nexus 
 
 The JBTIS target platform is now built and published but we're still not done.  It must finally be promoted to nexus.  Be cautious here - once created there's no easy way to remove it.
+
+* Clone jbosstools-integration-stack from jbosstools:
 
 [source,bash]
 ----
 # First build and deploy to staging  
 git clone -o origin https://github.com/jbosstools/jbosstools-integration-stack.git ./jbosstools-integration-stack  
 cd ./jbosstools-integration-stack/target-platform  
- 
-# Edit pom.xml - change n.n.n-SNAPSHOT to n.n.n.Final  
-# Clear out your local maven repository and build/ deploy  
+----
+
+* Edit pom.xml - change n.n.n-SNAPSHOT to n.n.n.Final (or Alphax, Betax - just not SNAPSHOT).
+* Clear out your local maven repository and build/ deploy enabling the jboss-release profile:
+
+[source,bash]
+----
 rm -rf ~/.m2/repository  
 mvn -U -s ~/.m2/settings-staging.xml -DuseReleaseProfile=true -Pjboss-release clean deploy  
- 
-# if you get an Error 401 - check your ~/.m2/settings-staging.xml  Make sure your server passwords are encrypted correctly.  
- 
-# Now promote from staging to release nexus (log into sonatype nexus with your favourite browser)  
- https://repository.jboss.org/nexus/index.html#stagingRepositories  
- 
-# Look for jboss_releases_staging_profile-nnnn - the Maven deploy from the previous step 
-# should have populated it.  
-# Check the box to the left  
-# Select the 'Close' button to finalize for release or select the 'Drop' button to delete the repo  
-# Once the close has completed - click 'Refresh'
 ----
+ 
+If you get an Error 401 - check your ~/.m2/settings-staging.xml  Make sure your server passwords are encrypted correctly.  
+ 
+* Now promote from staging to the release nexus (log into sonatype nexus with your favourite browser)  
+----
+ https://repository.jboss.org/nexus/index.html#stagingRepositories  
+---- 
+Look for 'jboss_releases_staging_profile-nnnn' - the Maven deploy from the previous step should have populated it. 
+ 
+* Check the box to the left  
+* Select the 'Close' button to finalize for release or select the 'Drop' button to delete the repo  
+* Once the close has completed - click 'Refresh'
 
 *This completes the JBTIS Target Platform build/ release process.*
 
@@ -534,21 +544,23 @@ Match the build type to the aggregate build type from the previous section.  Mat
 Verify:
 
 http://www.qa.jboss.com/binaries/RHDS/updates/development/kepler/integration-stack/aggregate/7.0.2.CR2/
+http://www.qa.jboss.com/binaries/RHDS/updates/development/luna/integration-stack/aggregate/8.0.0.Alpha1/
  
-==== Publish and Push the JBTIS Aggregate p2 Update Site
+==== Publish and Push the JBDSIS Aggregate p2 Update Site
 
 In this example we'll use the development 7.0.2.CR2 build from the previous step.    Update the production aggregate Eclipse p2 repository as well as the offline .zip file
 
 [source,bash]
 ----
 ssh wallace.redhat.com  
-rsync -aPrz --rsh=ssh pleacu@dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/updates/development/kepler/integration-stack/aggregate/7.0.2.CR2/*   
-     /mnt/devstudio/updates/7.0.0/7.0.2.CR2.jbds-is/  
+rsync -aPrz --rsh=ssh pleacu@dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/updates/development/kepler/integration-stack/aggregate/7.0.2.CR2/* /mnt/devstudio/updates/7.0.0/7.0.2.CR2.jbds-is/ 
+ - or -  
+rsync -aPrz --rsh=ssh pleacu@dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/updates/development/luna/integration-stack/aggregate/8.0.0.Alpha1/* /mnt/devstudio/updates/8.0.0/8.0.0.Alpha1.jbds-is/
      
 # Copy the p2 update site zip (devstudio-integration-stack-aggregate-7.0.2.CR2-SNAPSHOT.zip) to the devstudio update area:  
-rsync --rsh=ssh pleacu@dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/updates/development/kepler/integration-stack/aggregate/devstudio-integration-stack-aggregate-7.0.2.CR2.zip   
-
-/mnt/devstudio/updates/7.0.0/jbdevstudio-integration-stack-updatesite-7.0.2.CR2.zip
+rsync --rsh=ssh pleacu@dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/updates/development/kepler/integration-stack/aggregate/devstudio-integration-stack-aggregate-7.0.2.CR2.zip /mnt/devstudio/updates/7.0.0/jbdevstudio-integration-stack-updatesite-7.0.2.CR2.zip
+ - or -
+rsync --rsh=ssh pleacu@dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/updates/development/luna/integration-stack/aggregate/devstudio-integration-stack-aggregate-8.0.0.Alpha1.zip /mnt/devstudio/updates/8.0.0/jbdevstudio-integration-stack-updatesite-8.0.0.Alpha1.zip
 ----
 
 Note that  a stable build will be retrieved from a corresponding stable path.  If you update stable make sure to update development as well.
@@ -556,6 +568,8 @@ Note that  a stable build will be retrieved from a corresponding stable path.  I
 Clone jbdevstudio-website and update the composites in both the integration-stack directory and integration-stack/aggregate to reflect the new version and then update the timestamps.
 
 Git ref: https://github.com/jbdevstudio/jbdevstudio-website
+
+===== Update the developer studio composite update site.
 
 [NOTE]
 ----
@@ -591,8 +605,9 @@ Update the QE test staging area:
 ----
 ssh dev01.mw.lab.eng.bos.redhat.com  
 sudo su - hudson  
-cp -r /qa/services/http/binaries/RHDS/updates/development/kepler/integration-stack/aggregate/7.0.2.CR2  
-     /qa/services/http/binaries/RHDS/builds/staging/jbdsis-7.0.2-updatesite/ 
+cp -r /qa/services/http/binaries/RHDS/updates/development/kepler/integration-stack/aggregate/7.0.2.CR2 /qa/services/http/binaries/RHDS/builds/staging/jbdsis-7.0.2-updatesite/ 
+- or - 
+cp -r /qa/services/http/binaries/RHDS/updates/development/luna/integration-stack/aggregate/8.0.0.Alpha1 /qa/services/http/binaries/RHDS/builds/staging/jbdsis-8.0.0.Alpha1-updatesite/
 ----
 
 [NOTE]

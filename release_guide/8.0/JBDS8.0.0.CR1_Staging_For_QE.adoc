@@ -291,6 +291,14 @@ jboss.discovery.earlyaccess.site.url|devstudio|8.0.0.CR1=https://devstudio.redha
 ----
 
 
+== Release the latest devstudio-earlyaccess.properties
+
+NOTE: Should be automated together with publication of new discovery site, so this operation would be automatically part
+of moving/copying discovery site to staging location.
+
+Get the file __earlyaccess.properties__ from discovery job, in workspace folder __jbdevstudio/com.jboss.devstudio.discovery.earlyaccess__,
+and copy it do __http://download.jboss.org/jbosstools/discovery/development/4.2.0.CR1/bosstools-earlyaccess.properties__.
+
 == Notify the team (send 1 email)
 ____
 *To* external-exadel-list@redhat.com +

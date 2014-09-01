@@ -277,6 +277,14 @@ rsync -Pzrlt --rsh=ssh --protocol=28 ide-config.properties $TOOLS/configuration/
 
 ----
 
+== Release the latest jbosstools-earlyaccess.properties
+
+NOTE: Should be automated together with publication of new discovery site, so this operation would be automatically part
+of moving/copying discovery site to staging location.
+
+Get the file __earlyaccess.properties__ from discovery job, in workspace folder __jbosstools/org.jboss.tools.discovery.earlyaccess__,
+and copy it do __http://download.jboss.org/jbosstools/discovery/development/4.2.0.CR1/bosstools-earlyaccess.properties__.
+
 == Disable jobs
 
 All stable branch jobs from the https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_8.0.luna/[8.0.luna view] should be disabled.

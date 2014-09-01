@@ -36,6 +36,27 @@ If any of the root poms have not been correctly updated, simply re-open the task
 Once the above conditions have been met, you can proceed to the next steps.
 
 
+== Rebuild Target Platforms for Central and Early Access
+
+WARNING: This step is very important!
+
+Central and Early Access target platforms contain parts of JBoss Tools which have not yet been released, so these target platforms need to be rebuilt with every push to QE.
+
+Without this step, QE will be confused why there are Beta2 bits in the CR1 Central - eg., for Arquillian or Cordovasim.
+
+* Update the .target files and pom.xml files to include the correct respin label ("" for a first build, "a" or "b" for subsequent respins). 
+* Update the .target files to pull the latest JBT bits and verify it works with verifyTarget.sh. 
+
+https://github.com/jbosstools/jbosstools-build-ci/blob/master/util/verifyTarget.sh
+
+* Commit your changes.
+
+* Run the job to pick up the new commit, and verify that it publishes to the correct folder, eg. with "a" or "b":
+
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_8.0.luna/job/jbosstools-centraltarget_4.2.luna
+http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/4.40.0.CR1-SNAPSHOT/
+http://download.jboss.org/jbosstools/targetplatforms/jbtearlyaccesstarget/4.40.0.CR1-SNAPSHOT/
+
 
 == Stage to download.jboss.org
 
@@ -133,25 +154,6 @@ Run this script, then verify the resulting composite site:
 firefox "view-source:http://download.jboss.org/jbosstools/updates/staging/luna/compositeContent.xml"
 
 ----
-
-== Update Discovery sites
-
-Because Central and Early Access target platforms contain parts of JBoss Tools which have not yet been released, you need to rebuild the target platform using the new JBT 
-build, so that the QE experience will be consistent. Without this step, there may be a disconnect between the version of Arquillian or Cordovasim in Central/EA vs. the 
-version in the JBT/JBDS update site.
-
-* Update the .target files and pom.xml files to include the correct respin label ("" for a first build, "a" or "b" for subsequent respins). 
-* Update the .target files to pull the latest JBT bits and verify it works with verifyTarget.sh. 
-
-https://github.com/jbosstools/jbosstools-build-ci/blob/master/util/verifyTarget.sh
-
-* Commit your changes.
-
-* Run the job to pick up the new commit, and verify that it publishes to the correct folder, eg. with "a" or "b":
-
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_8.0.luna/job/jbosstools-centraltarget_4.2.luna
-http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/4.40.0.CR1-SNAPSHOT/
-http://download.jboss.org/jbosstools/targetplatforms/jbtearlyaccesstarget/4.40.0.CR1-SNAPSHOT/
 
 == Update Discovery URLs
 

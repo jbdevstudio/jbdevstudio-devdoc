@@ -314,8 +314,8 @@ TARGET_PLATFORM_VERSION_MIN=4.40.0.CR1-SNAPSHOT
 TARGET_PLATFORM_VERSION_MAX=4.40.0.CR1-SNAPSHOT
 TARGET_PLATFORM_CENTRAL_MAX=4.40.0.CR1-SNAPSHOT
 TARGET_PLATFORM_EARLYACCESS_MAX=4.40.0.CR1-SNAPSHOT
-version2=8.0.0.Beta3 # no respin suffix here
-version3=4.2.0.CR1 # no respin suffix here
+jbdsFixVersion=8.0.0.Beta3 # no respin suffix here
+jbtFoxVersion=4.2.0.CR1 # no respin suffix here
 echo "
 Subject: 
 
@@ -325,43 +325,32 @@ Body:
 
 As always, these are not FINAL bits, but preliminary results for QE & community testing. Not for use by customers or end users. 
 
-Update site:
-
-* http://download.jboss.org/jbosstools/updates/staging/luna/jbosstools-${version}-updatesite-core/
-
-Target platforms:
-
-* http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MAX} (upcoming milestone)
+Update site: http://download.jboss.org/jbosstools/updates/staging/luna/jbosstools-${version}-updatesite-core/
+Target platforms: http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MAX} (upcoming milestone)
 
 Until the above target platform site is released, you will need to add it to Eclipse to resolve dependencies at install time. 
 Once released, dependencies will be found automatically from here:
-
 * http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/luna/ (latest release)
-
 * http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/${TARGET_PLATFORM_CENTRAL_MAX}/ (upcoming milestone)
 * http://download.jboss.org/jbosstools/targetplatforms/jbtearlyaccesstarget/${TARGET_PLATFORM_EARLYACCESS_MAX}/ (upcoming milestone)
 
 New + noteworthy (subject to change): 
-
 * https://github.com/jbosstools/jbosstools-website/tree/master/documentation/whatsnew
 * http://tools.jboss.org/documentation/whatsnew/
 
-Schedule: 
-
-https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.plugin.system.project%3Aversions-panel
+Schedule: https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.plugin.system.project%3Aversions-panel
 
 --
 
 Additional update sites & builds:
-
 * http://download.jboss.org/jbosstools/updates/staging/luna/jbosstools-${version}-updatesite-coretests/
 * http://download.jboss.org/jbosstools/updates/staging/luna/jbosstools-${version}-updatesite-hibernatetools/
 * http://download.jboss.org/jbosstools/updates/staging/luna/jbosstools-${version}-updatesite-webtools/
 
-* http://download.jboss.org/jbosstools/builds/development/jbosstools-${version}-build-core/${coreBuildID}
-* http://download.jboss.org/jbosstools/builds/development/jbosstools-${version}-build-coretests/${coretestsBuildID}
-* http://download.jboss.org/jbosstools/builds/development/jbosstools-${version}-build-hibernatetools/${hibernatetoolsBuildID}
-* http://download.jboss.org/jbosstools/builds/development/jbosstools-${version}-build-webtools/${webtoolsBuildID}
+* http://download.jboss.org/jbosstools/builds/development/jbosstools-${version}-build-core/
+* http://download.jboss.org/jbosstools/builds/development/jbosstools-${version}-build-coretests/
+* http://download.jboss.org/jbosstools/builds/development/jbosstools-${version}-build-hibernatetools/
+* http://download.jboss.org/jbosstools/builds/development/jbosstools-${version}-build-webtools/
 
 "
 if [[ $respin != "respin-" ]]; then
@@ -371,7 +360,7 @@ echo "
 
 Changes prompting this $respin are:
 
-https://issues.jboss.org/issues/?jql=labels%20in%20%28%22${respin}%22%29%20and%20%28%28project%20in%20%28%22JBDS%22%29%20and%20fixversion%20in%20%28%22${version2}%22%29%29%20or%20%28project%20in%20%28%22JBIDE%22%2C%22TOOLSDOC%22%29%20and%20fixversion%20in%20%28%22${version3}%22%29%29%29
+https://issues.jboss.org/issues/?jql=labels%20in%20%28%22${respin}%22%29%20and%20%28%28project%20in%20%28%22JBDS%22%29%20and%20fixversion%20in%20%28%22${jbdsFixVersion}%22%29%29%20or%20%28project%20in%20%28%22JBIDE%22%2C%22TOOLSDOC%22%29%20and%20fixversion%20in%20%28%22${jbtFixVersion}%22%29%29%29
 
 To compare the upcoming version of Central (${version}) against an older version, add lines similar to these your eclipse.ini file after the -vmargs line for the appropriate version & URLs:
  -Djboss.discovery.directory.url=http://download.jboss.org/jbosstools/discovery/development/${version}/jbosstools-directory.xml

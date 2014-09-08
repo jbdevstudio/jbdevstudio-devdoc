@@ -261,26 +261,26 @@ And update it it as required, so that the links for the latest milestone point t
 
 [source,bash]
 ----
-
+version=4.2.0.CR1 #a, b, c...
 # adjust these steps to fit your own path location & git workflow
-cd ~/tru/download.jboss.org/jbosstools/configuration
-topic=release-jbosstools-4.2.0.CR1-to-qe; branch=master; gw1
+cd jbosstools-download.jboss.org/jbosstools/configuration
+git fetch jbosstools master
+git checkout FETCH_HEAD
 
-st ide-config.properties # or use another editor if not Sublime Text (st)
+vim ide-config.properties # or use another editor 
 
-# replace existing lines with these to make the 4.2.0.CR1 stuff live
-jboss.discovery.directory.url|jbosstools|4.2.0.CR1=http://download.jboss.org/jbosstools/discovery/development/4.2.0.CR1/jbosstools-directory.xml
-jboss.discovery.site.url|jbosstools|4.2.0.CR1=http://download.jboss.org/jbosstools/discovery/development/4.2.0.CR1/
-jboss.discovery.earlyaccess.site.url|jbosstools|4.2.0.CR1=http://download.jboss.org/jbosstools/discovery/development/4.2.0.CR1/
+# replace existing lines with these to make the ${version} stuff live
+  jboss.discovery.directory.url|jbosstools|4.2.0.CR1=http://download.jboss.org/jbosstools/discovery/development/4.2.0.CR1/jbosstools-directory.xml
+  jboss.discovery.site.url|jbosstools|4.2.0.CR1=http://download.jboss.org/jbosstools/discovery/development/4.2.0.CR1/
+  jboss.discovery.earlyaccess.site.url|jbosstools|4.2.0.CR1=http://download.jboss.org/jbosstools/discovery/development/4.2.0.CR1/
 
 # commit the change and push to master
-ci "release JBT 4.2.0.CR1 to QE: link to latest dev milestone discovery site" ide-config.properties
-gw2; gw3; gw4
+git add ide-config.properties
+git commit -m "release JBT ${version} to QE: link to latest dev milestone discovery site"
+git push jbosstools HEAD:master
 
 # push updated file to server
-TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
-rsync -Pzrlt --rsh=ssh --protocol=28 ide-config.properties $TOOLS/configuration/ide-config.properties
-
+scp ide-config.properties tools@filemgmt.jboss.org:/downloads_htdocs/tools/configuration/ide-config.properties
 ----
 
 == Release the latest jbosstools-earlyaccess.properties

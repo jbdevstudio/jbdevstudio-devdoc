@@ -45,23 +45,20 @@ WARNING: Don't use symlinks are they are too risky to use. Those operations can 
 
 [source,bash]
 ----
-
+version=8.0.0.CR1 # a, b, c...
 # can run 3 steps these in parallel 
 
-version=8.0.0.CR1 # a, b, c...
 rsync -aPrz /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/installer/* /qa/services/http/binaries/RHDS/builds/development/${version}-build-core/
 rsync -aPrz /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/logs/* /qa/services/http/binaries/RHDS/builds/development/${version}-build-core/
 cd /qa/services/http/binaries/RHDS/builds/development/
 find . -maxdepth 1 -type d -name "${version}*" | grep ${version}
 find . -maxdepth 1 -type d -name "${version}*" | sed "s#\.# >> http://www.qa.jboss.com/binaries/RHDS/builds/development#" | egrep ">>|${version}"
 
-version=8.0.0.CR1 # a, b, c...
 rsync -aPrz /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/all/repo/* /qa/services/http/binaries/RHDS/updates/development/${version}-updatesite-core/
 cd /qa/services/http/binaries/RHDS/updates/development/
 find . -maxdepth 1 -type d -name "${version}*" | grep ${version}
 find . -maxdepth 1 -type d -name "${version}*" | sed "s#\.# >> http://www.qa.jboss.com/binaries/RHDS/updates/development#" | egrep ">>|${version}"
 
-version=8.0.0.CR1 # a, b, c...
 # earlyaccess site includes one directory.xml file which lists both core and earlyaccess plugins, so use that instead of core site
 rsync -aPrz /qa/services/http/binaries/RHDS/discovery/nightly/earlyaccess/4.2.luna/* /qa/services/http/binaries/RHDS/discovery/development/${version}/
 ----
@@ -87,10 +84,6 @@ WARNING: Skip this test for Alpha
 
 === Push content
 
-# TODO: change all refs to wallace (wallace.intranet.prod.int.rdu2.redhat.com); files are now on devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
-
-# Can no longer ssh onto wallace to PULL files. Instead, will have to PUSH files from 
-
 +devstudio.redhat.com+ is actually hosted on +filemgmt.jboss.org+, accessible from inside Red Hat VPN. So you need both VPN enabled and permissions to write to devstudio@filemgmt. If you don't have access, send a copy of your public SSH key to eng-ops@redhat.com.
 
 First, ssh to dev01, and sudo to the hudson user. From there you will be able to push files to filemgmt.
@@ -111,7 +104,6 @@ version=8.0.0.CR1 # a, b, c...
 JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
 rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/all/repo/* ${JBDS}/updates/8.0.0/jboss-devstudio-${version}-updatesite-core/
 
-version=8.0.0.CR1 # a, b, c...
 JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
 # TODO: verify correct URL and filename for the target zip
 TARGET_PLATFORM_VERSION_MAX=4.40.0.CR1-SNAPSHOT
@@ -119,7 +111,6 @@ unzip -q /qa/services/http/binaries/RHDS/targetplatforms/jbdevstudiotarget/${TAR
 rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MAX}/jbdevstudiotarget-${TARGET_PLATFORM_VERSION_MAX}.zip ${JBDS}/updates/8.0.0/
 rsync -aPrz --rsh=ssh --protocol=28 /tmp/jboss-devstudio-${version}-target-platform ${JBDS}/updates/8.0.0/
 
-# TODO: verify correct URL and filename for the target zip
 version=8.0.0.CR1 # a, b, c...
 TARGET_PLATFORM_VERSION_MAX=4.40.0.CR1-SNAPSHOT
 mkdir -p /qa/services/http/binaries/RHDS/targetplatforms/jbtcentraltarget/${TARGET_PLATFORM_VERSION_MAX}/; pushd /qa/services/http/binaries/RHDS/targetplatforms/jbtcentraltarget/${TARGET_PLATFORM_VERSION_MAX}/
@@ -265,8 +256,8 @@ if [ "$isGA" = true ]; then
   # TODO: make sure you've merged in others' changes!
   git push origin master # in case of doubt, prefer pushing to a local repostiory and using a pull-request to ask for review
   popd
-  # TODO: change all refs to wallace (wallace.intranet.prod.int.rdu2.redhat.com); files are now on devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
-  rsync -aPrz --rsh=ssh --protocol=28 jbdevstudio-website/updates/8.0/*  wallace.intranet.prod.int.rdu2.redhat.com:/mnt/devstudio/updates/8.0/
+  
+  rsync -aPrz --rsh=ssh --protocol=28 jbdevstudio-website/updates/8.0/*  devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0/
 fi
 ----
 

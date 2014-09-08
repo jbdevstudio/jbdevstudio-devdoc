@@ -141,7 +141,10 @@ pushd jbdevstudio-website/content/updates/8.0-staging/
 now=`date +%s000`
 
 oldTP=jboss-devstudio-8.0.0.Beta3
-newTP=jboss-devstudio-8.0.0.CR1
+newTP=jboss-devstudio-${version}
+# Example for a respin
+# oldTP=jboss-devstudio-8.0.0.CR1
+# newTP=jboss-devstudio-8.0.0.CR1a
 for d in composite*.xml; do
   sed -i -e "s#${oldTP}#${newTP}#g" $d
   sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d

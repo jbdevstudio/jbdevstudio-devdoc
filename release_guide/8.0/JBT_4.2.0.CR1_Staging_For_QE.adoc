@@ -288,7 +288,7 @@ scp ide-config.properties tools@filemgmt.jboss.org:/downloads_htdocs/tools/confi
 NOTE: Should be automated together with publication of new discovery site, so this operation would be automatically part
 of moving/copying discovery site to staging location.
 
-Get the file __earlyaccess.properties__ from discovery job, in workspace folder __jbosstools/org.jboss.tools.discovery.earlyaccess__,
+Get the file __earlyaccess.properties__ from discovery job, in workspace folder __jbosstools/org.jboss.tools.discovery.earlyaccess__: https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_8.0.luna/job/jbosstools-discovery_4.2.luna/ws/sources/jbosstools/org.jboss.tools.central.discovery.earlyaccess/jbosstools-earlyaccess.properties
 and copy it do __http://download.jboss.org/jbosstools/discovery/development/4.2.0.CR1/bosstools-earlyaccess.properties__.
 
 == Disable jobs

@@ -196,7 +196,7 @@ NOTE:
 This step is mandatory only because we dont have a good way to copy stuff remotely (sftp only allows rename). If we could be granted something more powerful with remote copies, we could copy stuff in previous steps instead of moving it, and this step would becomme useless.
 
 First, run it as +hudson+ user from a ci machine
-[sources,bash]
+[source,bash]
 ----
 local$ ssh dev01.mw.lab.eng.bos.redhat.com
 dev01$ sudo su - hudson
@@ -204,20 +204,20 @@ dev01$ # set up command prompt and load aliases
 dev01$ . /home/hudson/config_repository/scripts/jbds/prompt.sh 
 ----
 or, if you didn't run prompt.sh above, you'll need this
-[sources,bash]
+[source,bash]
 ----
 alias   scpr=rsync -aPrz --rsh=ssh --protocol=28
 ----
 
 Then, initialize variables
-[sources,bash]
+[source,bash]
 ----
 version=4.2.0.CR1 #a, b, c...
 stream=4.2.luna
 ----
 
 Them you can run this 4 steps in parallel:
-[sources,bash]
+[source,bash]
 ----
 branch=core/${stream}
 scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/luna/jbosstools-${version}-updatesite-core/* /tmp/jbosstools-${version}-updatesite-core/
@@ -225,21 +225,18 @@ scpr /tmp/jbosstools-${version}-updatesite-core/* tools@filemgmt.jboss.org:/down
 rm -fr /tmp/jbosstools-${version}-updatesite-core/
 echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
 
-version=4.2.0.CR1 # a, b, c...
-branch=coretests/${stream
+branch=coretests/${stream}
 scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/luna/jbosstools-${version}-updatesite-coretests/* /tmp/jbosstools-${version}-updatesite-coretests/
 scpr /tmp/jbosstools-${version}-updatesite-coretests/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
 rm -fr /tmp/jbosstools-${version}-updatesite-coretests/
 echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
 
-version=4.2.0.CR1 # a, b, c...
 branch=hibernatetools/${stream}
 scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/luna/jbosstools-${version}-updatesite-hibernatetools/* /tmp/jbosstools-${version}-updatesite-hibernatetools/
 scpr /tmp/jbosstools-${version}-updatesite-hibernatetools/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
 rm -fr /tmp/jbosstools-${version}-updatesite-hibernatetools/
 echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
 
-version=4.2.0.CR1 # a, b, c...
 branch=webtools/${stream}
 scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/luna/jbosstools-${version}-updatesite-webtools/* /tmp/jbosstools-${version}-updatesite-webtools/
 scpr /tmp/jbosstools-${version}-updatesite-webtools/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete

@@ -123,7 +123,10 @@ Then verify those 4 sites are correctly populated.
 
 === Regenerate composite site metadata for staged updates
 
-Run this script, then verify the resulting composite site:
+Update files __http://download.jboss.org/jbosstools/updates/staging/luna/composite*.xml__ , with SFTP/SCP via command-line or your 
+favourite SFTP GUI client (such as Eclipse RSE).
+
+Optionally, run this script, then verify the resulting composite site:
 
 [source,bash]
 ----

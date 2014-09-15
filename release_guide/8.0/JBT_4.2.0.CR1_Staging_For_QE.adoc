@@ -162,7 +162,7 @@ http://download.jboss.org/jbosstools/targetplatforms/jbtearlyaccesstarget/4.40.0
 == Update Discovery URLs
 
 [[update-discovery-urls]]
-Update the *stable branch* discovery job [1] to publish to the right URL, according to JBT and JBDS versions +
+Update the *stable branch* discovery job ( https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_8.0.luna/job/jbosstools-discovery_4.2.luna/configure ) to publish to the right URL, according to JBT and JBDS versions +
 
 * Update property +JBTCENTRALTARGET_VERSION+ to 4.40.0.CR1-SNAPSHOT
 * Update property +JBTEARLYACCESSTARGET_VERSION+ to 4.40.0.CR1-SNAPSHOT
@@ -174,8 +174,6 @@ Then respin the job and verify that sites were correctly populated:
 
 * http://download.jboss.org/jbosstools/discovery/nightly/core/4.2.luna/
 * http://www.qa.jboss.com/binaries/RHDS/discovery/nightly/core/4.2.luna/
-
-[1] https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_8.0.luna/job/jbosstools-discovery_4.2.luna/configure
 
 
 === Stage discovery site 
@@ -209,7 +207,7 @@ dev01$ . /home/hudson/config_repository/scripts/jbds/prompt.sh
 or, if you didn't run prompt.sh above, you'll need this
 [source,bash]
 ----
-alias   scpr=rsync -aPrz --rsh=ssh --protocol=28
+alias   scpr="rsync -aPrz --rsh=ssh --protocol=28"
 ----
 
 Then, initialize variables

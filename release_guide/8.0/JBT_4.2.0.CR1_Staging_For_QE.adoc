@@ -270,10 +270,11 @@ git checkout FETCH_HEAD
 
 vim ide-config.properties # or use another editor 
 
-# replace existing lines with these to make the ${version} stuff live
-  jboss.discovery.directory.url|jbosstools|4.2.0.CR1=http://download.jboss.org/jbosstools/discovery/development/4.2.0.CR1/jbosstools-directory.xml
-  jboss.discovery.site.url|jbosstools|4.2.0.CR1=http://download.jboss.org/jbosstools/discovery/development/4.2.0.CR1/
-  jboss.discovery.earlyaccess.site.url|jbosstools|4.2.0.CR1=http://download.jboss.org/jbosstools/discovery/development/4.2.0.CR1/
+# replace existing lines with these to make the ${version} stuff live. ${version} must be exanded in the file
+  jboss.discovery.directory.url|jbosstools|4.2.0.CR1=http://download.jboss.org/jbosstools/discovery/development/${version}/jbosstools-directory.xml
+  jboss.discovery.site.url|jbosstools|4.2.0.CR1=http://download.jboss.org/jbosstools/discovery/development/${version}/
+  jboss.discovery.earlyaccess.site.url|jbosstools|4.2.0.CR1=http://download.jboss.org/jbosstools/discovery/development/${version}/
+  jboss.discovery.earlyaccess.list.url|jbosstools|4.2.0.CR1=http://download.jboss.org/jbosstools/discovery/development/${version}/jbosstools-earlyaccess.properties
 
 # commit the change and push to master
 git add ide-config.properties
@@ -290,7 +291,7 @@ NOTE: Should be automated together with publication of new discovery site, so th
 of moving/copying discovery site to staging location.
 
 Get the file __earlyaccess.properties__ from discovery job, in workspace folder __jbosstools/org.jboss.tools.discovery.earlyaccess__: https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_8.0.luna/job/jbosstools-discovery_4.2.luna/ws/sources/jbosstools/org.jboss.tools.central.discovery.earlyaccess/jbosstools-earlyaccess.properties
-and copy it do __http://download.jboss.org/jbosstools/discovery/development/4.2.0.CR1/bosstools-earlyaccess.properties__.
+and copy it do __http://download.jboss.org/jbosstools/discovery/development/${version}/jbosstools-earlyaccess.properties__.
 
 == Disable jobs
 

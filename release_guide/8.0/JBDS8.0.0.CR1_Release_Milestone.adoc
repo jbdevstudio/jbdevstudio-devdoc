@@ -2,9 +2,6 @@
 
 This document describe how to publish a valid JBoss Developer Studio build to production after being verified by QE.
 
-# TODO: change all refs to wallace (wallace.intranet.prod.int.rdu2.redhat.com); files are now on devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
-WARNING: This requires write access to wallace.redhat.com, but in future will require access to devstudio@filemgmt.jboss.org.
-
 CAUTION: TODO: when releasing GA make sure to :%s/development/stable/g and :%s/8.0-staging/8.0/g in product/features/com.jboss.jbds.product.feature/p2.inf
 
 == Verify that all JIRAs assigned to the current milestone are resolved

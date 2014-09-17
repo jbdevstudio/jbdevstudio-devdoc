@@ -41,7 +41,6 @@ Here are some generalities site promotion/release process. It's not an exhaustiv
 ... Site moves from 'updates/staging' with respin label to 'static/releases' without respin label
 ... Links to 'updates/luna' are replaced to link to new version
 ... JBoss Tools website is updated
-... JBoss Central Early Access site is rebuilt ** NEW **
 ... Git repositories are tagged
 ... Eclipse Marketplace entries are created or updated
 ... JIRA version can be released

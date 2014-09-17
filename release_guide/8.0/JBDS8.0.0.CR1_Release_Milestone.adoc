@@ -188,6 +188,21 @@ JBDS=devstudio@filemgmt.jboss.org:www_htdocs/devstudio
 rsync -Pzrlt --rsh=ssh --protocol=28 updates/${DESTSITE} updates/${SRC_SITE} $JBDS/updates/
 ----
 
+== Release the latest milestone to ide-config.properties
+
+Check out this file: http://download.jboss.org/jbosstools/configuration/ide-config.properties from _http://github.com/jbosstools/jbosstools-download.jboss.org_ repository.
+
+And update it it as required, so that the links for the latest milestone point to valid URLs, eg.,
+
+[source,bash]
+----
+jboss.discovery.directory.url|devstudio|8.0.0.CR1=https://devstudio.jboss.com/updates/8.0-development/devstudio-directory.xml
+jboss.discovery.site.url|devstudio|8.0.0.CR1=https://devstudio.jboss.com/updates/8.0-development/central/core/
+----
+
+Then commit and push changes to the origin GitHub repo. Then either push the file back to download.jboss.org, either manually (sftp, scp...) or using this CI job: https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-download.jboss.org-rsync-from-git/
+
+
 == Tag Git
 
 [source,bash]
@@ -267,21 +282,6 @@ Access it via +http://marketplace.eclipse.org/content/red-hat-jboss-developer-st
 * Title to match new version
 * Description to match new version & dependencies
 * Notes / warnings (if applicable, eg., JDK 7/8 issues)
-
-
-== Release the latest milestone to ide-config.properties
-
-Check out this file: http://download.jboss.org/jbosstools/configuration/ide-config.properties from _http://github.com/jbosstools/jbosstools-download.jboss.org_ repository.
-
-And update it it as required, so that the links for the latest milestone point to valid URLs, eg.,
-
-[source,bash]
-----
-jboss.discovery.directory.url|devstudio|8.0.0.CR1=https://devstudio.jboss.com/updates/8.0-development/devstudio-directory.xml
-jboss.discovery.site.url|devstudio|8.0.0.CR1=https://devstudio.jboss.com/updates/8.0-development/central/core/
-----
-
-Then commit and push changes to the origin GitHub repo. Then either push the file back to download.jboss.org, either manually (sftp, scp...) or using this CI job: https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-download.jboss.org-rsync-from-git/
 
 == Mark release as complete in JIRA
 

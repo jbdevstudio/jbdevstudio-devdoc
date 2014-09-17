@@ -600,12 +600,12 @@ ACTION REQUIRED: Project leads, please tag your projects [ branch ${branchName} 
 
 Body:
 
-Project leads, please tag your projects!
+Component leads, please tag your repositories!
 
-  co ${branchName}
-  git tag ${tagName}
-  git push origin ${tagName}
-
+$ git fetch jbosstools ${branchName} #assuming remote is called jbosstools, also often called origin
+$ git checkout FETCH_HEAD
+$ git tag ${tagName}
+$ git push jbosstools ${tagName}
 "
 ----
 ____

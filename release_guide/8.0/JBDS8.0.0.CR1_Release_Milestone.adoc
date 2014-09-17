@@ -145,16 +145,6 @@ popd
 
 ----
 
-== Request an update to jboss.org/products/devstudio
-
-Goal is to update the following pages: https://www.jboss.org/products/devstudio/download/ and https://www.jboss.org/products/devstudio/overview/
-
-This can be achived by creating a JIRA to JBoss Developer (https://issues.jboss.org/secure/CreateIssue.jspa?pid=12313621&issuetype=3 ) and submitting pull requests for file _products/devstudio/_common/product.yml_ against repository https://github.com/jboss-developer/www.jboss.org 
-
-Example past JIRA: https://issues.jboss.org/browse/DEVELOPER-733 . Relevant pull request is linked from here.
-
-NOTE: you'll need to get an answer from release-engineering@redhat.com (cf first step) to get the URLs to use for the various files
-
 == Update https://devstudio.redhat.com/updates/8.0*/devstudio-directory.xml to point at new discovery jar(s) from staging.
 
 [IMPORTANT]
@@ -341,13 +331,26 @@ fi
 
 WARNING: For stable releases, move content from RHDS/{builds,updates,discovery}/development into RHDS/{builds,updates,discovery}/stable, then symlink it back so it appears in both places.
 
-== Update jbosstools-website
+== Update websites
+
+=== tools.jboss.org
 
 Provide a PR to add the latest JBT & JBDS milestones to this listing:
 
 https://github.com/jbosstools/jbosstools-website/blob/master/_config/products.yml
 
 Example: https://github.com/jbosstools/jbosstools-website/pull/193
+
+== devstudio.jboss.com
+
+Goal is to update the following pages: https://www.jboss.org/products/devstudio/download/ and https://www.jboss.org/products/devstudio/overview/
+
+This can be achived by creating a JIRA to JBoss Developer (https://issues.jboss.org/secure/CreateIssue.jspa?pid=12313621&issuetype=3 ) and submitting pull requests for file _products/devstudio/_common/product.yml_ against repository https://github.com/jboss-developer/www.jboss.org 
+
+Example past JIRA: https://issues.jboss.org/browse/DEVELOPER-733 . Relevant pull request is linked from here.
+
+NOTE: you'll need to get an answer from release-engineering@redhat.com (cf first step) to get the URLs to use for the various files
+
 
 == Update Marketplace entry
 

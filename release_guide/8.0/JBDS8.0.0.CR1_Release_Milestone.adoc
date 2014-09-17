@@ -66,14 +66,19 @@ Only ONE of those artifacts [0] require sign in, as it bundles EAP. The rest are
 
 [0] http://www.qa.jboss.com/binaries/RHDS/builds/development/${versionWithRespin}-build-core/jboss-devstudio-${version3}-installer-eap.jar
 
-Please note that the new CSP pages should include similar documentation to the previous release [1] but with these string replacements / updates:
+Please note that the new CSP pages should include similar documentation 
+to the previous release ( 
+https://access.redhat.com/jbossnetwork/restricted/listSoftware.html ) 
+but with these string replacements / updates:
+* s/Luna M6/Luna/g
+* s/Luna M6 JEE bundle/Luna JEE bundle/g
+* s/lunam6/luna/g
 
-* s/Luna M6/Luna M7/g
-* s/Luna M6 JEE bundle/Luna M7 JEE bundle/g
-* s/lunam6/lunam7/g
-* s/Universal Binary/Installer/g
+When pushed, please reply so that QE can review the CSP pages & files 
+for push to production and use the Golden Gate links to update the 
+public site.
 
-[1] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html
+Thanks in advance,
 
 When pushed, please reply so that QE can review the CSP pages & files for push to production.
 

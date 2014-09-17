@@ -480,6 +480,42 @@ http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/jbosstools-d
 http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/plugins/ &
 ----
 
+== Release the latest milestone to ide-config.properties
+
+Check out this file:
+
+http://download.jboss.org/jbosstools/configuration/ide-config.properties
+
+And update it it as required, so that the links for the latest milestone point to valid URLs, eg.,
+
+[source,bash]
+----
+
+# adjust these steps to fit your own path location & git workflow
+cd ~/tru/jbosstools-download.jboss.org/jbosstools/configuration
+version=4.2.0.Beta3 # name to use in filenames ie fixVersion in JIRA
+versionWithRespin=4.2.0.Beta3c # Fully qualified version, including respin suffix
+
+topic=release-jbosstools-${versionWithRespin}-to-production; branch=master; gw1
+
+st ide-config.properties # or use another editor if not Sublime Text (st)
+
+# remove existing lines with these to make the 4.2.0.Beta3c stuff live as the lastest for 4.2.0 in development/luna
+#jboss.discovery.directory.url|jbosstools|4.2.0.Beta3=http://download.jboss.org/jbosstools/discovery/development/4.2.0.Beta3/jbosstools-directory.xml
+#jboss.discovery.site.url|jbosstools|4.2.0.Beta3=http://download.jboss.org/jbosstools/discovery/development/4.2.0.Beta3/
+#jboss.discovery.earlyaccess.site.url|jbosstools|4.2.0.Beta3=http://download.jboss.org/jbosstools/discovery/development/4.2.0.Beta3/
+
+# commit the change and push to master
+ci "release JBT ${version} (${versionWithRespin}) to production: link to latest dev milestone discovery site" ide-config.properties
+gw2; gw3; gw4
+
+# push updated file to server
+TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
+rsync -Pzrlt --rsh=ssh --protocol=28 ide-config.properties $TOOLS/configuration/ide-config.properties
+
+----
+
+
 == Update jbosstools-website
 
 Provide a PR to add the latest JBT milestones to this listing: https://github.com/jbosstools/jbosstools-website/blob/master/_config/products.yml
@@ -570,42 +606,6 @@ Project leads, please tag your projects!
 "
 ----
 ____
-
-== Release the latest milestone to ide-config.properties
-
-Check out this file:
-
-http://download.jboss.org/jbosstools/configuration/ide-config.properties
-
-And update it it as required, so that the links for the latest milestone point to valid URLs, eg.,
-
-[source,bash]
-----
-
-# adjust these steps to fit your own path location & git workflow
-cd ~/tru/jbosstools-download.jboss.org/jbosstools/configuration
-version=4.2.0.Beta3 # name to use in filenames ie fixVersion in JIRA
-versionWithRespin=4.2.0.Beta3c # Fully qualified version, including respin suffix
-
-topic=release-jbosstools-${versionWithRespin}-to-production; branch=master; gw1
-
-st ide-config.properties # or use another editor if not Sublime Text (st)
-
-# remove existing lines with these to make the 4.2.0.Beta3c stuff live as the lastest for 4.2.0 in development/luna
-#jboss.discovery.directory.url|jbosstools|4.2.0.Beta3=http://download.jboss.org/jbosstools/discovery/development/4.2.0.Beta3/jbosstools-directory.xml
-#jboss.discovery.site.url|jbosstools|4.2.0.Beta3=http://download.jboss.org/jbosstools/discovery/development/4.2.0.Beta3/
-#jboss.discovery.earlyaccess.site.url|jbosstools|4.2.0.Beta3=http://download.jboss.org/jbosstools/discovery/development/4.2.0.Beta3/
-
-# commit the change and push to master
-ci "release JBT ${version} (${versionWithRespin}) to production: link to latest dev milestone discovery site" ide-config.properties
-gw2; gw3; gw4
-
-# push updated file to server
-TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
-rsync -Pzrlt --rsh=ssh --protocol=28 ide-config.properties $TOOLS/configuration/ide-config.properties
-
-----
-
 
 == Release JIRA
 

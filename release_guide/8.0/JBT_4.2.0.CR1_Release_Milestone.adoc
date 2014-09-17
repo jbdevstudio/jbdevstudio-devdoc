@@ -64,9 +64,9 @@ JBIDE-16632 As of *Beta2* verify source zip actually contains github sources for
 [source,bash]
 ----
 stream=4.2.luna
-version=4.2.0.Beta3 # name to use in filenames ie fixVersion in JIRA
-versionWithRespin=4.2.0.Beta3c # Fully qualified version, including respin suffix
-hibernateToolsVersionWithRespin=4.2.0.Beta3c # it is possible that hibernate tools didn't require the same # of respins, so might have a different version
+version=4.2.0.CR1 # name to use in filenames ie fixVersion in JIRA
+versionWithRespin=4.2.0.CR1b # Fully qualified version, including respin suffix
+hibernateToolsVersionWithRespin=4.2.0.CR1b # it is possible that hibernate tools didn't require the same # of respins, so might have a different version
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 echo "mkdir development/sf.net/${version}" | sftp ${TOOLS}/builds
 
@@ -87,7 +87,7 @@ echo "rename development/jbosstools-${versionWithRespin}-build-hibernatetools/${
 === Pull files to sf.net, including release notes
 
 Go to https://issues.jboss.org/secure/ConfigureReport!default.jspa?selectedProjectId=10020&projectOrFilterId=project-10020&projectOrFilterName=Tools%20%28JBoss%20Tools%29&reportKey=org.jboss.labs.jira.plugin.release-notes-report-plugin:releasenotes 
-Then select the target release (4.2.0.Beta3 for example), type of issues = "All", style = "HTML". Copy the URL of the report page below.
+Then select the target release (4.2.0.CR1 for example), type of issues = "All", style = "HTML". Copy the URL of the report page below.
 
 There are many ways to push files to sf.net (SFTP, SCP, SSH...). Any alternative that puts the files under +JBossTools/jbosstools${version}+ is fine. Here, we'll show a shell-based approach that allows to save a few minutes.
 
@@ -107,7 +107,7 @@ Once granted a shell, create the release notes page and download the zips
 URL="https://issues.jboss.org/secure/ConfigureReport.jspa?versions=12324896&sections=all&style=html&selectedProjectId=10020&reportKey=org.jboss.labs.jira.plugin.release-notes-report-plugin%3Areleasenotes&Next=Next"
 
 branch=4.2.0.x # if this is a Final or build, use 4.1.x instead of 4.2.x
-version=4.2.0.Beta3
+version=4.2.0.CR1
 cd /home/frs/project/jboss/JBossTools/
 mkdir -p jbosstools${branch}
 cd jbosstools${branch}
@@ -151,8 +151,8 @@ The principle is to keep only the latest respin and make it the actual release.
 
 [source,bash]
 ----
-  version=4.2.0.Beta3
-  versionWithRespin=4.2.0.Beta3c # a, b, c, d...
+  version=4.2.0.CR1
+  versionWithRespin=4.2.0.CR1b # a, b, c, d...
   TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 
   if [[ ${versionWithRespin} != ${version} ]]; then
@@ -231,8 +231,8 @@ Webtools site is expected to be found in +http://download.jboss.org/tools/update
 Here is an example of a script doing that:
 [source,bash]
 ----
-previous=4.2.0.Beta2
-versionWithRespin=4.2.0.Beta3c
+previous=4.2.0.Beta3
+versionWithRespin=4.2.0.CR1b
 eclipseTrain=luna
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 
@@ -274,8 +274,8 @@ Here is a script doing that, from the +download.jboss.org+ folder.
 eclipseTrain=luna
 now=`date +%s000`
 
-oldTP=4.40.0.Beta3
-newTP=4.40.0.Beta4
+oldTP=4.40.0.Beta4
+newTP=4.40.0.CR1
 
 pushd jbosstools-download.jboss.org/jbosstools/targetplatforms/
   for f in jbosstools jbdevstudio; do
@@ -308,8 +308,8 @@ WARNING: TODO: JBIDE-17826 - latest Central/EA TP may now be in an "a" or "b" fo
 eclipseTrain=luna
 now=`date +%s000`
 
-oldTP=4.40.0.Beta3-SNAPSHOT
-newTP=4.40.0.Beta4b-SNAPSHOT
+oldTP=4.40.0.Beta4-SNAPSHOT
+newTP=4.40.0.CR1-SNAPSHOT
 
 pushd jbosstools-download.jboss.org/jbosstools/targetplatforms/
   for f in jbtcentral jbtearlyaccess; do
@@ -372,8 +372,8 @@ On this repository:
 
 [source,bash]
 ----
-previous=4.2.0.Beta2
-version=4.2.0.Beta3
+previous=4.2.0.Beta3
+version=4.2.0.CR1
 eclipseTrain=luna
 
 now=`date +%s000`
@@ -402,7 +402,7 @@ Then make the necessary updates for *discovery*
 Script:
 [source,bash]
 ----
-version=4.2.0.Beta3
+version=4.2.0.CR1
 eclipseTrain=luna
 
 isFinal=false # or true in case you're doing a Final

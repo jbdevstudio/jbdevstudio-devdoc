@@ -111,21 +111,21 @@ if [ "$isGA" == "true" ]; then
 else
   DESTSITE=8.0-development # or 8.0/ for a GA release
 fi
-
+JBDS=devstudio@filemgmt.jboss.org:www_htdocs/devstudio
 
 # set correct path for where you have project cloned on disk
 cd jbdevstudio-website/content
 basedir=$(pwd)
 
 # check in / sync changes
-rsync -aPrz --rsh=ssh updates/${SRC_SITE}/* updates/${DESTSITE}/
-wget -O updates/${DESTSITE}/devstudio-earlyaccess.properties https://devstudio.redhat.com/updates/${SRC_SITE}/discovery/devstudio-earlyaccess.properties
+rm -r updates/${DESTSITE}
+scp -r $JBDS/updates/${SRC_SITE} updates/${DESTSITE}/
 
 pushd updates/${DESTSITE}/
 # Update URLs in discovery jars
 newJars=$(cat devstudio-directory.xml | grep entry | grep -v "integration-stack" | sed -e "s#.\+discovery/#discovery/#g" | sed -e "s#\.jar.\+#.jar#g")
 for newJar in $newJars; do 
-  wget -q -nc http://www.qa.jboss.com/binaries/RHDS/discovery/development/${versionWithRespin}/${newJar}
+  wget -q -nc https://devstudio.redhat.com/updates/${SRC_SITE}/discovery/${newJar}
   if [[ ! ${newJar##*.earlyaccess_*} ]]; then
     newJarEA=${newJar}
     echo "EA: $newJarEA"
@@ -140,16 +140,21 @@ for newJar in ${newJarEA} ${newJarCore}; do
   unzip -q -d ${basedir}/updates/${DESTSITE}/${newJar}{_,}
   pushd ${newJar}_ >/dev/null 
   if [ "$isGA" = true ]; then
-    sed -i "s#https://devstudio.jboss.com/updates/8.0-staging/central/core/#https://devstudio.jboss.com/updates/8.0/central/core/#g" plugin.xml
-    sed -i "s#https://devstudio.jboss.com/updates/8.0-development/central/core/#https://devstudio.jboss.com/updates/8.0/central/core/#g" plugin.xml
+    sed -i "s#updates/8.0-staging/#updates/8.0/#g" plugin.xml
+    sed -i "s#updates/8.0-development/#updates/8.0/#g" plugin.xml
   else  # plugin points to the STAGING URL, not the RELEASE one
-    sed -i "s#https://devstudio.jboss.com/updates/8.0-staging/central/#https://devstudio.jboss.com/updates/8.0-development/central/#g" plugin.xml
-    sed -i "s#https://devstudio.jboss.com/updates/8.0/central/#https://devstudio.jboss.com/updates/8.0-development/central/#g" plugin.xml
+    sed -i "s#updates/8.0-staging/#updates/8.0-development/#g" plugin.xml
+    sed -i "s#updates/8.0/#updates/8.0-development/#g" plugin.xml
   fi
   zip -u ${basedir}/updates/${DESTSITE}/${newJar} plugin.xml
+  git add ${basedir}/updates/${DESTSITE}/${newJar}
   popd >/dev/null
   rm -fr ${basedir}/updates/${DESTSITE}/${newJar}_
 done
+
+# cleanup previous discovery jars
+others=$(ls -1 ${basedir}/updates/${DESTSITE}/discovery | grep -v $(basename $newJarEA) | grep -v $(basename $newJarCore))
+git rm -f others
 
 popd
 ----
@@ -165,11 +170,19 @@ Be sure to not overwrite integration-stack deltas (staging and development may n
 ----
 cd jbdevstudio-website/content # or...
 
-pushd updates/${DESTSITE}/extras/
-now=`date +%s000`
 
+now=`date +%s000`
 oldTP=4.40.0.Beta4b
 newTP=4.40.0.CR1
+
+pushd updates/${DESTSITE}/extras/
+for d in composite*.xml; do
+  sed -i -e "s#${oldTP}#${newTP}#g" $d
+  sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
+  git add $d
+done
+popd
+pushd updates/${DESTSITE}/earlyaccess/
 for d in composite*.xml; do
   sed -i -e "s#${oldTP}#${newTP}#g" $d
   sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
@@ -185,7 +198,7 @@ popd
 
 # push both staging and development folders to download.jboss.org
 JBDS=devstudio@filemgmt.jboss.org:www_htdocs/devstudio
-rsync -Pzrlt --rsh=ssh --protocol=28 updates/${DESTSITE} updates/${SRC_SITE} $JBDS/updates/
+scp -r updates/${DESTSITE} $JBDS/updates/
 ----
 
 == Release the latest milestone to ide-config.properties

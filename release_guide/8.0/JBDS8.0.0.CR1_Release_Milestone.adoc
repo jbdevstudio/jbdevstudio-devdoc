@@ -25,375 +25,11 @@ firefox https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
   https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
 ----
 
-# TODO: change all refs to wallace (wallace.intranet.prod.int.rdu2.redhat.com); files are now on devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
-
-== SSH to wallace.redhat.com, then fetch zips if not already there
-
-[source,bash]
-----
-screen
-
-# clean out old update sites from previous milestones; rename update sites from "a,b,c" to ""
-version=8.0.0.Beta3
-versionWithRespin=8.0.0.Beta3c; # a, b, c, ...
-cd /mnt/devstudio/updates/8.0.0/
-if [[ ${version} != ${versionWithRespin} ]]; then 
-  mv jboss-devstudio-${version}-updatesite-core jboss-devstudio-${version}-updatesite-core.DELETEME
-  mv jboss-devstudio-${version}-target-platform jboss-devstudio-${version}-target-platform.DELETEME
-  mv jboss-devstudio-${versionWithRespin}-updatesite-core jboss-devstudio-${version}-updatesite-core
-  mv jboss-devstudio-${versionWithRespin}-target-platform jboss-devstudio-${version}-target-platform
-fi
-# TODO: do not run this next line if the above step fails!
-rm -fr jboss-devstudio-${version}?-updatesite-core jboss-devstudio-${version}?-target-platform *.DELETEME
-----
-
-== Rename milestones from Foo1b to Foo1; fix html pages in 8.0-staging
-
-[source,bash]
-----
-# NOTE: ${basedir} is a symlink on my local machine to this folder in github: https://github.com/jbdevstudio/jbdevstudio-website/tree/master/content
-# "gw1" uses special aliases/scripts/shortcuts. Basically, we want to follow correct github workflows so that commits are pushed to user's fork, then later pull-requested (and the PR applied)
-# "gw2" will create the PR, "gw3" will apply it, and "gw4" will delete the topic branch locally and in my fork
-# the 4 steps are captured here: https://gist.github.com/nickboldt/4111850
-alias   ga='git add'
-alias   stat='git status'
-alias   gd='git diff --color=always -w'
-alias   scpr='rsync -aPrz --rsh=ssh'
-alias   ci='git commit -m'
-
-pushd ${basedir}/updates/8.0-staging
-version=8.0.0.Beta3
-versionWithRespin=8.0.0.Beta3c; # a, b, c, ...
-now=`date +%s000`
-for d in composite*.xml index.html central/index.html central/core/index.html central/earlyaccess/index.html; do
-  sed -i -e "s#${versionWithRespin}#${version}#g" $d
-  sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
-done
-
-# commit to github   
-topic="release-${versionWithRespin}";branch=master; gw1
-ci "rename ${versionWithRespin} to ${version}" .
-gw2;gw3;gw4
-
-# rsync updated files to server
-# TODO: change all refs to wallace (wallace.intranet.prod.int.rdu2.redhat.com); files are now on devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
-WALL=${USER}@wallace.intranet.prod.int.rdu2.redhat.com:/mnt/devstudio
-rsync -Pzrlt --rsh=ssh --protocol=28 ./* ${WALL}/updates/8.0-staging/
-popd
-
-----
-
-== Request an update to jboss.org/products/devstudio
-
-The pages are now controlled via github via JIRAs and PRs:
-
-https://www.jboss.org/products/devstudio/download/
-https://www.jboss.org/products/devstudio/overview/
-
-New JIRA: 
-
-https://issues.jboss.org/secure/CreateIssue.jspa?pid=12313621&issuetype=3
-
-Example past JIRA:
-
-https://issues.jboss.org/browse/DEVELOPER-733
-
-Submit pull request against this source:
-
-https://github.com/jboss-developer/www.jboss.org/blob/master/products/devstudio/_common/product.yml
-
-
-== Update https://devstudio.jboss.com/updates/8.0*/devstudio-directory.xml to point at new discovery jar(s) from staging.
-
-[IMPORTANT]
-====
-TODO for CR1 and GA: VERIFY CONTENTS OF DISCOVERY JAR ARE CORRECTLY POINTING AT
-
-*  8.0 for /8.0/
-*  8.0-development for /8.0-development/
-*  8.0-staging for /8.0-staging/
-====
-
-[source,bash]
-----
-
-isGA=false # or true in case you're doing a GA
-version=8.0.0.Beta3
-SRC_SITE=8.0-staging
-DESTSITE=8.0-development # or 8.0/ for a GA release
-
-
-# set correct path for where you have project cloned on disk
-basedir=${HOME}/truu/jbdevstudio-website/content # or...
-basedir=`pwd`
-pushd ${basedir}
-topic="release-${version}";branch=master; gw1
-
-# check in / sync changes
-
-scpr ${basedir}/updates/${SRC_SITE}/* ${basedir}/updates/${DESTSITE}/
-pushd ${basedir}/updates/${DESTSITE}/
-
-newJars=$(cat devstudio-directory.xml | grep entry | grep -v "integration-stack" | sed -e "s#.\+discovery/#discovery/#g" | sed -e "s#\.jar.\+#.jar#g")
-for newJar in $newJars; do 
-  wget -q -nc http://www.qa.jboss.com/binaries/RHDS/discovery/development/${version}/${newJar}
-  if [[ ! ${newJar##*.earlyaccess_*} ]]; then
-    newJarEA=${newJar}
-    echo "EA: $newJarEA"
-  else
-    newJarCore=${newJar}
-    echo "Core: $newJarCore"
-  fi
-  git add $newJar
-done
-
-for newJar in ${newJarEA} ${newJarCore}; do
-  unzip -q -d ${basedir}/updates/${DESTSITE}/${newJar}{_,}
-  pushd ${basedir}/updates/${DESTSITE}/${newJar}_ >/dev/null 
-  if [ "$isGA" = true ]; then
-    sed -i "s#https://devstudio.jboss.com/updates/8.0-staging/central/core/#https://devstudio.jboss.com/updates/8.0/central/core/#g" plugin.xml
-    sed -i "s#https://devstudio.jboss.com/updates/8.0-development/central/core/#https://devstudio.jboss.com/updates/8.0/central/core/#g" plugin.xml
-  else  # plugin points to the STAGING URL, not the RELEASE one
-    sed -i "s#https://devstudio.jboss.com/updates/8.0-staging/central/#https://devstudio.jboss.com/updates/8.0-development/central/#g" plugin.xml
-    sed -i "s#https://devstudio.jboss.com/updates/8.0/central/#https://devstudio.jboss.com/updates/8.0-development/central/#g" plugin.xml
-  fi
-  zip -u ${basedir}/updates/${DESTSITE}/${newJar} plugin.xml
-  popd >/dev/null
-  rm -fr ${basedir}/updates/${DESTSITE}/${newJar}_
-done
-
-popd
-
-----
-
-[CAUTION]
-====
-Be sure to not overwrite integration-stack deltas (staging and development may not be the same)!
-====
-
-=== Update latest target platform composite files
-
-[source,bash]
-----
-
-basedir=${HOME}/truu/jbdevstudio-website/content # or...
-basedir=`pwd`
-
-pushd ${basedir}/updates/8.0-staging/extras/
-now=`date +%s000`
-
-oldTP=4.40.0.Beta3
-newTP=4.40.0.Beta4
-for d in composite*.xml; do
-  sed -i -e "s#${oldTP}#${newTP}#g" $d
-  sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
-done
-popd
-
-# check in / sync changes in ${basedir}
-stat .
-gd .
-
-pushd ${basedir}/updates/
-ga ${DESTSITE}
-ci "release ${version} from ${SRC_SITE} to ${DESTSITE}" . 
-popd
-gw2;gw3;gw4
-
-# push both staging and development folders to wallace
-# TODO: change all refs to wallace (wallace.intranet.prod.int.rdu2.redhat.com); files are now on devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
-scpr ${basedir}/updates/${DESTSITE} ${basedir}/updates/${SRC_SITE} $WALL/updates/
-----
-
-== Fix file permissions on wallace (pull from dev01):
-
-# TODO: change all refs to wallace (wallace.intranet.prod.int.rdu2.redhat.com); files are now on devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
-
-[source,bash]
-----
-  ssh nboldt@wallace "
-    chmod -R g+w       /mnt/devstudio/updates/8.0* 2>/dev/null;
-    chgrp -R devstudio /mnt/devstudio/updates/8.0* 2>/dev/null
-  "
-----
-
-== JBoss Central Early Access site must now be rebuilt 
-
-WARNING: TODO: JBIDE-17826 - latest Central/EA TP may now be in an "a" or "b" folder so make sure you get the right one!
-
-(This step is only required if it was skipped when releasing JBoss Tools. You should have already done it there.)
-
-Since Beta3, JBoss Central includes part of JBoss Tools, in order to make it avaiable in JBDS. 
-Therefore, once JBoss Tools is released, you must rebuild the Early Access site to include the final bits for that milestone.
-
-1. Update jbosstools-discovery/jbtearlyaccesstarget/multiple/jbtearlyaccess-multiple.target
-2. Run verifyTarget.sh to pull in the latest versions of the IUs and verify the TP can be resolved to disk
-3. Kick this job https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-centraltarget_4.2.luna/
-4. Send announcement email (?)
-
-== Tag Git
-
-[source,bash]
-----
-  # if not already cloned, the do this:
-  git clone https://github.com/jbdevstudio/jbdevstudio-product
-  git clone https://github.com/jbdevstudio/jbdevstudio-ci
-  git clone https://github.com/jbdevstudio/jbdevstudio-website
-  git clone https://github.com/jbdevstudio/jbdevstudio-artwork
-  git clone https://github.com/jbdevstudio/jbdevstudio-devdoc
-
-  # now tag multiple projects in a single step, replacing existing tags if already exist
-  jbt_branch=jbosstools-4.2.0.Beta3x
-  version=8.0.0.Beta3
-  for d in product ci website artwork devdoc; do
-    echo "====================================================================="
-    echo "Tagging jbdevstudio-${d} from branch ${jbt_branch} as tag ${version}..."
-    pushd ~/truu/jbdevstudio-${d}
-    git stash
-    git pull origin
-    git fetch -t -p
-    git checkout ${jbt_branch} && git tag -f jbdevstudio-${version} && git push origin jbdevstudio-${version}
-    git checkout master; git stash pop
-    echo ">>> https://github.com/jbdevstudio/jbdevstudio-${d}/tree/jbdevstudio-${version}"
-    popd >/dev/null 
-    echo "====================================================================="
-    echo ""
-  done
-----
-
-== Commit updates to release guide (including this document):
-
-[source,bash]
-----
-  version=8.0.0.Beta3
-  cd ~/truu/doc/release_guide/8.0
-  topic="release-${version}";branch=master; gw1
-  ci "update release guide for ${version}" .
-  gw2;gw3;gw4
-----
-
-== Move installers from "a" or "b" folder to base folder; purge old stuff from OLD/ folder
-
-  ssh to dev01.mw.lab.eng.bos.redhat.com, sudo to hudson user, then
-
-[source,bash]
-----
-# TODO: (new for Beta3) make sure this works as expected when renaming CR1!
-  version=8.0.0.Beta3
-  versionWithRespin=8.0.0.Beta3c
-  if [[ ${version} != ${versionWithRespin} ]]; then
-    for d in ~/RHDS/builds/development/ ~/RHDS/updates/development/ ~/RHDS/discovery/development/; do
-      pushd $d
-        others=`find ${d} -name "${version}*" -and -not -name "${versionWithRespin}*"`
-        f=`find ${d} -name "${versionWithRespin}*"`
-        g=${f/${versionWithRespin}/${version}}
-        echo "Rename $f to $g ... and move old respins to OLD/" | grep $version
-        mv ${others} OLD/
-        mv ${f} ${g}
-      popd
-    done
-  fi
-----
-
-WARNING: For stable releases, move content from RHDS/{builds,updates,discovery}/development into RHDS/{builds,updates,discovery}/stable, then symlink it back so it appears in both places.
-
-== Update jbosstools-website
-
-Provide a PR to add the latest JBT & JBDS milestones to this listing:
-
-https://github.com/jbosstools/jbosstools-website/blob/master/_config/products.yml
-
-Example: https://github.com/jbosstools/jbosstools-website/pull/193
-
-== Update Marketplace entry
-
-WARNING: Alpha versions are not published to market place. So ignore this step for Alpha versions.
-
-=== If node doesn't exist yet
-
-This is usually the case of first Beta version.
-
-Create a new node on Marketplace, listing the single "BYOE" feature: com.jboss.devstudio.core.feature
-
-=== If node already exists
-
-Access it via +http://marketplace.eclipse.org/content/red-hat-jboss-developer-studio-luna/edit+ and update the following things:
-
-* Title to match new version
-* Description to match new version & dependencies
-* Notes / warnings (if applicable, eg., JDK 7/8 issues)
-
-
-== Release the latest milestone to ide-config.properties
-
-Check out this file:
-
-http://download.jboss.org/jbosstools/configuration/ide-config.properties
-
-And update it it as required, so that the links for the latest milestone point to valid URLs, eg.,
-
-[source,bash]
-----
-jboss.discovery.directory.url|devstudio|8.0.0.Beta3=https://devstudio.jboss.com/updates/8.0-development/devstudio-directory.xml
-jboss.discovery.site.url|devstudio|8.0.0.Beta3=https://devstudio.jboss.com/updates/8.0-development/central/core/
-----
-
-== Release JIRA
-
-If there are no unresolved issues, release the milestone version in JIRA.
-
-Launch the config pages for JBIDE and JBDS and using the gear icons, release the milestone version in JIRA. 
-
-[source,bash]
-----
-firefox https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
-  https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
-----
-
-
-== Notify the team (send 2 emails)
-
-____
-
-*To* jbosstools-dev@lists.jboss.org +
-and +
-*To* external-exadel-list@redhat.com, jboss-announce@redhat.com (optional for major milestones/releases)+
-
-[source,bash]
-----
-version=8.0.0.Beta3
-echo "
-Subject: 
-
-JBoss Developer Studio ${version} is available
-
-Body:
-
-JBoss Developer Studio ${version} is available!
-
-Download page and installer: 
-* https://tools.jboss.org/downloads/devstudio/luna/${version}.html
-* https://www.jboss.org/products/devstudio/overview/
-
-Update site: https://devstudio.jboss.com/updates/8.0-development/
-
-Note that the update site may take a while to replicate from our staging server to publication. Please allow at least an hour before attempting to install from the site - if the page above still shows the previous milestone instead of ${version}, try again later.
-
---
-
-Eclipse Marketplace: https://marketplace.eclipse.org/content/red-hat-jboss-developer-studio-kepler
-
---
-
-Schedule / Upcoming Releases: https://issues.jboss.org/browse/JBDS#selectedTab=com.atlassian.jira.plugin.system.project%3Aversions-panel
-
-"
-----
-____
-
-
 == Announce internally for push to CSP staging site
 
+First thing is to ask for availability of the binaries to CSP (Red Hat Customer Portal) and Golden Gate (JBoss products portal).
+
+NOTE: As this takes some time and can be easily cancelled, this step can be anticipated a few days before release.
 ____
 *To* release-engineering@redhat.com +
 and +
@@ -446,3 +82,354 @@ Thanks in advance,
 "
 ----
 ____
+
+As an answer, you get the links to the files on both portals. Keep them as you'll need them later.
+
+== On devstudio.redhat.com, remove respin suffix
+
+# TODO: Is this step really mandatory? Can't we keep respin there?
+
+[source,bash]
+----
+version=8.0.0.CR1
+versionWithRespin=8.0.0.CR1b; # a, b, c, ...
+
+# Assuming devstudio_jboss_org is an empty dir
+sshfs devstudio@filemgmt.jboss.org:www_htdocs/devstudio/ devstudio_jboss_org
+cd devstudio_jboss_org
+
+# clean out old update sites from previous milestones; rename update sites from "a,b,c" to ""
+cd /updates/8.0.0/
+if [[ ${version} != ${versionWithRespin} ]]; then 
+  mv jboss-devstudio-${version}-updatesite-core jboss-devstudio-${version}-updatesite-core.DELETEME
+  mv jboss-devstudio-${version}-target-platform jboss-devstudio-${version}-target-platform.DELETEME
+  mv jboss-devstudio-${versionWithRespin}-updatesite-core jboss-devstudio-${version}-updatesite-core
+  mv jboss-devstudio-${versionWithRespin}-target-platform jboss-devstudio-${version}-target-platform
+fi
+# TODO: do not run this next line if the above step fails!
+rm -fr jboss-devstudio-${version}?-updatesite-core jboss-devstudio-${version}?-target-platform *.DELETEME
+----
+
+Then, update the various composite files to use URL not suffixed by respin. This can be done by editing repository _jbdevstudio-website_ locally.
+
+[source,bash]
+----
+# "gw1" uses special aliases/scripts/shortcuts. Basically, we want to follow correct github workflows so that commits are pushed to user's fork, then later pull-requested (and the PR applied)
+# "gw2" will create the PR, "gw3" will apply it, and "gw4" will delete the topic branch locally and in my fork
+# the 4 steps are captured here: https://gist.github.com/nickboldt/4111850
+alias   ga='git add'
+alias   stat='git status'
+alias   gd='git diff --color=always -w'
+alias   ci='git commit -m'
+
+pushd jbdevstudio-website/content/updates/8.0-staging
+version=8.0.0.CR1
+versionWithRespin=8.0.0.CR1b # a, b, c, ...
+now=`date +%s000`
+for d in composite*.xml index.html central/index.html central/core/index.html central/earlyaccess/index.html; do
+  sed -i -e "s#${versionWithRespin}#${version}#g" $d
+  sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
+  git add $d
+done
+
+# commit to github
+git commit -m "rename ${versionWithRespin} to ${version}"
+git push jbdevstudio HEAD:master #jbdevstudio is remote repo alias, also sometimes called 'origin'
+
+# rsync updated files to server
+JBDS=devstudio@filemgmt.jboss.org:www_htdocs/devstudio
+rsync -Pzrlt --rsh=ssh --protocol=28 ./* ${JBDS}/updates/8.0-staging/
+popd
+
+----
+
+== Request an update to jboss.org/products/devstudio
+
+Goal is to update the following pages: https://www.jboss.org/products/devstudio/download/ and https://www.jboss.org/products/devstudio/overview/
+
+This can be achived by creating a JIRA to JBoss Developer (https://issues.jboss.org/secure/CreateIssue.jspa?pid=12313621&issuetype=3 ) and submitting pull requests for file _products/devstudio/_common/product.yml_ against repository https://github.com/jboss-developer/www.jboss.org 
+
+Example past JIRA: https://issues.jboss.org/browse/DEVELOPER-733 . Relevant pull request is linked from here.
+
+NOTE: you'll need to get an answer from release-engineering@redhat.com (cf first step) to get the URLs to use for the various files
+
+== Update https://devstudio.redhat.com/updates/8.0*/devstudio-directory.xml to point at new discovery jar(s) from staging.
+
+[IMPORTANT]
+====
+TODO for CR1 and GA: VERIFY CONTENTS OF DISCOVERY JAR ARE CORRECTLY POINTING AT
+
+*  8.0 for /8.0/
+*  8.0-development for /8.0-development/
+*  8.0-staging for /8.0-staging/
+====
+
+You can run this script from your local machine:
+
+[source,bash]
+----
+
+isGA=false # or true in case you're doing a GA
+version=8.0.0.Beta3
+SRC_SITE=8.0-staging
+DESTSITE=8.0-development # or 8.0/ for a GA release
+
+
+# set correct path for where you have project cloned on disk
+cd jbdevstudio-website/content
+
+topic="release-${version}";branch=master; gw1
+
+# check in / sync changes
+
+rsync -aPrz --rsh=ssh updates/${SRC_SITE}/* updates/${DESTSITE}/
+
+pushd updates/${DESTSITE}/
+# Update URLs in discovery jars
+newJars=$(cat devstudio-directory.xml | grep entry | grep -v "integration-stack" | sed -e "s#.\+discovery/#discovery/#g" | sed -e "s#\.jar.\+#.jar#g")
+for newJar in $newJars; do 
+  wget -q -nc http://www.qa.jboss.com/binaries/RHDS/discovery/development/${version}/${newJar}
+  if [[ ! ${newJar##*.earlyaccess_*} ]]; then
+    newJarEA=${newJar}
+    echo "EA: $newJarEA"
+  else
+    newJarCore=${newJar}
+    echo "Core: $newJarCore"
+  fi
+  git add $newJar
+done
+
+for newJar in ${newJarEA} ${newJarCore}; do
+  unzip -q -d ${basedir}/updates/${DESTSITE}/${newJar}{_,}
+  pushd ${newJar}_ >/dev/null 
+  if [ "$isGA" = true ]; then
+    sed -i "s#https://devstudio.jboss.com/updates/8.0-staging/central/core/#https://devstudio.jboss.com/updates/8.0/central/core/#g" plugin.xml
+    sed -i "s#https://devstudio.jboss.com/updates/8.0-development/central/core/#https://devstudio.jboss.com/updates/8.0/central/core/#g" plugin.xml
+  else  # plugin points to the STAGING URL, not the RELEASE one
+    sed -i "s#https://devstudio.jboss.com/updates/8.0-staging/central/#https://devstudio.jboss.com/updates/8.0-development/central/#g" plugin.xml
+    sed -i "s#https://devstudio.jboss.com/updates/8.0/central/#https://devstudio.jboss.com/updates/8.0-development/central/#g" plugin.xml
+  fi
+  zip -u ${basedir}/updates/${DESTSITE}/${newJar} plugin.xml
+  popd >/dev/null
+  rm -fr ${basedir}/updates/${DESTSITE}/${newJar}_
+done
+
+popd
+
+----
+
+[CAUTION]
+====
+Be sure to not overwrite integration-stack deltas (staging and development may not be the same)!
+====
+
+=== Update latest target platform composite files
+
+[source,bash]
+----
+
+cd jbdevstudio-website/content # or...
+
+pushd updates/8.0-staging/extras/
+now=`date +%s000`
+
+oldTP=4.40.0.Beta4
+newTP=4.40.0.CR1
+for d in composite*.xml; do
+  sed -i -e "s#${oldTP}#${newTP}#g" $d
+  sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
+  git add $d
+done
+popd
+
+pushd updates
+git add ${DESTSITE}
+git commit -m "release ${version} from ${SRC_SITE} to ${DESTSITE}"
+git push jbdevstudio HEAD:master
+popd
+
+# push both staging and development folders to download.jboss.org
+rsync -Pzrlt --rsh=ssh --protocol=28 updates/${DESTSITE} updates/${SRC_SITE} $JBDS/updates/
+----
+
+
+== JBoss Central Early Access site must now be rebuilt 
+
+WARNING: TODO: JBIDE-17826 - latest Central/EA TP may now be in an "a" or "b" folder so make sure you get the right one!
+
+(This step is only required if it was skipped when releasing JBoss Tools. You should have already done it there.)
+
+Since Beta3, JBoss Central includes part of JBoss Tools, in order to make it avaiable in JBDS. 
+Therefore, once JBoss Tools is released, you must rebuild the Early Access site to include the final bits for that milestone.
+
+1. Update jbosstools-discovery/jbtearlyaccesstarget/multiple/jbtearlyaccess-multiple.target
+2. Run verifyTarget.sh to pull in the latest versions of the IUs and verify the TP can be resolved to disk
+3. Kick this job https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-centraltarget_4.2.luna/
+4. Send announcement email (?)
+
+== Tag Git
+
+[source,bash]
+----
+  # if not already cloned, the do this:
+  git clone https://github.com/jbdevstudio/jbdevstudio-product
+  git clone https://github.com/jbdevstudio/jbdevstudio-ci
+  git clone https://github.com/jbdevstudio/jbdevstudio-website
+  git clone https://github.com/jbdevstudio/jbdevstudio-artwork
+  git clone https://github.com/jbdevstudio/jbdevstudio-devdoc
+
+  # now tag multiple projects in a single step, replacing existing tags if already exist
+  jbt_branch=jbosstools-4.2.0.Beta3x
+  version=8.0.0.Beta3
+  for d in product ci website artwork devdoc; do
+    echo "====================================================================="
+    echo "Tagging jbdevstudio-${d} from branch ${jbt_branch} as tag ${version}..."
+    pushd ~/truu/jbdevstudio-${d}
+    git stash
+    git pull origin
+    git fetch -t -p
+    git checkout ${jbt_branch} && git tag -f jbdevstudio-${version} && git push origin jbdevstudio-${version}
+    git checkout master; git stash pop
+    echo ">>> https://github.com/jbdevstudio/jbdevstudio-${d}/tree/jbdevstudio-${version}"
+    popd >/dev/null 
+    echo "====================================================================="
+    echo ""
+  done
+----
+
+== Commit updates to release guide (including this document):
+
+[source,bash]
+----
+version=8.0.0.CR1
+cd jbdevstudio-devdoc/release_guide/8.0
+git commit -m "update release guide for ${version}" .
+git push origin HEAD:master
+----
+
+== Move installers from "a" or "b" folder to base folder; purge old stuff from OLD/ folder
+
+TODO: Is this step really useful? Also, it seems conflicting with URLs provided in request for CSP/GoldenGate
+
+These steps required to be logged as _hudson_ on dev01.
+[source,bash]
+----
+ssh dev01.mw.lab.eng.bos.redhat.com
+sudo su - hudson
+----
+
+[source,bash]
+----
+# TODO: (new for Beta3) make sure this works as expected when renaming CR1!
+version=8.0.0.CR1
+versionWithRespin=8.0.0.CR1b
+if [[ ${version} != ${versionWithRespin} ]]; then
+  for d in ~/RHDS/builds/development/ ~/RHDS/updates/development/ ~/RHDS/discovery/development/; do
+    pushd $d
+    others=`find ${d} -name "${version}*" -and -not -name "${versionWithRespin}*"`
+    f=`find ${d} -name "${versionWithRespin}*"`
+    g=${f/${versionWithRespin}/${version}}
+    echo "Rename $f to $g ... and move old respins to OLD/" | grep $version
+    mv ${others} OLD/
+    mv ${f} ${g}
+    popd
+  done
+fi
+----
+
+WARNING: For stable releases, move content from RHDS/{builds,updates,discovery}/development into RHDS/{builds,updates,discovery}/stable, then symlink it back so it appears in both places.
+
+== Update jbosstools-website
+
+Provide a PR to add the latest JBT & JBDS milestones to this listing:
+
+https://github.com/jbosstools/jbosstools-website/blob/master/_config/products.yml
+
+Example: https://github.com/jbosstools/jbosstools-website/pull/193
+
+== Update Marketplace entry
+
+WARNING: Alpha versions are not published to market place. So ignore this step for Alpha versions.
+
+=== If node doesn't exist yet
+
+This is usually the case of first Beta version.
+
+Create a new node on Marketplace, listing the single "BYOE" feature: com.jboss.devstudio.core.feature
+
+=== If node already exists
+
+Access it via +http://marketplace.eclipse.org/content/red-hat-jboss-developer-studio-luna/edit+ and update the following things:
+
+* Title to match new version
+* Description to match new version & dependencies
+* Notes / warnings (if applicable, eg., JDK 7/8 issues)
+
+
+== Release the latest milestone to ide-config.properties
+
+Check out this file: http://download.jboss.org/jbosstools/configuration/ide-config.properties from _http://github.com/jbosstools/jbosstools-download.jboss.org_ repository.
+
+And update it it as required, so that the links for the latest milestone point to valid URLs, eg.,
+
+[source,bash]
+----
+jboss.discovery.directory.url|devstudio|8.0.0.CR1=https://devstudio.jboss.com/updates/8.0-development/devstudio-directory.xml
+jboss.discovery.site.url|devstudio|8.0.0.CR1=https://devstudio.jboss.com/updates/8.0-development/central/core/
+----
+
+Then commit and push changes to the origin GitHub repo. Then either push the file back to download.jboss.org, either manually (sftp, scp...) or using this CI job: https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-download.jboss.org-rsync-from-git/
+
+== Mark release as complete in JIRA
+
+If there are no unresolved issues, release the milestone version in JIRA.
+
+Launch the config pages for JBIDE and JBDS and using the gear icons, release the milestone version in JIRA. 
+
+[source,bash]
+----
+firefox https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
+  https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
+----
+
+
+== Notify the team (send 2 emails)
+
+____
+
+*To* jbosstools-dev@lists.jboss.org +
+and +
+*To* external-exadel-list@redhat.com, jboss-announce@redhat.com (optional for major milestones/releases)+
+
+[source,bash]
+----
+version=8.0.0.CR1
+echo "
+Subject: 
+
+JBoss Developer Studio ${version} is available
+
+Body:
+
+JBoss Developer Studio ${version} is available!
+
+Download page and installer: 
+* https://tools.jboss.org/downloads/devstudio/luna/${version}.html
+* https://www.jboss.org/products/devstudio/overview/
+
+Update site: https://devstudio.jboss.com/updates/8.0-development/
+
+Note that the update site may take a while to replicate from our staging server to publication. Please allow at least an hour before attempting to install from the site - if the page above still shows the previous milestone instead of ${version}, try again later.
+
+--
+
+Eclipse Marketplace: https://marketplace.eclipse.org/content/red-hat-jboss-developer-studio-kepler
+
+--
+
+Schedule / Upcoming Releases: https://issues.jboss.org/browse/JBDS#selectedTab=com.atlassian.jira.plugin.system.project%3Aversions-panel
+
+"
+----
+____
+

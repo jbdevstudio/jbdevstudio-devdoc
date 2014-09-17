@@ -140,14 +140,11 @@ Still on sf.net, verify the following file (adapt it to the version you're pushi
 
 These steps happens on filemgmt.jboss.org, in the jbosstools download area.
 
-=== If publishing a respin, remove respin suffix from sites
+=== Move content to release directory
 
-# TODO: for CR1, put content into staging/luna/ instead of just staging/
+NOTE: for CR1, put content into staging/luna/ instead of just staging/
 
-The goal of this task is to make latest respin is available in the 'updates/development/${version}' location, without respin attribute.
-
-Via sftp, remove older respins and rename the latest respin to remove its respin (a, b) suffix. 
-The principle is to keep only the latest respin and make it the actual release.
+We simply move the content of the latest respin to the release directory (under _jbosstools/static_ which is using Akamai)
 
 [source,bash]
 ----
@@ -181,7 +178,7 @@ So if you're doing a 4.2.0.CR1b, then you can delete 4.2.0.CR1 and 4.2.0.CR1a fo
 
 Webtools site is expected to be found in +http://download.jboss.org/tools/updates/webtools/${eclipseTrain}+ (where eclipseTrain is for example "luna"). So, with a sftp client, on filemgmt.jboss.org
 
-# TODO: for CR1, put content into staging/luna/ instead of just staging/
+NOTE: for CR1, put content into staging/luna/ instead of just staging/
 
 1. Rename +/downloads_htdocs/tools/updates/webtools/${eclipseTrain}+ into +/downloads_htdocs/tools/updates/webtools/${eclipseTrain}_${previousVersion}+, with ${previous} being the name of previous release (for example 4.2.0.Alpha1 when releasing 4.2.0.Beta3)
 1. Move last build in +/downloads_htdocs/tools/updates/staging/jbosstools-${version}-updatesite-webtools+ to +/downloads_htdocs/tools/updates/webtools/${eclipseTrain}+
@@ -291,7 +288,6 @@ When all changes are done:
 
 [source,bash]
 ----
-
 eclipseTrain=luna
 
 # set correct path for where you have project cloned on disk
@@ -311,7 +307,6 @@ http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${eclipseT
 http://download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/${eclipseTrain}/compositeContent.xml \
 http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/${eclipseTrain}/compositeContent.xml \
 http://download.jboss.org/jbosstools/targetplatforms/jbtearlyaccesstarget/${eclipseTrain}/compositeContent.xml &
-
 ----
 
 At that time, it is also safe to upgrade the version of the central target definition. in order to prevent next change from
@@ -431,7 +426,6 @@ else
     rm -fr ${basedir}/jbosstools/updates/development/${eclipseTrain}/${newJar}_
   done
 fi
-
 ----
 
 When all changes are done:
@@ -444,7 +438,6 @@ or, use the following script that would have the same effect
 
 [source,bash]
 ----
-
 eclipseTrain=luna
 
 # set correct path for where you have project cloned on disk
@@ -462,7 +455,6 @@ if [ "$isFinal" = true ]; then
   rsync -Pzrlt --rsh=ssh --protocol=28 ./* ${TOOLS}/updates/stable/${eclipseTrain}/
   popd
 fi  
-
 ----
 
 
@@ -491,17 +483,12 @@ http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/plugins/ &
 
 == Update jbosstools-website
 
-# TODO: make sure that JBDS is released before doing this to prevent the blog announcement from going out too early
-
-Provide a PR to add the latest JBT & JBDS milestones to this listing:
-
-https://github.com/jbosstools/jbosstools-website/blob/master/_config/products.yml
-
-Example: https://github.com/jbosstools/jbosstools-website/pull/193
+Provide a PR to add the latest JBT milestones to this listing: https://github.com/jbosstools/jbosstools-website/blob/master/_config/products.yml
+Example: https://github.com/jbosstools/jbosstools-website/pull/193 (note that the JBDS part is better done after & seprarately, while releasing JBDS)
 
 == Update Eclipse Marketplace (add/remove features)
 
-WARNING: Alpha versions are not published to market place. So ignore this step for Alpha versions
+WARNING: Only for Beta, CR and GA! We don't put Alpha on marketplace.
 
 === If node does not yet exist
 
@@ -516,15 +503,6 @@ Access it via +https://marketplace.eclipse.org/content/jboss-tools-luna/edit+ an
 * Title to match new version
 * Description to match new version & dependencies
 * Update list of features, using content of +http://download.jboss.org/jbosstools/static/releases/jbosstools-4.2.0.Beta3-updatesite-core/site.properties+
-
-
-== JBoss Central Early Access site must now be rebuilt 
-
-WARNING: TODO: JBIDE-17826 - latest Central/EA TP may now be in an "a" or "b" folder so make sure you get the right one!
-
-Since Beta3, JBoss Central includes part of JBoss Tools, in order to make it avaiable in JBDS. 
-Therefore, once JBoss Tools is released, you must rebuild the Early Access site to include the final bits for that milestone, 
-*IF THIS WAS NOT ALREADY DONE* when link:JBT_4.2.0.Beta3_Staging_For_QE.adoc[Staging JBT For QE]
 
 == Git tags
 

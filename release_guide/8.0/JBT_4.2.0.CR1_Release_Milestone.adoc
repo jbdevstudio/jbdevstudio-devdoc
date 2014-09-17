@@ -359,7 +359,8 @@ popd
 
 Then make the necessary updates for *discovery*
 
-* Replace +jbosstools/updates/development/${eclipseTrain}/jbosstools-directory.xml+ by +http://download.jboss.org/jbosstools/discovery/development/${versionWithRespin}/jbosstools-directory.xml+
+* Replace +jbosstools/updates/development/${eclipseTrain}/jbosstools-directory.xml+ by +http://download.jboss.org/jbosstools/discovery/development/${versionWithRespin}/jbosstools-directory.xml+ and
++jbosstools/updates/development/${eclipseTrain}/jbosstools-earlyaccess.properties+ by +http://download.jboss.org/jbosstools/discovery/development/${versionWithRespin}/jbosstools-earlyaccess.properties+
 * Remove previous discovery jar in +plugins+
 * Fetch the jar listed in +jbosstools-directory.xml+ into the +http://download.jboss.org/jbosstools/discovery/development/${versionWithRespin}/plugins+ directory.
 * Verify that plugin.xml in the discovery jar contains the right URL:
@@ -382,6 +383,8 @@ pushd ${basedir}/jbosstools/updates/development/${eclipseTrain}/
 # Replace jbosstools-directory.xml by newest
 rm -f jbosstools-directory.xml
 wget -nc http://download.jboss.org/jbosstools/discovery/development/${versionWithRespin}/jbosstools-directory.xml
+# TODO maybe a rsync of the folder would be more efficient here
+wget -nc http://download.jboss.org/jbosstools/discovery/development/${versionWithRespin}/jbosstools-earlyaccess.properties
 # Get newest discovery plugins
 newJars=$(cat jbosstools-directory.xml | grep entry | sed -e "s#.\+plugins/#plugins/#g" | sed -e "s#\.jar.\+#.jar#g")
 mkdir -p plugins

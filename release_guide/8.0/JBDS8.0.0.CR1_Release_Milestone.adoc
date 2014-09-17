@@ -145,7 +145,7 @@ popd
 
 ----
 
-== Update https://devstudio.redhat.com/updates/8.0*/devstudio-directory.xml to point at new discovery jar(s) from staging.
+== Update composite files and devstudio-directory.xml to point at new discovery jar(s) from staging
 
 [IMPORTANT]
 ====
@@ -164,7 +164,11 @@ You can run this script from your local machine:
 isGA=false # or true in case you're doing a GA
 version=8.0.0.Beta3
 SRC_SITE=8.0-staging
-DESTSITE=8.0-development # or 8.0/ for a GA release
+if [ "$isGA" == "true" ]; do
+  DESTSITE=8.0
+else
+  DESTSITE=8.0-development # or 8.0/ for a GA release
+fi
 
 
 # set correct path for where you have project cloned on disk

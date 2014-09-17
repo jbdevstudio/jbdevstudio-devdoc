@@ -484,7 +484,11 @@ http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/plugins/ &
 == Update jbosstools-website
 
 Provide a PR to add the latest JBT milestones to this listing: https://github.com/jbosstools/jbosstools-website/blob/master/_config/products.yml
-Example: https://github.com/jbosstools/jbosstools-website/pull/193 (note that the JBDS part is better done after & seprarately, while releasing JBDS)
+
+Example:
+
+* https://github.com/jbosstools/jbosstools-website/pull/193 (note that the JBDS part is better done after & seprarately, while releasing JBDS)
+* https://github.com/jbosstools/jbosstools-website/pull/211 (only JBT part of the change)
 
 == Update Eclipse Marketplace (add/remove features)
 

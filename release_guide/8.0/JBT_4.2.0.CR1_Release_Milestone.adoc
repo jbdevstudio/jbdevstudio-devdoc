@@ -151,70 +151,28 @@ The principle is to keep only the latest respin and make it the actual release.
 
 [source,bash]
 ----
-  version=4.2.0.CR1
-  versionWithRespin=4.2.0.CR1b # a, b, c, d...
-  TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
+version=4.2.0.CR1
+versionWithRespin=4.2.0.CR1b # no respin suffix or a, b, c, d... suffix
+TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 
-  if [[ ${versionWithRespin} != ${version} ]]; then
-    # rename discovery site, http://download.jboss.org/jbosstools/discovery/development/${versionWithRespin}/
-    echo "rename development/${version}  development/${version}.DELETEME" | sftp ${TOOLS}/discovery
-    echo "rename development/${versionWithRespin} development/${version}" | sftp ${TOOLS}/discovery
-
-    # rename the development build
-    echo "rename development/jbosstools-${version}-build-core  development/jbosstools-${version}-build-core.DELETEME" | sftp ${TOOLS}/builds
-    echo "rename development/jbosstools-${versionWithRespin}-build-core development/jbosstools-${version}-build-core" | sftp ${TOOLS}/builds
-
-    # TODO: make sure this exists - might be only "a" while core is on "c"
-    echo "rename development/jbosstools-${version}-build-coretests  development/jbosstools-${version}-build-coretests.DELETEME" | sftp ${TOOLS}/builds
-    echo "rename development/jbosstools-${versionWithRespin}-build-coretests development/jbosstools-${version}-build-coretests" | sftp ${TOOLS}/builds
-
-    # TODO: make sure this exists - might be only "a" while core is on "c"
-    echo "rename development/jbosstools-${version}-build-webtools  development/jbosstools-${version}-build-webtools.DELETEME" | sftp ${TOOLS}/builds
-    echo "rename development/jbosstools-${versionWithRespin}-build-webtools development/jbosstools-${version}-build-webtools" | sftp ${TOOLS}/builds
-
-    # TODO: make sure this exists - might be only "a" while core is on "c"
-    echo "rename development/jbosstools-${version}-build-hibernatetools  development/jbosstools-${version}-build-hibernatetools.DELETEME" | sftp ${TOOLS}/builds
-    echo "rename development/jbosstools-${versionWithRespin}-build-hibernatetools development/jbosstools-${version}-build-hibernatetools" | sftp ${TOOLS}/builds
-
-    # TODO: for CR1, put content into staging/luna/ instead of just staging/
-
-    # rename the update site
-    echo "rename updates/staging/jbosstools-${version}-updatesite-core  updates/staging/jbosstools-${version}-updatesite-core.DELETEME" | sftp ${TOOLS}
-    echo "rename updates/staging/jbosstools-${versionWithRespin}-updatesite-core static/releases/jbosstools-${version}-updatesite-core" | sftp ${TOOLS}
-
-    # TODO: make sure this exists - might be only "a" while core is on "c"
-    echo "rename updates/staging/jbosstools-${version}-updatesite-coretests  updates/staging/jbosstools-${version}-updatesite-coretests.DELETEME" | sftp ${TOOLS}
-    echo "rename updates/staging/jbosstools-${versionWithRespin}-updatesite-coretests static/releases/jbosstools-${version}-updatesite-coretests" | sftp ${TOOLS}
-
-    # TODO: make sure this exists - might be only "a" while core is on "c"
-    echo "rename updates/staging/jbosstools-${version}-updatesite-webtools  updates/staging/jbosstools-${version}-updatesite-webtools.DELETEME" | sftp ${TOOLS}
-    # TODO: https://bugs.eclipse.org/bugs/show_bug.cgi?id=434185 when web tools supports composite sites, we can start putting content here instead of in /updates/webtools/, then linking to it
-    #echo "rename updates/staging/jbosstools-${versionWithRespin}-updatesite-webtools static/releases/jbosstools-${version}-updatesite-webtools" | sftp ${TOOLS}
-
-    # TODO: make sure this exists - might be only "a" while core is on "c"
-    echo "rename updates/staging/jbosstools-${version}-updatesite-hibernatetools  updates/staging/jbosstools-${version}-updatesite-hibernatetools.DELETEME" | sftp ${TOOLS}
-    echo "rename updates/staging/jbosstools-${versionWithRespin}-updatesite-hibernatetools static/releases/jbosstools-${version}-updatesite-hibernatetools" | sftp ${TOOLS}
-  else
-    # TODO: for CR1, put content into staging/luna/ instead of just staging/
-
-    # if there were no respins, then version = versionWithRespin
-    echo "rename updates/staging/jbosstools-${version}-updatesite-core           static/releases/jbosstools-${version}-updatesite-core"           | sftp ${TOOLS}
-    echo "rename updates/staging/jbosstools-${version}-updatesite-coretests      static/releases/jbosstools-${version}-updatesite-coretests"      | sftp ${TOOLS}
-    echo "rename updates/staging/jbosstools-${version}-updatesite-hibernatetools static/releases/jbosstools-${version}-updatesite-hibernatetools" | sftp ${TOOLS}
-    # no point renaming this into static folder when we're just going to rename it again lower down
-    # TODO: https://bugs.eclipse.org/bugs/show_bug.cgi?id=434185 when web tools supports composite sites, we can start putting content here instead of in /updates/webtools/, then linking to it
-    #echo "rename updates/staging/jbosstools-${version}-updatesite-webtools      static/releases/jbosstools-${version}-updatesite-webtools"       | sftp ${TOOLS}
-  fi
-
+# if there were no respins, then version = versionWithRespin
+echo "rename updates/staging/luna/jbosstools-${versionWithRespin}-updatesite-core           static/releases/jbosstools-${version}-updatesite-core"           | sftp ${TOOLS}
+echo "rename updates/staging/luna/jbosstools-${versionWithRespin}-updatesite-coretests      static/releases/jbosstools-${version}-updatesite-coretests"      | sftp ${TOOLS}
+echo "rename updates/staging/luna/jbosstools-${versionWithRespin}-updatesite-hibernatetools static/releases/jbosstools-${version}-updatesite-hibernatetools" | sftp ${TOOLS}
+# no point renaming this into static folder when we're just going to rename it again lower down
+# TODO: https://bugs.eclipse.org/bugs/show_bug.cgi?id=434185 when web tools supports composite sites, we can start putting content here instead of in /updates/webtools/, then linking to it
+#echo "rename updates/staging/luna/jbosstools-${versionWithRespin}-updatesite-webtools      static/releases/jbosstools-${version}-updatesite-webtools"       | sftp ${TOOLS}
+fi
 ----
 
-If everything above completed OK, you can then in the backgrouns delete all the *.DELETEME folders (and any old respins) while you continue with the next steps.
-
-A graphical sftp client such as FileZilla or FireFTP (plugin for Firefox) is the easiest way to perform these operations. Looks in the following locations:
+If everything above completed OK, you can then in the backgrouns delete all the previous spins of the build from
 
 * /downloads_htdocs/tools/discovery/development/
 * /downloads_htdocs/tools/builds/development/
 * /downloads_htdocs/tools/updates/staging/
+* /downloads_htdocs/tools/updates/staging/luna
+
+So if you're doing a 4.2.0.CR1b, then you can delete 4.2.0.CR1 and 4.2.0.CR1a folders. A graphical sftp client such as FileZilla or FireFTP (plugin for Firefox) is the easiest way to perform these operations. Looks in the following locations:
 
 
 === WebTools
@@ -236,10 +194,9 @@ versionWithRespin=4.2.0.CR1b
 eclipseTrain=luna
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 
-# TODO: for CR1, put content into staging/luna/ instead of just staging/
 
 echo "rename webtools/${eclipseTrain} webtools/${eclipseTrain}_${previous}"                        | sftp ${TOOLS}/updates/
-echo "rename staging/jbosstools-${versionWithRespin}-updatesite-webtools webtools/${eclipseTrain}" | sftp ${TOOLS}/updates/
+echo "rename staging/luna/jbosstools-${versionWithRespin}-updatesite-webtools webtools/${eclipseTrain}" | sftp ${TOOLS}/updates/
 ----
 
 [TODO]
@@ -357,6 +314,22 @@ http://download.jboss.org/jbosstools/targetplatforms/jbtearlyaccesstarget/${ecli
 
 ----
 
+At that time, it is also safe to upgrade the version of the central target definition. in order to prevent next change from
+overriding the content of the repository links from _luna_.
+[source,bash]
+----
+discoveryTPVersion=4.40.0.CR1-SNAPSHOT #version for ongoing release
+nextVersion=4.40.0.CR2-SNAPSHOT #next version on that stream
+
+cd jbosstools-discovery
+for f in *target/pom.xml *target/*/pom.xml *target/*/*-multiple.target do;
+  sed -i -e "s#${discoveryTPVersion}#${nextVersion}#g" $f
+  git add $f
+done
+git commit -m "Update Central and EA discovery TP to ${nextVersion}"
+git push jbosstools HEAD:jbosstools-4.2.x  #or master for Alphas and Betas
+----
+
 === Update composite, discovery and index.html
 
 +composite*.xml+ and +*-directory.xml+ files allow to control the public URLs we give to users and allow to "select" what is the new release.
@@ -392,9 +365,9 @@ popd
 
 Then make the necessary updates for *discovery*
 
-* Replace +jbosstools/updates/development/${eclipseTrain}/jbosstools-directory.xml+ by +http://download.jboss.org/jbosstools/discovery/development/${version}/jbosstools-directory.xml+
+* Replace +jbosstools/updates/development/${eclipseTrain}/jbosstools-directory.xml+ by +http://download.jboss.org/jbosstools/discovery/development/${versionWithRespin}/jbosstools-directory.xml+
 * Remove previous discovery jar in +plugins+
-* Fetch the jar listed in +jbosstools-directory.xml+ into the +http://download.jboss.org/jbosstools/discovery/development/${version}/plugins+ directory.
+* Fetch the jar listed in +jbosstools-directory.xml+ into the +http://download.jboss.org/jbosstools/discovery/development/${versionWithRespin}/plugins+ directory.
 * Verify that plugin.xml in the discovery jar contains the right URL:
 ** If this is a *pre-final*, the plugin must point to *staging* URL, not release one. So URL should be +http://download.jboss.org/jbosstools/updates/development/${eclipseTrain}/central/core/+
 ** IF this is a *Final*, the plugin must reference the *release* URL, not the staging one. So URL should look like +http://download.jboss.org/jbosstools/updates/stable/kepler/central/core/+
@@ -403,6 +376,7 @@ Script:
 [source,bash]
 ----
 version=4.2.0.CR1
+versionWithRespin=4.2.CR1b
 eclipseTrain=luna
 
 isFinal=false # or true in case you're doing a Final
@@ -413,13 +387,13 @@ basedir=`pwd`
 pushd ${basedir}/jbosstools/updates/development/${eclipseTrain}/
 # Replace jbosstools-directory.xml by newest
 rm -f jbosstools-directory.xml
-wget -nc http://download.jboss.org/jbosstools/discovery/development/${version}/jbosstools-directory.xml
+wget -nc http://download.jboss.org/jbosstools/discovery/development/${versionWithRespin}/jbosstools-directory.xml
 # Get newest discovery plugins
 newJars=$(cat jbosstools-directory.xml | grep entry | sed -e "s#.\+plugins/#plugins/#g" | sed -e "s#\.jar.\+#.jar#g")
 mkdir -p plugins
 pushd plugins
 for newJar in $newJars; do 
-  wget -nc http://download.jboss.org/jbosstools/discovery/development/${version}/${newJar}
+  wget -nc http://download.jboss.org/jbosstools/discovery/development/${versionWithRespin}/${newJar}
   if [[ ! ${newJar##*.earlyaccess_*} ]]; then
     newJarEA=${newJar}
     #newJarEA=${newJar/plugins/discovery}
@@ -466,6 +440,8 @@ When all changes are done:
 * Push to remote repo
 * Publish to download.jboss.org using the synchronization job https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-download.jboss.org-rsync-from-git/
 
+or, use the following script that would have the same effect
+
 [source,bash]
 ----
 
@@ -489,13 +465,11 @@ fi
 
 ----
 
-# TODO: for CR1, put content into staging/luna/ instead of just staging/
 
 * Check the following URLs show the right versions and reference content under the 'static/releases' directory (not 'updates/${version}' nor 'updates/staging/*'
 
 [source,bash]
 ----
-
 # for milestones and Final builds
 eclipseTrain=luna
 google-chrome \
@@ -513,7 +487,6 @@ http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/compositeArt
 http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/central/core/compositeArtifacts.xml \
 http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/jbosstools-directory.xml \
 http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/plugins/ &
-
 ----
 
 == Update jbosstools-website

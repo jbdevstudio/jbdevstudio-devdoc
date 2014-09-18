@@ -170,6 +170,9 @@ If everything above completed OK, you can then in the backgrouns delete all the 
 
 So if you're doing a 4.2.0.CR1b, then you can delete 4.2.0.CR1 and 4.2.0.CR1a folders. A graphical sftp client such as FileZilla or FireFTP (plugin for Firefox) is the easiest way to perform these operations. Looks in the following locations:
 
+=== Update staging to point to new location
+
+Update +composite*.xml+ files in http://download.jboss.org/jbosstools/updates/staging/luna/ to reference the release location http://download.jboss.org/jbosstools/static/releases/jbosstools-${version}-updatesite-core .
 
 === WebTools
 

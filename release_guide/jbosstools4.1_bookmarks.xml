@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<bookmarks>
-   <site url="http://download.jboss.org/jbosstools/updates/stable/kepler/" selected="true" name=""/>
-   <site url="http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/kepler/" selected="true" name=""/>
-   <site url="http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/kepler/" selected="true" name=""/>
-
-   <!--<site url="http://download.jboss.org/jbosstools/updates/development/kepler/integration-stack/" selected="true" name=""/>
-   <site url="http://download.jboss.org/jbosstools/updates/kepler/integration-stack/" selected="true" name=""/> -->
-</bookmarks>

@@ -1,3 +1,0 @@
-Publishing SOA/BRMS Tooling components
-
-See https://community.jboss.org/wiki/PromotingJBossToolsNightlyProjectBuildsToMilestoneOrStableRelease

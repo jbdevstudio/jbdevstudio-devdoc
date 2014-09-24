@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<bookmarks>
-   <site url="http://download.jboss.org/jbosstools/updates/stable/juno/" selected="true" name=""/>
-   <site url="http://download.jboss.org/jbosstools/updates/juno/" selected="true" name=""/>
-   <site url="http://download.jboss.org/jbosstools/updates/juno/extras/" selected="true" name=""/>
-
-   <site url="http://download.jboss.org/jbosstools/updates/development/juno/soa-tooling/" selected="true" name=""/>
-   <site url="http://download.jboss.org/jbosstools/updates/juno/soa-tooling/" selected="true" name=""/>
-</bookmarks>

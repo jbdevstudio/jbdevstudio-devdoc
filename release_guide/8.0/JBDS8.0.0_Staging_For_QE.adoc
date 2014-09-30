@@ -217,11 +217,11 @@ unzip -q -d ${newJarCore}{_,}
 pushd ${newJarCore}_ 
 
 if [ "$isGA" = true ]; then
-  sed -i "s#https://devstudio.redhat.com/updates/8.0-staging/central/core/#https://devstudio.redhat.com/updates/8.0/central/core/#g" plugin.xml
-  sed -i "s#https://devstudio.redhat.com/updates/8.0-development/central/core/#https://devstudio.redhat.com/updates/8.0/central/core/#g" plugin.xml
+  sed -i "s#https://devstudio.redhat.com/updates/8.0-staging/#https://devstudio.redhat.com/updates/8.0/#g" plugin.xml
+  sed -i "s#https://devstudio.redhat.com/updates/8.0-development/#https://devstudio.redhat.com/updates/8.0/#g" plugin.xml
 else  # plugin points to the STAGING URL, not the RELEASE one
-  sed -i "s#https://devstudio.redhat.com/updates/8.0/central/core/#https://devstudio.redhat.com/updates/8.0-staging/central/core/#g" plugin.xml
-  sed -i "s#https://devstudio.redhat.com/updates/8.0-development/central/core/#https://devstudio.redhat.com/updates/8.0-staging/central/core/#g" plugin.xml
+  sed -i "s#https://devstudio.redhat.com/updates/8.0/#https://devstudio.redhat.com/updates/8.0-staging/#g" plugin.xml
+  sed -i "s#https://devstudio.redhat.com/updates/8.0-development/#https://devstudio.redhat.com/updates/8.0-staging/#g" plugin.xml
 fi
 zip -u ../../${newJarCore} plugin.xml
 popd

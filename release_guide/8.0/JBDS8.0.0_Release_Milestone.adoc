@@ -210,7 +210,7 @@ And update it it as required, so that the links for the latest milestone point t
 [source,bash]
 ----
 jboss.discovery.directory.url|devstudio|8.0.0.CR1=https://devstudio.jboss.com/updates/8.0-development/devstudio-directory.xml
-jboss.discovery.site.url|devstudio|8.0.0.CR1=https://devstudio.jboss.com/updates/8.0-development/central/core/
+jboss.discovery.site.url|devstudio|8.0.0.CR1=https://devstudio.jboss.com/updates/8.0-development/
 ----
 
 Then commit and push changes to the origin GitHub repo. Then either push the file back to download.jboss.org, either manually (sftp, scp...) or using this CI job: https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-download.jboss.org-rsync-from-git/

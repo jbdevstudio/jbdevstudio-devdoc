@@ -10,7 +10,7 @@ TODO:
 
 == Update Discovery Sites and URLs
 
-See details in link:JBT_4.2.0.CR1_Staging_For_QE.adoc[Staging JBT For QE]
+See details in link:JBT_4.2.0.CR2_Staging_For_QE.adoc[Staging JBT For QE]
 
 
 == Disable jobs
@@ -45,7 +45,7 @@ WARNING: Don't use symlinks are they are too risky to use. Those operations can 
 
 [source,bash]
 ----
-versionWithRespin=8.0.0.CR1 # a, b, c...
+versionWithRespin=8.0.0.CR2 # a, b, c...
 # can run 3 steps these in parallel 
 
 rsync -aPrz /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/installer/* /qa/services/http/binaries/RHDS/builds/development/${versionWithRespin}-build-core/
@@ -103,17 +103,17 @@ runnung this script
 
 # can run 4 steps these in parallel 
 
-versionWithRespin=8.0.0.CR1 # a, b, c...
+versionWithRespin=8.0.0.CR2 # a, b, c...
 JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
 rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/all/repo/* ${JBDS}/updates/8.0.0/jboss-devstudio-${versionWithRespin}-updatesite-core/
 
 # TODO: verify correct URL and filename for the target zip
-TARGET_PLATFORM_VERSION_MAX=4.40.0.CR1-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.40.0.CR2-SNAPSHOT
 unzip -q /qa/services/http/binaries/RHDS/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MAX}/jbdevstudiotarget-${TARGET_PLATFORM_VERSION_MAX}.zip -d /tmp/jboss-devstudio-${versionWithRespin}-target-platform
 rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MAX}/jbdevstudiotarget-${TARGET_PLATFORM_VERSION_MAX}.zip ${JBDS}/updates/8.0.0/
 rsync -aPrz --rsh=ssh --protocol=28 /tmp/jboss-devstudio-${version}-target-platform ${JBDS}/updates/8.0.0/
 
-CENTRAL_TARGET_VERSION=4.40.0.CR1-SNAPSHOT
+CENTRAL_TARGET_VERSION=4.40.0.CR2-SNAPSHOT
 # Central discovery
 rm -rf /qa/services/http/binaries/RHDS/targetplatforms/jbtcentraltarget/${CENTRAL_TARGET_VERSION}
 mkdir -p /qa/services/http/binaries/RHDS/targetplatforms/jbtcentraltarget/${CENTRAL_TARGET_VERSION}/
@@ -141,16 +141,32 @@ rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/targetplatfo
 
 Then, update the composite files to have public URLs pointing to these artifacts. Get a clone of repository +https://github.com/jbdevstudio/jbdevstudio-website+, then we can update the necessary composite files to reference new locations. This imply tweaks on some files of the jbdevstudio-website repository. This repo will get later published to devstudio.redhat.com. Those changes can then be performed on your local machine.
 
+NOTE: Now that Central content is merged into the same composite as JBDS and its target platform, you MAY have to edit this file by hand if the JBDS TP and JBDS Central TP versions are not the same.
+
 [source,bash]
 ----
 pushd jbdevstudio-website/content/updates/8.0-staging/
 now=`date +%s000`
 
-oldTP=jboss-devstudio-8.0.0.Beta3
+oldTP=jboss-devstudio-8.0.0.CR1
 newTP=jboss-devstudio-${version}
 # Example for a respin
-# oldTP=jboss-devstudio-8.0.0.CR1
-# newTP=jboss-devstudio-8.0.0.CR1a
+# oldTP=jboss-devstudio-8.0.0.CR2
+# newTP=jboss-devstudio-8.0.0.CR2a
+for d in composite*.xml; do
+  sed -i -e "s#${oldTP}#${newTP}#g" $d
+  sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
+done
+popd
+
+pushd jbdevstudio-website/content/earlyaccess/8.0-staging/
+now=`date +%s000`
+
+oldTP=jboss-devstudio-8.0.0.CR1
+newTP=jboss-devstudio-${version}
+# Example for a respin
+# oldTP=jboss-devstudio-8.0.0.CR2
+# newTP=jboss-devstudio-8.0.0.CR2a
 for d in composite*.xml; do
   sed -i -e "s#${oldTP}#${newTP}#g" $d
   sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
@@ -164,8 +180,8 @@ popd
 [source,bash]
 ----
 isGA=false # or true in case you're doing a GA
-previousFull=8.0.0.Beta3 # a, b, c...
-versionWithRespin=8.0.0.CR1 # a, b, c...
+previousFull=8.0.0.CR1 # a, b, c...
+versionWithRespin=8.0.0.CR2 # a, b, c...
 
 #TODO: make sure you're the correct folder here!
 pushd jbdevstudio-website/content/
@@ -203,11 +219,11 @@ unzip -q -d ${newJarEA}{_,}
 pushd ${newJarEA}_ 
 
 if [ "$isGA" = true ]; then
-  sed -i "s#https://devstudio.redhat.com/updates/8.0-staging/central/earlyaccess/#https://devstudio.redhat.com/updates/8.0/central/earlyaccess/#g" plugin.xml
-  sed -i "s#https://devstudio.redhat.com/updates/8.0-development/central/earlyaccess/#https://devstudio.redhat.com/updates/8.0/central/earlyaccess/#g" plugin.xml
+  sed -i "s#https://devstudio.redhat.com/earlyaccess/8.0-staging/#https://devstudio.redhat.com/updates/8.0/central/earlyaccess/#g" plugin.xml
+  sed -i "s#https://devstudio.redhat.com/earlyaccess/8.0-development/#https://devstudio.redhat.com/updates/8.0/central/earlyaccess/#g" plugin.xml
 else  # plugin points to the STAGING URL, not the RELEASE one
-  sed -i "s#https://devstudio.redhat.com/updates/8.0/central/earlyaccess/#https://devstudio.redhat.com/updates/8.0-staging/central/earlyaccess/#g" plugin.xml
-  sed -i "s#https://devstudio.redhat.com/updates/8.0-development/central/earlyaccess/#https://devstudio.redhat.com/updates/8.0-staging/central/earlyaccess/#g" plugin.xml
+  sed -i "s#https://devstudio.redhat.com/updates/8.0/central/earlyaccess/#https://devstudio.redhat.com/earlyaccess/8.0-staging/#g" plugin.xml
+  sed -i "s#https://devstudio.redhat.com/earlyaccess/8.0-development/#https://devstudio.redhat.com/earlyaccess/8.0-staging/#g" plugin.xml
 fi
 zip -u ../../${newJarEA} plugin.xml
 popd
@@ -246,6 +262,11 @@ git status .
 git diff --color=always -w .
 # TODO: make sure you're using a PR & topic branch!
 git commit -m "release ${versionWithRespin} for QE: add new discovery plugins ${newJarCore}, ${newJarEA} + update devstudio-directory.xml + update HTML pages" . discovery/*.jar
+
+# now do the same for the EA site
+cd ../../earlyaccess/8.0-staging/
+git commit -m "release ${versionWithRespin} for QE: add new discovery plugins ${newJarCore}, ${newJarEA} + update devstudio-directory.xml + update HTML pages" . discovery/*.jar
+
 # TODO: make sure you've merged in others' changes!
 git push origin master # in case of doubt, prefer pushing to a local repostiory and using a pull-request to ask for review
 popd
@@ -284,9 +305,9 @@ And update it it as required, so that the links for the latest milestone point t
 
 [source,bash]
 ----
-jboss.discovery.directory.url|devstudio|8.0.0.CR1=https://devstudio.redhat.com/updates/8.0-staging/devstudio-directory.xml
-jboss.discovery.site.url|devstudio|8.0.0.CR1=https://devstudio.redhat.com/updates/8.0-staging/
-jboss.discovery.earlyaccess.site.url|devstudio|8.0.0.CR1=https://devstudio.redhat.com/earlyaccess/8.0-staging/
+jboss.discovery.directory.url|devstudio|8.0.0.CR2=https://devstudio.redhat.com/updates/8.0-staging/devstudio-directory.xml
+jboss.discovery.site.url|devstudio|8.0.0.CR2=https://devstudio.redhat.com/updates/8.0-staging/
+jboss.discovery.earlyaccess.site.url|devstudio|8.0.0.CR2=https://devstudio.redhat.com/earlyaccess/8.0-staging/
 ----
 
 
@@ -305,14 +326,14 @@ ____
 
 [source,bash]
 ----
-versionWithRespin=8.0.0.CR1 # a, b, c...
+versionWithRespin=8.0.0.CR2 # a, b, c...
 respin="respin-"
-TARGET_PLATFORM_VERSION_MIN=4.40.0.CR1-SNAPSHOT
-TARGET_PLATFORM_VERSION_MAX=4.40.0.CR1-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.40.0.CR1-SNAPSHOT
-TARGET_PLATFORM_EARLYACCESS_MAX=4.40.0.CR1-SNAPSHOT
-jbdsVersion=8.0.0.CR1 # no respin suffix here
-jbtVersion=4.2.0.CR1 # no respin suffix here
+TARGET_PLATFORM_VERSION_MIN=4.40.0.CR2-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.40.0.CR2-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.40.0.CR2-SNAPSHOT
+TARGET_PLATFORM_EARLYACCESS_MAX=4.40.0.CR2-SNAPSHOT
+jbdsVersion=8.0.0.CR2 # no respin suffix here
+jbtVersion=4.2.0.CR2 # no respin suffix here
 echo "
 Subject: 
 
@@ -335,8 +356,8 @@ The sites below are public-facing for staging purposes (no VPN required).
 
 Update Sites (Public, Staging):
 
-* https://devstudio.redhat.com/updates/8.0-staging/ (includes ${version} Core + Target Platform + 3rd party site mirrors)
-* https://devstudio.redhat.com/earlyaccess/8.0-staging/ (as in /core/ but with Early Access content too)
+* https://devstudio.redhat.com/updates/8.0-staging/ (includes ${version} Core + Target Platform + JBoss Central)
+* https://devstudio.redhat.com/earlyaccess/8.0-staging/ (includes the above site + Early Access)
 
 --
 

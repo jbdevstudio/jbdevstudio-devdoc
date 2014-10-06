@@ -109,11 +109,16 @@ JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
 rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/all/repo/* ${JBDS}/updates/8.0.0/jboss-devstudio-${versionWithRespin}-updatesite-core/
 
 # TODO: verify correct URL and filename for the target zip
+versionWithRespin=8.0.0.CR2 # a, b, c...
+JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
 TARGET_PLATFORM_VERSION_MAX=4.41.0.CR2-SNAPSHOT
 unzip -q /qa/services/http/binaries/RHDS/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MAX}/jbdevstudiotarget-${TARGET_PLATFORM_VERSION_MAX}.zip -d /tmp/jboss-devstudio-${versionWithRespin}-target-platform
 rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MAX}/jbdevstudiotarget-${TARGET_PLATFORM_VERSION_MAX}.zip ${JBDS}/updates/8.0.0/
-rsync -aPrz --rsh=ssh --protocol=28 /tmp/jboss-devstudio-${version}-target-platform ${JBDS}/updates/8.0.0/
+rsync -aPrz --rsh=ssh --protocol=28 /tmp/jboss-devstudio-${versionWithRespin}-target-platform ${JBDS}/updates/8.0.0/
 
+# TODO: verify correct URL and filename for the target zip
+versionWithRespin=8.0.0.CR2 # a, b, c...
+JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
 CENTRAL_TARGET_VERSION=4.41.0.CR2-SNAPSHOT
 # Central discovery
 rm -rf /qa/services/http/binaries/RHDS/targetplatforms/jbtcentraltarget/${CENTRAL_TARGET_VERSION}
@@ -123,8 +128,13 @@ wget http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/${CEN
 popd
 rm -fr /tmp/jboss-devstudio-${versionWithRespin}-updatesite-central
 unzip -q /qa/services/http/binaries/RHDS/targetplatforms/jbtcentraltarget/${TARGET_PLATFORM_VERSION_MAX}/jbtcentraltarget-${CENTRAL_TARGET_VERSION}.zip -d /tmp/jboss-devstudio-${versionWithRespin}-updatesite-central
-rsync -aPrz --rsh=ssh --protocol=28 --delete /tmp/jboss-devstudio-${version}-updatesite-central/* ${JBDS}/updates/8.0.0/jboss-devstudio-${versionWithRespin}-updatesite-central/
+rsync -aPrz --rsh=ssh --protocol=28 --delete /tmp/jboss-devstudio-${versionWithRespin}-updatesite-central/* ${JBDS}/updates/8.0.0/jboss-devstudio-${versionWithRespin}-updatesite-central/
 rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/targetplatforms/jbtcentraltarget/${CENTRAL_TARGET_VERSION}/jbtcentraltarget-${CENTRAL_TARGET_VERSION}.zip ${JBDS}/updates/8.0.0/
+
+# TODO: verify correct URL and filename for the target zip
+versionWithRespin=8.0.0.CR2 # a, b, c...
+JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
+CENTRAL_TARGET_VERSION=4.41.0.CR2-SNAPSHOT
 # Early Access
 rm -rf /qa/services/http/binaries/RHDS/targetplatforms/jbtearlyaccesstarget/${CENTRAL_TARGET_VERSION}/
 mkdir -p /qa/services/http/binaries/RHDS/targetplatforms/jbtearlyaccesstarget/${CENTRAL_TARGET_VERSION}/
@@ -133,7 +143,7 @@ wget http://download.jboss.org/jbosstools/targetplatforms/jbtearlyaccesstarget/$
 popd
 rm -fr /tmp/jboss-devstudio-${versionWithRespin}-updatesite-earlyaccess
 unzip -q /qa/services/http/binaries/RHDS/targetplatforms/jbtearlyaccesstarget/${TARGET_PLATFORM_VERSION_MAX}/jbtearlyaccesstarget-${CENTRAL_TARGET_VERSION}.zip -d /tmp/jboss-devstudio-${versionWithRespin}-updatesite-earlyaccess
-rsync -aPrz --rsh=ssh --protocol=28 --delete /tmp/jboss-devstudio-${version}-updatesite-earlyaccess/* ${JBDS}/updates/8.0.0/jboss-devstudio-${versionWithRespin}-updatesite-earlyaccess/
+rsync -aPrz --rsh=ssh --protocol=28 --delete /tmp/jboss-devstudio-${versionWithRespin}-updatesite-earlyaccess/* ${JBDS}/updates/8.0.0/jboss-devstudio-${versionWithRespin}-updatesite-earlyaccess/
 rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/targetplatforms/jbtearlyaccesstarget/${CENTRAL_TARGET_VERSION}/jbtearlyaccesstarget-${CENTRAL_TARGET_VERSION}.zip ${JBDS}/updates/8.0.0/
 
 ----

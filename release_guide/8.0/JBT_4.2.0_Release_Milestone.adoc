@@ -69,17 +69,17 @@ hibernateToolsVersionWithRespin=4.2.0.CR1b # it is possible that hibernate tools
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 echo "mkdir development/sf.net/${version}" | sftp ${TOOLS}/builds
 
-coreBuildID=$(echo "ls 20*" | sftp ${TOOLS}/builds/development/jbosstools-${versionWithRespin}-build-core/ 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); coreBuildID=${coreBuildID%%/*}
+coreBuildID=$(echo "ls 20*" | sftp ${TOOLS}/builds/staging/jbosstools-${versionWithRespin}-build-core/ 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); coreBuildID=${coreBuildID%%/*}
 echo "Latest build: ${coreBuildID}"
-echo "rename development/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID}-updatesite.zip      development/sf.net/${version}/jbosstools-${version}_${coreBuildID}-updatesite-core.zip"         | sftp ${TOOLS}/builds
-echo "rename development/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID}-updatesite.zip.MD5  development/sf.net/${version}/jbosstools-${version}_${coreBuildID}-updatesite-core.zip.MD5"     | sftp ${TOOLS}/builds
-echo "rename development/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID}-src.zip     development/sf.net/${version}/jbosstools-${version}_${coreBuildID}-src.zip"        | sftp ${TOOLS}/builds
-echo "rename development/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID}-src.zip.MD5 development/sf.net/${version}/jbosstools-${version}_${coreBuildID}-src.zip.MD5"    | sftp ${TOOLS}/builds
+echo "rename staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID}-updatesite.zip      development/sf.net/${version}/jbosstools-${version}_${coreBuildID}-updatesite-core.zip"         | sftp ${TOOLS}/builds
+echo "rename staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID}-updatesite.zip.MD5  development/sf.net/${version}/jbosstools-${version}_${coreBuildID}-updatesite-core.zip.MD5"     | sftp ${TOOLS}/builds
+echo "rename staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID}-src.zip     development/sf.net/${version}/jbosstools-${version}_${coreBuildID}-src.zip"        | sftp ${TOOLS}/builds
+echo "rename staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID}-src.zip.MD5 development/sf.net/${version}/jbosstools-${version}_${coreBuildID}-src.zip.MD5"    | sftp ${TOOLS}/builds
 
-hibernateToolsBuildID=$(echo "ls 20*" | sftp ${TOOLS}/builds/development/jbosstools-${hibernateToolsVersionWithRespin}-build-hibernatetools/ 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); hibernateToolsBuildID=${hibernateToolsBuildID%%/*}
+hibernateToolsBuildID=$(echo "ls 20*" | sftp ${TOOLS}/builds/staging/jbosstools-${hibernateToolsVersionWithRespin}-build-hibernatetools/ 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); hibernateToolsBuildID=${hibernateToolsBuildID%%/*}
 echo "Latest build: ${hibernateToolsBuildID}"
-echo "rename development/jbosstools-${versionWithRespin}-build-hibernatetools/${hibernateToolsBuildID}/all/jbosstools-build-sites.aggregate.hibernatetools-site_${stream}-${hibernateToolsBuildID}-updatesite.zip development/sf.net/${version}/jbosstools-${version}_${hibernateToolsBuildID}-updatesite-hibernatetools.zip" | sftp ${TOOLS}/builds
-echo "rename development/jbosstools-${versionWithRespin}-build-hibernatetools/${hibernateToolsBuildID}/all/jbosstools-build-sites.aggregate.hibernatetools-site_${stream}-${hibernateToolsBuildID}-updatesite.zip.MD5 development/sf.net/${version}/jbosstools-${version}_${hibernateToolsBuildID}-updatesite-hibernatetools.zip.MD5" | sftp ${TOOLS}/builds
+echo "rename staging/jbosstools-${versionWithRespin}-build-hibernatetools/${hibernateToolsBuildID}/all/jbosstools-build-sites.aggregate.hibernatetools-site_${stream}-${hibernateToolsBuildID}-updatesite.zip development/sf.net/${version}/jbosstools-${version}_${hibernateToolsBuildID}-updatesite-hibernatetools.zip" | sftp ${TOOLS}/builds
+echo "rename staging/jbosstools-${versionWithRespin}-build-hibernatetools/${hibernateToolsBuildID}/all/jbosstools-build-sites.aggregate.hibernatetools-site_${stream}-${hibernateToolsBuildID}-updatesite.zip.MD5 development/sf.net/${version}/jbosstools-${version}_${hibernateToolsBuildID}-updatesite-hibernatetools.zip.MD5" | sftp ${TOOLS}/builds
 
 ----
 
@@ -161,7 +161,7 @@ echo "rename updates/staging/luna/jbosstools-${versionWithRespin}-updatesite-hib
 fi
 ----
 
-If everything above completed OK, you can then in the backgrouns delete all the previous spins of the build from
+If everything above completed OK, you can then in the background delete all the previous spins of the build from
 
 * /downloads_htdocs/tools/discovery/development/
 * /downloads_htdocs/tools/builds/development/
@@ -362,8 +362,8 @@ popd
 
 Then make the necessary updates for *discovery*
 
-* Replace +jbosstools/updates/development/${eclipseTrain}/jbosstools-directory.xml+ by +http://download.jboss.org/jbosstools/discovery/development/${versionWithRespin}/jbosstools-directory.xml+ and
-+jbosstools/updates/development/${eclipseTrain}/jbosstools-earlyaccess.properties+ by +http://download.jboss.org/jbosstools/discovery/development/${versionWithRespin}/jbosstools-earlyaccess.properties+
+* Replace +jbosstools/updates/development/${eclipseTrain}/jbosstools-directory.xml+ by +http://download.jboss.org/jbosstools/discovery/staging/${versionWithRespin}/jbosstools-directory.xml+ and
++jbosstools/updates/development/${eclipseTrain}/jbosstools-earlyaccess.properties+ by +http://download.jboss.org/jbosstools/discovery/staging/${versionWithRespin}/jbosstools-earlyaccess.properties+
 * Remove previous discovery jar in +plugins+
 * Fetch the jar listed in +jbosstools-directory.xml+ into the +http://download.jboss.org/jbosstools/discovery/development/${versionWithRespin}/plugins+ directory.
 * Verify that plugin.xml in the discovery jar contains the right URL:
@@ -385,15 +385,15 @@ basedir=`pwd`
 pushd ${basedir}/jbosstools/updates/development/${eclipseTrain}/
 # Replace jbosstools-directory.xml by newest
 rm -f jbosstools-directory.xml
-wget -nc http://download.jboss.org/jbosstools/discovery/development/${versionWithRespin}/jbosstools-directory.xml
+wget -nc http://download.jboss.org/jbosstools/discovery/staging/${versionWithRespin}/jbosstools-directory.xml
 # TODO maybe a rsync of the folder would be more efficient here
-wget -nc http://download.jboss.org/jbosstools/discovery/development/${versionWithRespin}/jbosstools-earlyaccess.properties
+wget -nc http://download.jboss.org/jbosstools/discovery/staging/${versionWithRespin}/jbosstools-earlyaccess.properties
 # Get newest discovery plugins
 newJars=$(cat jbosstools-directory.xml | grep entry | sed -e "s#.\+plugins/#plugins/#g" | sed -e "s#\.jar.\+#.jar#g")
 mkdir -p plugins
 pushd plugins
 for newJar in $newJars; do 
-  wget -nc http://download.jboss.org/jbosstools/discovery/development/${versionWithRespin}/${newJar}
+  wget -nc http://download.jboss.org/jbosstools/discovery/staging/${versionWithRespin}/${newJar}
   if [[ ! ${newJar##*.earlyaccess_*} ]]; then
     newJarEA=${newJar}
     #newJarEA=${newJar/plugins/discovery}
@@ -407,7 +407,7 @@ done
 popd
  
 if [ "$isFinal" = true ]; then
-  # IF THIS IS Final, ensure that your plugin points to the RELEASE URL, not the STAGING one:
+  # IF THIS IS Final, ensure that your plugin points to the RELEASE URL, not the STAGING nor development one:
   for newJar in ${newJarEA} ${newJarCore}; do
     unzip -q -d ${basedir}/jbosstools/updates/development/${eclipseTrain}/${newJar}{_,}
     pushd ${basedir}/jbosstools/updates/development/${eclipseTrain}/${newJar}_
@@ -421,11 +421,12 @@ if [ "$isFinal" = true ]; then
   # TODO: verify this works for /updates/stable/ - untested!
   cp -f ${basedir}/jbosstools/updates/development/${eclipseTrain}/jbosstools-directory.xml ${basedir}/jbosstools/updates/stable/${eclipseTrain}/
 else
-  # IF THIS IS pre-Final, ensure that your plugin points to the STAGING URL, not the RELEASE one:
+  # IF THIS IS pre-Final, ensure that your plugin points to the development URL, not the RELEASE or staging one:
   for newJar in ${newJarEA} ${newJarCore}; do
     unzip -q -d ${basedir}/jbosstools/updates/development/${eclipseTrain}/${newJar}{_,}
     pushd ${basedir}//jbosstools/updates/development/${eclipseTrain}/${newJar}_ >/dev/null 
     sed -i "s#http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/central/core/#http://download.jboss.org/jbosstools/updates/development/${eclipseTrain}/central/core/#g" plugin.xml
+    sed -i "s#http://download.jboss.org/jbosstools/updates/staging/${eclipseTrain}/central/core/#http://download.jboss.org/jbosstools/updates/development/${eclipseTrain}/central/core/#g" plugin.xml
     zip -u ${basedir}/jbosstools/updates/development/${eclipseTrain}/${newJar} plugin.xml
     popd >/dev/null
     rm -fr ${basedir}/jbosstools/updates/development/${eclipseTrain}/${newJar}_

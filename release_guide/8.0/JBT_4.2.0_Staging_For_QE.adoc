@@ -335,13 +335,13 @@ Body:
 
 As always, these are not FINAL bits, but preliminary results for QE & community testing. Not for use by customers or end users. 
 
-Update site: http://download.jboss.org/jbosstools/updates/staging/luna/jbosstools-${version}-updatesite-core/
+Update site: http://download.jboss.org/jbosstools/updates/staging/luna/
 
 Target platforms: 
 * http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MIN} (upcoming Luna R milestone)
 * http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MAX} (upcoming Luna SR1 milestone)
 
-Until the above target platform site is released, you will need to add it to Eclipse to resolve dependencies at install time. 
+Until the above target platform site is released, you may need to add it to Eclipse to resolve dependencies at install time. 
 Once released, dependencies will be found automatically from here:
 * http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/luna/ (latest release)
 * http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/${TARGET_PLATFORM_CENTRAL_MAX}/ (upcoming milestone)
@@ -355,11 +355,12 @@ Schedule: https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.p
 
 --
 
-Additional update sites & builds:
+Additional update sites:
+* http://download.jboss.org/jbosstools/updates/staging/luna/jbosstools-${version}-updatesite-core/
 * http://download.jboss.org/jbosstools/updates/staging/luna/jbosstools-${version}-updatesite-coretests/
 * http://download.jboss.org/jbosstools/updates/staging/luna/jbosstools-${version}-updatesite-hibernatetools/
 * http://download.jboss.org/jbosstools/updates/staging/luna/jbosstools-${version}-updatesite-webtools/
-
+and build sites:
 * http://download.jboss.org/jbosstools/builds/staging/jbosstools-${version}-build-core/
 * http://download.jboss.org/jbosstools/builds/staging/jbosstools-${version}-build-coretests/
 * http://download.jboss.org/jbosstools/builds/staging/jbosstools-${version}-build-hibernatetools/

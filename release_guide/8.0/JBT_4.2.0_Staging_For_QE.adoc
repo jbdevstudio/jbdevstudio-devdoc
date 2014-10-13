@@ -144,7 +144,8 @@ firefox "view-source:http://download.jboss.org/jbosstools/updates/staging/luna/c
 
 == Rebuild Target Platforms for Central and Early Access
 
-WARNING: This step is very important!
+WARNING: This step is very important! It can take long time to perform the TP update and make it available. While
+some jobs are running for that task, you can get a bit forward and start re-populating nighly sites in parallel.
 
 Central and Early Access target platforms contain parts of JBoss Tools which have not yet been released, so these target platforms need to be rebuilt with every push to QE.
 
@@ -157,11 +158,9 @@ https://github.com/jbosstools/jbosstools-build-ci/blob/master/util/verifyTarget.
 
 * Commit your changes.
 
-* Run the job to pick up the new commit, and verify that it publishes to the correct folder, eg. with "a" or "b":
-
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_8.0.luna/job/jbosstools-centraltarget_4.2.luna
-http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/4.41.0.CR2-SNAPSHOT/
-http://download.jboss.org/jbosstools/targetplatforms/jbtearlyaccesstarget/4.41.0.CR2-SNAPSHOT/
+* Run the job https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_8.0.luna/job/jbosstools-centraltarget_4.2.luna to pick up the new commit, and verify that updated TP sites
+(http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/4.41.0.CR2-SNAPSHOT/ and http://download.jboss.org/jbosstools/targetplatforms/jbtearlyaccesstarget/4.41.0.CR2-SNAPSHOT/ ) now
+contain newer artifacts.
 
 
 == Update Discovery URLs
@@ -173,7 +172,7 @@ Update the *stable branch* discovery job ( https://jenkins.mw.lab.eng.bos.redhat
 * Update property +JBTEARLYACCESSTARGET_VERSION+ to 4.41.0.CR2-SNAPSHOT
 
 * Update property +JBT_UPDATE_SITE+ to http://download.jboss.org/jbosstools/updates/staging/luna/
-* Update property +JBDS_UPDATE_SITE+ to http://www.qa.jboss.com/binaries/RHDS/updates/development/8.0.0.CR2-updatesite-core/
+* Update property +JBDS_UPDATE_SITE+ to https://devstudio.redhat.com/updates/8.0-staging/
 
 Then respin the job and verify that sites were correctly populated:
 

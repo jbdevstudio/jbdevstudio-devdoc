@@ -12,7 +12,6 @@ TODO:
 
 See details in link:JBT_4.2.0.CR2_Staging_For_QE.adoc[Staging JBT For QE]
 
-
 == Disable jobs
 
 All stable branch jobs from the https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_8.0.luna/[8.0.luna view] should be disabled.
@@ -21,6 +20,20 @@ Quick way to do so is with https://github.com/jbdevstudio/jbdevstudio-ci/blob/ma
 
 Should a respin be needed, they can be re-enabled at that time.
 
+== Variables to use
+
+Whenever you're starting a new shell, you should set those variables:
+
+[sources,bash]
+----
+versionWithRespin=8.0.0.CR2a
+TARGET_PLATFORM_VERSION_MAX=4.41.0.CR2-SNAPSHOT
+CENTRAL_TARGET_VERSION=4.41.0.CR2-SNAPSHOT
+previousFull=8.0.0.CR2
+now=$(date +%s000)
+isGA=false
+JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
+----
 
 == Stage to qa.jboss.org
 
@@ -196,11 +209,10 @@ for d in updates/8.0-staging/*.*ml earlyaccess/8.0-staging/*.*ml; do
   # update composite timestamp
   sed -i -e "s#${previousFull}#${versionWithRespin}#g" -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
 done
-popd
 
 # update https://devstudio.redhat.com/updates/8.0-staging/devstudio-directory.xml to point at new Core discovery jar.
 # Latest discovery site is here: http://www.qa.jboss.com/binaries/RHDS/discovery/development/${versionWithRespin}
-pushd jbdevstudio-website/content/updates/8.0-staging/
+pushd updates/8.0-staging/
 wget -q -nc http://www.qa.jboss.com/binaries/RHDS/discovery/development/${versionWithRespin}/devstudio-directory.xml
 newJars=$(cat devstudio-directory.xml | grep entry | sed -e "s#.\+plugins#plugins#g" | sed -e "s#\.jar.\+#.jar#g")
 for newJar in $newJars; do 
@@ -213,11 +225,8 @@ for newJar in $newJars; do
     echo "Core: $newJarCore"
   fi
 done
-rm -f devstudio-directory.xml
-popd
 
 # update XML
-pushd jbdevstudio-website/content/updates/8.0-staging/
 sed -i -e "s#discovery/com.jboss.jbds.central.discovery.earlyaccess_.\+\.jar#${newJarEA}#g" devstudio-directory.xml
 sed -i -e "s#discovery/com.jboss.jbds.central.discovery_.\+\.jar#${newJarCore}#g" devstudio-directory.xml
   
@@ -249,7 +258,8 @@ zip -u ../../${newJarCore} plugin.xml
 popd
 rm -fr ${newJarCore}_
 
-popd # all the way back out
+popd # pop updates/8.0-staging and get back to jbosstools-website/content
+popd # pop jbosstools-website/content and get back to jbosstools-webstite/..
 
 # don't do this until you're ready to release the content -- not for QE
 # TODO: move this to the Release doc, not the Staging for QE doc

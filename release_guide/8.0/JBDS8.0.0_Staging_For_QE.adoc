@@ -367,26 +367,18 @@ Body:
 
 As always, these are not FINAL bits, but preliminary results for QE testing. Not for redistribution to customers. Links in this section are all internal (VPN required), except for the target platform.
 
-Universal Installers (Internal): http://www.qa.jboss.com/binaries/RHDS/builds/development/${versionWithRespin}-build-core/build-info.html
-Update Sites (Internal): http://www.qa.jboss.com/binaries/RHDS/updates/development/${versionWithRespin}-updatesite-core/
+Universal Installers: http://www.qa.jboss.com/binaries/RHDS/builds/development/8.0.0.CR2-build-core/build-info.html (Internal, VPN required)
+Update Sites:
+* https://devstudio.redhat.com/updates/8.0-staging/ (includes ${versionWithRespin} Core + Target Platform + JBoss Central)
+* https://devstudio.redhat.com/earlyaccess/8.0-staging/ (includes the above site + Early Access)
+* http://www.qa.jboss.com/binaries/RHDS/updates/development/${versionWithRespin}-updatesite-core/ (Internal, VPN required)
 
 Target Platforms (Public): 
 * http://download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MIN}/ (upcoming milestone)
 * http://download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MAX}/ (upcoming milestone)
 
-Until the above target platform site is released, you will need to add it to Eclipse to resolve dependencies at install time. 
+Until the above target platform site is released, you may need to add it to Eclipse to resolve dependencies at install time. 
 Once released, dependencies will be found automatically from here: http://download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/luna/ (latest release)
-
---
-
-The sites below are public-facing for staging purposes (no VPN required). 
-
-Update Sites (Public, Staging):
-
-* https://devstudio.redhat.com/updates/8.0-staging/ (includes ${version} Core + Target Platform + JBoss Central)
-* https://devstudio.redhat.com/earlyaccess/8.0-staging/ (includes the above site + Early Access)
-
---
 
 New + Noteworthy (subject to change):
 * https://github.com/jbosstools/jbosstools-website/tree/master/documentation/whatsnew

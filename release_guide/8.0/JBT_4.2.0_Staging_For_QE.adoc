@@ -304,12 +304,12 @@ Should a respin be needed, they can be re-enabled at that time.
 
 Before notifying team of successful staging process completion, let's check there is no obvious issue
 
-# Get a recent Eclipse (compatible with the target version of JBT)
-# Install all content from http://download.jboss.org/jbosstools/updates/staging/luna in it
-# Restart as suggested
-# Open Central Software/Updates tab, enable Early-Access select and install all connectors
-# Restart as suggested
-# Check log, start an example project, check log again
+1. Get a recent Eclipse (compatible with the target version of JBT)
+2. Install all content from http://download.jboss.org/jbosstools/updates/staging/luna in it
+3. Restart as suggested
+4. Open Central Software/Updates tab, enable Early-Access select and install all connectors
+5. Restart as suggested
+6. Check log, start an example project, check log again
 
 == Notify the team
 

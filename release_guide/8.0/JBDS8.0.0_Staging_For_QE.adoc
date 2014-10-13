@@ -199,12 +199,12 @@ popd
 [source,bash]
 ----
 isGA=false # or true in case you're doing a GA
-previousFull=8.0.0.CR1b # a, b, c...
-versionWithRespin=8.0.0.CR2 # a, b, c...
+previousFull=8.0.0.CR2 # a, b, c...
+versionWithRespin=8.0.0.CR2a # a, b, c...
+now=`date +%s000`
 
 #TODO: make sure you're the correct folder here!
 pushd jbdevstudio-website/content/
-now=`date +%s000`
 for d in updates/8.0-staging/*.*ml earlyaccess/8.0-staging/*.*ml; do
   # update composite timestamp
   sed -i -e "s#${previousFull}#${versionWithRespin}#g" -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
@@ -216,23 +216,25 @@ pushd updates/8.0-staging/
 wget -q -nc http://www.qa.jboss.com/binaries/RHDS/discovery/development/${versionWithRespin}/devstudio-directory.xml
 newJars=$(cat devstudio-directory.xml | grep entry | sed -e "s#.\+plugins#plugins#g" | sed -e "s#\.jar.\+#.jar#g")
 for newJar in $newJars; do 
-  wget -q -nc http://www.qa.jboss.com/binaries/RHDS/discovery/development/${versionWithRespin}/${newJar}
-  if [[ ! ${newJar##*.earlyaccess_*} ]]; then
+    if [[ ! ${newJar##*.earlyaccess_*} ]]; then
     newJarEA=${newJar/plugins/discovery}
+    wget -q -nc -O ${newJarEA} http://www.qa.jboss.com/binaries/RHDS/discovery/development/${versionWithRespin}/${newJar} 
     echo "EA: $newJarEA"
   else
     newJarCore=${newJar/plugins/discovery}
+    wget -q -nc -O ${newJarCore} http://www.qa.jboss.com/binaries/RHDS/discovery/development/${versionWithRespin}/${newJar} 
     echo "Core: $newJarCore"
   fi
 done
 
-# update XML
+# update catalog (discovery/ instead of plugins/)
 sed -i -e "s#discovery/com.jboss.jbds.central.discovery.earlyaccess_.\+\.jar#${newJarEA}#g" devstudio-directory.xml
 sed -i -e "s#discovery/com.jboss.jbds.central.discovery_.\+\.jar#${newJarCore}#g" devstudio-directory.xml
-  
+sed -i -e "s#plugins/com.jboss.jbds.central.discovery.earlyaccess_.\+\.jar#${newJarEA}#g" devstudio-directory.xml
+sed -i -e "s#plugins/com.jboss.jbds.central.discovery_.\+\.jar#${newJarCore}#g" devstudio-directory.xml
+
 unzip -q -d ${newJarEA}{_,}
 pushd ${newJarEA}_ 
-
 if [ "$isGA" = true ]; then
   sed -i "s#https://devstudio.redhat.com/earlyaccess/8.0-staging/#https://devstudio.redhat.com/updates/8.0/central/earlyaccess/#g" plugin.xml
   sed -i "s#https://devstudio.redhat.com/earlyaccess/8.0-development/#https://devstudio.redhat.com/updates/8.0/central/earlyaccess/#g" plugin.xml
@@ -246,7 +248,6 @@ rm -fr ${newJarEA}_
 
 unzip -q -d ${newJarCore}{_,}
 pushd ${newJarCore}_ 
-
 if [ "$isGA" = true ]; then
   sed -i "s#https://devstudio.redhat.com/updates/8.0-staging/#https://devstudio.redhat.com/updates/8.0/#g" plugin.xml
   sed -i "s#https://devstudio.redhat.com/updates/8.0-development/#https://devstudio.redhat.com/updates/8.0/#g" plugin.xml
@@ -257,9 +258,6 @@ fi
 zip -u ../../${newJarCore} plugin.xml
 popd
 rm -fr ${newJarCore}_
-
-popd # pop updates/8.0-staging and get back to jbosstools-website/content
-popd # pop jbosstools-website/content and get back to jbosstools-webstite/..
 
 # don't do this until you're ready to release the content -- not for QE
 # TODO: move this to the Release doc, not the Staging for QE doc
@@ -272,24 +270,24 @@ popd # pop jbosstools-website/content and get back to jbosstools-webstite/..
 #fi
 
 # check in / sync changes
-pushd jbdevstudio-website/content/updates/8.0-staging/
 git add ${newJarEA} ${newJarCore}
-git status .
-git diff --color=always -w .
+git add . discovery/*.jar
+git add ../../earlyaccess/8.0-staging/
 # TODO: make sure you're using a PR & topic branch!
-git commit -m "release ${versionWithRespin} for QE: add new discovery plugins ${newJarCore}, ${newJarEA} + update devstudio-directory.xml + update HTML pages" . discovery/*.jar
+git commit -m "release ${versionWithRespin} for QE
 
-# now do the same for the EA site
-cd ../../earlyaccess/8.0-staging/
-git commit -m "release ${versionWithRespin} for QE: add new discovery plugins ${newJarCore}, ${newJarEA} + update devstudio-directory.xml + update HTML pages" . discovery/*.jar
+* add new discovery plugins ${newJarCore}, ${newJarEA}
+* update devstudio-directory.xml
+* update HTML pages" 
 
 # TODO: make sure you've merged in others' changes!
 git push origin master # in case of doubt, prefer pushing to a local repostiory and using a pull-request to ask for review
-popd
 
 JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
-rsync -aPrz --rsh=ssh --protocol=28 jbdevstudio-website/content/updates/8.0-staging/* ${JBDS}/updates/8.0-staging/
-rsync -aPrz --rsh=ssh --protocol=28 jbdevstudio-website/content/earlyaccess/8.0-staging/* ${JBDS}/earlyaccess/8.0-staging/
+rsync -aPrz --rsh=ssh --protocol=28 * ${JBDS}/updates/8.0-staging/
+pushd ../../earlyaccess/8.0-staging/
+rsync -aPrz --rsh=ssh --protocol=28 * ${JBDS}/earlyaccess/8.0-staging/
+popd
 
 if [ "$isGA" = true ]; then
   pushd jbdevstudio-website/content/updates/8.0/
@@ -304,6 +302,9 @@ if [ "$isGA" = true ]; then
   
   rsync -aPrz --rsh=ssh --protocol=28 jbdevstudio-website/updates/8.0/*  devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0/
 fi
+
+popd # pop updates/8.0-staging and get back to jbosstools-website/content
+popd # pop jbosstools-website/content and get back to jbosstools-webstite/..
 ----
 
 == Update documentation

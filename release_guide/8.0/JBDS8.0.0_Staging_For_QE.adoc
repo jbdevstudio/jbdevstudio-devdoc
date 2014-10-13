@@ -157,7 +157,6 @@ NOTE: Now that Central content is merged into the same composite as JBDS and its
 [source,bash]
 ----
 versionWithRespin=8.0.0.CR2 # a, b, c...
-pushd jbdevstudio-website/content/updates/8.0-staging/
 now=`date +%s000`
 
 oldTP=jboss-devstudio-8.0.0.CR1b
@@ -165,6 +164,8 @@ newTP=jboss-devstudio-${versionWithRespin}
 # Example for a respin
 # oldTP=jboss-devstudio-8.0.0.CR2
 # newTP=jboss-devstudio-8.0.0.CR2a
+
+pushd jbdevstudio-website/content/updates/8.0-staging/
 for d in composite*.xml; do
   sed -i -e "s#${oldTP}#${newTP}#g" $d
   sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
@@ -172,13 +173,6 @@ done
 popd
 
 pushd jbdevstudio-website/content/earlyaccess/8.0-staging/
-now=`date +%s000`
-
-oldTP=jboss-devstudio-8.0.0.CR1b
-newTP=jboss-devstudio-${versionWithRespin}
-# Example for a respin
-# oldTP=jboss-devstudio-8.0.0.CR2
-# newTP=jboss-devstudio-8.0.0.CR2a
 for d in composite*.xml; do
   sed -i -e "s#${oldTP}#${newTP}#g" $d
   sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d

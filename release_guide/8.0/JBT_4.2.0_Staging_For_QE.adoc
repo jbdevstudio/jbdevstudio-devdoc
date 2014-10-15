@@ -121,25 +121,15 @@ echo " >> http://download.jboss.org/jbosstools/updates/staging/luna/jbosstools-$
 
 Then verify those 4 sites are correctly populated.
 
-=== Regenerate composite site metadata for staged updates
+=== Update composite site metadata for staged updates
 
 Update files __http://download.jboss.org/jbosstools/updates/staging/luna/composite*.xml__ , with SFTP/SCP via command-line or your 
 favourite SFTP GUI client (such as Eclipse RSE).
 
 This site needs to contain:
-* The new JBoss Tools core site
-* It's recomended target-platform site
-* JBoss Tools Central site
-
-Optionally, run this script, then verify the resulting composite site:
-
-[source,bash]
-----
-
-~/tru/buildci/util/cleanup/jbosstools-cleanup.sh --regen-metadata-only --no-subdirs --dirs-to-scan updates/staging/luna
-firefox "view-source:http://download.jboss.org/jbosstools/updates/staging/luna/compositeContent.xml"
-
-----
+* The latest JBoss Tools core site
+* The latest matching target platform site
+* The latest matching JBoss Tools Central site
 
 
 == Rebuild Target Platforms for Central and Early Access

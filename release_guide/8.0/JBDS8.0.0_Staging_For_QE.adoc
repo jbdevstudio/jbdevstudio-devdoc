@@ -290,21 +290,22 @@ pushd ../../earlyaccess/8.0-staging/
 rsync -aPrz --rsh=ssh --protocol=28 * ${JBDS}/earlyaccess/8.0-staging/
 popd
 
-if [ "$isGA" = true ]; then
-  pushd jbdevstudio-website/content/updates/8.0/
-  git add ${newJar}
-  git status .
-  gd diff --color=always -w .
-  # TODO: make sure you're using a PR & topic branch!
-  git commit "release ${versionWithRespin} for QE: add new discovery plugins ${newJarCore}, ${newJarEA} + update devstudio-directory.xml" . discovery/*.jar
-  # TODO: make sure you've merged in others' changes!
-  git push origin master # in case of doubt, prefer pushing to a local repostiory and using a pull-request to ask for review
-  popd
-  
-  rsync -aPrz --rsh=ssh --protocol=28 jbdevstudio-website/updates/8.0/*  devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0/
-fi
-
 popd # pop updates/8.0-staging and get back to jbosstools-website/content
+
+# TODO: move this to the Release doc, not the Staging for QE doc
+#if [ "$isGA" = true ]; then
+#  pushd updates/8.0/
+#  git add ${newJar}
+#  git status .
+#  git diff --color=always -w .
+#  # TODO: make sure you're using a PR & topic branch!
+#  git commit "release ${versionWithRespin} for QE: add new discovery plugins ${newJarCore}, ${newJarEA} + update devstudio-directory.xml" . discovery/*.jar
+#  # TODO: make sure you've merged in others' changes!
+#  git push origin master # in case of doubt, prefer pushing to a local repostiory and using a pull-request to ask for review
+#  popd
+#  rsync -aPrz --rsh=ssh --protocol=28 jbdevstudio-website/updates/8.0/*  devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0/
+#fi
+
 popd # pop jbosstools-website/content and get back to jbosstools-webstite/..
 ----
 

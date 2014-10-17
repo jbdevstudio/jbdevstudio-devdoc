@@ -214,7 +214,7 @@ done
 # Latest discovery site is here: http://www.qa.jboss.com/binaries/RHDS/discovery/development/${versionWithRespin}
 pushd updates/8.0-staging/
 wget -q -nc http://www.qa.jboss.com/binaries/RHDS/discovery/development/${versionWithRespin}/devstudio-directory.xml
-newJars=$(cat devstudio-directory.xml | grep entry | sed -e "s#.\+plugins#plugins#g" | sed -e "s#\.jar.\+#.jar#g")
+newJars=$(cat devstudio-directory.xml | grep entry | sed -e "s#.\+plugins/#plugins/#g" | sed -e "s#.\+discovery/#discovery/#g" |sed -e "s#\.jar.\+#.jar#g")
 for newJar in $newJars; do 
     if [[ ! ${newJar##*.earlyaccess_*} ]]; then
     newJarEA=${newJar/plugins/discovery}

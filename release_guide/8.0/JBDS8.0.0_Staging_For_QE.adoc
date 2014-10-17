@@ -213,6 +213,7 @@ done
 # update https://devstudio.redhat.com/updates/8.0-staging/devstudio-directory.xml to point at new Core discovery jar.
 # Latest discovery site is here: http://www.qa.jboss.com/binaries/RHDS/discovery/development/${versionWithRespin}
 pushd updates/8.0-staging/
+rm -f devstudio-directory.xml
 wget -q -nc http://www.qa.jboss.com/binaries/RHDS/discovery/development/${versionWithRespin}/devstudio-directory.xml
 newJars=$(cat devstudio-directory.xml | grep entry | sed -e "s#.\+plugins/#plugins/#g" | sed -e "s#.\+discovery/#discovery/#g" |sed -e "s#\.jar.\+#.jar#g")
 for newJar in $newJars; do 

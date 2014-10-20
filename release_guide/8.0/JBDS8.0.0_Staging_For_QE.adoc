@@ -346,6 +346,18 @@ wget https://devstudio.redhat.com/updates/8.0/devstudio-earlyaccess.properties
 scp devstudio-earlyaccess.properties ${JBDS}/updates/8.0-staging
 ----
 
+== Minimal testing
+
+Make sure that the very basic installation scenario works:
+
+1. Download JBDS installer and install it
+2. Go to Central > Software Updates page
+3. Enable Early-Access
+4. Select all
+5. Run installation
+
+If this fails, it most likely highlight a bug or a failure in the previous steps, so fix it before notifying team.
+
 == Notify the team (send 1 email)
 ____
 *To* external-exadel-list@redhat.com +

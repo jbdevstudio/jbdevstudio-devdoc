@@ -30,13 +30,12 @@ NOTE: As this takes some time and can be easily cancelled, this step can be anti
 ____
 *To* release-engineering@redhat.com +
 and +
-*Cc* cobrien@redhat.com, ldimaggi@redhat.com, mmurray@redhat.com, jpallich@redhat.com +
+*Cc* cobrien@redhat.com, ldimaggi@redhat.com, mmurray@redhat.com, jpallich@redhat.com, nboldt@redhat.com, mistria@redhat.com, maxanderse@redhat.com, bsutter@redhat.com +
 
 [source,bash]
 ----
 version=8.0.0.GA
 versionWithRespin=8.0.0.CR2c # a, b, c...
-version3=8.0.0.GA-v20141020-1042-B317
 echo "
 Subject: 
 
@@ -46,36 +45,21 @@ Body:
 
 JBoss Developer Studio ${version} (to be renamed from ${versionWithRespin}) is available to push to CSP staging server, for subsequent smoke test & review by QE.
 
-Please include these 5 files:
+Please include the 5 jars/zips listed here:
 
-* http://www.qa.jboss.com/binaries/RHDS/builds/development/${versionWithRespin}-build-core/jboss-devstudio-${version3}-installer-standalone.jar 
-* http://www.qa.jboss.com/binaries/RHDS/builds/development/${versionWithRespin}-build-core/jboss-devstudio-${version3}-installer-eap.jar
-* http://www.qa.jboss.com/binaries/RHDS/builds/development/${versionWithRespin}-build-core/jboss-devstudio-${version3}-installer-src.zip
-* http://www.qa.jboss.com/binaries/RHDS/builds/development/${versionWithRespin}-build-core/jboss-devstudio-${version3}-updatesite-core.zip
-* http://www.qa.jboss.com/binaries/RHDS/builds/development/${versionWithRespin}-build-core/jboss-devstudio-${version3}-updatesite-central.zip
+* http://www.qa.jboss.com/binaries/RHDS/builds/development/${versionWithRespin}-build-core/
 
-We will also need GoldenGate links for the 5 artifacts above, as they need to be linked from these pages for Early Access:
+We will also need GoldenGate links for the 5 artifacts above, as they need to be linked from these pages:
 
 * https://www.jboss.org/products/devstudio/overview/
 * https://www.jboss.org/products/devstudio/download/
 
 Only ONE of those artifacts [0] require sign in, as it bundles EAP. The rest are free. 
 
-[0] http://www.qa.jboss.com/binaries/RHDS/builds/development/${versionWithRespin}-build-core/jboss-devstudio-${version3}-installer-eap.jar
+[0] jboss-devstudio-*-installer-eap.jar 
 
-Please note that the new CSP pages should include similar documentation 
-to the previous release ( 
-https://access.redhat.com/jbossnetwork/restricted/listSoftware.html ) 
-but with these string replacements / updates:
-* s/Luna M6/Luna/g
-* s/Luna M6 JEE bundle/Luna JEE bundle/g
-* s/lunam6/luna/g
-
-When pushed, please reply so that QE can review the CSP pages & files 
-for push to production and use the Golden Gate links to update the 
-public site.
-
-Thanks in advance,
+Please note that the new CSP pages should include similar documentation
+to the previous release but now I've pre-generated the HTML and text content in the above folder.
 
 When pushed, please reply so that QE can review the CSP pages & files for push to production.
 

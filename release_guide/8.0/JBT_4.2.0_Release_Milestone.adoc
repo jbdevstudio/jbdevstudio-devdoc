@@ -212,56 +212,9 @@ example 'luna' or 'mars'), ensure that upstream project Web Tools (WTP) knows to
 This is only necessary if this new milestone uses a new Target Platform. In case there is no change in Target Platform between this milestone/release and the 
 previous one, you can ignore these steps.
 
-=== Final/GA releases 
+=== Make sure necessary target-platforms are released
 
-For Final or GA releases, the target platform folders should be moved to /static/ and symlinked back.
-
-Thus for example, 
-
-http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/4.40.0.Final/
-http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/4.41.0.Final/
-http://download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/4.40.0.Final/
-http://download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/4.41.0.Final/
-
-should be moved to:
-
-http://download.jboss.org/jbosstools/static/targetplatforms/jbosstoolstarget/4.40.0.Final/
-http://download.jboss.org/jbosstools/static/targetplatforms/jbosstoolstarget/4.41.0.Final/
-http://download.jboss.org/jbosstools/static/targetplatforms/jbdevstudiotarget/4.40.0.Final/
-http://download.jboss.org/jbosstools/static/targetplatforms/jbdevstudiotarget/4.41.0.Final/
-
-Then you can symlink the old location to the new one.
-
-1. Create 4 relative-path symlinks on your local disk, like this:
-
-[source,bash]
-----
-cd /path/to/jbosstools-download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget
-ln -s ../../static/targetplatforms/jbosstoolstarget/4.40.0.Final
-ln -s ../../static/targetplatforms/jbosstoolstarget/4.41.0.Final
-cd ../jbdevstudiotarget
-ln -s ../../static/targetplatforms/jbdevstudiotarget/4.40.0.Final
-ln -s ../../static/targetplatforms/jbdevstudiotarget/4.41.0.Final
-----
-
-2. Push those files to github:
-
-https://github.com/jbosstools/jbosstools-download.jboss.org/pull/429
-
-3. scp/sftp/rsync these link files to the server, where they will act as symlinks
-
-4. Verify:
-
-http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/4.40.0.Final/
-http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/4.41.0.Final/
-http://download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/4.40.0.Final/
-http://download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/4.41.0.Final/
-
-http://download.jboss.org/jbosstools/static/targetplatforms/jbosstoolstarget/4.40.0.Final/
-http://download.jboss.org/jbosstools/static/targetplatforms/jbosstoolstarget/4.41.0.Final/
-http://download.jboss.org/jbosstools/static/targetplatforms/jbdevstudiotarget/4.40.0.Final/
-http://download.jboss.org/jbosstools/static/targetplatforms/jbdevstudiotarget/4.41.0.Final/
-
+Releases (either development or GA) are supposed to use released target-platforms. So if the build is still using a -SNAPSHOT target-platform, you should release it first following documentation at https://github.com/jbosstools/jbosstools-devdoc/blob/master/building/target_platforms/target_platforms_releases.md . An important point is that at least for GAs, the target platform site needs to leverage *Akamai* in order to improve download and installation performances. The document mentioned gives more details on how to make a target platform release site mirrored by Akamai.
 
 === JBoss Tools and Developer Studio Target Platforms
 

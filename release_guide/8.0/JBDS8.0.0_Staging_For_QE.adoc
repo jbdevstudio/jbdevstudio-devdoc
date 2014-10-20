@@ -381,7 +381,7 @@ Body:
 
 As always, these are not FINAL bits, but preliminary results for QE testing. Not for redistribution to customers. Links in this section are all internal (VPN required), except for the target platform.
 
-Universal Installers: http://www.qa.jboss.com/binaries/RHDS/builds/development/8.0.0.CR2-build-core/build-info.html (Internal, VPN required)
+Universal Installers: http://www.qa.jboss.com/binaries/RHDS/builds/development/${versionWithRespin}-build-core/build-info.html (Internal, VPN required)
 Update Sites:
 * https://devstudio.redhat.com/updates/8.0-staging/ (includes ${versionWithRespin} Core + Target Platform + JBoss Central)
 * https://devstudio.redhat.com/earlyaccess/8.0-staging/ (includes the above site + Early Access)

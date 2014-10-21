@@ -339,11 +339,9 @@ Update site: https://devstudio.jboss.com/updates/8.0-development/
 
 Early Access site: https://devstudio.jboss.com/earlyaccess/8.0-development/
 
-Note that the update sites may take a while to replicate from our staging server to publication. Please allow at least an hour before attempting to install from the site - if the page above still shows the previous milestone instead of ${version}, try again later.
-
 --
 
-Eclipse Marketplace: https://marketplace.eclipse.org/content/red-hat-jboss-developer-studio-kepler
+Eclipse Marketplace: https://marketplace.eclipse.org/content/red-hat-jboss-developer-studio-luna
 
 --
 

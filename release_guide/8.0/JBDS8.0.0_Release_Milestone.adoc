@@ -63,6 +63,12 @@ to the previous release but now I've pre-generated the HTML and text content in 
 
 When pushed, please reply so that QE can review the CSP pages & files for push to production.
 
+Note that in addition to the new CSP page, eg., [1] or [2], the CSP landing page [3] should also be updated to point to the latest release.
+
+[1] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=8.0.0+CR1
+[2] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=8.0.0
+[3] https://access.redhat.com/downloads/
+
 Thanks in advance,
 
 "

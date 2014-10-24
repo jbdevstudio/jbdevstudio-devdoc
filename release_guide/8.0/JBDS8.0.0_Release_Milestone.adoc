@@ -22,6 +22,18 @@ firefox https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
   https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
 ----
 
+== Rename artifacts to remove timestamp and buildID
+
+To comply with Goldengate URL rules, we need to rename artifacts before they go to the CSP.
+
+Thus, using this regex - s#-v\d{8}-\d{4}-B\d+## - we would rename as follows:
+
+  jboss-devstudio-8.0.0.GA-v20141020-1042-B317-installer-standalone.jar
+
+to
+
+  jboss-devstudio-8.0.0.GA-installer-standalone.jar 
+
 == Announce internally for push to CSP staging site
 
 First thing is to ask for availability of the binaries to CSP (Red Hat Customer Portal) and Golden Gate (JBoss products portal).

@@ -329,13 +329,17 @@ firefox https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
 ----
 
 
-== Notify the team (send 2 emails)
+== Notify the team (send 2 or more emails)
 
 ____
 
 *To* jbosstools-dev@lists.jboss.org +
 and +
-*To* external-exadel-list@redhat.com, jboss-announce@redhat.com (optional for major milestones/releases)+
+*To* external-exadel-list@redhat.com +
+and +
+*To* jboss-announce@redhat.com (optional for major milestones, recommended for GA releases) +
+and +
+*To* gss-support-readiness@redhat.com, dgeoffro@redhat.com, mmusaji@redhat.com (for GA releases ONLY)
 
 [source,bash]
 ----

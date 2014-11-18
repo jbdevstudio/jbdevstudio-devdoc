@@ -339,7 +339,7 @@ and +
 and +
 *To* jboss-announce@redhat.com (optional for major milestones, recommended for GA releases) +
 and +
-*To* gss-support-readiness@redhat.com, dgeoffro@redhat.com, mmusaji@redhat.com (for GA releases ONLY)
+*To* gss-support-readiness@redhat.com, dgeoffro@redhat.com, mmusaji@redhat.com (for all GA releases (major, minor, maintenance) ONLY)
 
 [source,bash]
 ----

@@ -267,11 +267,11 @@ git checkout FETCH_HEAD
 
 vim ide-config.properties # or use another editor 
 
-# replace existing lines with these to make the ${version} stuff live. ${version} must be exanded in the file
-  jboss.discovery.directory.url|jbosstools|4.2.1.CR1=http://download.jboss.org/jbosstools/discovery/staging/${version}/jbosstools-directory.xml
-  jboss.discovery.site.url|jbosstools|4.2.1.CR1=http://download.jboss.org/jbosstools/updates/staging/luna/
-  jboss.discovery.earlyaccess.site.url|jbosstools|4.2.1.CR1=http://download.jboss.org/jbosstools/discovery/staging/${version}/
-  jboss.discovery.earlyaccess.list.url|jbosstools|4.2.1.CR1=http://download.jboss.org/jbosstools/discovery/staging/${version}/jbosstools-earlyaccess.properties
+# replace existing lines with these to make the lastest milestone live.
+jboss.discovery.directory.url|jbosstools|4.2.1.CR1=http://download.jboss.org/jbosstools/discovery/staging/4.2.1.CR1/jbosstools-directory.xml
+jboss.discovery.site.url|jbosstools|4.2.1.CR1=http://download.jboss.org/jbosstools/updates/staging/luna/
+jboss.discovery.earlyaccess.site.url|jbosstools|4.2.1.CR1=http://download.jboss.org/jbosstools/discovery/staging/4.2.1.CR1/
+jboss.discovery.earlyaccess.list.url|jbosstools|4.2.1.CR1=http://download.jboss.org/jbosstools/discovery/staging/4.2.1.CR1/jbosstools-earlyaccess.properties
 
 # commit the change and push to master
 git add ide-config.properties
@@ -312,8 +312,8 @@ version=4.2.1.CR1 # a, b, c...
 respin="respin-"
 TARGET_PLATFORM_VERSION_MIN=4.40.0.Final
 TARGET_PLATFORM_VERSION_MAX=4.41.1.CR1
-TARGET_PLATFORM_CENTRAL_MAX=4.41.0.Final
-TARGET_PLATFORM_EARLYACCESS_MAX=4.41.0.Final
+TARGET_PLATFORM_CENTRAL_MAX=4.41.1.CR1-SNAPSHOT
+TARGET_PLATFORM_EARLYACCESS_MAX=4.41.1.CR1-SNAPSHOT
 jbdsFixVersion=8.0.1.CR1 # no respin suffix here
 jbtFixVersion=4.2.1.CR1 # no respin suffix here
 echo "

@@ -28,7 +28,7 @@ Whenever you're starting a new shell, you should set those variables:
 ----
 versionWithRespin=8.0.1.CR1
 TARGET_PLATFORM_VERSION_MAX=4.41.1.CR1
-CENTRAL_TARGET_VERSION=4.41.0.Final
+CENTRAL_TARGET_VERSION=4.41.1.CR1-SNAPSHOT
 previousFull=8.0.0.GA
 now=$(date +%s000)
 isGA=false
@@ -132,7 +132,7 @@ rsync -aPrz --rsh=ssh --protocol=28 /tmp/jboss-devstudio-${versionWithRespin}-ta
 # TODO: verify correct URL and filename for the target zip
 versionWithRespin=8.0.1.CR1 # a, b, c...
 JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
-CENTRAL_TARGET_VERSION=4.41.0.Final
+CENTRAL_TARGET_VERSION=4.41.1.CR1-SNAPSHOT
 # Central discovery
 rm -rf /qa/services/http/binaries/RHDS/targetplatforms/jbtcentraltarget/${CENTRAL_TARGET_VERSION}
 mkdir -p /qa/services/http/binaries/RHDS/targetplatforms/jbtcentraltarget/${CENTRAL_TARGET_VERSION}/
@@ -147,7 +147,7 @@ rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/targetplatfo
 # TODO: verify correct URL and filename for the target zip
 versionWithRespin=8.0.1.CR1 # a, b, c...
 JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
-CENTRAL_TARGET_VERSION=4.41.0.Final
+CENTRAL_TARGET_VERSION=4.41.1.CR1-SNAPSHOT
 # Early Access
 rm -rf /qa/services/http/binaries/RHDS/targetplatforms/jbtearlyaccesstarget/${CENTRAL_TARGET_VERSION}/
 mkdir -p /qa/services/http/binaries/RHDS/targetplatforms/jbtearlyaccesstarget/${CENTRAL_TARGET_VERSION}/
@@ -172,7 +172,7 @@ NOTE: Now that Central content is merged into the same composite as JBDS and its
 versionWithRespin=8.0.1.CR1 # a, b, c...
 now=`date +%s000`
 
-oldTP=jboss-devstudio-8.0.1.CR1
+oldTP=jboss-devstudio-8.0.0.GA
 newTP=jboss-devstudio-${versionWithRespin}
 # Example for a respin
 # oldTP=jboss-devstudio-8.0.1.CR1
@@ -368,8 +368,8 @@ versionWithRespin=8.0.1.CR1 # a, b, c...
 respin="respin-"
 TARGET_PLATFORM_VERSION_MIN=4.40.0.Final
 TARGET_PLATFORM_VERSION_MAX=4.41.1.CR1
-TARGET_PLATFORM_CENTRAL_MAX=4.41.0.Final
-TARGET_PLATFORM_EARLYACCESS_MAX=4.41.0.Final
+TARGET_PLATFORM_CENTRAL_MAX=4.41.1.CR1-SNAPSHOT
+TARGET_PLATFORM_EARLYACCESS_MAX=4.41.1.CR1-SNAPSHOT
 jbdsVersion=8.0.1.CR1 # no respin suffix here
 jbtVersion=4.2.1.CR1 # no respin suffix here
 echo "

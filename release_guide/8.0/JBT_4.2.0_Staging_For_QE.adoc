@@ -131,6 +131,41 @@ This site needs to contain:
 * The latest matching target platform site
 * The latest matching JBoss Tools Central site
 
+[source,bash]
+----
+versionWithRespin_PREV=4.2.0.Final
+TARGET_PLATFORM_VERSION_MAX_PREV=4.41.0.Final
+TARGET_PLATFORM_CENTRAL_MAX_PREV=4.41.1.CR1-SNAPSHOT
+
+versionWithRespin=4.2.1.CR1
+TARGET_PLATFORM_VERSION_MAX=4.41.1.CR1
+TARGET_PLATFORM_CENTRAL_MAX=4.41.1.CR1-SNAPSHOT
+
+cd jbosstools-download.jboss.org/jbosstools/updates/staging/luna
+git fetch origin master
+git checkout FETCH_HEAD
+
+# replace static/releases with updates/staging/luna/, then replace all the versions
+now=`date +%s000`
+for c in compositeContent.xml compositeArtifacts.xml; do 
+  sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#" $c
+  sed -i -e "s#/static/releases/#/updates/staging/luna/#" $c
+  sed -i -e "s#${versionWithRespin_PREV}#${versionWithRespin}#" $c
+  sed -i -e "s#${TARGET_PLATFORM_VERSION_MAX_PREV}#${TARGET_PLATFORM_VERSION_MAX}#" $c
+  sed -i -e "s#${TARGET_PLATFORM_CENTRAL_MAX_PREV}#${TARGET_PLATFORM_CENTRAL_MAX}#" $c
+done
+cat $c | egrep "${versionWithRespin}|${TARGET_PLATFORM_VERSION_MAX}|${TARGET_PLATFORM_CENTRAL_MAX}|timestamp"
+
+# commit the change and push to master
+git add composite*.xml
+git commit -m "release JBT ${versionWithRespin} to QE" composite*.xml
+git push origin HEAD:master
+
+# push updated file to server
+scp composite*.xml tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/luna/
+
+----
+
 
 == Rebuild Target Platforms for Central and Early Access
 

@@ -316,10 +316,10 @@ git checkout FETCH_HEAD
 vim ide-config.properties # or use another editor 
 
 # otherwise, replace existing lines with these to make the lastest milestone live
-jboss.discovery.directory.url|jbosstools|4.2.1.CR1=http://download.jboss.org/jbosstools/discovery/staging/4.2.0.CR2/jbosstools-directory.xml
+jboss.discovery.directory.url|jbosstools|4.2.1.CR1=http://download.jboss.org/jbosstools/discovery/staging/${version}/jbosstools-directory.xml
 jboss.discovery.site.url|jbosstools|4.2.1.CR1=http://download.jboss.org/jbosstools/updates/staging/luna/
-jboss.discovery.earlyaccess.site.url|jbosstools|4.2.1.CR1=http://download.jboss.org/jbosstools/discovery/staging/4.2.0.CR2/
-jboss.discovery.earlyaccess.list.url|jbosstools|4.2.1.CR1=http://download.jboss.org/jbosstools/discovery/staging/4.2.0.CR2/jbosstools-earlyaccess.properties
+jboss.discovery.earlyaccess.site.url|jbosstools|4.2.1.CR1=http://download.jboss.org/jbosstools/discovery/staging/${version}/
+jboss.discovery.earlyaccess.list.url|jbosstools|4.2.1.CR1=http://download.jboss.org/jbosstools/discovery/staging/${version}/jbosstools-earlyaccess.properties
 
 # commit the change and push to master
 git add ide-config.properties
@@ -359,7 +359,7 @@ ____
 version=4.2.1.CR2 # a, b, c...
 respin="respin-a"
 TARGET_PLATFORM_VERSION_MIN=4.40.0.Final
-TARGET_PLATFORM_VERSION_MAX=4.41.1.CR1
+TARGET_PLATFORM_VERSION_MAX=4.41.1.CR2
 TARGET_PLATFORM_CENTRAL_MAX=4.41.1.CR1-SNAPSHOT
 TARGET_PLATFORM_EARLYACCESS_MAX=4.41.1.CR1-SNAPSHOT
 jbdsFixVersion=8.0.1.CR1 # no respin suffix here
@@ -376,8 +376,8 @@ As always, these are not FINAL bits, but preliminary results for QE & community 
 Update site: http://download.jboss.org/jbosstools/updates/staging/luna/
 
 Target platforms: 
-* http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MIN} (upcoming Luna R milestone)
-* http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MAX} (upcoming Luna SR1 milestone)
+* http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MIN} 
+* http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MAX} 
 
 Until the above target platform site is released, you may need to add it to Eclipse to resolve dependencies at install time. 
 Once released, dependencies will be found automatically from here:

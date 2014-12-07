@@ -275,7 +275,9 @@ git add ${newJarEA} ${newJarCore}
 git add . discovery/*.jar
 git add ../../earlyaccess/8.0-staging/
 # TODO: make sure you're using a PR & topic branch!
-git commit -m "release ${versionWithRespin} for QE
+pushd ../..
+git commit -m "release ${versionWithRespin} for QE" .
+popd
 
 * add new discovery plugins ${newJarCore}, ${newJarEA}
 * update devstudio-directory.xml
@@ -354,9 +356,11 @@ and copy it do __https://devstudio.redhat.com/updates/8.0-staging/devstudio-earl
 
 [source,bash]
 ----
-rm devstudio-earlyaccess.properties
-wget https://devstudio.redhat.com/updates/8.0/devstudio-earlyaccess.properties
+pushd jbdevstudio-website/content/updates/8.0-staging
+rm -f devstudio-earlyaccess.properties
+wget -nc -q --no-check-certificate https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_8.0.luna/job/jbosstools-discovery_4.2.luna/ws/sources/jbdevstudio/com.jboss.jbds.central.discovery.earlyaccess/devstudio-earlyaccess.properties
 scp devstudio-earlyaccess.properties ${JBDS}/updates/8.0-staging
+
 ----
 
 == Minimal testing

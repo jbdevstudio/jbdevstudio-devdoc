@@ -331,15 +331,15 @@ updatesiteURL=http://www.qa.jboss.com/binaries/RHDS/builds/staging/devstudio.pro
 cd /tmp; wget -q -nc $updatesiteURL
 thejar=`cat index.html | egrep -v "source|pack.gz" | egrep "core.central|foundation.core" | sed -e "s#.\+href=\"\([^\"]\+\)\">.\+#\1#" | sort | head -1; rm -f index.html`
 cd /tmp; wget -q -nc ${updatesiteURL}/${thejar}
-theversion=`unzip -p ${thejar} */currentversion.properties | grep default.version | sed -e "s/default.version=//"`
+theversion=`unzip -p ${thejar} */currentversion.properties | grep version= | sed -e "s/version=//" | tail -1`
 rm -f ${thejar}
 echo $theversion
 
 # if value found above for $jbosstoolsversion != current release version, then you need to rebuild foundation w/ a new value inserted.
 
-jboss.discovery.directory.url|devstudio|8.0.1.GA=https://devstudio.redhat.com/updates/8.0-staging/devstudio-directory.xml
-jboss.discovery.site.url|devstudio|8.0.1.GA=https://devstudio.redhat.com/updates/8.0-staging/
-jboss.discovery.earlyaccess.site.url|devstudio|8.0.1.GA=https://devstudio.redhat.com/earlyaccess/8.0-staging/
+jboss.discovery.directory.url|devstudio|8.0.1.CR1=https://devstudio.redhat.com/updates/8.0-staging/devstudio-directory.xml
+jboss.discovery.site.url|devstudio|8.0.1.CR1=https://devstudio.redhat.com/updates/8.0-staging/
+jboss.discovery.earlyaccess.site.url|devstudio|8.0.1.CR1=https://devstudio.redhat.com/earlyaccess/8.0-staging/
 ----
 
 

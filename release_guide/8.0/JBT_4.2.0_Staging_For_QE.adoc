@@ -302,10 +302,9 @@ updatesiteURL=http://download.jboss.org/jbosstools/updates/nightly/core/4.2.luna
 cd /tmp; wget -q -nc $updatesiteURL
 thejar=`cat index.html | egrep -v "source|pack.gz" | egrep "core.central|foundation.core" | sed -e "s#.\+href=\"\([^\"]\+\)\">.\+#\1#" | sort | head -1; rm -f index.html`
 cd /tmp; wget -q -nc ${updatesiteURL}/${thejar}
-theversion=`unzip -p ${thejar} */currentversion.properties | grep default.version | sed -e "s/default.version=//"`
+theversion=`unzip -p ${thejar} */currentversion.properties | grep version= | sed -e "s/version=//" | tail -1`
 rm -f ${thejar}
 echo $theversion
-
 
 # if value found above for $jbosstoolsversion != current release version, then you need to rebuild foundation w/ a new value inserted.
 
@@ -317,10 +316,10 @@ git checkout FETCH_HEAD
 vim ide-config.properties # or use another editor 
 
 # otherwise, replace existing lines with these to make the lastest milestone live
-jboss.discovery.directory.url|jbosstools|4.2.0.Final=http://download.jboss.org/jbosstools/discovery/staging/4.2.0.Final/jbosstools-directory.xml
-jboss.discovery.site.url|jbosstools|4.2.0.Final=http://download.jboss.org/jbosstools/updates/staging/luna/
-jboss.discovery.earlyaccess.site.url|jbosstools|4.2.0.Final=http://download.jboss.org/jbosstools/discovery/staging/4.2.0.Final/
-jboss.discovery.earlyaccess.list.url|jbosstools|4.2.0.Final=http://download.jboss.org/jbosstools/discovery/staging/4.2.0.Final/jbosstools-earlyaccess.properties
+jboss.discovery.directory.url|jbosstools|4.2.1.CR1=http://download.jboss.org/jbosstools/discovery/staging/4.2.0.CR2/jbosstools-directory.xml
+jboss.discovery.site.url|jbosstools|4.2.1.CR1=http://download.jboss.org/jbosstools/updates/staging/luna/
+jboss.discovery.earlyaccess.site.url|jbosstools|4.2.1.CR1=http://download.jboss.org/jbosstools/discovery/staging/4.2.0.CR2/
+jboss.discovery.earlyaccess.list.url|jbosstools|4.2.1.CR1=http://download.jboss.org/jbosstools/discovery/staging/4.2.0.CR2/jbosstools-earlyaccess.properties
 
 # commit the change and push to master
 git add ide-config.properties

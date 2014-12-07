@@ -41,16 +41,16 @@ Once the above conditions have been met, you can proceed to the next steps.
 === Promote builds from "nightly" to "staging"
 
 *Staging* is where we store builds for staging. This contains build metadata. The URL for staging sites pattern is +http://download.jboss.org/jbosstools/staging/<version>.<siteName>/<buildId>::
-. *Core* site (which contains JBoss Tools): Move the most recent build available from +http://downloads.jboss.org/jbosstools/builds/nightly/core/4.2.luna+ to +http://downloads.jboss.org/jbosstools/builds/staging/jbosstools-4.2.1.CR1-updatesite-core/+
-. *Core Tests* site (which contains JBoss Tools tests): Move the most recent build available from +http://downloads.jboss.org/jbosstools/builds/nightly/coretests/4.2.luna+ to +http://downloads.jboss.org/jbosstools/builds/staging/jbosstools-4.2.1.CR1-updatesite-coretests/+
-. *WebTools* site (which contains only WTP connectors for AS/WildFly/EAP): Move the most recent build available from +http://downloads.jboss.org/jbosstools/builds/nightly/webtools/4.2.luna+ to +http://downloads.jboss.org/jbosstools/builds/staging/jbosstools-4.2.1.CR1-updatesite-webtools/+ 
-. *Hibernate Tools* site (which contains Hibernate Tools, a subset of JBoss Tools): Move the most recent build available from +http://downloads.jboss.org/jbosstools/builds/nightly/hibernatetools/4.2.luna+ to +http://downloads.jboss.org/jbosstools/builds/staging/jbosstools-4.2.1.CR1-updatesite-hibernatetools/+
+. *Core* site (which contains JBoss Tools): Move the most recent build available from +http://downloads.jboss.org/jbosstools/builds/nightly/core/4.2.luna+ to +http://downloads.jboss.org/jbosstools/builds/staging/jbosstools-4.2.1.CR2-updatesite-core/+
+. *Core Tests* site (which contains JBoss Tools tests): Move the most recent build available from +http://downloads.jboss.org/jbosstools/builds/nightly/coretests/4.2.luna+ to +http://downloads.jboss.org/jbosstools/builds/staging/jbosstools-4.2.1.CR2-updatesite-coretests/+
+. *WebTools* site (which contains only WTP connectors for AS/WildFly/EAP): Move the most recent build available from +http://downloads.jboss.org/jbosstools/builds/nightly/webtools/4.2.luna+ to +http://downloads.jboss.org/jbosstools/builds/staging/jbosstools-4.2.1.CR2-updatesite-webtools/+ 
+. *Hibernate Tools* site (which contains Hibernate Tools, a subset of JBoss Tools): Move the most recent build available from +http://downloads.jboss.org/jbosstools/builds/nightly/hibernatetools/4.2.luna+ to +http://downloads.jboss.org/jbosstools/builds/staging/jbosstools-4.2.1.CR2-updatesite-hibernatetools/+
 
 Here is a script that does this:
 [source,bash]
 ----
 stream=4.2.luna
-version=4.2.1.CR1 # a, b, c...
+version=4.2.1.CR2 # a, b, c...
 
 site=core
 # Retrieve latest build and remove trailing slash
@@ -99,7 +99,7 @@ p2 repositories are expected to be under the +http://download.jboss.org/jbosstoo
 [source,bash]
 ----
 stream=4.2.luna
-version=4.2.1.CR1 # a, b, c...
+version=4.2.1.CR2 # a, b, c...
 
 site=core
 echo "rename nightly/${site}/${stream} staging/luna/jbosstools-${version}-updatesite-${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates  
@@ -133,12 +133,12 @@ This site needs to contain:
 
 [source,bash]
 ----
-versionWithRespin_PREV=4.2.0.Final
-TARGET_PLATFORM_VERSION_MAX_PREV=4.41.0.Final
+versionWithRespin_PREV=4.2.1.CR1
+TARGET_PLATFORM_VERSION_MAX_PREV=4.41.1.CR1
 TARGET_PLATFORM_CENTRAL_MAX_PREV=4.41.1.CR1-SNAPSHOT
 
-versionWithRespin=4.2.1.CR1
-TARGET_PLATFORM_VERSION_MAX=4.41.1.CR1
+versionWithRespin=4.2.1.CR2
+TARGET_PLATFORM_VERSION_MAX=4.41.1.CR2
 TARGET_PLATFORM_CENTRAL_MAX=4.41.1.CR1-SNAPSHOT
 
 cd jbosstools-download.jboss.org/jbosstools/updates/staging/luna
@@ -212,7 +212,7 @@ WARNING: Make sure you performed the step <<update-discovery-urls,Update Discove
 [source,bash]
 ----
 stream=4.2.luna
-version=4.2.1.CR1 # a, b, c...
+version=4.2.1.CR2 # a, b, c...
 # earlyaccess site includes one directory.xml file which lists both core and earlyaccess plugins, so use that instead of core site
 echo "rename nightly/earlyaccess/${stream} staging/${version}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery/
 echo " >> http://download.jboss.org/jbosstools/discovery/staging/${version}/" | egrep ">>|${version}"
@@ -242,7 +242,7 @@ alias   scpr="rsync -aPrz --rsh=ssh --protocol=28"
 Them you can run this 4 steps in parallel:
 [source,bash]
 ----
-version=4.2.1.CR1 #a, b, c...
+version=4.2.1.CR2 #a, b, c...
 stream=4.2.luna
 branch=core/${stream}
 scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/luna/jbosstools-${version}-updatesite-core/* /tmp/jbosstools-${version}-updatesite-core/
@@ -250,7 +250,7 @@ scpr /tmp/jbosstools-${version}-updatesite-core/* tools@filemgmt.jboss.org:/down
 rm -fr /tmp/jbosstools-${version}-updatesite-core/
 echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
 
-version=4.2.1.CR1 #a, b, c...
+version=4.2.1.CR2 #a, b, c...
 stream=4.2.luna
 branch=coretests/${stream}
 scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/luna/jbosstools-${version}-updatesite-coretests/* /tmp/jbosstools-${version}-updatesite-coretests/
@@ -258,7 +258,7 @@ scpr /tmp/jbosstools-${version}-updatesite-coretests/* tools@filemgmt.jboss.org:
 rm -fr /tmp/jbosstools-${version}-updatesite-coretests/
 echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
 
-version=4.2.1.CR1 #a, b, c...
+version=4.2.1.CR2 #a, b, c...
 stream=4.2.luna
 branch=hibernatetools/${stream}
 scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/luna/jbosstools-${version}-updatesite-hibernatetools/* /tmp/jbosstools-${version}-updatesite-hibernatetools/
@@ -266,7 +266,7 @@ scpr /tmp/jbosstools-${version}-updatesite-hibernatetools/* tools@filemgmt.jboss
 rm -fr /tmp/jbosstools-${version}-updatesite-hibernatetools/
 echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
 
-version=4.2.1.CR1 #a, b, c...
+version=4.2.1.CR2 #a, b, c...
 stream=4.2.luna
 branch=webtools/${stream}
 scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/luna/jbosstools-${version}-updatesite-webtools/* /tmp/jbosstools-${version}-updatesite-webtools/
@@ -275,7 +275,7 @@ rm -fr /tmp/jbosstools-${version}-updatesite-webtools/
 echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
 
 # now, discovery site
-version=4.2.1.CR1 #a, b, c...
+version=4.2.1.CR2 #a, b, c...
 stream=4.2.luna
 branch=earlyaccess/${stream}
 scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery/staging/${version}/* /tmp/jbosstools-${version}-updatesite-discovery/
@@ -294,19 +294,33 @@ And update it it as required, so that the links for the latest milestone point t
 
 [source,bash]
 ----
-version=4.2.1.CR1 #a, b, c...
+
+# @since JBT 4.2.1 / JBDS 8.0.1
+# JBIDE-18820, JBIDE-18806 check the version set in o.j.t.foundation.core's currentversion.properties value of default.version
+updatesiteURL=http://www.qa.jboss.com/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/all/repo/plugins/
+updatesiteURL=http://download.jboss.org/jbosstools/updates/nightly/core/4.2.luna/plugins/
+cd /tmp; wget -q -nc $updatesiteURL
+thejar=`cat index.html | egrep -v "source|pack.gz" | egrep "core.central|foundation.core" | sed -e "s#.\+href=\"\([^\"]\+\)\">.\+#\1#" | sort | head -1; rm -f index.html`
+cd /tmp; wget -q -nc ${updatesiteURL}/${thejar}
+theversion=`unzip -p ${thejar} */currentversion.properties | grep default.version | sed -e "s/default.version=//"`
+rm -f ${thejar}
+echo $theversion
+
+
+# if value found above for $jbosstoolsversion != current release version, then you need to rebuild foundation w/ a new value inserted.
+
+version=4.2.1.CR2 #a, b, c...
 # adjust these steps to fit your own path location & git workflow
 cd jbosstools-download.jboss.org/jbosstools/configuration
 git fetch jbosstools master
 git checkout FETCH_HEAD
-
 vim ide-config.properties # or use another editor 
 
-# replace existing lines with these to make the lastest milestone live.
-jboss.discovery.directory.url|jbosstools|4.2.1.CR1=http://download.jboss.org/jbosstools/discovery/staging/4.2.1.CR1/jbosstools-directory.xml
-jboss.discovery.site.url|jbosstools|4.2.1.CR1=http://download.jboss.org/jbosstools/updates/staging/luna/
-jboss.discovery.earlyaccess.site.url|jbosstools|4.2.1.CR1=http://download.jboss.org/jbosstools/discovery/staging/4.2.1.CR1/
-jboss.discovery.earlyaccess.list.url|jbosstools|4.2.1.CR1=http://download.jboss.org/jbosstools/discovery/staging/4.2.1.CR1/jbosstools-earlyaccess.properties
+# otherwise, replace existing lines with these to make the lastest milestone live
+jboss.discovery.directory.url|jbosstools|4.2.0.Final=http://download.jboss.org/jbosstools/discovery/staging/4.2.0.Final/jbosstools-directory.xml
+jboss.discovery.site.url|jbosstools|4.2.0.Final=http://download.jboss.org/jbosstools/updates/staging/luna/
+jboss.discovery.earlyaccess.site.url|jbosstools|4.2.0.Final=http://download.jboss.org/jbosstools/discovery/staging/4.2.0.Final/
+jboss.discovery.earlyaccess.list.url|jbosstools|4.2.0.Final=http://download.jboss.org/jbosstools/discovery/staging/4.2.0.Final/jbosstools-earlyaccess.properties
 
 # commit the change and push to master
 git add ide-config.properties
@@ -343,8 +357,8 @@ ____
 
 [source,bash]
 ----
-version=4.2.1.CR1 # a, b, c...
-respin="respin-"
+version=4.2.1.CR2 # a, b, c...
+respin="respin-a"
 TARGET_PLATFORM_VERSION_MIN=4.40.0.Final
 TARGET_PLATFORM_VERSION_MAX=4.41.1.CR1
 TARGET_PLATFORM_CENTRAL_MAX=4.41.1.CR1-SNAPSHOT

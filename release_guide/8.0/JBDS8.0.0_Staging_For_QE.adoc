@@ -270,6 +270,24 @@ rm -fr ${newJarCore}_
 #  cp -f jbdevstudio-website/content/updates/8.0-staging/devstudio-directory.xml jbdevstudio-website/content/updates/8.0/devstudio-directory.xml
 #fi
 
+# rememeber to include IS jar in devstudio-directory.xml
+isjar=""
+isjar=`grep integration-stack ../../updates/8.0/devstudio-directory.xml`
+isjar=`grep integration-stack ../../updates/8.0-development/devstudio-directory.xml`
+if [[ ${isjar} ]]; then 
+  # echo "Found integration-stack jar: ${isjar}"
+  isjar2=`grep integration-stack ../../updates/8.0-staging/devstudio-directory.xml`
+  if [[ ! ${isjar2} ]]; then
+    echo "ERROR: no integration stack jar listed in 8.0-staging/devstudio-directory.xml" | grep ERROR
+    echo "Please add this to 8.0-staging/devstudio-directory.xml :"
+    echo ""
+    echo "${isjar}"
+    echo ""
+  else
+    echo "devstudio-directory.xml includes ${isjar}" | grep integration-stack
+  fi
+fi
+
 # check in / sync changes
 git add ${newJarEA} ${newJarCore}
 git add . discovery/*.jar
@@ -279,9 +297,9 @@ pushd ../..
 git commit -m "release ${versionWithRespin} for QE" .
 popd
 
-* add new discovery plugins ${newJarCore}, ${newJarEA}
-* update devstudio-directory.xml
-* update HTML pages" 
+# add new discovery plugins ${newJarCore}, ${newJarEA}
+# update devstudio-directory.xml
+# update HTML pages" 
 
 # TODO: make sure you've merged in others' changes!
 git push origin master # in case of doubt, prefer pushing to a local repostiory and using a pull-request to ask for review

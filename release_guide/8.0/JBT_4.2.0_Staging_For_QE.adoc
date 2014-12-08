@@ -216,6 +216,45 @@ version=4.2.1.CR2 # a, b, c...
 # earlyaccess site includes one directory.xml file which lists both core and earlyaccess plugins, so use that instead of core site
 echo "rename nightly/earlyaccess/${stream} staging/${version}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery/
 echo " >> http://download.jboss.org/jbosstools/discovery/staging/${version}/" | egrep ">>|${version}"
+
+# TODO verify this works for 4.2.1.Final
+# remember to include IS jar in jbosstools-directory.xml
+isjar=""
+isjar=`curl -s http://download.jboss.org/jbosstools/updates/stable/luna/jbosstools-directory.xml | grep integration-stack`
+isjar=`curl -s http://download.jboss.org/jbosstools/updates/development/luna/jbosstools-directory.xml | grep integration-stack`
+if [[ ${isjar} ]]; then 
+  # echo "Found integration-stack jar: ${isjar}"
+	curl -s http://download.jboss.org/jbosstools/discovery/staging/${version}/jbosstools-directory.xml > /tmp/jbosstools-directory.xml
+  isjar2=`cat /tmp/jbosstools-directory.xml | grep integration-stack`
+  if [[ ! ${isjar2} ]]; then
+    echo "ERROR: no integration stack jar listed in http://download.jboss.org/jbosstools/discovery/staging/${version}/" | grep ERROR
+    echo "Must add this line:"
+    echo ""
+    echo "${isjar}"
+    echo ""
+    pushd jbosstools-download.jboss.org/jbosstools/discovery/staging/
+	    git fetch origin master
+	    git checkout master 
+	    mkdir -p ${version}
+	    pushd ${version}
+		    mv /tmp/jbosstools-directory.xml jbosstools-directory.xml
+		    cat jbosstools-directory.xml | egrep "<directory|<entry" > jbosstools-directory.xml.out
+		    echo ${isjar} >> jbosstools-directory.xml.out
+		    echo "</directory>" >> jbosstools-directory.xml.out
+		    mv -f jbosstools-directory.xml.out jbosstools-directory.xml
+		    cat jbosstools-directory.xml
+		    git add jbosstools-directory.xml
+		    git commit -m "add latest JBT IS jar to jbosstools/discovery/staging/${version}" jbosstools-directory.xml
+		    git push origin master
+		    scpr jbosstools-directory.xml $TOOLS/discovery/staging/${version}/
+		  popd
+    popd
+  else
+    echo "jbosstools-directory.xml includes ${isjar}" | grep integration-stack
+    rm -f /tmp/jbosstools-directory.xml
+  fi
+fi
+
 ----
 
 Then verify the site is correctly populated.
@@ -311,7 +350,7 @@ echo $theversion
 version=4.2.1.CR2 #a, b, c...
 # adjust these steps to fit your own path location & git workflow
 cd jbosstools-download.jboss.org/jbosstools/configuration
-git fetch jbosstools master
+git fetch origin master
 git checkout FETCH_HEAD
 vim ide-config.properties # or use another editor 
 

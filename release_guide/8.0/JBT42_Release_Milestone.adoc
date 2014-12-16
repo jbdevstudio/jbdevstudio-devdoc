@@ -497,9 +497,9 @@ if [ "$isFinal" = true ]; then
   for newJar in ${newJarEA} ${newJarCore}; do
     unzip -q -d ${basedir}/jbosstools/updates/development/${eclipseTrain}/${newJar}{_,}
     pushd ${basedir}/jbosstools/updates/development/${eclipseTrain}/${newJar}_
-    sed -i "s#http://download.jboss.org/jbosstools/updates/staging/luna/central/core/#http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/#g" plugin.xml
-    sed -i "s#http://download.jboss.org/jbosstools/updates/development/luna/central/core/#http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/#g" plugin.xml
-    sed -i "s#http://download.jboss.org/jbosstools/updates/stable/luna/central/core/#http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/#g" plugin.xml
+    sed -i "s#http://download.jboss.org/jbosstools/updates/staging/${eclipseTrain}/central/core/#http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/#g" plugin.xml
+    sed -i "s#http://download.jboss.org/jbosstools/updates/development/${eclipseTrain}/central/core/#http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/#g" plugin.xml
+    sed -i "s#http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/central/core/#http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/#g" plugin.xml
 
     zip -u ${basedir}/jbosstools/updates/development/${eclipseTrain}/${newJar} plugin.xml
     popd
@@ -515,7 +515,7 @@ else
     unzip -q -d ${basedir}/jbosstools/updates/development/${eclipseTrain}/${newJar}{_,}
     pushd ${basedir}/jbosstools/updates/development/${eclipseTrain}/${newJar}_ >/dev/null 
     sed -i "s#http://download.jboss.org/jbosstools/updates/staging/${eclipseTrain}/central/core/#http://download.jboss.org/jbosstools/updates/development/${eclipseTrain}/#g" plugin.xml
-    sed -i "s#http://download.jboss.org/jbosstools/updates/development/luna/central/core/#http://download.jboss.org/jbosstools/updates/development/${eclipseTrain}/#g" plugin.xml
+    sed -i "s#http://download.jboss.org/jbosstools/updates/development/${eclipseTrain}/central/core/#http://download.jboss.org/jbosstools/updates/development/${eclipseTrain}/#g" plugin.xml
     sed -i "s#http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/central/core/#http://download.jboss.org/jbosstools/updates/development/${eclipseTrain}/#g" plugin.xml
     zip -u ${basedir}/jbosstools/updates/development/${eclipseTrain}/${newJar} plugin.xml
     popd >/dev/null

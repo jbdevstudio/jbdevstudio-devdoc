@@ -28,11 +28,11 @@ To comply with Goldengate URL rules, we need to rename artifacts before they go 
 
 Thus, using this regex - s#-v\d{8}-\d{4}-B\d+## - we would rename as follows:
 
-  jboss-devstudio-8.0.0.GA-v20141020-1042-B317-installer-standalone.jar
+  jboss-devstudio-8.0.1.GA-v20141020-1042-B317-installer-standalone.jar
 
 to
 
-  jboss-devstudio-8.0.0.GA-installer-standalone.jar 
+  jboss-devstudio-8.0.1.GA-installer-standalone.jar 
 
 == Announce internally for push to CSP staging site
 
@@ -46,8 +46,8 @@ and +
 
 [source,bash]
 ----
-version=8.0.0.GA
-versionWithRespin=8.0.0.CR2c # a, b, c...
+version=8.0.1.GA
+versionWithRespin=8.0.1.GA # a, b, c...
 echo "
 Subject: 
 
@@ -89,6 +89,21 @@ ____
 
 As an answer, you get the links to the files on both portals. Keep them as you'll need them later.
 
+
+== Move GA content to /static/
+
+For GA releases ONLY, there are 4 update sites and 3 update site zips which should be moved to /static/ for Akamai caching.
+
+[source,bash]
+----
+
+JBDS=devstudio@filemgmt.jboss.org:www_htdocs/devstudio
+for f in `echo ls | sftp $JBDS/updates/8.0.0/ 2>/dev/null | egrep "4.41.1.Final|8.0.1.GA"`; do
+  echo "rename updates/8.0.0/${f} static/updates/8.0.0/${f}" | sftp $JBDS
+done
+
+----
+
 == Update composite files and devstudio-directory.xml to point at new discovery jar(s) from staging
 
 [IMPORTANT]
@@ -104,113 +119,78 @@ You can run this script from your local machine:
 
 [source,bash]
 ----
-isGA=false # or true in case you're doing a GA
-version=8.0.0.GA
-versionWithRespin=8.0.0.CR2c
+isGA=true # or true in case you're doing a GA
+version=8.0.1.GA
+versionWithRespin=8.0.1.GA
 SRC_SITE=8.0-staging
-if [ "$isGA" == "true" ]; then
-  DESTSITE=8.0
-else
-  DESTSITE=8.0-development # or 8.0/ for a GA release
-fi
+DESTSITE=8.0-development # or 8.0/ for a GA release
 JBDS=devstudio@filemgmt.jboss.org:www_htdocs/devstudio
 
 # set correct path for where you have project cloned on disk
-cd jbdevstudio-website/content
+pushd jbdevstudio-website/content
 basedir=$(pwd)
 
-# check in / sync changes
-rm -r updates/${DESTSITE}
-scp -r $JBDS/updates/${SRC_SITE} updates/${DESTSITE}/
+dirs="8.0-staging 8.0-development"
+if [[ $isGA == "true" ]]; then dirs="8.0-staging 8.0-development 8.0"; fi
 
-pushd updates/${DESTSITE}/
-# Update URLs in discovery jars
-newJars=$(cat devstudio-directory.xml | grep entry | grep -v "integration-stack" | sed -e "s#.\+discovery/#discovery/#g" | sed -e "s#\.jar.\+#.jar#g")
-for newJar in $newJars; do 
-  wget -q -nc https://devstudio.redhat.com/updates/${SRC_SITE}/discovery/${newJar}
-  if [[ ! ${newJar##*.earlyaccess_*} ]]; then
-    newJarEA=${newJar}
-    echo "EA: $newJarEA"
-  else
-    newJarCore=${newJar}
-    echo "Core: $newJarCore"
+for d in $dirs; do
+  if [[ $d == "8.0-staging" ]]; then
+    pushd ${basedir}/updates/${d}
+      # Update URLs in discovery jars
+      newJars=$(cat devstudio-directory.xml | grep entry | grep -v "integration-stack" | sed -e "s#.\+discovery/#discovery/#g" | sed -e "s#\.jar.\+#.jar#g")
+      for newJar in $newJars; do 
+        wget -q -nc https://devstudio.redhat.com/updates/${SRC_SITE}/discovery/${newJar}
+        if [[ ! ${newJar##*.earlyaccess_*} ]] && [[ ${newJar##*integration-stack*} ]]; then
+          newJarEA=${newJar}
+          echo "EA: $newJarEA"
+        elif [[ ${newJar##*integration-stack*} ]]; then
+          newJarCore=${newJar}
+          echo "Core: $newJarCore"
+        fi
+        git add $newJar
+      done
+
+      for newJar in ${newJarEA} ${newJarCore}; do
+        unzip -q -d ${basedir}/updates/${d}/${newJar}{_,}
+        pushd ${newJar}_ >/dev/null 
+        if [ "$isGA" = true ]; then
+          sed -i "s#/8.0-staging/#/8.0/#g" plugin.xml
+          sed -i "s#/8.0-development/#/8.0/#g" plugin.xml
+        else  # plugin points to the STAGING URL, not the RELEASE one
+          sed -i "s#/8.0-staging/#/8.0-development/#g" plugin.xml
+          sed -i "s#/8.0/#/8.0-development/#g" plugin.xml
+        fi
+        zip -u ${basedir}/updates/${d}/${newJar} plugin.xml
+        git add ${basedir}/updates/${d}/${newJar}
+        popd >/dev/null
+        rm -fr ${basedir}/updates/${d}/${newJar}_
+      done
+
+      # cleanup previous discovery jars
+      others=$(ls -1 ${basedir}/updates/${d}/discovery | egrep -v "$(basename $newJarEA)|$(basename $newJarCore)|integration-stack")
+      echo "Clean these old jars: $others"
+      git rm -f $others
+    popd
+  else  
+    pushd ${basedir}/updates/8.0-staging
+      rsync -aPrz --rsh=ssh --protocol=28 ./* ${basedir}/updates/${d}/
+    popd
   fi
-  git add $newJar
 done
 
-for newJar in ${newJarEA} ${newJarCore}; do
-  unzip -q -d ${basedir}/updates/${DESTSITE}/${newJar}{_,}
-  pushd ${newJar}_ >/dev/null 
-  if [ "$isGA" = true ]; then
-    sed -i "s#updates/8.0-staging/#updates/8.0/#g" plugin.xml
-    sed -i "s#updates/8.0-development/#updates/8.0/#g" plugin.xml
-  else  # plugin points to the STAGING URL, not the RELEASE one
-    sed -i "s#updates/8.0-staging/#updates/8.0-development/#g" plugin.xml
-    sed -i "s#updates/8.0/#updates/8.0-development/#g" plugin.xml
-  fi
-  zip -u ${basedir}/updates/${DESTSITE}/${newJar} plugin.xml
-  git add ${basedir}/updates/${DESTSITE}/${newJar}
-  popd >/dev/null
-  rm -fr ${basedir}/updates/${DESTSITE}/${newJar}_
-done
-
-# cleanup previous discovery jars
-others=$(ls -1 ${basedir}/updates/${DESTSITE}/discovery | grep -v $(basename $newJarEA) | grep -v $(basename $newJarCore))
-git rm -f others
-
-popd
-----
-
-[CAUTION]
-====
-Be sure to not overwrite integration-stack deltas (staging and development may not be the same)!
-====
-
-=== Update latest Central and Early Access (extras) target platform
-
-NOTE: Now that Central content is merged into the same composite as JBDS and its target platform, you MAY have to edit this file by hand if the JBDS TP and JBDS Central TP versions are not the same.
-
-[source,bash]
-----
-cd jbdevstudio-website/content # or...
-
-
-now=`date +%s000`
-oldTP=4.40.0.CR1-SNAPSHOT
-newTP=4.41.0.Final
-
-pushd updates/${DESTSITE}/extras/
-for d in composite*.xml; do
-  sed -i -e "s#${oldTP}#${newTP}#g" $d
-  sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
-  git add $d
-done
-popd
-pushd earlyaccess/${DESTSITE}/
-for d in composite*.xml; do
-  sed -i -e "s#${oldTP}#${newTP}#g" $d
-  sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
-  git add $d
-done
 popd
 
-pushd updates
-git add ${DESTSITE}
-git commit -m "release ${version} from ${SRC_SITE} to ${DESTSITE}"
+# verify all files are correct before pusing to git and server
+# TODO: make sure we're using /static/updates/ not /updates/ in composite*.xml for all GA files, and just /updates/ for pre-GA files
 
-# repeat for EA site too
-pushd ../earlyaccess
-git add ${DESTSITE}
-git commit -m "release ${version} from ${SRC_SITE} to ${DESTSITE}"
-popd
+git push origin HEAD:master
 
-git push jbdevstudio HEAD:master
-popd
-
-# push both staging and development folders to download.jboss.org
+# push both staging and development folders to devstudio.redhat.com
 JBDS=devstudio@filemgmt.jboss.org:www_htdocs/devstudio
-scp -r updates/${DESTSITE} $JBDS/updates/
-scp -r earlyaccess/${DESTSITE} $JBDS/earlyaccess/
+for d in $dirs; do
+  rsync -aPrz --rsh=ssh --protocol=28 ${basedir}/updates/${d}/* ${JBDS}/updates/${d}/
+  rsync -aPrz --rsh=ssh --protocol=28 ${basedir}/earlyaccess/${d}/* ${JBDS}/earlyaccess/${d}/
+done
 ----
 
 == Release the latest milestone to ide-config.properties
@@ -221,20 +201,28 @@ And update it it as required, so that the links for the latest milestone point t
 
 [source,bash]
 ----
-jboss.discovery.directory.url|devstudio|8.0.0.CR2=https://devstudio.jboss.com/updates/8.0-development/devstudio-directory.xml
-jboss.discovery.site.url|devstudio|8.0.0.CR2=https://devstudio.jboss.com/updates/8.0-development/
+# adjust these steps to fit your own path location & git workflow
+cd ~/tru
+pushd jbosstools-download.jboss.org/jbosstools/configuration
+version=8.0.1.Final # name to use in filenames ie fixVersion in JIRA
+versionWithRespin=8.0.1.Final # Fully qualified version, including respin suffix
+
+topic=release-jbosstools-${versionWithRespin}-to-production; branch=master; gw1
+
+st ide-config.properties # or use another editor if not Sublime Text (st)
+
+# something like this...
+# jboss.discovery.directory.url|devstudio|8=https://devstudio.jboss.com/updates/8.0/devstudio-directory.xml
+# jboss.discovery.site.url|devstudio|8=https://devstudio.jboss.com/updates/8.0/
+
+# commit the change and push to master
+ci "release JBDS ${version} (${versionWithRespin}) to production: link to latest dev milestone discovery site" ide-config.properties
+gw2; gw3; gw4
+
+# push updated file to server
+TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
+rsync -Pzrlt --rsh=ssh --protocol=28 ide-config.properties $TOOLS/configuration/ide-config.properties
 ----
-
-Or,  for GA:
-
-[source,bash]
-----
-jboss.discovery.directory.url|devstudio|8.0.0=https://devstudio.jboss.com/updates/8.0/devstudio-directory.xml
-jboss.discovery.site.url|devstudio|8.0.0=https://devstudio.jboss.com/updates/8.0/
-----
-
-Then commit and push changes to the origin GitHub repo. Then either push the file back to download.jboss.org, either manually (sftp, scp...) or using this CI job: https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-download.jboss.org-rsync-from-git/
-
 
 == Tag Git
 
@@ -249,7 +237,7 @@ git clone https://github.com/jbdevstudio/jbdevstudio-devdoc
 
 # now tag multiple projects in a single step, replacing existing tags if already exist
 jbt_branch=jbosstools-4.2.x
-version=8.0.0.GA
+version=8.0.1.GA
 for d in product ci website artwork devdoc; do
   echo "====================================================================="
   echo "Tagging jbdevstudio-${d} from branch ${jbt_branch} as tag ${version}..."
@@ -270,7 +258,7 @@ done
 
 [source,bash]
 ----
-version=8.0.0.GA
+version=8.0.1.GA
 cd jbdevstudio-devdoc/release_guide/8.0
 git commit -m "update release guide for ${version}" .
 git push origin HEAD:master
@@ -343,7 +331,7 @@ and +
 
 [source,bash]
 ----
-version=8.0.0.GA
+version=8.0.1.GA
 echo "
 Subject: 
 

@@ -193,6 +193,38 @@ for d in $dirs; do
 done
 ----
 
+== Put a copy of the update site zip on devstudio.redhat.com
+
+First, ssh to www.qa server. Then, sudo to the hudson user, and run this:
+
+[source,bash]
+----
+. /home/hudson/config_repository/scripts/jbds/prompt.sh
+version=8.0.1.GA
+cd ~/RHDS/builds/development/${version}-build-core/
+scpr jboss-devstudio-${version}*-updatesite-core.zip jboss-devstudio-${version}*-updatesite-core.zip.MD5 $JBDS/static/updates/8.0.0/
+----
+
+== Cleanup builds and update sites under /development/ and /stable/
+
+First, ssh to www.qa server. Then, sudo to the hudson user, and run this:
+
+[source,bash]
+----
+. /home/hudson/config_repository/scripts/jbds/prompt.sh
+version=8.0.1.GA
+cd ~/RHDS/builds/development/
+mv ${version}* ../stable
+ln -s ../stable/${version}*
+mv 8.0.1.CR* OLD/
+
+cd ~/RHDS/updates/development/
+mv ${version}* ../stable
+ln -s ../stable/${version}*
+mv 8.0.1.CR* OLD/
+----
+
+
 == Release the latest milestone to ide-config.properties
 
 Check out this file: http://download.jboss.org/jbosstools/configuration/ide-config.properties from _http://github.com/jbosstools/jbosstools-download.jboss.org_ repository.

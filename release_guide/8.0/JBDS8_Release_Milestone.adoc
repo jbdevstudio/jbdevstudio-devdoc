@@ -122,8 +122,6 @@ You can run this script from your local machine:
 isGA=true # or true in case you're doing a GA
 version=8.0.1.GA
 versionWithRespin=8.0.1.GA
-SRC_SITE=8.0-staging
-DESTSITE=8.0-development # or 8.0/ for a GA release
 JBDS=devstudio@filemgmt.jboss.org:www_htdocs/devstudio
 
 # set correct path for where you have project cloned on disk
@@ -175,8 +173,20 @@ for d in $dirs; do
     pushd ${basedir}/updates/8.0-staging
       rsync -aPrz --rsh=ssh --protocol=28 ./* ${basedir}/updates/${d}/
     popd
+    # now fix URLs in html pages
+    pushd ${basedir}/updates/${d}/
+      # set correct page label
+      if [[ $d == "8.0" ]]; then sed -i "s#Development Milestone#Stable Release#" index.html; fi
+      if [[ $d == "8.0-development" ]]; then sed -i "s#8.0-staging#8.0-development#" index.html; fi
+      sed -i "s#8.0-staging#8.0#" index.html
+    popd
+
   fi
 done
+
+previous=8.0.0.GA
+version=8.0.1.GA
+sed -i "s#${previous}#${version}#" updates/index.html
 
 popd
 

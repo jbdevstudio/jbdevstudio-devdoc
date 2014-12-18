@@ -611,16 +611,6 @@ rsync -Pzrlt --rsh=ssh --protocol=28 ide-config.properties $TOOLS/configuration/
 
 ----
 
-
-== Update jbosstools-website
-
-Provide a PR to add the latest JBT milestones to this listing: https://github.com/jbosstools/jbosstools-website/blob/master/_config/products.yml
-
-Example:
-
-* https://github.com/jbosstools/jbosstools-website/pull/193 (note that the JBDS part is better done after & seprarately, while releasing JBDS)
-* https://github.com/jbosstools/jbosstools-website/pull/211 (only JBT part of the change)
-
 == Update Eclipse Marketplace (add/remove features)
 
 WARNING: Only for Beta, CR and GA! We do not release Alphas to Eclipse Marketplace.
@@ -718,7 +708,19 @@ firefox https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
 ----
 
 
+== Update jbosstools-website
+
+Provide a PR to add the latest JBT milestones to this listing: https://github.com/jbosstools/jbosstools-website/blob/master/_config/products.yml
+
+Example:
+
+* https://github.com/jbosstools/jbosstools-website/pull/193 (note that the JBDS part is better done after & seprarately, while releasing JBDS)
+* https://github.com/jbosstools/jbosstools-website/pull/211 (only JBT part of the change)
+
+
 == Notify the team (send 2 emails)
+
+DO NOT send email notification until the above update to the website is done, and the new blog announcement is live, with image inclusion, spelling, & grammar checks done.
 
 ____
 *To:* jbosstools-dev@lists.jboss.org +
@@ -746,7 +748,7 @@ Update Site Zips: http://sourceforge.net/projects/jboss/files/JBossTools/jbossto
 
 Installation instructions: http://tools.jboss.org/downloads/installation.html
 
-New + Noteworthy (subject to change): http://tools-stg.jboss.org/documentation/whatsnew/jbosstools/${version}.html
+New + Noteworthy (subject to change): http://tools.jboss.org/documentation/whatsnew/jbosstools/${version}.html
 
 Schedule / Upcoming Releases: https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.plugin.system.project%3Aversions-panel
 "

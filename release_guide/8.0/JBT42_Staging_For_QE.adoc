@@ -173,6 +173,10 @@ scp composite*.xml tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/stag
 WARNING: This step is very important! It can take long time to perform the TP update and make it available. While
 some jobs are running for that task, you can get a bit forward and start re-populating nighly sites in parallel.
 
+NOTE: Since these changes are actually necessary because of JBoss Developer Studio (which only contains a subseet of JBT 
+so that it needs to put additions in the Central .target), we are working on https://issues.jboss.org/browse/JBIDE-19025
+to remove needs for this step as part of JBoss Tools staging and release process.
+
 Central and Early Access target platforms contain parts of JBoss Tools which have not yet been released, so these target platforms need to be rebuilt with every push to QE.
 
 Without this step, QE will be confused why there are Beta2 bits in the CR2 Central - eg., for Arquillian or Cordovasim.

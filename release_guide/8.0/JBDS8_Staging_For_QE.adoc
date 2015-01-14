@@ -431,12 +431,7 @@ Update Sites:
 * https://devstudio.redhat.com/earlyaccess/8.0-staging/ (includes the above site + Early Access)
 * http://www.qa.jboss.com/binaries/RHDS/updates/development/${versionWithRespin}-updatesite-core/ (Internal, VPN required)
 
-Target Platforms (Public): 
-* http://download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MIN}/ (upcoming milestone)
-* http://download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MAX}/ (upcoming milestone)
-
-Until the above target platform site is released, you may need to add it to Eclipse to resolve dependencies at install time. 
-Once released, dependencies will be found automatically from here: http://download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/luna/ (latest release)
+Target Platforms: https://devstudio.jboss.com/updates/8.0.0/jboss-devstudio-${versionWithRespin}-target-platform/
 
 New + Noteworthy (subject to change):
 * https://github.com/jbosstools/jbosstools-website/tree/master/documentation/whatsnew

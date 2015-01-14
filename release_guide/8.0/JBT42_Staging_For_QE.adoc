@@ -6,8 +6,7 @@ This document describe how to provide a valid JBoss Tools build to QE so they ca
 ====
 Note that +sftp://tools@filemgmt.jboss.org/downloads_htdocs/tools/+ maps to +http://download.jboss.org/jbosstools/+ +
 
-If you do not need it urgently, you can push files there simply by pushing a change into the following location: https://github.com/jbosstools/jbosstools-download.jboss.org/tree/master/jbosstools
-
+If you do not need it urgently, you can push files there simply by pushing a change into the following location: https://github.com/jbosstools/jbosstools-download.jboss.org/tree/master/jbosstools . 
 A Jenkins job can then be triggered to sync changes to download.jboss.org: https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-download.jboss.org-rsync-from-svn/
 ====
 

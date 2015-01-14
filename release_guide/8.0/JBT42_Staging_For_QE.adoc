@@ -287,7 +287,8 @@ fi
 
 ----
 
-Then verify the site is correctly populated.
+Then verify the discovery sites are correctly populated: directory.xml contains right entries, and plugins/ folder contains the expected 
+jars according to discovery.xml
 
 == Disable jobs
 

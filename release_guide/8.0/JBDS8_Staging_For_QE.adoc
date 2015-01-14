@@ -206,8 +206,10 @@ now=`date +%s000`
 #TODO: make sure you're the correct folder here!
 pushd jbdevstudio-website/content/
 for d in updates/8.0-staging/*.*ml earlyaccess/8.0-staging/*.*ml; do
+  akamaiPath='../../static/updates/'
+  regularPath='../'
   # update composite timestamp
-  sed -i -e "s#${previousFull}#${versionWithRespin}#g" -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
+  sed -i -e "s#${akamaiPath}#${regularPath}#g" -e "s#${previousFull}#${versionWithRespin}#g" -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
 done
 
 # update https://devstudio.redhat.com/updates/8.0-staging/devstudio-directory.xml to point at new Core discovery jar.

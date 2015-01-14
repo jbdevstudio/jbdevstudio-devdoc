@@ -122,6 +122,11 @@ echo " >> http://download.jboss.org/jbosstools/updates/staging/luna/jbosstools-$
 
 Then verify those 4 sites are correctly populated.
 
+=== Rebuild aggregates
+
+Since the nightly sites for branch may be used by QA folks, those should be rebuilt to not break them. Since no component is meant to be rebuilt in the
+meantime, content of nightly sites will be the same as promoted content (except some timestamps in index.html and p2 repo metadata, but they don't matter).
+
 === Update composite site metadata for staged updates
 
 Update files __http://download.jboss.org/jbosstools/updates/staging/luna/composite*.xml__ , with SFTP/SCP via command-line or your 
@@ -285,116 +290,6 @@ fi
 
 Then verify the site is correctly populated.
 
-=== Preserve a copy of the nightly sites after the move
-
-NOTE:
-This step is mandatory only because we dont have a good way to copy stuff remotely (sftp only allows rename). If we could be granted something more powerful with remote copies, we could copy stuff in previous steps instead of moving it, and this step would becomme useless.
-
-First, run it as +hudson+ user from a ci machine
-[source,bash]
-----
-local$ ssh dev01.mw.lab.eng.bos.redhat.com
-dev01$ sudo su - hudson
-dev01$ # set up command prompt and load aliases
-dev01$ . /home/hudson/config_repository/scripts/jbds/prompt.sh 
-----
-or, if you didn't run prompt.sh above, you'll need this
-[source,bash]
-----
-alias   scpr="rsync -aPrz --rsh=ssh --protocol=28"
-----
-
-Them you can run this 4 steps in parallel:
-[source,bash]
-----
-version=4.2.1.Final #a, b, c...
-stream=4.2.luna
-branch=core/${stream}
-scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/luna/jbosstools-${version}-updatesite-core/* /tmp/jbosstools-${version}-updatesite-core/
-scpr /tmp/jbosstools-${version}-updatesite-core/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
-rm -fr /tmp/jbosstools-${version}-updatesite-core/
-echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
-
-version=4.2.1.Final #a, b, c...
-stream=4.2.luna
-branch=coretests/${stream}
-scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/luna/jbosstools-${version}-updatesite-coretests/* /tmp/jbosstools-${version}-updatesite-coretests/
-scpr /tmp/jbosstools-${version}-updatesite-coretests/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
-rm -fr /tmp/jbosstools-${version}-updatesite-coretests/
-echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
-
-version=4.2.1.Final #a, b, c...
-stream=4.2.luna
-branch=hibernatetools/${stream}
-scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/luna/jbosstools-${version}-updatesite-hibernatetools/* /tmp/jbosstools-${version}-updatesite-hibernatetools/
-scpr /tmp/jbosstools-${version}-updatesite-hibernatetools/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
-rm -fr /tmp/jbosstools-${version}-updatesite-hibernatetools/
-echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
-
-version=4.2.1.Final #a, b, c...
-stream=4.2.luna
-branch=webtools/${stream}
-scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/luna/jbosstools-${version}-updatesite-webtools/* /tmp/jbosstools-${version}-updatesite-webtools/
-scpr /tmp/jbosstools-${version}-updatesite-webtools/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
-rm -fr /tmp/jbosstools-${version}-updatesite-webtools/
-echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
-
-# now, discovery site
-version=4.2.1.Final #a, b, c...
-stream=4.2.luna
-branch=earlyaccess/${stream}
-scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery/staging/${version}/* /tmp/jbosstools-${version}-updatesite-discovery/
-scpr /tmp/jbosstools-${version}-updatesite-discovery/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery/nightly/${branch}/ --delete
-rm -fr /tmp/jbosstools-${version}-updatesite-discovery/
-echo " >> http://download.jboss.org/jbosstools/discovery/nightly/${branch}/" | egrep ">>|${branch}"
-----
-
-== Release the latest QE snapshot to ide-config.properties
-
-Check out this file:
-
-http://download.jboss.org/jbosstools/configuration/ide-config.properties
-
-And update it it as required, so that the links for the latest milestone point to valid URLs, eg.,
-
-[source,bash]
-----
-
-# @since JBT 4.2.1 / JBDS 8.0.1
-# JBIDE-18820, JBIDE-18806 check the version set in o.j.t.foundation.core's currentversion.properties value of default.version
-updatesiteURL=http://www.qa.jboss.com/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/all/repo/plugins/
-updatesiteURL=http://download.jboss.org/jbosstools/updates/nightly/core/4.2.luna/plugins/
-pushd /tmp; wget -q -nc $updatesiteURL
-thejar=`cat index.html | egrep -v "source|pack.gz" | egrep "core.central|foundation.core" | sed -e "s#.\+href=\"\([^\"]\+\)\">.\+#\1#" | sort | head -1; rm -f index.html`
-wget -q -nc ${updatesiteURL}/${thejar}
-theversion=`unzip -p ${thejar} */currentversion.properties | grep version= | sed -e "s/version=//" | tail -1`
-rm -f ${thejar}
-popd
-echo $theversion
-
-# if value found above for $jbosstoolsversion != current release version, then you need to rebuild foundation w/ a new value inserted.
-
-version=4.2.1.Final #a, b, c...
-# adjust these steps to fit your own path location & git workflow
-cd jbosstools-download.jboss.org/jbosstools/configuration
-git fetch origin master
-git checkout FETCH_HEAD
-vim ide-config.properties # or use another editor 
-
-# otherwise, replace existing lines with these to make the lastest milestone live
-jboss.discovery.directory.url|jbosstools|4.2.1.Final=http://download.jboss.org/jbosstools/discovery/staging/${version}/jbosstools-directory.xml
-jboss.discovery.site.url|jbosstools|4.2.1.Final=http://download.jboss.org/jbosstools/updates/staging/luna/
-jboss.discovery.earlyaccess.site.url|jbosstools|4.2.1.Final=http://download.jboss.org/jbosstools/discovery/staging/${version}/
-jboss.discovery.earlyaccess.list.url|jbosstools|4.2.1.Final=http://download.jboss.org/jbosstools/discovery/staging/${version}/jbosstools-earlyaccess.properties
-
-# commit the change and push to master
-git add ide-config.properties
-git commit -m "release JBT ${version} to QE: link to latest dev milestone discovery site" ide-config.properties
-git push origin HEAD:master
-
-# push updated file to server
-scp ide-config.properties tools@filemgmt.jboss.org:/downloads_htdocs/tools/configuration/ide-config.properties
-----
 == Disable jobs
 
 All stable branch jobs from the https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_8.0.luna/[8.0.luna view] should be disabled.

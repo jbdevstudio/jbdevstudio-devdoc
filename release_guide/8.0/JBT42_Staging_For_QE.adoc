@@ -191,6 +191,8 @@ Without this step, QE will be confused why there are Beta2 bits in the CR2 Centr
 ** `http://download.jboss.org/jbosstools/static/releases/jbosstools-4.2.1.Final-updatesite-core/` -> `http://download.jboss.org/jbosstools/static/releases/jbosstools-4.2.2.Final-updatesite-core/`
 * When this is done, update the .target files to use the newer versions of listed units. You can use the https://github.com/jbosstools/jbosstools-maven-plugins/wiki#update-versions-of-ius-in-target-file[fix-versions mojo]
 on the modified .target files to automatically get a fixed version of those .target files.
+* If target files have changes, and that version was not bumped since last staging/release, bump version of target artifacts, in
+`.target` and, more important, in `pom.xml`.
 * Then verify it works with verifyTarget.sh. 
 
 https://github.com/jbosstools/jbosstools-build-ci/blob/master/util/verifyTarget.sh
@@ -237,6 +239,12 @@ Then respin the job and verify that sites were correctly populated:
 
 WARNING: Make sure you performed the step <<update-discovery-urls,Update Discovery URLs>> above.
 
+It consists of 3 steps:
+
+. Moving discovery site to there staging URL
+. Update them to include reference to latest Integration-Stack, if not already defined.
+
+This script automates the 
 [source,bash]
 ----
 stream=4.2.luna
@@ -284,11 +292,13 @@ if [[ ${isjar} ]]; then
     rm -f /tmp/jbosstools-directory.xml
   fi
 fi
-
 ----
 
-Then verify the discovery sites are correctly populated: directory.xml contains right entries, and plugins/ folder contains the expected 
-jars according to discovery.xml
+[start=3]
+. If Central target-platform version changed since previous staging version, update the `composite*.xml` file http://downaload.jboss.org/updates/staging/luna
+to reference the newer site. Edit it locally from the `jbosstools-download.jboss.org` repository, commit and push (to Git and to `download.jboss.org` with scp)
+
+Then verify the discovery sites are correctly populated: directory.xml contains right entries, with the expected `B??` qualifier and that integration-stack is in.
 
 == Release the latest QE snapshot to ide-config.properties
 

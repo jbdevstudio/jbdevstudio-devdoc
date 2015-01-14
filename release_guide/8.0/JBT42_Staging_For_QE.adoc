@@ -290,6 +290,53 @@ fi
 Then verify the discovery sites are correctly populated: directory.xml contains right entries, and plugins/ folder contains the expected 
 jars according to discovery.xml
 
+== Release the latest QE snapshot to ide-config.properties
+
+Check out this file:
+
+http://download.jboss.org/jbosstools/configuration/ide-config.properties
+
+And update it it as required, so that the links for the latest milestone point to valid URLs, eg.,
+
+[source,bash]
+----
+
+# @since JBT 4.2.1 / JBDS 8.0.1
+# JBIDE-18820, JBIDE-18806 check the version set in o.j.t.foundation.core's currentversion.properties value of default.version
+updatesiteURL=http://www.qa.jboss.com/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/all/repo/plugins/
+updatesiteURL=http://download.jboss.org/jbosstools/updates/nightly/core/4.2.luna/plugins/
+pushd /tmp; wget -q -nc $updatesiteURL
+thejar=`cat index.html | egrep -v "source|pack.gz" | egrep "core.central|foundation.core" | sed -e "s#.\+href=\"\([^\"]\+\)\">.\+#\1#" | sort | head -1; rm -f index.html`
+wget -q -nc ${updatesiteURL}/${thejar}
+theversion=`unzip -p ${thejar} */currentversion.properties | grep version= | sed -e "s/version=//" | tail -1`
+rm -f ${thejar}
+popd
+echo $theversion
+
+# if value found above for $jbosstoolsversion != current release version, then you need to rebuild foundation w/ a new value inserted.
+
+version=4.2.1.Final #a, b, c...
+# adjust these steps to fit your own path location & git workflow
+cd jbosstools-download.jboss.org/jbosstools/configuration
+git fetch origin master
+git checkout FETCH_HEAD
+vim ide-config.properties # or use another editor 
+
+# otherwise, replace existing lines with these to make the lastest milestone live
+jboss.discovery.directory.url|jbosstools|4.2.1.Final=http://download.jboss.org/jbosstools/discovery/staging/${version}/jbosstools-directory.xml
+jboss.discovery.site.url|jbosstools|4.2.1.Final=http://download.jboss.org/jbosstools/updates/staging/luna/
+jboss.discovery.earlyaccess.site.url|jbosstools|4.2.1.Final=http://download.jboss.org/jbosstools/discovery/staging/${version}/
+jboss.discovery.earlyaccess.list.url|jbosstools|4.2.1.Final=http://download.jboss.org/jbosstools/discovery/staging/${version}/jbosstools-earlyaccess.properties
+
+# commit the change and push to master
+git add ide-config.properties
+git commit -m "release JBT ${version} to QE: link to latest dev milestone discovery site" ide-config.properties
+git push origin HEAD:master
+
+# push updated file to server
+scp ide-config.properties tools@filemgmt.jboss.org:/downloads_htdocs/tools/configuration/ide-config.properties
+----
+
 == Disable jobs
 
 All stable branch jobs from the https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_8.0.luna/[8.0.luna view] should be disabled.

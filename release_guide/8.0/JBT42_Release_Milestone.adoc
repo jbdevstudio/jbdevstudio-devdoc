@@ -657,7 +657,7 @@ for d in build build-ci build-sites devdoc discovery; do
   pushd jbosstools-${d}
   git fetch origin ${jbt_branch}
   git tag jbosstools-${version} FETCH_HEAD
-  git push jbosstools-${version}
+  git push origin jbosstools-${version}
   echo ">>> https://github.com/jbosstools/jbosstools-${d}/tree/jbosstools-${version}"
   popd >/dev/null 
   echo "====================================================================="
@@ -686,8 +686,7 @@ Body:
 Component leads, please tag your repositories!
 
 $ git fetch jbosstools ${branchName} #assuming remote is called jbosstools, also often called origin
-$ git checkout FETCH_HEAD
-$ git tag ${tagName}
+$ git tag ${tagName} FETCH_HEAD
 $ git push jbosstools ${tagName}
 "
 ----

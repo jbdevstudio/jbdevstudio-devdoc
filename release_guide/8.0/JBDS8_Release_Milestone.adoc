@@ -95,9 +95,11 @@ For GA releases ONLY, there are 4 update sites and 3 update site zips which shou
 
 [source,bash]
 ----
-
 JBDS=devstudio@filemgmt.jboss.org:www_htdocs/devstudio
-for f in `echo ls | sftp $JBDS/updates/8.0.0/ 2>/dev/null | egrep "4.41.1.Final|8.0.1.GA"`; do
+version=8.0.2.GA
+jbtVersion=4.2.2.Final
+
+for f in `echo ls | sftp $JBDS/updates/8.0.0/ 2>/dev/null | egrep "${jbtVersion}|${version}"`; do
   echo "rename updates/8.0.0/${f} static/updates/8.0.0/${f}" | sftp $JBDS
 done
 

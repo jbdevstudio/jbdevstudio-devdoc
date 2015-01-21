@@ -41,7 +41,7 @@ NOTE: As this takes some time and can be easily cancelled, this step can be anti
 ____
 *To* release-engineering@redhat.com +
 and +
-*Cc* cobrien@redhat.com, ldimaggi@redhat.com, mmurray@redhat.com, jpallich@redhat.com, nboldt@redhat.com, mistria@redhat.com, maxanderse@redhat.com, bsutter@redhat.com +
+*Cc* cobrien@redhat.com, ldimaggi@redhat.com, mmurray@redhat.com, jpallich@redhat.com, nboldt@redhat.com, mistria@redhat.com, manderse@redhat.com, bsutter@redhat.com +
 
 [source,bash]
 ----

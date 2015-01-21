@@ -103,6 +103,16 @@ for f in `echo ls | sftp $JBDS/updates/8.0.0/ 2>/dev/null | egrep "${jbtVersion}
   echo "rename updates/8.0.0/${f} static/updates/8.0.0/${f}" | sftp $JBDS
 done
 
+regularPath='../8.0.0'
+akamaiPath='../../static/updates/8.0.0'
+now=$(date +%s000)
+wget -O compositeArtifacts.xml http://devstudio.jboss.com/updates/8.0-staging/compositeArtifacts.xml
+wget -O compositeContent.xml http://devstudio.jboss.com/updates/8.0-staging/compositeContent.xml
+sed --regexp-extended --in-place \
+    -e s#[[:digit:]]{13}#$now## \
+    -e s#$regularPath#$akamaiPath## \
+    compositeArtifacts.xml compositeContent.xml
+scp compositeArtifacts.xml compositeContent.jar $JBDS/updates/8.0-staging
 ----
 
 == Update composite files and devstudio-directory.xml to point at new discovery jar(s) from staging

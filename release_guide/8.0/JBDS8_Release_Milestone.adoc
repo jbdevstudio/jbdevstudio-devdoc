@@ -285,8 +285,8 @@ for d in product ci website artwork devdoc; do
   echo "====================================================================="
   echo "Tagging jbdevstudio-${d} from branch ${jbt_branch} as tag ${version}..."
   pushd jbdevstudio-${d}
-  git fetch origin jbosstools-${jbt_branch}
-  git target jbdevstudio-${version} FETCH_HEAD
+  git fetch origin ${jbt_branch}
+  git tag jbdevstudio-${version} FETCH_HEAD
   git push origin jbdevstudio-${version}
   echo ">>> https://github.com/jbdevstudio/jbdevstudio-${d}/tree/jbdevstudio-${version}"
   popd >/dev/null 

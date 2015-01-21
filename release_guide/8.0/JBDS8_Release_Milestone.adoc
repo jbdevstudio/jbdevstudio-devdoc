@@ -369,10 +369,10 @@ firefox https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
 
 == Minimal validation of the installation
 
-# Get a compatible Eclipse
-# Install from Marketplace
-# Install everything from Central + Earlyaccess
-# Test a project example
+1. Get a compatible Eclipse
+2. Install from Marketplace
+3. Install everything from Central + Earlyaccess
+4. Test a project example
 
 Any failure there should be fixed with highest priority. In general, it could be wrong URLs in a composite site.
 

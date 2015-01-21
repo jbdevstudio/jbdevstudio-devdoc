@@ -655,11 +655,9 @@ for d in build build-ci build-sites devdoc discovery; do
   echo "====================================================================="
   echo "Tagging jbosstools-${d} from branch ${jbt_branch} as tag ${version}..."
   pushd jbosstools-${d}
-  git stash
-  git pull origin
-  git fetch -t -p
-  git checkout ${jbt_branch} && git tag -f jbosstools-${version} && git push origin jbosstools-${version}
-  git checkout master; git stash pop
+  git fetch origin ${jbt_branch}
+  git tag jbosstools-${version} FETCH_HEAD
+  git push jbosstools-${version}
   echo ">>> https://github.com/jbosstools/jbosstools-${d}/tree/jbosstools-${version}"
   popd >/dev/null 
   echo "====================================================================="

@@ -379,14 +379,14 @@ of moving/copying discovery site to staging location.
 
 Get the file __earlyaccess.properties__ from discovery job, in workspace folder __jbdevstudio/com.jboss.devstudio.discovery.earlyaccess__: 
 https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/job/jbosstools-discovery_4.3.mars/ws/sources/jbdevstudio/com.jboss.jbds.central.discovery.earlyaccess/devstudio-earlyaccess.properties
-and copy it do __https://devstudio.redhat.com/updates/9.0-staging/devstudio-earlyaccess.properties__.
+and copy it do __https://devstudio.redhat.com/earlyaccess/9.0-staging/devstudio-earlyaccess.properties__.
 
 [source,bash]
 ----
-pushd jbdevstudio-website/content/updates/9.0-staging
+pushd jbdevstudio-website/content/earlyaccess/9.0-staging
 rm -f devstudio-earlyaccess.properties
 wget --no-check-certificate https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/job/jbosstools-discovery_4.3.mars/ws/sources/jbdevstudio/com.jboss.jbds.central.discovery.earlyaccess/devstudio-earlyaccess.properties --user=nboldt --password PASSWORD
-scp devstudio-earlyaccess.properties ${JBDS}/updates/9.0-staging
+scp devstudio-earlyaccess.properties ${JBDS}/earlyaccess/9.0-staging
 
 ----
 

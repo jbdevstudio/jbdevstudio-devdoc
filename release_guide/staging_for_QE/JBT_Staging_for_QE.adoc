@@ -40,16 +40,16 @@ Once the above conditions have been met, you can proceed to the next steps.
 === Promote builds from "nightly" to "staging"
 
 *Staging* is where we store builds for staging. This contains build metadata. The URL for staging sites pattern is +http://download.jboss.org/jbosstools/staging/<version>.<siteName>/<buildId>::
-. *Core* site (which contains JBoss Tools): Move the most recent build available from +http://downloads.jboss.org/jbosstools/builds/nightly/core/4.2.luna+ to +http://downloads.jboss.org/jbosstools/builds/staging/jbosstools-4.2.1.Final-updatesite-core/+
-. *Core Tests* site (which contains JBoss Tools tests): Move the most recent build available from +http://downloads.jboss.org/jbosstools/builds/nightly/coretests/4.2.luna+ to +http://downloads.jboss.org/jbosstools/builds/staging/jbosstools-4.2.1.Final-updatesite-coretests/+
-. *WebTools* site (which contains only WTP connectors for AS/WildFly/EAP): Move the most recent build available from +http://downloads.jboss.org/jbosstools/builds/nightly/webtools/4.2.luna+ to +http://downloads.jboss.org/jbosstools/builds/staging/jbosstools-4.2.1.Final-updatesite-webtools/+ 
-. *Hibernate Tools* site (which contains Hibernate Tools, a subset of JBoss Tools): Move the most recent build available from +http://downloads.jboss.org/jbosstools/builds/nightly/hibernatetools/4.2.luna+ to +http://downloads.jboss.org/jbosstools/builds/staging/jbosstools-4.2.1.Final-updatesite-hibernatetools/+
+. *Core* site (which contains JBoss Tools): Move the most recent build available from +http://downloads.jboss.org/jbosstools/builds/nightly/core/4.3.mars+ to +http://downloads.jboss.org/jbosstools/builds/staging/jbosstools-4.3.1.Final-updatesite-core/+
+. *Core Tests* site (which contains JBoss Tools tests): Move the most recent build available from +http://downloads.jboss.org/jbosstools/builds/nightly/coretests/4.3.mars+ to +http://downloads.jboss.org/jbosstools/builds/staging/jbosstools-4.3.1.Final-updatesite-coretests/+
+. *WebTools* site (which contains only WTP connectors for AS/WildFly/EAP): Move the most recent build available from +http://downloads.jboss.org/jbosstools/builds/nightly/webtools/4.3.mars+ to +http://downloads.jboss.org/jbosstools/builds/staging/jbosstools-4.3.1.Final-updatesite-webtools/+ 
+. *Hibernate Tools* site (which contains Hibernate Tools, a subset of JBoss Tools): Move the most recent build available from +http://downloads.jboss.org/jbosstools/builds/nightly/hibernatetools/4.3.mars+ to +http://downloads.jboss.org/jbosstools/builds/staging/jbosstools-4.3.1.Final-updatesite-hibernatetools/+
 
 Here is a script that does this:
 [source,bash]
 ----
-stream=4.2.luna
-version=4.2.1.Final # a, b, c...
+stream=4.3.mars
+version=4.3.1.Final # a, b, c...
 
 site=core
 # Retrieve latest build and remove trailing slash
@@ -98,24 +98,24 @@ p2 repositories are expected to be under the +http://download.jboss.org/jbosstoo
 
 [source,bash]
 ----
-stream=4.2.luna
-version=4.2.1.Final # a, b, c...
+stream=4.3.mars
+version=4.3.1.Final # a, b, c...
 
 site=core
-echo "rename nightly/${site}/${stream} staging/luna/jbosstools-${version}-updatesite-${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates  
-echo " >> http://download.jboss.org/jbosstools/updates/staging/luna/jbosstools-${version}-updatesite-${site}/" | egrep ">>|${version}"
+echo "rename nightly/${site}/${stream} staging/mars/jbosstools-${version}-updatesite-${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates  
+echo " >> http://download.jboss.org/jbosstools/updates/staging/mars/jbosstools-${version}-updatesite-${site}/" | egrep ">>|${version}"
 
 site=coretests
-echo "rename nightly/${site}/${stream} staging/luna/jbosstools-${version}-updatesite-${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates  
-echo " >> http://download.jboss.org/jbosstools/updates/staging/luna/jbosstools-${version}-updatesite-${site}/" | egrep ">>|${version}"
+echo "rename nightly/${site}/${stream} staging/mars/jbosstools-${version}-updatesite-${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates  
+echo " >> http://download.jboss.org/jbosstools/updates/staging/mars/jbosstools-${version}-updatesite-${site}/" | egrep ">>|${version}"
 
 site=hibernatetools
-echo "rename nightly/${site}/${stream} staging/luna/jbosstools-${version}-updatesite-${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
-echo " >> http://download.jboss.org/jbosstools/updates/staging/luna/jbosstools-${version}-updatesite-${site}/" | egrep ">>|${version}"
+echo "rename nightly/${site}/${stream} staging/mars/jbosstools-${version}-updatesite-${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
+echo " >> http://download.jboss.org/jbosstools/updates/staging/mars/jbosstools-${version}-updatesite-${site}/" | egrep ">>|${version}"
 
 site=webtools
-echo "rename nightly/${site}/${stream} staging/luna/jbosstools-${version}-updatesite-${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
-echo " >> http://download.jboss.org/jbosstools/updates/staging/luna/jbosstools-${version}-updatesite-${site}/" | egrep ">>|${version}"
+echo "rename nightly/${site}/${stream} staging/mars/jbosstools-${version}-updatesite-${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
+echo " >> http://download.jboss.org/jbosstools/updates/staging/mars/jbosstools-${version}-updatesite-${site}/" | egrep ">>|${version}"
 
 ----
 
@@ -128,7 +128,7 @@ meantime, content of nightly sites will be the same as promoted content (except 
 
 === Update composite site metadata for staged updates
 
-Update files __http://download.jboss.org/jbosstools/updates/staging/luna/composite*.xml__ , with SFTP/SCP via command-line or your 
+Update files __http://download.jboss.org/jbosstools/updates/staging/mars/composite*.xml__ , with SFTP/SCP via command-line or your 
 favourite SFTP GUI client (such as Eclipse RSE).
 
 This site needs to contain:
@@ -138,23 +138,23 @@ This site needs to contain:
 
 [source,bash]
 ----
-versionWithRespin_PREV=4.2.1.CR2
+versionWithRespin_PREV=4.3.1.CR2
 TARGET_PLATFORM_VERSION_MAX_PREV=4.41.1.CR2
 TARGET_PLATFORM_CENTRAL_MAX_PREV=4.41.1.CR1-SNAPSHOT
 
-versionWithRespin=4.2.1.Final
+versionWithRespin=4.3.1.Final
 TARGET_PLATFORM_VERSION_MAX=4.41.1.Final
 TARGET_PLATFORM_CENTRAL_MAX=4.41.1.Final-SNAPSHOT
 
-cd jbosstools-download.jboss.org/jbosstools/updates/staging/luna
+cd jbosstools-download.jboss.org/jbosstools/updates/staging/mars
 git fetch origin master
 git checkout FETCH_HEAD
 
-# replace static/releases with updates/staging/luna/, then replace all the versions
+# replace static/releases with updates/staging/mars/, then replace all the versions
 now=`date +%s000`
 for c in compositeContent.xml compositeArtifacts.xml; do 
   sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#" $c
-  sed -i -e "s#/static/releases/#/updates/staging/luna/#" $c
+  sed -i -e "s#/static/releases/#/updates/staging/mars/#" $c
   sed -i -e "s#${versionWithRespin_PREV}#${versionWithRespin}#" $c
   sed -i -e "s#${TARGET_PLATFORM_VERSION_MAX_PREV}#${TARGET_PLATFORM_VERSION_MAX}#" $c
   sed -i -e "s#${TARGET_PLATFORM_CENTRAL_MAX_PREV}#${TARGET_PLATFORM_CENTRAL_MAX}#" $c
@@ -167,7 +167,7 @@ git commit -m "release JBT ${versionWithRespin} to QE" composite*.xml
 git push origin HEAD:master
 
 # push updated file to server
-scp composite*.xml tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/luna/
+scp composite*.xml tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/mars/
 
 ----
 
@@ -187,8 +187,8 @@ Without this step, QE will be confused why there are Beta2 bits in the CR2 Centr
 
 * Update the .target files and pom.xml files to replace the previous URL for JBoss Tools artifact by the one you just created
 (this could be including the correct respin label -"" for a first build, "a" or "b" for subsequent respins-, or increasing the minor version). Examples
-** `http://download.jboss.org/jbosstools/static/releases/jbosstools-4.2.0.CR1-updatesite-core/` -> `http://download.jboss.org/jbosstools/static/releases/jbosstools-4.2.0.CR1a-updatesite-core/`
-** `http://download.jboss.org/jbosstools/static/releases/jbosstools-4.2.1.Final-updatesite-core/` -> `http://download.jboss.org/jbosstools/static/releases/jbosstools-4.2.2.Final-updatesite-core/`
+** `http://download.jboss.org/jbosstools/static/releases/jbosstools-4.3.0.CR1-updatesite-core/` -> `http://download.jboss.org/jbosstools/static/releases/jbosstools-4.3.0.CR1a-updatesite-core/`
+** `http://download.jboss.org/jbosstools/static/releases/jbosstools-4.3.1.Final-updatesite-core/` -> `http://download.jboss.org/jbosstools/static/releases/jbosstools-4.3.2.Final-updatesite-core/`
 * When this is done, update the .target files to use the newer versions of listed units. You can use the https://github.com/jbosstools/jbosstools-maven-plugins/wiki#update-versions-of-ius-in-target-file[fix-versions mojo]
 on the modified .target files to automatically get a fixed version of those .target files.
 * If target files have changes, and that version was not bumped since last staging/release, bump version of target artifacts, in
@@ -203,17 +203,17 @@ For example:
 ----
 
 /path/to/verifyTarget.sh -b /path/to/jbosstools-discovery -p \
-jbtcentral -x -u http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/4.41.1.Final/,http://download.jboss.org/jbosstools/updates/nightly/core/4.2.luna/
+jbtcentral -x -u http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/4.41.1.Final/,http://download.jboss.org/jbosstools/updates/nightly/core/4.3.mars/
 
 /path/to/verifyTarget.sh -b /path/to/jbosstools-discovery -p \
-jbtearlyaccess -x -u http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/4.41.1.Final/,http://download.jboss.org/jbosstools/updates/nightly/core/4.2.luna/,\
+jbtearlyaccess -x -u http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/4.41.1.Final/,http://download.jboss.org/jbosstools/updates/nightly/core/4.3.mars/,\
 file:///path/to/jbosstools-discovery/jbtcentraltarget/multiple/target/jbtcentral-multiple.target.repo/
 
 ----
 
 * Commit your changes.
 
-* Run the job https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_8.0.luna/job/jbosstools-centraltarget_4.2.luna to pick up the new commit, and verify that updated TP sites
+* Run the job https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/job/jbosstools-centraltarget_4.3.mars to pick up the new commit, and verify that updated TP sites
 (http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/4.41.1.Final-SNAPSHOT/ and http://download.jboss.org/jbosstools/targetplatforms/jbtearlyaccesstarget/4.41.1.Final-SNAPSHOT/ ) now
 contain newer artifacts.
 
@@ -221,18 +221,18 @@ contain newer artifacts.
 == Update Discovery URLs
 
 [[update-discovery-urls]]
-Update the *stable branch* discovery job ( https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_8.0.luna/job/jbosstools-discovery_4.2.luna/configure ) to publish to the right URL, according to JBT and JBDS versions +
+Update the *stable branch* discovery job ( https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/job/jbosstools-discovery_4.3.mars/configure ) to publish to the right URL, according to JBT and JBDS versions +
 
 * Update property +JBTCENTRALTARGET_VERSION+ to 4.41.1.Final-SNAPSHOT
 * Update property +JBTEARLYACCESSTARGET_VERSION+ to 4.41.1.Final-SNAPSHOT
 
-* Update property +JBT_UPDATE_SITE+ to http://download.jboss.org/jbosstools/updates/staging/luna/
-* Update property +JBDS_UPDATE_SITE+ to https://devstudio.redhat.com/updates/8.0-staging/
+* Update property +JBT_UPDATE_SITE+ to http://download.jboss.org/jbosstools/updates/staging/mars/
+* Update property +JBDS_UPDATE_SITE+ to https://devstudio.redhat.com/updates/9.0-staging/
 
 Then respin the job and verify that sites were correctly populated:
 
-* http://download.jboss.org/jbosstools/discovery/nightly/core/4.2.luna/
-* http://www.qa.jboss.com/binaries/RHDS/discovery/nightly/core/4.2.luna/
+* http://download.jboss.org/jbosstools/discovery/nightly/core/4.3.mars/
+* http://www.qa.jboss.com/binaries/RHDS/discovery/nightly/core/4.3.mars/
 
 
 === Stage discovery site 
@@ -247,17 +247,17 @@ It consists of 3 steps:
 This script automates the 
 [source,bash]
 ----
-stream=4.2.luna
-version=4.2.1.Final # a, b, c...
+stream=4.3.mars
+version=4.3.1.Final # a, b, c...
 # earlyaccess site includes one directory.xml file which lists both core and earlyaccess plugins, so use that instead of core site
 echo "rename nightly/earlyaccess/${stream} staging/${version}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery/
 echo " >> http://download.jboss.org/jbosstools/discovery/staging/${version}/" | egrep ">>|${version}"
 
-# TODO verify this works for 4.2.1.Final
+# TODO verify this works for 4.3.1.Final
 # remember to include IS jar in jbosstools-directory.xml
 isjar=""
-isjar=`curl -s http://download.jboss.org/jbosstools/updates/stable/luna/jbosstools-directory.xml | grep integration-stack`
-isjar=`curl -s http://download.jboss.org/jbosstools/updates/development/luna/jbosstools-directory.xml | grep integration-stack`
+isjar=`curl -s http://download.jboss.org/jbosstools/updates/stable/mars/jbosstools-directory.xml | grep integration-stack`
+isjar=`curl -s http://download.jboss.org/jbosstools/updates/development/mars/jbosstools-directory.xml | grep integration-stack`
 if [[ ${isjar} ]]; then 
   # echo "Found integration-stack jar: ${isjar}"
 	curl -s http://download.jboss.org/jbosstools/discovery/staging/${version}/jbosstools-directory.xml > /tmp/jbosstools-directory.xml
@@ -295,7 +295,7 @@ fi
 ----
 
 [start=3]
-. If Central target-platform version changed since previous staging version, update the `composite*.xml` file http://downaload.jboss.org/updates/staging/luna
+. If Central target-platform version changed since previous staging version, update the `composite*.xml` file http://downaload.jboss.org/updates/staging/mars
 to reference the newer site. Edit it locally from the `jbosstools-download.jboss.org` repository, commit and push (to Git and to `download.jboss.org` with scp)
 
 Then verify the discovery sites are correctly populated: directory.xml contains right entries, with the expected `B??` qualifier and that integration-stack is in.
@@ -311,10 +311,10 @@ And update it it as required, so that the links for the latest milestone point t
 [source,bash]
 ----
 
-# @since JBT 4.2.1 / JBDS 8.0.1
+# @since JBT 4.3.1 / JBDS 9.0.1
 # JBIDE-18820, JBIDE-18806 check the version set in o.j.t.foundation.core's currentversion.properties value of default.version
-updatesiteURL=http://www.qa.jboss.com/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/all/repo/plugins/
-updatesiteURL=http://download.jboss.org/jbosstools/updates/nightly/core/4.2.luna/plugins/
+updatesiteURL=http://www.qa.jboss.com/binaries/RHDS/builds/staging/devstudio.product_9.0.mars/all/repo/plugins/
+updatesiteURL=http://download.jboss.org/jbosstools/updates/nightly/core/4.3.mars/plugins/
 pushd /tmp; wget -q -nc $updatesiteURL
 thejar=`cat index.html | egrep -v "source|pack.gz" | egrep "core.central|foundation.core" | sed -e "s#.\+href=\"\([^\"]\+\)\">.\+#\1#" | sort | head -1; rm -f index.html`
 wget -q -nc ${updatesiteURL}/${thejar}
@@ -325,7 +325,7 @@ echo $theversion
 
 # if value found above for $jbosstoolsversion != current release version, then you need to rebuild foundation w/ a new value inserted.
 
-version=4.2.1.Final #a, b, c...
+version=4.3.1.Final #a, b, c...
 # adjust these steps to fit your own path location & git workflow
 cd jbosstools-download.jboss.org/jbosstools/configuration
 git fetch origin master
@@ -333,10 +333,10 @@ git checkout FETCH_HEAD
 vim ide-config.properties # or use another editor 
 
 # otherwise, replace existing lines with these to make the lastest milestone live
-jboss.discovery.directory.url|jbosstools|4.2.1.Final=http://download.jboss.org/jbosstools/discovery/staging/${version}/jbosstools-directory.xml
-jboss.discovery.site.url|jbosstools|4.2.1.Final=http://download.jboss.org/jbosstools/updates/staging/luna/
-jboss.discovery.earlyaccess.site.url|jbosstools|4.2.1.Final=http://download.jboss.org/jbosstools/discovery/staging/${version}/
-jboss.discovery.earlyaccess.list.url|jbosstools|4.2.1.Final=http://download.jboss.org/jbosstools/discovery/staging/${version}/jbosstools-earlyaccess.properties
+jboss.discovery.directory.url|jbosstools|4.3.1.Final=http://download.jboss.org/jbosstools/discovery/staging/${version}/jbosstools-directory.xml
+jboss.discovery.site.url|jbosstools|4.3.1.Final=http://download.jboss.org/jbosstools/updates/staging/mars/
+jboss.discovery.earlyaccess.site.url|jbosstools|4.3.1.Final=http://download.jboss.org/jbosstools/discovery/staging/${version}/
+jboss.discovery.earlyaccess.list.url|jbosstools|4.3.1.Final=http://download.jboss.org/jbosstools/discovery/staging/${version}/jbosstools-earlyaccess.properties
 
 # commit the change and push to master
 git add ide-config.properties
@@ -349,7 +349,7 @@ scp ide-config.properties tools@filemgmt.jboss.org:/downloads_htdocs/tools/confi
 
 == Disable jobs
 
-All stable branch jobs from the https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_8.0.luna/[8.0.luna view] should be disabled.
+All stable branch jobs from the https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/[9.0.mars view] should be disabled.
 
 Quick way to do so is with https://github.com/jbdevstudio/jbdevstudio-ci/blob/master/bin/toggleJenkinsJobs.py[toggleJenkinsJobs.py]. 
 See https://github.com/jbdevstudio/jbdevstudio-ci/blob/master/bin/toggleJenkinsJobs.py.examples.txt[usage examples].
@@ -361,7 +361,7 @@ Should a respin be needed, they can be re-enabled at that time.
 Before notifying team of successful staging process completion, let's check there is no obvious issue
 
 1. Get a recent Eclipse (compatible with the target version of JBT)
-2. Install all content from http://download.jboss.org/jbosstools/updates/staging/luna in it
+2. Install all content from http://download.jboss.org/jbosstools/updates/staging/mars in it
 3. Restart as suggested
 4. Open Central Software/Updates tab, enable Early-Access select and install all connectors
 5. Restart as suggested
@@ -374,14 +374,14 @@ ____
 
 [source,bash]
 ----
-version=4.2.1.Final # a, b, c...
+version=4.3.1.Final # a, b, c...
 respin="respin-"
 TARGET_PLATFORM_VERSION_MIN=4.40.0.Final
 TARGET_PLATFORM_VERSION_MAX=4.41.1.Final
 TARGET_PLATFORM_CENTRAL_MAX=4.41.1.Final-SNAPSHOT
 TARGET_PLATFORM_EARLYACCESS_MAX=4.41.1.Final-SNAPSHOT
-jbdsFixVersion=8.0.1.Final # no respin suffix here
-jbtFixVersion=4.2.1.Final # no respin suffix here
+jbdsFixVersion=9.0.1.Final # no respin suffix here
+jbtFixVersion=4.3.1.Final # no respin suffix here
 echo "
 Subject: 
 
@@ -391,7 +391,7 @@ Body:
 
 As always, these are not FINAL bits, but preliminary results for QE & community testing. Not for use by customers or end users. 
 
-Update site: http://download.jboss.org/jbosstools/updates/staging/luna/
+Update site: http://download.jboss.org/jbosstools/updates/staging/mars/
 
 Target platforms: 
 * http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MIN} 
@@ -399,7 +399,7 @@ Target platforms:
 
 Until the above target platform site is released, you may need to add it to Eclipse to resolve dependencies at install time. 
 Once released, dependencies will be found automatically from here:
-* http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/luna/ (latest release)
+* http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/mars/ (latest release)
 * http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/${TARGET_PLATFORM_CENTRAL_MAX}/ (upcoming milestone)
 * http://download.jboss.org/jbosstools/targetplatforms/jbtearlyaccesstarget/${TARGET_PLATFORM_EARLYACCESS_MAX}/ (upcoming milestone)
 
@@ -412,10 +412,10 @@ Schedule: https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.p
 --
 
 Additional update sites:
-* http://download.jboss.org/jbosstools/updates/staging/luna/jbosstools-${version}-updatesite-core/
-* http://download.jboss.org/jbosstools/updates/staging/luna/jbosstools-${version}-updatesite-coretests/
-* http://download.jboss.org/jbosstools/updates/staging/luna/jbosstools-${version}-updatesite-hibernatetools/
-* http://download.jboss.org/jbosstools/updates/staging/luna/jbosstools-${version}-updatesite-webtools/
+* http://download.jboss.org/jbosstools/updates/staging/mars/jbosstools-${version}-updatesite-core/
+* http://download.jboss.org/jbosstools/updates/staging/mars/jbosstools-${version}-updatesite-coretests/
+* http://download.jboss.org/jbosstools/updates/staging/mars/jbosstools-${version}-updatesite-hibernatetools/
+* http://download.jboss.org/jbosstools/updates/staging/mars/jbosstools-${version}-updatesite-webtools/
 and build sites:
 * http://download.jboss.org/jbosstools/builds/staging/jbosstools-${version}-build-core/
 * http://download.jboss.org/jbosstools/builds/staging/jbosstools-${version}-build-coretests/

@@ -1,0 +1,452 @@
+= Publishing JBDS Installers & update sites for QE
+
+This document describe how to provide a valid JBoss Developer Studio build to QE so they can test us.
+
+TODO:
+
+* in product/features/com.jboss.jbds.product.feature/p2.inf
+* when releasing GA make sure to :%s/development/stable/g and :%s/8.0-staging/8.0/g
+
+
+== Update Discovery Sites and URLs
+
+See details in JBT_4.2.*_Staging_For_QE.adoc
+
+== Disable jobs
+
+All stable branch jobs from the https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_8.0.luna/[8.0.luna view] should be disabled.
+
+Quick way to do so is with https://github.com/jbdevstudio/jbdevstudio-ci/blob/master/bin/toggleJenkinsJobs.py[toggleJenkinsJobs.py]. See https://github.com/jbdevstudio/jbdevstudio-ci/blob/master/bin/toggleJenkinsJobs.py.examples.txt[usage examples].
+
+Should a respin be needed, they can be re-enabled at that time.
+
+== Variables to use
+
+Whenever you're starting a new shell, you should set those variables:
+
+[sources,bash]
+----
+versionWithRespin=8.0.1.GA
+TARGET_PLATFORM_VERSION_MAX=4.41.1.Final
+CENTRAL_TARGET_VERSION=4.41.1.Final-SNAPSHOT
+previousFull=8.0.1.CR2
+now=$(date +%s000)
+isGA=false
+JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
+----
+
+== Stage to qa.jboss.org
+
+*qa.jboss.org* is actually mapped to folder +/qa/services/http/binaries/RHDS+ accessible from CI machines (such as dev01.mw.lab.eng.bos.redhat.com). So first connect to dev01.mw.lab.eng.bos.redhat.com as +hudson+ user (requires permissions).
+
+[source,bash]
+----
+me@local$ ssh dev01.mw.lab.eng.bos.redhat.com
+me@dev01$ sudo su - hudson
+hudson@dev01$ ...
+----
+
+Then copy the latest JBDS artifacts:
+
+* installer
+* update site
+* discovery site
+
+WARNING: Don't use symlinks are they are too risky to use. Those operations can be done in parallel (using multiple terminals is the easiest way)
+
+=== Push installers, update site, and discovery site
+
+[source,bash]
+----
+# can run 3 steps these in parallel 
+
+versionWithRespin=8.0.1.GA # a, b, c...
+rsync -aPrz /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/installer/* /qa/services/http/binaries/RHDS/builds/development/${versionWithRespin}-build-core/
+rsync -aPrz /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/logs/* /qa/services/http/binaries/RHDS/builds/development/${versionWithRespin}-build-core/
+cd /qa/services/http/binaries/RHDS/builds/development/
+find . -maxdepth 1 -type d -name "${versionWithRespin}*" | grep ${versionWithRespin}
+find . -maxdepth 1 -type d -name "${versionWithRespin}*" | sed "s#\.# >> http://www.qa.jboss.com/binaries/RHDS/builds/development#" | egrep ">>|${versionWithRespin}"
+
+versionWithRespin=8.0.1.GA # a, b, c...
+rsync -aPrz /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/all/repo/* /qa/services/http/binaries/RHDS/updates/development/${versionWithRespin}-updatesite-core/
+cd /qa/services/http/binaries/RHDS/updates/development/
+find . -maxdepth 1 -type d -name "${versionWithRespin}*" | grep ${versionWithRespin}
+find . -maxdepth 1 -type d -name "${versionWithRespin}*" | sed "s#\.# >> http://www.qa.jboss.com/binaries/RHDS/updates/development#" | egrep ">>|${versionWithRespin}"
+
+# earlyaccess site includes one directory.xml file which lists both core and earlyaccess plugins, so use that instead of core site
+versionWithRespin=8.0.1.GA # a, b, c...
+rsync -aPrz /qa/services/http/binaries/RHDS/discovery/nightly/earlyaccess/4.2.luna/* /qa/services/http/binaries/RHDS/discovery/development/${versionWithRespin}/
+----
+
+=== Update discovery composite sites
+
+[source,bash]
+----
+cd /qa/services/http/binaries/RHDS/discovery/development/${versionWithRespin}/
+for c in compositeContent.xml compositeArtifacts.xml; do 
+  sed -i -e "s#http://www.qa.jboss.com/binaries/RHDS/builds/staging/devstudio.product.\+/all/.\+/#http://www.qa.jboss.com/binaries/RHDS/updates/development/${versionWithRespin}-updatesite-core/#" $c
+  sed -i -e "s#http://www.qa.jboss.com/binaries/RHDS/updates/development/${versionWithRespin}-updatesite-core/repo/#http://www.qa.jboss.com/binaries/RHDS/updates/development/${versionWithRespin}-updatesite-core/#" $c
+  cat $c | egrep "${versionWithRespin}"
+done
+cd /qa/services/http/binaries/RHDS/discovery/development/
+find . -maxdepth 1 -type d -name "${versionWithRespin}*" | grep ${versionWithRespin}
+find . -maxdepth 1 -type d -name "${versionWithRespin}*" | sed "s#\.# >> http://www.qa.jboss.com/binaries/RHDS/discovery/development#" | egrep ">>|${version}"
+----
+
+== Stage files to devstudio.redhat.com
+
+WARNING: Skip this test for Alpha
+
+=== Push content
+
++devstudio.redhat.com+ is actually hosted on +filemgmt.jboss.org+, accessible from inside Red Hat VPN. So you need both VPN enabled and permissions to write to devstudio@filemgmt. If you don't have access, send a copy of your public SSH key to eng-ops@redhat.com.
+
+First, ssh to dev01, and sudo to the hudson user. From there you will be able to push files to filemgmt.
+
+[source,bash]
+----
+me@local$ ssh dev01.mw.lab.eng.bos.redhat.com
+me@dev01$ sudo su - hudson
+hudson@dev01$ ...
+----
+
+If the target platform has not been released (still has -SNAPSHOT version suffix), make sure you clean the various locations before running this script.
+
+[source,bash]
+----
+
+# can run 4 steps these in parallel 
+
+versionWithRespin=8.0.1.GA # a, b, c...
+JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
+rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/all/repo/* ${JBDS}/updates/8.0.0/jboss-devstudio-${versionWithRespin}-updatesite-core/
+
+# TODO: verify correct URL and filename for the target zip
+versionWithRespin=8.0.1.GA # a, b, c...
+JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
+TARGET_PLATFORM_VERSION_MAX=4.41.1.Final
+unzip -q /qa/services/http/binaries/RHDS/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MAX}/jbdevstudiotarget-${TARGET_PLATFORM_VERSION_MAX}.zip -d /tmp/jboss-devstudio-${versionWithRespin}-target-platform
+rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MAX}/jbdevstudiotarget-${TARGET_PLATFORM_VERSION_MAX}.zip ${JBDS}/updates/8.0.0/
+rsync -aPrz --rsh=ssh --protocol=28 /tmp/jboss-devstudio-${versionWithRespin}-target-platform ${JBDS}/updates/8.0.0/
+
+# TODO: verify correct URL and filename for the target zip
+versionWithRespin=8.0.1.GA # a, b, c...
+JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
+CENTRAL_TARGET_VERSION=4.41.1.Final-SNAPSHOT
+# Central discovery
+rm -rf /qa/services/http/binaries/RHDS/targetplatforms/jbtcentraltarget/${CENTRAL_TARGET_VERSION}
+mkdir -p /qa/services/http/binaries/RHDS/targetplatforms/jbtcentraltarget/${CENTRAL_TARGET_VERSION}/
+pushd /qa/services/http/binaries/RHDS/targetplatforms/jbtcentraltarget/${CENTRAL_TARGET_VERSION}/
+wget http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/${CENTRAL_TARGET_VERSION}/jbtcentraltarget-${CENTRAL_TARGET_VERSION}.zip
+popd
+rm -fr /tmp/jboss-devstudio-${versionWithRespin}-updatesite-central
+unzip -q /qa/services/http/binaries/RHDS/targetplatforms/jbtcentraltarget/${CENTRAL_TARGET_VERSION}/jbtcentraltarget-${CENTRAL_TARGET_VERSION}.zip -d /tmp/jboss-devstudio-${versionWithRespin}-updatesite-central
+rsync -aPrz --rsh=ssh --protocol=28 --delete /tmp/jboss-devstudio-${versionWithRespin}-updatesite-central/* ${JBDS}/updates/8.0.0/jboss-devstudio-${versionWithRespin}-updatesite-central/
+rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/targetplatforms/jbtcentraltarget/${CENTRAL_TARGET_VERSION}/jbtcentraltarget-${CENTRAL_TARGET_VERSION}.zip ${JBDS}/updates/8.0.0/
+
+# TODO: verify correct URL and filename for the target zip
+versionWithRespin=8.0.1.GA # a, b, c...
+JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
+CENTRAL_TARGET_VERSION=4.41.1.Final-SNAPSHOT
+# Early Access
+rm -rf /qa/services/http/binaries/RHDS/targetplatforms/jbtearlyaccesstarget/${CENTRAL_TARGET_VERSION}/
+mkdir -p /qa/services/http/binaries/RHDS/targetplatforms/jbtearlyaccesstarget/${CENTRAL_TARGET_VERSION}/
+pushd /qa/services/http/binaries/RHDS/targetplatforms/jbtearlyaccesstarget/${CENTRAL_TARGET_VERSION}/
+wget http://download.jboss.org/jbosstools/targetplatforms/jbtearlyaccesstarget/${CENTRAL_TARGET_VERSION}/jbtearlyaccesstarget-${CENTRAL_TARGET_VERSION}.zip
+popd
+rm -fr /tmp/jboss-devstudio-${versionWithRespin}-updatesite-earlyaccess
+unzip -q /qa/services/http/binaries/RHDS/targetplatforms/jbtearlyaccesstarget/${CENTRAL_TARGET_VERSION}/jbtearlyaccesstarget-${CENTRAL_TARGET_VERSION}.zip -d /tmp/jboss-devstudio-${versionWithRespin}-updatesite-earlyaccess
+rsync -aPrz --rsh=ssh --protocol=28 --delete /tmp/jboss-devstudio-${versionWithRespin}-updatesite-earlyaccess/* ${JBDS}/updates/8.0.0/jboss-devstudio-${versionWithRespin}-updatesite-earlyaccess/
+rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/targetplatforms/jbtearlyaccesstarget/${CENTRAL_TARGET_VERSION}/jbtearlyaccesstarget-${CENTRAL_TARGET_VERSION}.zip ${JBDS}/updates/8.0.0/
+
+----
+
+=== Update latest target platform composite files
+
+Then, update the composite files to have public URLs pointing to these artifacts. Get a clone of repository +https://github.com/jbdevstudio/jbdevstudio-website+, then we can update the necessary composite files to reference new locations. This imply tweaks on some files of the jbdevstudio-website repository. This repo will get later published to devstudio.redhat.com. Those changes can then be performed on your local machine.
+
+NOTE: Now that Central content is merged into the same composite as JBDS and its target platform, you MAY have to edit this file by hand if the JBDS TP and JBDS Central TP versions are not the same.
+
+[source,bash]
+----
+versionWithRespin=8.0.1.GA # a, b, c...
+now=`date +%s000`
+
+oldTP=jboss-devstudio-8.0.1.CR2
+newTP=jboss-devstudio-${versionWithRespin}
+# Example for a respin
+# oldTP=jboss-devstudio-8.0.1.CR2
+# newTP=jboss-devstudio-8.0.1.CR2
+
+pushd jbdevstudio-website/content/updates/8.0-staging/
+for d in composite*.xml; do
+  sed -i -e "s#${oldTP}#${newTP}#g" $d
+  sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
+done
+popd
+
+pushd jbdevstudio-website/content/earlyaccess/8.0-staging/
+for d in composite*.xml; do
+  sed -i -e "s#${oldTP}#${newTP}#g" $d
+  sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
+done
+popd
+
+----
+
+=== Update composite discovery files
+
+[source,bash]
+----
+isGA=false # or true in case you're doing a GA
+previousFull=8.0.1.CR2 # a, b, c...
+versionWithRespin=8.0.1.GA # a, b, c...
+now=`date +%s000`
+
+#TODO: make sure you're the correct folder here!
+pushd jbdevstudio-website/content/
+for d in updates/8.0-staging/*.*ml earlyaccess/8.0-staging/*.*ml; do
+  akamaiPath='../../static/updates/'
+  regularPath='../'
+  # update composite timestamp
+  sed -i -e "s#${akamaiPath}#${regularPath}#g" -e "s#${previousFull}#${versionWithRespin}#g" -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
+done
+
+# update https://devstudio.redhat.com/updates/8.0-staging/devstudio-directory.xml to point at new Core discovery jar.
+# Latest discovery site is here: http://www.qa.jboss.com/binaries/RHDS/discovery/development/${versionWithRespin}
+pushd updates/8.0-staging/
+rm -f devstudio-directory.xml
+wget -q -nc http://www.qa.jboss.com/binaries/RHDS/discovery/development/${versionWithRespin}/devstudio-directory.xml
+newJars=$(cat devstudio-directory.xml | grep entry | sed -e "s#.\+plugins/#plugins/#g" | sed -e "s#.\+discovery/#discovery/#g" |sed -e "s#\.jar.\+#.jar#g")
+for newJar in $newJars; do 
+    if [[ ! ${newJar##*.earlyaccess_*} ]]; then
+    newJarEA=${newJar/plugins/discovery}
+    wget -q -nc -O ${newJarEA} http://www.qa.jboss.com/binaries/RHDS/discovery/development/${versionWithRespin}/${newJar} 
+    echo "EA: $newJarEA"
+  else
+    newJarCore=${newJar/plugins/discovery}
+    wget -q -nc -O ${newJarCore} http://www.qa.jboss.com/binaries/RHDS/discovery/development/${versionWithRespin}/${newJar} 
+    echo "Core: $newJarCore"
+  fi
+done
+
+# update catalog (discovery/ instead of plugins/)
+sed -i -e "s#discovery/com.jboss.jbds.central.discovery.earlyaccess_.\+\.jar#${newJarEA}#g" devstudio-directory.xml
+sed -i -e "s#discovery/com.jboss.jbds.central.discovery_.\+\.jar#${newJarCore}#g" devstudio-directory.xml
+sed -i -e "s#plugins/com.jboss.jbds.central.discovery.earlyaccess_.\+\.jar#${newJarEA}#g" devstudio-directory.xml
+sed -i -e "s#plugins/com.jboss.jbds.central.discovery_.\+\.jar#${newJarCore}#g" devstudio-directory.xml
+
+unzip -q -d ${newJarEA}{_,}
+pushd ${newJarEA}_ 
+if [ "$isGA" = true ]; then
+  sed -i "s#https://devstudio.redhat.com/earlyaccess/8.0-staging/#https://devstudio.redhat.com/updates/8.0/central/earlyaccess/#g" plugin.xml
+  sed -i "s#https://devstudio.redhat.com/earlyaccess/8.0-development/#https://devstudio.redhat.com/updates/8.0/central/earlyaccess/#g" plugin.xml
+else  # plugin points to the STAGING URL, not the RELEASE one
+  sed -i "s#https://devstudio.redhat.com/updates/8.0/central/earlyaccess/#https://devstudio.redhat.com/earlyaccess/8.0-staging/#g" plugin.xml
+  sed -i "s#https://devstudio.redhat.com/earlyaccess/8.0-development/#https://devstudio.redhat.com/earlyaccess/8.0-staging/#g" plugin.xml
+fi
+zip -u ../../${newJarEA} plugin.xml
+popd
+rm -fr ${newJarEA}_
+
+unzip -q -d ${newJarCore}{_,}
+pushd ${newJarCore}_ 
+if [ "$isGA" = true ]; then
+  sed -i "s#https://devstudio.redhat.com/updates/8.0-staging/#https://devstudio.redhat.com/updates/8.0/#g" plugin.xml
+  sed -i "s#https://devstudio.redhat.com/updates/8.0-development/#https://devstudio.redhat.com/updates/8.0/#g" plugin.xml
+else  # plugin points to the STAGING URL, not the RELEASE one
+  sed -i "s#https://devstudio.redhat.com/updates/8.0/#https://devstudio.redhat.com/updates/8.0-staging/#g" plugin.xml
+  sed -i "s#https://devstudio.redhat.com/updates/8.0-development/#https://devstudio.redhat.com/updates/8.0-staging/#g" plugin.xml
+fi
+zip -u ../../${newJarCore} plugin.xml
+popd
+rm -fr ${newJarCore}_
+
+# don't do this until you're ready to release the content -- not for QE
+# TODO: move this to the Release doc, not the Staging for QE doc
+#if [ "$isGA" = true ]; then # new plugin is also in 8.0/ and 8.0-development/ as well as 8.0-staging/
+#  cp -f jbdevstudio-website/content/updates/8.0-staging/${newJar} jbdevstudio-website/content/updates/8.0-development/${newJar}
+#  cp -f jbdevstudio-website/content/updates/8.0-staging/devstudio-directory.xml jbdevstudio-website/content/updates/8.0-development/devstudio-directory.xml
+#
+#  cp -f jbdevstudio-website/content/updates/8.0-staging/${newJar} jbdevstudio-website/content/updates/8.0/${newJar}
+#  cp -f jbdevstudio-website/content/updates/8.0-staging/devstudio-directory.xml jbdevstudio-website/content/updates/8.0/devstudio-directory.xml
+#fi
+
+# remember to include IS jar in devstudio-directory.xml
+isjar=""
+isjar=`grep integration-stack ../../updates/8.0/devstudio-directory.xml`
+isjar=`grep integration-stack ../../updates/8.0-development/devstudio-directory.xml`
+if [[ ${isjar} ]]; then 
+  # echo "Found integration-stack jar: ${isjar}"
+  isjar2=`grep integration-stack ../../updates/8.0-staging/devstudio-directory.xml`
+  if [[ ! ${isjar2} ]]; then
+    echo "ERROR: no integration stack jar listed in 8.0-staging/devstudio-directory.xml" | grep ERROR
+    echo "Please add this to 8.0-staging/devstudio-directory.xml :"
+    echo ""
+    echo "${isjar}"
+    echo ""
+    pushd ../../updates/8.0-staging/
+      cat devstudio-directory.xml | egrep "<directory|<entry" > devstudio-directory.xml.out
+      echo ${isjar} >> devstudio-directory.xml.out
+      echo "</directory>" >> devstudio-directory.xml.out
+      mv -f devstudio-directory.xml.out devstudio-directory.xml
+      cat devstudio-directory.xml | grep integration-stack
+    popd
+  else
+    echo "OK: directory.xml includes ${isjar}" | egrep "OK|integration-stack"
+  fi
+fi
+
+# check in / sync changes
+git add ${newJarEA} ${newJarCore}
+git add . discovery/*.jar
+git add ../../earlyaccess/8.0-staging/
+# TODO: make sure you're using a PR & topic branch!
+pushd ../..
+git commit -m "release ${versionWithRespin} for QE" .
+popd
+
+# add new discovery plugins ${newJarCore}, ${newJarEA}
+# update devstudio-directory.xml
+# update HTML pages" 
+
+# TODO: make sure you've merged in others' changes!
+git push origin master # in case of doubt, prefer pushing to a local repostiory and using a pull-request to ask for review
+
+JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
+rsync -aPrz --rsh=ssh --protocol=28 * ${JBDS}/updates/8.0-staging/
+pushd ../../earlyaccess/8.0-staging/
+rsync -aPrz --rsh=ssh --protocol=28 * ${JBDS}/earlyaccess/8.0-staging/
+popd
+
+popd # pop updates/8.0-staging and get back to jbosstools-website/content
+
+# TODO: move this to the Release doc, not the Staging for QE doc
+#if [ "$isGA" = true ]; then
+#  pushd updates/8.0/
+#  git add ${newJar}
+#  git status .
+#  git diff --color=always -w .
+#  # TODO: make sure you're using a PR & topic branch!
+#  git commit "release ${versionWithRespin} for QE: add new discovery plugins ${newJarCore}, ${newJarEA} + update devstudio-directory.xml" . discovery/*.jar
+#  # TODO: make sure you've merged in others' changes!
+#  git push origin master # in case of doubt, prefer pushing to a local repostiory and using a pull-request to ask for review
+#  popd
+#  rsync -aPrz --rsh=ssh --protocol=28 jbdevstudio-website/updates/8.0/*  devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0/
+#fi
+
+popd # pop jbosstools-website/content and get back to jbosstools-webstite/..
+----
+
+== Update documentation
+
+In case something change, update relevant documentation in +jbdevstudio-devdoc+ repository. As this is a shared documentation, it's better to create a pull request and ask reviews from other potential users (Nick, Mickael, Max, Denis... and anyone else who can be interested). 
+
+
+== Release the latest QE snapshot to ide-config.properties
+
+Check out this file:
+
+http://download.jboss.org/jbosstools/configuration/ide-config.properties
+
+And update it it as required, so that the links for the latest milestone point to valid URLs, eg.,
+
+[source,bash]
+----
+
+# @since JBT 4.2.1 / JBDS 8.0.1
+# JBIDE-18820, JBIDE-18806 check the version set in c.j.d.central.core's currentversion.properties value of default.version
+updatesiteURL=http://www.qa.jboss.com/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/all/repo/plugins/
+cd /tmp; wget -q -nc $updatesiteURL
+thejar=`cat index.html | egrep -v "source|pack.gz" | egrep "core.central|foundation.core" | sed -e "s#.\+href=\"\([^\"]\+\)\">.\+#\1#" | sort | head -1; rm -f index.html`
+cd /tmp; wget -q -nc ${updatesiteURL}/${thejar}
+theversion=`unzip -p ${thejar} */currentversion.properties | grep version= | sed -e "s/version=//" | tail -1`
+rm -f ${thejar}
+echo $theversion
+
+# if value found above for $jbosstoolsversion != current release version, then you need to rebuild foundation w/ a new value inserted.
+
+jboss.discovery.directory.url|devstudio|8.0.1.GA=https://devstudio.redhat.com/updates/8.0-staging/devstudio-directory.xml
+jboss.discovery.site.url|devstudio|8.0.1.GA=https://devstudio.redhat.com/updates/8.0-staging/
+jboss.discovery.earlyaccess.site.url|devstudio|8.0.1.GA=https://devstudio.redhat.com/earlyaccess/8.0-staging/
+----
+
+
+== Release the latest devstudio-earlyaccess.properties
+
+NOTE: Should be automated together with publication of new discovery site, so this operation would be automatically part
+of moving/copying discovery site to staging location.
+
+Get the file __earlyaccess.properties__ from discovery job, in workspace folder __jbdevstudio/com.jboss.devstudio.discovery.earlyaccess__: 
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_8.0.luna/job/jbosstools-discovery_4.2.luna/ws/sources/jbdevstudio/com.jboss.jbds.central.discovery.earlyaccess/devstudio-earlyaccess.properties
+and copy it do __https://devstudio.redhat.com/updates/8.0-staging/devstudio-earlyaccess.properties__.
+
+[source,bash]
+----
+pushd jbdevstudio-website/content/updates/8.0-staging
+rm -f devstudio-earlyaccess.properties
+wget --no-check-certificate https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_8.0.luna/job/jbosstools-discovery_4.2.luna/ws/sources/jbdevstudio/com.jboss.jbds.central.discovery.earlyaccess/devstudio-earlyaccess.properties --user=nboldt --password PASSWORD
+scp devstudio-earlyaccess.properties ${JBDS}/updates/8.0-staging
+
+----
+
+== Minimal testing
+
+Make sure that the very basic installation scenario works:
+
+1. Download JBDS installer and install it
+2. Go to Central > Software Updates page
+3. Enable Early-Access
+4. Select all
+5. Run installation
+
+If this fails, it most likely highlight a bug or a failure in the previous steps, so fix it before notifying team.
+
+== Notify the team (send 1 email)
+____
+*To* external-exadel-list@redhat.com +
+
+[source,bash]
+----
+versionWithRespin=8.0.1.GA # a, b, c...
+respin="respin-"
+TARGET_PLATFORM_VERSION_MIN=4.40.0.Final
+TARGET_PLATFORM_VERSION_MAX=4.41.1.Final
+TARGET_PLATFORM_CENTRAL_MAX=4.41.1.Final-SNAPSHOT
+TARGET_PLATFORM_EARLYACCESS_MAX=4.41.1.Final-SNAPSHOT
+jbdsVersion=8.0.1.GA # no respin suffix here
+jbtVersion=4.2.1.Final # no respin suffix here
+echo "
+Subject: 
+
+JBDS ${versionWithRespin} Core bits available for QE testing
+
+Body:
+
+As always, these are not FINAL bits, but preliminary results for QE testing. Not for redistribution to customers. Links in this section are all internal (VPN required), except for the target platform.
+
+Universal Installers: http://www.qa.jboss.com/binaries/RHDS/builds/development/${versionWithRespin}-build-core/build-info.html (Internal, VPN required)
+Update Sites:
+* https://devstudio.redhat.com/updates/8.0-staging/ (includes ${versionWithRespin} Core + Target Platform + JBoss Central)
+* https://devstudio.redhat.com/earlyaccess/8.0-staging/ (includes the above site + Early Access)
+* http://www.qa.jboss.com/binaries/RHDS/updates/development/${versionWithRespin}-updatesite-core/ (Internal, VPN required)
+
+Target Platforms: https://devstudio.jboss.com/updates/8.0.0/jboss-devstudio-${versionWithRespin}-target-platform/
+
+New + Noteworthy (subject to change):
+* https://github.com/jbosstools/jbosstools-website/tree/master/documentation/whatsnew
+* http://tools.jboss.org/documentation/whatsnew/
+
+Schedule / Upcoming Releases: https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.plugin.system.project%3Aversions-panel
+
+"
+
+if [[ $respin != "respin-" ]]; then
+echo " 
+Changes prompting this $respin are: https://issues.jboss.org/issues/?jql=labels%20in%20%28%22${respin}%22%29%20and%20%28%28project%20in%20%28%22JBDS%22%29%20and%20fixversion%20in%20%28%22${jbdsVersion}%22%29%29%20or%20%28project%20in%20%28%22JBIDE%22%2C%22TOOLSDOC%22%29%20and%20fixversion%20in%20%28%22${jbtVersion}%22%29%29%29
+"
+fi
+
+
+----
+____

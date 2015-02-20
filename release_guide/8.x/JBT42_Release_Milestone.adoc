@@ -1,0 +1,755 @@
+= Release JBoss Tools Development Milestone
+
+This document describe how to publish a valid JBoss Tools build to production after being verified by QE.
+
+With distractions (email, IRC), this process took ~90 mins for the Beta3 release. 
+
+WARNING: this requires write access to http://sourceforge.net/projects/jboss/files/JBossTools/
+
+== Verify that all JIRAs assigned to the current milestone are resolved
+
+Launch the config pages for JBIDE and JBDS and using the gear icons, release the milestone version in JIRA. 
+
+Note: If there are unresolved issues with a fixversion set to the current milestone, make sure those issues will not be lost / forgotten. 
+
+Send an email to jbosstools-dev@ and external-exadel-list@  reminding people to close out their JIRAs or move them to the next milestone fixversion.
+
+Sample email: http://lists.jboss.org/pipermail/jbosstools-dev/2014-April/008799.html
+
+DO NOT proceed with the release if there are any unresolved issues. Only JIRAs allowed before release should be bookeping JIRAs or issues that cannot be closed until the push is complete.
+
+[source,bash]
+----
+firefox https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
+  https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
+----
+
+== Summary
+
+Here are some generalities site promotion/release process. It's not an exhaustive list so you need to read the full document to do a release, but it gives an overview of the various steps.
+
+. CI build output is published the 'builds/staging' folder, while aggregated update-sites goes to 'updates/nightly' folder
+. After branching, component repository are rebuilt from branch (instead of 'master') and new aggregated updatesites are created as well.  A site is promoted from nightly to staging for QE, and moves from 'updates/nightly' to 'updates/staging', including a respin suffix if required.
+.. If QE finds a blocker issue, a respin is requested
+... On Jira, add a 'respin-a' or 'respin-b' or 'respin-x' label to bugs that needs for be fixed for the respin
+... Edit CI jobs to the next respin label (eg Beta2a -> Beta2b)
+... Re-run necessary jobs
+... Go To 1
+.. If QE approves, release is accepted and promoted
+... JIRA is checked to ensure all JIRAs for this milestone are resolved
+... Zips get published on sourceforge
+... Site moves from 'updates/staging' with respin label to 'static/releases' without respin label
+... Links to 'updates/luna' are replaced to link to new version
+... JBoss Tools website is updated
+... Git repositories are tagged
+... Eclipse Marketplace entries are created or updated
+... JIRA version can be released
+... Interested parties are notified
+
+
+== Zips on sf.net
+
+Zips (recommanded for offline installation) are made available on sf.net. sf.net provides interesting metrics on download and other stuff.
+
+=== Prepare files
+
+On your local machine, using a SFTP client (or the script suggested above), move the files to publish to +http://download.jboss.org/jbosstools/builds/development/sf.net/+ and rename them to conform to pattern.
+
+[source,bash]
+----
+stream=4.2.luna
+version=4.2.1.Final # name to use in filenames ie fixVersion in JIRA
+versionWithRespin=4.2.1.Final # Fully qualified version, including respin suffix
+hibernateToolsVersionWithRespin=4.2.1.Final # it is possible that hibernate tools didn't require the same # of respins, so might have a different version
+TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
+echo "mkdir development/sf.net/${version}" | sftp ${TOOLS}/builds
+
+coreBuildID=$(echo "ls 20*" | sftp ${TOOLS}/builds/staging/jbosstools-${versionWithRespin}-build-core/ 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); coreBuildID=${coreBuildID%%/*}
+echo "Latest build: ${coreBuildID}"
+
+# TODO: if you set Release=No in the job, you get SNAPSHOT instead of the BuildID, so override it here. Stable milestone jobs should ALWAYS set Release=Yes, but this provides a nice hackaround if you screwed up and don't want to rebuild :D
+coreBuildID2=${coreBuildID}
+#coreBuildID2=SNAPSHOT
+
+echo "rename staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID2}-updatesite.zip      development/sf.net/${version}/jbosstools-${version}_${coreBuildID}-updatesite-core.zip"         | sftp ${TOOLS}/builds
+echo "rename staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID2}-updatesite.zip.MD5  development/sf.net/${version}/jbosstools-${version}_${coreBuildID}-updatesite-core.zip.MD5"     | sftp ${TOOLS}/builds
+echo "rename staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID2}-src.zip     development/sf.net/${version}/jbosstools-${version}_${coreBuildID}-src.zip"        | sftp ${TOOLS}/builds
+echo "rename staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID2}-src.zip.MD5 development/sf.net/${version}/jbosstools-${version}_${coreBuildID}-src.zip.MD5"    | sftp ${TOOLS}/builds
+
+hibernateToolsBuildID=$(echo "ls 20*" | sftp ${TOOLS}/builds/staging/jbosstools-${hibernateToolsVersionWithRespin}-build-hibernatetools/ 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); hibernateToolsBuildID=${hibernateToolsBuildID%%/*}
+echo "Latest build: ${hibernateToolsBuildID}"
+echo "rename staging/jbosstools-${versionWithRespin}-build-hibernatetools/${hibernateToolsBuildID}/all/jbosstools-build-sites.aggregate.hibernatetools-site_${stream}-${hibernateToolsBuildID}-updatesite.zip development/sf.net/${version}/jbosstools-${version}_${hibernateToolsBuildID}-updatesite-hibernatetools.zip" | sftp ${TOOLS}/builds
+echo "rename staging/jbosstools-${versionWithRespin}-build-hibernatetools/${hibernateToolsBuildID}/all/jbosstools-build-sites.aggregate.hibernatetools-site_${stream}-${hibernateToolsBuildID}-updatesite.zip.MD5 development/sf.net/${version}/jbosstools-${version}_${hibernateToolsBuildID}-updatesite-hibernatetools.zip.MD5" | sftp ${TOOLS}/builds
+
+----
+
+=== Pull files to sf.net, including release notes
+
+Go to https://issues.jboss.org/secure/ConfigureReport!default.jspa?selectedProjectId=10020&projectOrFilterId=project-10020&projectOrFilterName=Tools%20%28JBoss%20Tools%29&reportKey=org.jboss.labs.jira.plugin.release-notes-report-plugin:releasenotes 
+Then select the target release (4.2.1.Final for example), type of issues = "All", style = "HTML". Copy the URL of the report page below.
+
+There are many ways to push files to sf.net (SFTP, SCP, SSH...). Any alternative that puts the files under +JBossTools/jbosstools${version}+ is fine. Here, we'll show a shell-based approach that allows to save a few minutes.
+
+First, connect to sf.net. Replace `yourname` by your sf.net username:
+
+[source,bash]
+----
+sfuser=yourname
+ssh -t ${sfuser},jboss@shell.sourceforge.net create
+----
+
+Once granted a shell, create the release notes page and download the zips
+
+[source,bash]
+----
+# TODO: get URL from step above
+URL="https://issues.jboss.org/secure/ConfigureReport.jspa?versions=12326250&versions=12325398&sections=all&style=html&selectedProjectId=10020&reportKey=org.jboss.labs.jira.plugin.release-notes-report-plugin%3Areleasenotes&Next=Next"
+
+branch=4.2.x # if this is a Final build, use 4.1.x instead of 4.2.x
+version=4.2.1.Final
+cd /home/frs/project/jboss/JBossTools/
+mkdir -p jbosstools${branch}
+cd jbosstools${branch}
+
+# generate release notes pointer page
+echo "<html><head><meta http-equiv=\"refresh\" content=\"0, url=${URL}\"/></head></html>"> zz_Release_Notes_${version}.readme.html
+cat zz_Release_Notes_${version}.readme.html
+
+# fetch zips
+wget http://download.jboss.org/jbosstools/builds/development/sf.net/${version} -k -O /tmp/index.html
+for f in $(cat /tmp/index.html | egrep -v "C=D|title>|h1>" | grep "${version}" | sed 's#.\+href="\([^"]\+\)".\+#\1#g'); do
+  wget -nc $f
+done
+rm -f /tmp/index.html
+
+# fetch browsersim standalone zip, rename it to match the rest of JBT zips and generate MD5 sum for it
+coreBuildID=`find . -name "*${version}*src.zip" | head -1 | sed "s#./jbosstools-\(.\+\)-src.zip#\1#"`
+echo "Latest build: ${coreBuildID}"
+z=jbosstools-${coreBuildID}-browsersim-standalone.zip
+wget http://download.jboss.org/jbosstools/builds/development/jbosstools-4.2.1.Final-browsersim-standalone/jbosstools-4.2.1.Final-browsersim-standalone.zip -O $z
+for m in $(md5sum ${z}); do if [[ $m != ${z} ]]; then echo $m > ${z}.MD5; fi; done
+
+# when done, exit the sourceforge shell
+exit
+
+# check files are on sourceforge (NOTE lowercase folder is new):
+google-chrome http://sourceforge.net/projects/jboss/files/JBossTools/jbosstools4.2.x/
+
+----
+  
+=== bookmarks.xml
+
+Bookmarks.xml keeps links from sf.net to the actual JBoss Tools update sites.
+Still on sf.net, verify the following file (adapt it to the version you're pushing: +/home/frs/project/jboss/JBossTools/jbosstools4.2_bookmarks.xml+. In case you're starting a new stream, you probably need to update those files (for example rename from kepler to Luna).
+
+== Move sites
+
+These steps happens on filemgmt.jboss.org, in the jbosstools download area.
+
+=== Move content to release directory
+
+We simply move the content of the latest respin to the release directory (under _jbosstools/static_ which is using Akamai)
+
+[source,bash]
+----
+version=4.2.1.Final
+versionWithRespin=4.2.1.Final # no respin suffix or a, b, c, d... suffix
+TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
+
+# if there were no respins, then version = versionWithRespin
+echo "rename updates/staging/luna/jbosstools-${versionWithRespin}-updatesite-core           static/releases/jbosstools-${version}-updatesite-core"           | sftp ${TOOLS}
+echo "rename updates/staging/luna/jbosstools-${versionWithRespin}-updatesite-coretests      static/releases/jbosstools-${version}-updatesite-coretests"      | sftp ${TOOLS}
+echo "rename updates/staging/luna/jbosstools-${versionWithRespin}-updatesite-hibernatetools static/releases/jbosstools-${version}-updatesite-hibernatetools" | sftp ${TOOLS}
+echo "rename updates/staging/luna/jbosstools-${versionWithRespin}-updatesite-webtools       static/releases/jbosstools-${version}-updatesite-webtools"       | sftp ${TOOLS}
+----
+
+If everything above completed OK, you can then in the background delete all the previous spins of the build from
+
+* /downloads_htdocs/tools/discovery/development/ (should this be discovery/development/luna/ instead?)
+* /downloads_htdocs/tools/builds/development/
+* /downloads_htdocs/tools/updates/staging/luna
+
+So if you're doing a 4.2.1.Final, then you can delete 4.2.0.CR2, 4.2.0.CR2a, etc. folders. A graphical sftp client such as FileZilla or FireFTP (plugin for Firefox) is the easiest way to perform these operations. Looks in the following locations:
+
+=== Update staging to point to new location
+
+Update +composite*.xml+ files in http://download.jboss.org/jbosstools/updates/staging/luna/ to reference the release location http://download.jboss.org/jbosstools/static/releases/jbosstools-${version}-updatesite-core .
+
+=== WebTools
+
+==== Publish Site
+
+Webtools site is expected to be found in +http://download.jboss.org/tools/updates/webtools/${eclipseTrain}+ (where eclipseTrain is for example "luna"). So, with a sftp client, on filemgmt.jboss.org
+
+
+1. Rename +/downloads_htdocs/tools/updates/webtools/${eclipseTrain}+ into +/downloads_htdocs/tools/updates/webtools/${eclipseTrain}_${previousVersion}+, with ${previous} being the name of previous release (for example 4.2.0.Alpha1 when releasing 4.2.0.CR1)
+1. Move last build in +/downloads_htdocs/tools/updates/staging/luna/jbosstools-${version}-updatesite-webtools+ to +/downloads_htdocs/tools/updates/webtools/${eclipseTrain}+
+
+Here is an example of a script doing that:
+[source,bash]
+----
+cd ~/tru # or where you have jbosstools-download.jboss.org checked out
+
+previous=4.2.0.Final
+versionWithRespin=4.2.1.Final
+eclipseTrain=luna
+TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
+
+pushd jbosstools-download.jboss.org/jbosstools/updates/webtools
+  # create new symlink
+  mv luna luna_${previous}
+  ln -s ../../static/releases/jbosstools-${version}-updatesite-webtools luna
+  # move the previous release out of the way
+  echo "rename webtools/${eclipseTrain} webtools/${eclipseTrain}_${previous}"                        | sftp ${TOOLS}/updates/
+  # push new symlink to server
+  rsync -Pzrlt --rsh=ssh --protocol=28 luna $TOOLS/updates/webtools/
+  # commit change to github
+  git add luna
+  git commit -m "update symlink to point at latest ../../static/releases/jbosstools-${version}-updatesite-webtools release folder" luna
+  git push origin master
+popd
+
+----
+
+==== Notify webtools project
+
+If this is the first milestone release (ie if you had to create the 'updates/webtools/${eclipseReleaseTrain}' directory (where ${eclipseReleaseTrain} can be for 
+example 'luna' or 'mars'), ensure that upstream project Web Tools (WTP) knows to include this new URL in their server adapter wizard. New bugzilla required!
+
+== Update Target Platforms
+
+This is only necessary if this new milestone uses a new Target Platform. In case there is no change in Target Platform between this milestone/release and the 
+previous one, you can ignore these steps.
+
+=== Final/GA releases 
+
+For Final or GA releases, the target platform folders should be moved to /static/ and composited back.
+
+Thus for example, 
+
+http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/4.41.0.Final/
+http://download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/4.41.0.Final/
+
+should be moved to:
+
+http://download.jboss.org/jbosstools/static/targetplatforms/jbosstoolstarget/4.41.0.Final/
+http://download.jboss.org/jbosstools/static/targetplatforms/jbdevstudiotarget/4.41.0.Final/
+
+Then you can create composites in the old locations pointing to the new one, like this:
+
+https://github.com/jbosstools/jbosstools-download.jboss.org/commit/d5306ce9408144ef681627ad8f5bd1e6c491bcf4
+
+[source,bash]
+----
+
+cd ~/tru # or where you have jbosstools-download.jboss.org checked out
+
+oldTP=4.41.0.Final
+newTP=4.41.1.Final
+now=`date +%s000`
+eclipseTrain=luna
+TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
+
+pushd jbosstools-download.jboss.org/jbosstools/targetplatforms/
+  for f in jbosstools jbdevstudio; do
+    pushd ${f}target
+      mkdir ${newTP}
+      for d in ${eclipseTrain}/composite*.xml; do
+        sed -i -e "s#${oldTP}#${newTP}#g" $d
+        sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
+      done
+      mkdir -p ${newTP}/REPO/
+      cp -f ${eclipseTrain}/composite* ${newTP}/
+      cp -f ${eclipseTrain}/composite* ${newTP}/REPO/
+    popd
+  done
+
+  # check your changes here before changing stuff on the server!
+
+  for f in jbosstools jbdevstudio; do
+    git add ${f}target
+    # move actual TP to /static/ folder
+    echo "rename targetplatforms/${f}target/${newTP} static/targetplatforms/${f}target/${newTP}" | sftp ${TOOLS}/
+    # create composite pointer
+    rsync -Pzrlt --rsh=ssh --protocol=28 ${f}target/${newTP}/* $TOOLS/targetplatforms/${f}target/${newTP}/
+    # update eclipseTrain pointer
+    rsync -Pzrlt --rsh=ssh --protocol=28 ${f}target/${eclipseTrain}/* $TOOLS/targetplatforms/${f}target/${eclipseTrain}/
+  done
+  # commit changes to github
+  git commit -m "move target platforms into /static/ and update composite pointers to latest $eclipseTrain => ${newTP}" .
+  git push origin master
+popd
+
+# verify all files are correct
+firefox \
+view-source:http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${eclipseTrain}/compositeContent.xml \
+view-source:http://download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/${eclipseTrain}/compositeContent.xml \
+view-source:http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${newTP}/compositeContent.xml \
+view-source:http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${newTP}/REPO/compositeContent.xml \
+view-source:http://download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/${newTP}/compositeContent.xml \
+view-source:http://download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/${newTP}/REPO/compositeContent.xml \
+http://download.jboss.org/jbosstools/static/targetplatforms/jbosstoolstarget/${newTP}/ \
+http://download.jboss.org/jbosstools/static/targetplatforms/jbdevstudiotarget/${newTP}/
+
+----
+
+=== JBoss Central and Early Access Target Platforms
+
+WARNING: TODO: JBIDE-17826 - latest Central/EA TP may now be in an "a" or "b" folder so make sure you get the right one!
+
+*If* Target Platform isn't compatible with previous release (for example introducing new incompatible feature), then don't change the composite, and instead, you
+should tweak the +updates/development/${eclipseTrain}/central/core/composite*.xml+ files to point at a specific TP version.
+
+*Otherwise* if Target Platform is compatible with previous release consuming them, then update +jbosstools/targetplatforms/*target/${eclipseTrain}/composite*.xml+ to point to this new Target Platform. 
+
+This can be done similarly for Central/EA as done for JBT/JBDS TPs above:
+
+[source,bash]
+----
+eclipseTrain=luna
+now=`date +%s000`
+
+oldTP=4.41.0.Final
+newTP=4.41.1.Final # no -SNAPSHOT suffix here, as we'll remove it as we move to /static/
+
+pushd jbosstools-download.jboss.org/jbosstools/targetplatforms/
+  for f in jbtcentral jbtearlyaccess; do
+    pushd ${f}target;
+      for d in ${eclipseTrain}/composite*.xml; do
+        sed -i -e "s#${oldTP}#${newTP}#g" $d
+        sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
+      done
+      mkdir -p ${newTP}/REPO/
+      cp -f ${eclipseTrain}/composite* ${newTP}/
+      cp -f ${eclipseTrain}/composite* ${newTP}/REPO/
+    popd
+  done
+
+  # check your changes here before changing stuff on the server!
+
+  for f in jbtcentral jbtearlyaccess; do
+    git add ${f}target
+    # move actual TP to /static/ folder AND REMOVE THE -SNAPSHOT suffix
+    echo "rename targetplatforms/${f}target/${newTP}-SNAPSHOT static/targetplatforms/${f}target/${newTP}" | sftp ${TOOLS}/
+    # create composite pointer
+    rsync -Pzrlt --rsh=ssh --protocol=28 ${f}target/${newTP}/* $TOOLS/targetplatforms/${f}target/${newTP}/
+    # update eclipseTrain pointer
+    rsync -Pzrlt --rsh=ssh --protocol=28 ${f}target/${eclipseTrain}/* $TOOLS/targetplatforms/${f}target/${eclipseTrain}/
+  done
+  # commit changes to github
+  git commit -m "move target platforms into /static/ and update composite pointers to latest $eclipseTrain => ${newTP}" .
+  git push origin master
+popd
+
+# verify all files are correct
+firefox \
+view-source:http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/${eclipseTrain}/compositeContent.xml \
+view-source:http://download.jboss.org/jbosstools/targetplatforms/jbtearlyaccesstarget/${eclipseTrain}/compositeContent.xml \
+view-source:http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/${newTP}/compositeContent.xml \
+view-source:http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/${newTP}/REPO/compositeContent.xml \
+view-source:http://download.jboss.org/jbosstools/targetplatforms/jbtearlyaccesstarget/${newTP}/compositeContent.xml \
+view-source:http://download.jboss.org/jbosstools/targetplatforms/jbtearlyaccesstarget/${newTP}/REPO/compositeContent.xml \
+http://download.jboss.org/jbosstools/static/targetplatforms/jbtcentraltarget/${newTP}/ \
+http://download.jboss.org/jbosstools/static/targetplatforms/jbtearlyaccesstarget/${newTP}/
+
+----
+
+At that time, it is also safe to upgrade the version of the central target definition. in order to prevent next change from
+overriding the content of the repository links from _luna_.
+[source,bash]
+----
+discoveryTP_prev=4.41.1.Final-SNAPSHOT #version for ongoing release
+discoveryTP_next=4.41.2.CR1-SNAPSHOT #next version on that stream
+JBT_prev=updates/staging/luna/jbosstools-4.2.1.Final-updatesite-core
+JBT_next=static/releases/jbosstools-4.2.1.Final-updatesite-core
+
+cd jbosstools-discovery
+for f in *target/pom.xml *target/*/pom.xml *target/*/*-multiple.target; do
+  sed -i -e "s#${discoveryTP_prev}#${discoveryTP_next}#g" $f
+  sed -i -e "s#${JBT_prev}#${JBT_next}#g" $f
+done
+
+# check results before committing
+git status
+git diff
+
+git add *target
+git commit -m "Update Central and EA discovery TP: ${discoveryTP_prev} => ${discoveryTP_next} & ${JBT_prev} => ${JBT_next}"
+git push origin HEAD:jbosstools-4.2.x  #or master for Alphas and Betas
+----
+
+=== Update composite, discovery and index.html
+
++composite*.xml+ and +*-directory.xml+ files allow to control the public URLs we give to users and allow to "select" what is the new release.
+So we update them to make sure public URLs reference our latest stuff.
+
+Changes also happen on the +jbosstools-download.jboss.org+ repository, which is synchronized with download.jboss.org using https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-download.jboss.org-rsync-from-git/ .
+
+On this repository:
+
+* Update +jbosstools/updates/development/${eclipseTrain}/composite*.xml+ to use newer version and timestamp
+* Replace +jbosstools/updates/development/${eclipseTrain}/index.xml+ with the one you can fetch at +http://download.jboss.org/jbosstools/static/releases/jbosstools-${version}-updatesite-core/index.html+
+* In the new +index.html+ replace relative paths by absolute paths. In order to do so, check for "href" occurrences
+
+[source,bash]
+----
+previous=4.2.0.Final
+version=4.2.1.Final
+eclipseTrain=luna
+now=`date +%s000`
+
+isFinal=true
+
+dirs=development
+if [[ $isFinal == "true" ]]; then dirs="development stable"; fi
+
+pushd jbosstools-download.jboss.org/jbosstools/updates/
+  for f in $dirs; do
+    pushd $f/${eclipseTrain}
+      for d in composite*.xml; do
+        sed -i -e "s#${previous}#${version}#g" $d
+        sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
+      done
+      rm -f index.html
+      wget -nc http://download.jboss.org/jbosstools/static/releases/jbosstools-${version}-updatesite-core/index.html
+      sed -i -e "s#href=\"#href=\"http://download.jboss.org/jbosstools/static/releases/jbosstools-${version}-updatesite-core/#g" -e "s#href=\"http://download.jboss.org/jbosstools/static/releases/jbosstools-${version}-updatesite-core/http#href=\"http#g" index.html
+      sed -i -e "s#\-SNAPSHOT (\(.\+\))#.\1#" index.html
+      if [[ $isFinal == "true" ]]; then 
+        sed -i -e "s#Development Milestone Update Site#Stable Release Update Site#" index.html
+        sed -i -e "s#<b>Development Milestone</b>#<b>Stable Release</b>#" index.html
+      fi
+      cat index.html | egrep "Latest Build|SNAPSHOT|Stable|Milestone"
+    popd
+  done
+
+  # check status
+  git status
+  git diff
+
+  # commit to github
+  git add $dirs
+  git commit -m "Release $version into /updates/{${dirs/ /,}}/${eclipseTrain}/"
+  git push origin HEAD:jbosstools-4.2.x  #or master for Alphas and Betas
+  # push to server
+  for f in $dirs; do
+    rsync -Pzrlt --rsh=ssh --protocol=28 ${f}/${eclipseTrain}/* $TOOLS/updates/${f}/${eclipseTrain}/
+  done
+
+popd
+
+----
+
+Then make the necessary updates for *discovery*
+
+* Replace +jbosstools/updates/development/${eclipseTrain}/jbosstools-directory.xml+ by +http://download.jboss.org/jbosstools/discovery/staging/luna/${versionWithRespin}/jbosstools-directory.xml+ and
++jbosstools/updates/development/${eclipseTrain}/jbosstools-earlyaccess.properties+ by +http://download.jboss.org/jbosstools/discovery/staging/luna/${versionWithRespin}/jbosstools-earlyaccess.properties+
+* Remove previous discovery jar in +plugins+
+* Fetch the jar listed in +jbosstools-directory.xml+ into the +http://download.jboss.org/jbosstools/discovery/development/${versionWithRespin}/plugins+ directory.
+* Verify that plugin.xml in the discovery jar contains the right URL:
+** If this is a *pre-final*, the plugin must point to *staging* URL, not release one. So URL should be +http://download.jboss.org/jbosstools/updates/development/${eclipseTrain}/central/core/+
+** IF this is a *Final*, the plugin must reference the *release* URL, not the staging one. So URL should look like +http://download.jboss.org/jbosstools/updates/stable/kepler/central/core/+
+
+Script:
+[source,bash]
+----
+version=4.2.1.Final
+versionWithRespin=4.2.1.Final
+eclipseTrain=luna
+
+isFinal=true # or true in case you're doing a Final
+# set correct path for where you have project cloned on disk
+basedir=${HOME}/tru/jbosstools-download.jboss.org/ # or...
+basedir=`pwd`
+
+pushd ${basedir}/jbosstools/updates/development/${eclipseTrain}/
+# Replace jbosstools-directory.xml by newest
+rm -f jbosstools-directory.xml jbosstools-earlyaccess.properties
+# TODO: use discovery/staging/luna/ instead of just discovery/staging/
+wget -nc http://download.jboss.org/jbosstools/discovery/staging/${versionWithRespin}/jbosstools-directory.xml
+# TODO maybe a rsync of the folder would be more efficient here
+# TODO this strips the xml declaration from the file: <?xml version='1.0' encoding='UTF-8'?> (staging version does not contain it) -- is that a problem?
+
+# TODO: use discovery/staging/luna/ instead of just discovery/staging/
+wget -nc http://download.jboss.org/jbosstools/discovery/staging/${versionWithRespin}/jbosstools-earlyaccess.properties
+# Get newest discovery plugins
+newJars=$(cat jbosstools-directory.xml | grep entry | sed -e "s#.\+plugins/#plugins/#g" | sed -e "s#\.jar.\+#.jar#g")
+mkdir -p plugins
+pushd plugins
+for newJar in $newJars; do 
+  # TODO: use discovery/staging/luna/ instead of just discovery/staging/
+  wget -nc http://download.jboss.org/jbosstools/discovery/staging/${versionWithRespin}/${newJar}
+  if [[ ! ${newJar##*.earlyaccess_*} ]] && [[ ${newJar##*integration-stack*} ]]; then
+    newJarEA=${newJar}
+    #newJarEA=${newJar/plugins/discovery}
+    echo "EA: $newJarEA"
+  elif [[ ${newJar##*integration-stack*} ]]; then
+    newJarCore=${newJar}
+    #newJarCore=${newJar/plugins/discovery}
+    echo "Core: $newJarCore"
+  fi
+done
+popd
+
+# CAUTION! Make sure that the contents of jbosstools-earlyaccess.properties contain the LATEST stuff from the Integration Stack!
+ 
+if [ "$isFinal" = true ]; then
+  # IF THIS IS Final, ensure that your plugin points to the RELEASE URL, not the STAGING nor development one:
+  for newJar in ${newJarEA} ${newJarCore}; do
+    unzip -q -d ${basedir}/jbosstools/updates/development/${eclipseTrain}/${newJar}{_,}
+    pushd ${basedir}/jbosstools/updates/development/${eclipseTrain}/${newJar}_
+    sed -i "s#http://download.jboss.org/jbosstools/updates/staging/${eclipseTrain}/central/core/#http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/#g" plugin.xml
+    sed -i "s#http://download.jboss.org/jbosstools/updates/development/${eclipseTrain}/central/core/#http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/#g" plugin.xml
+    sed -i "s#http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/central/core/#http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/#g" plugin.xml
+
+    zip -u ${basedir}/jbosstools/updates/development/${eclipseTrain}/${newJar} plugin.xml
+    popd
+    rm -fr ${basedir}/jbosstools/updates/development/${eclipseTrain}/${newJar}_
+    cp -f ${basedir}/jbosstools/updates/development/${eclipseTrain}/{${newJarEA},${newJarCore}} ${basedir}/jbosstools/updates/stable/${eclipseTrain}/
+  done
+  cp -f ${basedir}/jbosstools/updates/development/${eclipseTrain}/jbosstools-directory.xml ${basedir}/jbosstools/updates/stable/${eclipseTrain}/
+  cp -f ${basedir}/jbosstools/updates/development/${eclipseTrain}/jbosstools-earlyaccess.properties ${basedir}/jbosstools/updates/stable/${eclipseTrain}/
+
+else
+  # IF THIS IS pre-Final, ensure that your plugin points to the development URL, not the RELEASE or staging one:
+  for newJar in ${newJarEA} ${newJarCore}; do
+    unzip -q -d ${basedir}/jbosstools/updates/development/${eclipseTrain}/${newJar}{_,}
+    pushd ${basedir}/jbosstools/updates/development/${eclipseTrain}/${newJar}_ >/dev/null 
+    sed -i "s#http://download.jboss.org/jbosstools/updates/staging/${eclipseTrain}/central/core/#http://download.jboss.org/jbosstools/updates/development/${eclipseTrain}/#g" plugin.xml
+    sed -i "s#http://download.jboss.org/jbosstools/updates/development/${eclipseTrain}/central/core/#http://download.jboss.org/jbosstools/updates/development/${eclipseTrain}/#g" plugin.xml
+    sed -i "s#http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/central/core/#http://download.jboss.org/jbosstools/updates/development/${eclipseTrain}/#g" plugin.xml
+    zip -u ${basedir}/jbosstools/updates/development/${eclipseTrain}/${newJar} plugin.xml
+    popd >/dev/null
+    rm -fr ${basedir}/jbosstools/updates/development/${eclipseTrain}/${newJar}_
+  done
+fi
+
+popd
+
+# TODO: IMPORTANT! Make sure no integration stack entries are accidentally lost (or reverted to old versions!) in jbosstools-directory.xml or jbosstools-earlyaccess.properties
+
+pushd ${basedir}/jbosstools/updates/
+
+  # check changes 
+  git status
+
+  dirs=development
+  if [[ $isFinal == "true" ]]; then dirs="development stable"; fi
+
+  # commit changes & push to server
+  git add $dirs
+  git commit -m "Release discovery plugins $version into /updates/{${dirs/ /,}}/${eclipseTrain}/"
+  git push origin HEAD:jbosstools-4.2.x  #or master for Alphas and Betas
+  # push to server
+  for f in $dirs; do
+    rsync -Pzrlt --rsh=ssh --protocol=28 ${f}/${eclipseTrain}/* $TOOLS/updates/${f}/${eclipseTrain}/
+  done
+
+popd
+
+----
+
+* If this is a Final release, CAREFULLY merge stuff in /development/ over to /stable/, taking into account where files SHOULD be different (eg., where a page is called "Stable Release" instead of "Development Milestone")
+
+* Check that the following URLs show the right versions and reference content under the 'static/releases' directory (not 'updates/${version}' nor 'updates/staging/*'
+
+[source,bash]
+----
+# for milestones and Final builds
+eclipseTrain=luna
+google-chrome \
+http://download.jboss.org/jbosstools/updates/development/${eclipseTrain}/ \
+http://download.jboss.org/jbosstools/updates/development/${eclipseTrain}/compositeArtifacts.xml \
+http://download.jboss.org/jbosstools/updates/development/${eclipseTrain}/central/integration-stack/compositeArtifacts.xml \
+http://download.jboss.org/jbosstools/updates/development/${eclipseTrain}/jbosstools-directory.xml \
+http://download.jboss.org/jbosstools/updates/development/${eclipseTrain}/jbosstools-earlyaccess.properties \
+http://download.jboss.org/jbosstools/updates/development/${eclipseTrain}/plugins/ &
+
+# Or, for Final builds
+eclipseTrain=luna
+google-chrome \
+http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/ \
+http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/compositeArtifacts.xml \
+http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/central/integration-stack/compositeArtifacts.xml \
+http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/jbosstools-directory.xml \
+http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/jbosstools-earlyaccess.properties \
+http://download.jboss.org/jbosstools/updates/stable/${eclipseTrain}/plugins/ &
+----
+
+== Release the latest milestone to ide-config.properties
+
+Check out this file:
+
+http://download.jboss.org/jbosstools/configuration/ide-config.properties
+
+And update it it as required, so that the links for the latest milestone point to valid URLs, eg.,
+
+[source,bash]
+----
+
+# adjust these steps to fit your own path location & git workflow
+cd ~/tru
+pushd jbosstools-download.jboss.org/jbosstools/configuration
+version=4.2.1.Final # name to use in filenames ie fixVersion in JIRA
+versionWithRespin=4.2.1.Final # Fully qualified version, including respin suffix
+
+topic=release-jbosstools-${versionWithRespin}-to-production; branch=master; gw1
+
+st ide-config.properties # or use another editor if not Sublime Text (st)
+
+# remove existing lines with these to make the 4.2.1.Final stuff live as the lastest for 4.2.0 in development/luna
+#jboss.discovery.directory.url|jbosstools|4.2.1.Final=http://download.jboss.org/jbosstools/discovery/development/4.2.1.Final/jbosstools-directory.xml
+#jboss.discovery.site.url|jbosstools|4.2.1.Final=http://download.jboss.org/jbosstools/discovery/development/4.2.1.Final/
+#jboss.discovery.earlyaccess.site.url|jbosstools|4.2.1.Final=http://download.jboss.org/jbosstools/discovery/development/4.2.1.Final/
+
+# commit the change and push to master
+ci "release JBT ${version} (${versionWithRespin}) to production: link to latest dev milestone discovery site" ide-config.properties
+gw2; gw3; gw4
+
+# push updated file to server
+TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
+rsync -Pzrlt --rsh=ssh --protocol=28 ide-config.properties $TOOLS/configuration/ide-config.properties
+
+----
+
+== Update Eclipse Marketplace (add/remove features)
+
+WARNING: Only for Beta, CR and GA! We do not release Alphas to Eclipse Marketplace.
+
+=== If node does not yet exist
+
+This is usually the case of first Beta version.
+
+Create a new node on Marketplace, use content of +http://download.jboss.org/jbosstools/static/releases/jbosstools-4.2.1.Final-updatesite-core/site.properties+
+
+=== If node already exists
+
+Access it via +https://marketplace.eclipse.org/content/jboss-tools-luna/edit+ and update the following things:
+
+* Title to match new version
+* Description to match new version & dependencies
+* Update list of features, using content of +http://download.jboss.org/jbosstools/static/releases/jbosstools-4.2.1.Final-updatesite-core/site.properties+
+
+== Git tags
+
+=== Create tags for build-related repositories
+
+Tag the following repositories:
+
+* https://github.com/jbosstools/jbosstools-build
+* https://github.com/jbosstools/jbosstools-build-ci
+* https://github.com/jbosstools/jbosstools-build-sites
+* https://github.com/jbosstools/jbosstools-devdoc
+* https://github.com/jbosstools/jbosstools-discovery
+* https://github.com/jbosstools/jbosstools-download.jboss.org
+* https://github.com/jbosstools/jbosstools-maven-plugins
+
+Assuming you have the above proejcts already cloned, this script will create the tags if run from the location with your git clones:
+
+[source,bash]
+----
+# maven-plugins does not get released/branched the same as other projects
+# download.jboss.org removed because might still need to tweak ide-config.properties
+jbt_branch=jbosstools-4.2.x
+version=4.2.1.Final
+for d in build build-ci build-sites devdoc discovery; do 
+  echo "====================================================================="
+  echo "Tagging jbosstools-${d} from branch ${jbt_branch} as tag ${version}..."
+  pushd jbosstools-${d}
+  git fetch origin ${jbt_branch}
+  git tag jbosstools-${version} FETCH_HEAD
+  git push origin jbosstools-${version}
+  echo ">>> https://github.com/jbosstools/jbosstools-${d}/tree/jbosstools-${version}"
+  popd >/dev/null 
+  echo "====================================================================="
+  echo ""
+done
+----
+
+=== Announce requirement of tag creation
+
+Send email to team.
+
+____
+*To:* jbosstools-dev@lists.jboss.org + 
+
+[source,bash]
+----
+branchName=jbosstools-4.2.x
+tagName=jbosstools-4.2.1.Final
+echo "
+Subject:
+
+ACTION REQUIRED: Project leads, please tag your projects [ branch ${branchName} -> tag ${tagName} ] 
+
+Body:
+
+Component leads, please tag your repositories!
+
+$ git fetch jbosstools ${branchName} #assuming remote is called jbosstools, also often called origin
+$ git tag ${tagName} FETCH_HEAD
+$ git push jbosstools ${tagName}
+"
+----
+____
+
+== Release JIRA
+
+If there are no unresolved issues, release the milestone version in JIRA.
+
+Launch the config pages for JBIDE and JBDS and using the gear icons, release the milestone version in JIRA. 
+
+[source,bash]
+----
+firefox https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
+  https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
+----
+
+
+== Update jbosstools-website
+
+Provide a PR to add the latest JBT milestones to this listing: https://github.com/jbosstools/jbosstools-website/blob/master/_config/products.yml
+
+Example:
+
+* https://github.com/jbosstools/jbosstools-website/pull/193 (note that the JBDS part is better done after & seprarately, while releasing JBDS)
+* https://github.com/jbosstools/jbosstools-website/pull/211 (only JBT part of the change)
+
+
+== Notify the team (send 2 emails)
+
+DO NOT send email notification until the above update to the website is done, and the new blog announcement is live, with image inclusion, spelling, & grammar checks done.
+
+____
+*To:* jbosstools-dev@lists.jboss.org +
+and +
+*To:* external-exadel-list@redhat.com, jboss-announce@redhat.com +
+
+[source,bash]
+----
+version=4.2.1.Final
+eclipseVersion="Eclipse 4.4.1 Luna"
+echo "
+Subject: 
+
+JBoss Tools ${version} is now available
+
+Body:
+
+This is a development release aimed at ${eclipseVersion} users.
+
+Eclipse Marketplace: https://marketplace.eclipse.org/content/jboss-tools-luna
+
+Update Site: http://download.jboss.org/jbosstools/updates/development/luna/
+
+Update Site Zips: http://sourceforge.net/projects/jboss/files/JBossTools/jbosstools4.2.x/
+
+Installation instructions: http://tools.jboss.org/downloads/installation.html
+
+New + Noteworthy (subject to change): http://tools.jboss.org/documentation/whatsnew/jbosstools/${version}.html
+
+Schedule / Upcoming Releases: https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.plugin.system.project%3Aversions-panel
+"
+
+----
+____
+

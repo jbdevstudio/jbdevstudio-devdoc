@@ -377,6 +377,8 @@ jboss.discovery.earlyaccess.site.url|devstudio|8.0.1.GA=https://devstudio.redhat
 NOTE: Should be automated together with publication of new discovery site, so this operation would be automatically part
 of moving/copying discovery site to staging location.
 
+NOTE: in JBDS 9 this file moves into /earlyaccess/ folder.
+
 Get the file __earlyaccess.properties__ from discovery job, in workspace folder __jbdevstudio/com.jboss.devstudio.discovery.earlyaccess__: 
 https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_8.0.luna/job/jbosstools-discovery_4.2.luna/ws/sources/jbdevstudio/com.jboss.jbds.central.discovery.earlyaccess/devstudio-earlyaccess.properties
 and copy it do __https://devstudio.redhat.com/updates/8.0-staging/devstudio-earlyaccess.properties__.

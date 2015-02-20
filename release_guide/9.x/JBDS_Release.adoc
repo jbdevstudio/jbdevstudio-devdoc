@@ -2,7 +2,7 @@
 
 This document describe how to publish a valid JBoss Developer Studio build to production after being verified by QE.
 
-CAUTION: TODO: when releasing GA make sure to :%s/development/stable/g and :%s/8.0-staging/8.0/g in product/features/com.jboss.jbds.product.feature/p2.inf
+CAUTION: TODO: when releasing GA make sure to :%s/development/stable/g and :%s/9.0-staging/9.0/g in product/features/com.jboss.jbds.product.feature/p2.inf
 
 == Verify that all JIRAs assigned to the current milestone are resolved
 
@@ -25,7 +25,7 @@ firefox https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
 == Rename artifacts to remove timestamp and buildID
 
 To comply with Goldengate URL rules, we need to rename artifacts before they go to the CSP. For example
-`jboss-devstudio-8.0.1.GA-v20141020-1042-B317-installer-standalone.jar` must be renamed to `jboss-devstudio-8.0.1.GA-installer-standalone.jar`.
+`jboss-devstudio-9.0.0.Alpha1-v20141020-1042-B317-installer-standalone.jar` must be renamed to `jboss-devstudio-9.0.0.Alpha1-installer-standalone.jar`.
 
 To achieve that::
 . Log in to dev01 or dev02
@@ -45,8 +45,8 @@ and +
 
 [source,bash]
 ----
-version=8.0.1.GA
-versionWithRespin=8.0.1.GA # a, b, c...
+version=9.0.0.Alpha1
+versionWithRespin=9.0.0.Alpha1 # a, b, c...
 echo "
 Subject: 
 
@@ -76,8 +76,8 @@ When pushed, please reply so that QE can review the CSP pages & files for push t
 
 Note that in addition to the new CSP page, eg., [1] or [2], the CSP landing page [3] should also be updated to point to the latest release.
 
-[1] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=8.0.0+CR1
-[2] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=8.0.0
+[1] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=9.0.0+Alpha1
+[2] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=9.0.0
 [3] https://access.redhat.com/downloads/
 
 Thanks in advance,
@@ -96,23 +96,23 @@ For GA releases ONLY, there are 4 update sites and 3 update site zips which shou
 [source,bash]
 ----
 JBDS=devstudio@filemgmt.jboss.org:www_htdocs/devstudio
-version=8.0.2.GA
-jbtVersion=4.2.2.Final
+version=9.0.0.Alpha1
+jbtVersion=4.3.0.Alpha1
 
-for f in `echo ls | sftp $JBDS/updates/8.0.0/ 2>/dev/null | egrep "${jbtVersion}|${version}"`; do
-  echo "rename updates/8.0.0/${f} static/updates/8.0.0/${f}" | sftp $JBDS
+for f in `echo ls | sftp $JBDS/updates/9.0.0/ 2>/dev/null | egrep "${jbtVersion}|${version}"`; do
+  echo "rename updates/9.0.0/${f} static/updates/9.0.0/${f}" | sftp $JBDS
 done
 
-regularPath='../8.0.0'
-akamaiPath='../../static/updates/8.0.0'
+regularPath='../9.0.0'
+akamaiPath='../../static/updates/9.0.0'
 now=$(date +%s000)
-wget -O compositeArtifacts.xml http://devstudio.jboss.com/updates/8.0-staging/compositeArtifacts.xml
-wget -O compositeContent.xml http://devstudio.jboss.com/updates/8.0-staging/compositeContent.xml
+wget -O compositeArtifacts.xml http://devstudio.jboss.com/updates/9.0-staging/compositeArtifacts.xml
+wget -O compositeContent.xml http://devstudio.jboss.com/updates/9.0-staging/compositeContent.xml
 sed --regexp-extended --in-place \
     -e s#[[:digit:]]{13}#$now## \
     -e s#$regularPath#$akamaiPath## \
     compositeArtifacts.xml compositeContent.xml
-scp compositeArtifacts.xml compositeContent.jar $JBDS/updates/8.0-staging
+scp compositeArtifacts.xml compositeContent.jar $JBDS/updates/9.0-staging
 ----
 
 == Update composite files and devstudio-directory.xml to point at new discovery jar(s) from staging
@@ -121,29 +121,29 @@ scp compositeArtifacts.xml compositeContent.jar $JBDS/updates/8.0-staging
 ====
 TODO for CRx and GA: VERIFY CONTENTS OF DISCOVERY JAR ARE CORRECTLY POINTING AT
 
-*  8.0 for /8.0/
-*  8.0-development for /8.0-development/
-*  8.0-staging for /8.0-staging/
+*  9.0 for /9.0/
+*  9.0-development for /9.0-development/
+*  9.0-staging for /9.0-staging/
 ====
 
 You can run this script from your local machine:
 
 [source,bash]
 ----
-isGA=true # or true in case you're doing a GA
-version=8.0.1.GA
-versionWithRespin=8.0.1.GA
+isGA=false # or true in case you're doing a GA
+version=9.0.0.Alpha1
+versionWithRespin=9.0.0.Alpha1
 JBDS=devstudio@filemgmt.jboss.org:www_htdocs/devstudio
 
 # set correct path for where you have project cloned on disk
 pushd jbdevstudio-website/content
 basedir=$(pwd)
 
-dirs="8.0-staging 8.0-development"
-if [[ $isGA == "true" ]]; then dirs="8.0-staging 8.0-development 8.0"; fi
+dirs="9.0-staging 9.0-development"
+if [[ $isGA == "true" ]]; then dirs="9.0-staging 9.0-development 9.0"; fi
 
 for d in $dirs; do
-  if [[ $d == "8.0-staging" ]]; then
+  if [[ $d == "9.0-staging" ]]; then
     pushd ${basedir}/updates/${d}
       # Update URLs in discovery jars
       newJars=$(cat devstudio-directory.xml | grep entry | grep -v "integration-stack" | sed -e "s#.\+discovery/#discovery/#g" | sed -e "s#\.jar.\+#.jar#g")
@@ -163,11 +163,11 @@ for d in $dirs; do
         unzip -q -d ${basedir}/updates/${d}/${newJar}{_,}
         pushd ${newJar}_ >/dev/null 
         if [ "$isGA" = true ]; then
-          sed -i "s#/8.0-staging/#/8.0/#g" plugin.xml
-          sed -i "s#/8.0-development/#/8.0/#g" plugin.xml
+          sed -i "s#/9.0-staging/#/9.0/#g" plugin.xml
+          sed -i "s#/9.0-development/#/9.0/#g" plugin.xml
         else  # plugin points to the STAGING URL, not the RELEASE one
-          sed -i "s#/8.0-staging/#/8.0-development/#g" plugin.xml
-          sed -i "s#/8.0/#/8.0-development/#g" plugin.xml
+          sed -i "s#/9.0-staging/#/9.0-development/#g" plugin.xml
+          sed -i "s#/9.0/#/9.0-development/#g" plugin.xml
         fi
         zip -u ${basedir}/updates/${d}/${newJar} plugin.xml
         git add ${basedir}/updates/${d}/${newJar}
@@ -181,22 +181,22 @@ for d in $dirs; do
       git rm -f $others
     popd
   else  
-    pushd ${basedir}/updates/8.0-staging
+    pushd ${basedir}/updates/9.0-staging
       rsync -aPrz --rsh=ssh --protocol=28 ./* ${basedir}/updates/${d}/
     popd
     # now fix URLs in html pages
     pushd ${basedir}/updates/${d}/
       # set correct page label
-      if [[ $d == "8.0" ]]; then sed -i "s#Development Milestone#Stable Release#" index.html; fi
-      if [[ $d == "8.0-development" ]]; then sed -i "s#8.0-staging#8.0-development#" index.html; fi
-      sed -i "s#8.0-staging#8.0#" index.html
+      if [[ $d == "9.0" ]]; then sed -i "s#Development Milestone#Stable Release#" index.html; fi
+      if [[ $d == "9.0-development" ]]; then sed -i "s#9.0-staging#9.0-development#" index.html; fi
+      sed -i "s#9.0-staging#9.0#" index.html
     popd
 
   fi
 done
 
-previous=8.0.0.GA
-version=8.0.1.GA
+previous=9.0.0.Alpha0
+version=9.0.0.Alpha1
 sed -i "s#${previous}#${version}#" updates/index.html
 
 popd
@@ -221,9 +221,9 @@ First, ssh to www.qa server. Then, sudo to the hudson user, and run this:
 [source,bash]
 ----
 . /home/hudson/config_repository/scripts/jbds/prompt.sh
-version=8.0.1.GA
+version=9.0.0.Alpha1
 cd ~/RHDS/builds/development/${version}-build-core/
-scpr jboss-devstudio-${version}*-updatesite-core.zip jboss-devstudio-${version}*-updatesite-core.zip.MD5 $JBDS/static/updates/8.0.0/
+scpr jboss-devstudio-${version}*-updatesite-core.zip jboss-devstudio-${version}*-updatesite-core.zip.MD5 $JBDS/static/updates/9.0.0/
 ----
 
 == Cleanup builds and update sites under /development/ and /stable/
@@ -233,16 +233,16 @@ First, ssh to www.qa server. Then, sudo to the hudson user, and run this:
 [source,bash]
 ----
 . /home/hudson/config_repository/scripts/jbds/prompt.sh
-version=8.0.1.GA
+version=9.0.0.Alpha1
 cd ~/RHDS/builds/development/
 mv ${version}* ../stable
 ln -s ../stable/${version}*
-mv 8.0.1.CR* OLD/
+mv 9.0.0.Alpha* OLD/
 
 cd ~/RHDS/updates/development/
 mv ${version}* ../stable
 ln -s ../stable/${version}*
-mv 8.0.1.CR* OLD/
+mv 9.0.0.Alpha* OLD/
 ----
 
 
@@ -257,16 +257,16 @@ And update it it as required, so that the links for the latest milestone point t
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru
 pushd jbosstools-download.jboss.org/jbosstools/configuration
-version=8.0.1.Final # name to use in filenames ie fixVersion in JIRA
-versionWithRespin=8.0.1.Final # Fully qualified version, including respin suffix
+version=9.0.0.Alpha1 # name to use in filenames ie fixVersion in JIRA
+versionWithRespin=9.0.0.Alpha1 # Fully qualified version, including respin suffix
 
 topic=release-jbosstools-${versionWithRespin}-to-production; branch=master; gw1
 
 st ide-config.properties # or use another editor if not Sublime Text (st)
 
 # something like this...
-# jboss.discovery.directory.url|devstudio|8=https://devstudio.jboss.com/updates/8.0/devstudio-directory.xml
-# jboss.discovery.site.url|devstudio|8=https://devstudio.jboss.com/updates/8.0/
+# jboss.discovery.directory.url|devstudio|8=https://devstudio.jboss.com/updates/9.0/devstudio-directory.xml
+# jboss.discovery.site.url|devstudio|8=https://devstudio.jboss.com/updates/9.0/
 
 # commit the change and push to master
 ci "release JBDS ${version} (${versionWithRespin}) to production: link to latest dev milestone discovery site" ide-config.properties
@@ -289,8 +289,8 @@ git clone https://github.com/jbdevstudio/jbdevstudio-artwork
 git clone https://github.com/jbdevstudio/jbdevstudio-devdoc
 
 # now tag multiple projects in a single step, replacing existing tags if already exist
-jbt_branch=jbosstools-4.2.x
-version=8.0.2.GA
+jbt_branch=jbosstools-4.3.0.Alpha1x
+version=9.0.0.Alpha1
 for d in product ci website artwork devdoc; do
   echo "====================================================================="
   echo "Tagging jbdevstudio-${d} from branch ${jbt_branch} as tag ${version}..."
@@ -309,8 +309,8 @@ done
 
 [source,bash]
 ----
-version=8.0.1.GA
-cd jbdevstudio-devdoc/release_guide/8.0
+version=9.0.0.Alpha1
+cd jbdevstudio-devdoc/release_guide/9.0
 git commit -m "update release guide for ${version}" .
 git push origin HEAD:master
 ----
@@ -349,7 +349,7 @@ Create a new node on Marketplace, listing the single "BYOE" feature: com.jboss.d
 
 === If node already exists
 
-Access it via +http://marketplace.eclipse.org/content/red-hat-jboss-developer-studio-luna/edit+ and update the following things:
+Access it via +http://marketplace.eclipse.org/content/red-hat-jboss-developer-studio-mars/edit+ and update the following things:
 
 * Title to match new version
 * Description to match new version & dependencies
@@ -390,7 +390,7 @@ and +
 
 [source,bash]
 ----
-version=8.0.1.GA
+version=9.0.0.Alpha1
 echo "
 Subject: 
 
@@ -401,16 +401,16 @@ Body:
 JBoss Developer Studio ${version} is available!
 
 Download page and installer: 
-* https://tools.jboss.org/downloads/devstudio/luna/${version}.html
+* https://tools.jboss.org/downloads/devstudio/mars/${version}.html
 * https://www.jboss.org/products/devstudio/overview/
 
-Update site: https://devstudio.jboss.com/updates/8.0-development/
+Update site: https://devstudio.jboss.com/updates/9.0-development/
 
-Early Access site: https://devstudio.jboss.com/earlyaccess/8.0-development/
+Early Access site: https://devstudio.jboss.com/earlyaccess/9.0-development/
 
 --
 
-Eclipse Marketplace: https://marketplace.eclipse.org/content/red-hat-jboss-developer-studio-luna
+Eclipse Marketplace: https://marketplace.eclipse.org/content/red-hat-jboss-developer-studio-mars
 
 --
 

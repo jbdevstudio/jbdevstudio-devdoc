@@ -60,7 +60,6 @@ On your local machine, using a SFTP client (or the script suggested above), move
 stream=4.3.mars
 version=4.3.0.Alpha1 # name to use in filenames ie fixVersion in JIRA
 versionWithRespin=4.3.0.Alpha1 # Fully qualified version, including respin suffix
-hibernateToolsVersionWithRespin=4.3.0.Alpha1 # it is possible that hibernate tools didn't require the same # of respins, so might have a different version
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 echo "mkdir development/sf.net/${version}" | sftp ${TOOLS}/builds
 
@@ -75,16 +74,6 @@ echo "rename staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/a
 echo "rename staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID2}-updatesite.zip.MD5  development/sf.net/${version}/jbosstools-${version}_${coreBuildID}-updatesite-core.zip.MD5"     | sftp ${TOOLS}/builds
 echo "rename staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID2}-src.zip     development/sf.net/${version}/jbosstools-${version}_${coreBuildID}-src.zip"        | sftp ${TOOLS}/builds
 echo "rename staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID2}-src.zip.MD5 development/sf.net/${version}/jbosstools-${version}_${coreBuildID}-src.zip.MD5"    | sftp ${TOOLS}/builds
-
-hibernateToolsBuildID=$(echo "ls 20*" | sftp ${TOOLS}/builds/staging/jbosstools-${hibernateToolsVersionWithRespin}-build-hibernatetools/ 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); hibernateToolsBuildID=${hibernateToolsBuildID%%/*}
-echo "Latest build: ${hibernateToolsBuildID}"
-
-# TODO: if you set Release=No in the job, you get SNAPSHOT instead of the BuildID, so override it here. Stable milestone jobs should ALWAYS set Release=Yes, but this provides a nice hackaround if you screwed up and don't want to rebuild :D
-# hibernateToolsBuildID2=${hibernateToolsBuildID}
-hibernateToolsBuildID2=SNAPSHOT
-
-echo "rename staging/jbosstools-${versionWithRespin}-build-hibernatetools/${hibernateToolsBuildID}/all/jbosstools-build-sites.aggregate.hibernatetools-site_${stream}-${hibernateToolsBuildID2}-updatesite.zip development/sf.net/${version}/jbosstools-${version}_${hibernateToolsBuildID}-updatesite-hibernatetools.zip" | sftp ${TOOLS}/builds
-echo "rename staging/jbosstools-${versionWithRespin}-build-hibernatetools/${hibernateToolsBuildID}/all/jbosstools-build-sites.aggregate.hibernatetools-site_${stream}-${hibernateToolsBuildID2}-updatesite.zip.MD5 development/sf.net/${version}/jbosstools-${version}_${hibernateToolsBuildID}-updatesite-hibernatetools.zip.MD5" | sftp ${TOOLS}/builds
 
 ----
 
@@ -157,7 +146,6 @@ TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 # if there were no respins, then version = versionWithRespin
 echo "rename updates/staging/mars/jbosstools-${versionWithRespin}-updatesite-core           static/releases/jbosstools-${version}-updatesite-core"           | sftp ${TOOLS}
 echo "rename updates/staging/mars/jbosstools-${versionWithRespin}-updatesite-coretests      static/releases/jbosstools-${version}-updatesite-coretests"      | sftp ${TOOLS}
-echo "rename updates/staging/mars/jbosstools-${versionWithRespin}-updatesite-hibernatetools static/releases/jbosstools-${version}-updatesite-hibernatetools" | sftp ${TOOLS}
 echo "rename updates/staging/mars/jbosstools-${versionWithRespin}-updatesite-webtools       static/releases/jbosstools-${version}-updatesite-webtools"       | sftp ${TOOLS}
 ----
 

@@ -43,7 +43,6 @@ Once the above conditions have been met, you can proceed to the next steps.
 . *Core* site (which contains JBoss Tools): Move the most recent build available from +http://downloads.jboss.org/jbosstools/builds/nightly/core/4.3.mars+ to +http://downloads.jboss.org/jbosstools/builds/staging/jbosstools-4.3.0.Alpha1-updatesite-core/+
 . *Core Tests* site (which contains JBoss Tools tests): Move the most recent build available from +http://downloads.jboss.org/jbosstools/builds/nightly/coretests/4.3.mars+ to +http://downloads.jboss.org/jbosstools/builds/staging/jbosstools-4.3.0.Alpha1-updatesite-coretests/+
 . *WebTools* site (which contains only WTP connectors for AS/WildFly/EAP): Move the most recent build available from +http://downloads.jboss.org/jbosstools/builds/nightly/webtools/4.3.mars+ to +http://downloads.jboss.org/jbosstools/builds/staging/jbosstools-4.3.0.Alpha1-updatesite-webtools/+ 
-. *Hibernate Tools* site (which contains Hibernate Tools, a subset of JBoss Tools): Move the most recent build available from +http://downloads.jboss.org/jbosstools/builds/nightly/hibernatetools/4.3.mars+ to +http://downloads.jboss.org/jbosstools/builds/staging/jbosstools-4.3.0.Alpha1-updatesite-hibernatetools/+
 
 Here is a script that does this:
 [source,bash]
@@ -68,13 +67,6 @@ echo "Latest build for ${site}: ${coretestsBuildID}"
 echo "mkdir staging/jbosstools-${version}-build-${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
 echo "rename nightly/${site}/${stream}/${coretestsBuildID} staging/jbosstools-${version}-build-${site}/${coretestsBuildID}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
   
-site=hibernatetools
-hibernatetoolsBuildID=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/nightly/${site}/${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1)
-hibernatetoolsBuildID=${hibernatetoolsBuildID%%/*}
-echo "Latest build for ${site}: ${hibernatetoolsBuildID}"
-echo "mkdir staging/jbosstools-${version}-build-${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
-echo "rename nightly/${site}/${stream}/${hibernatetoolsBuildID} staging/jbosstools-${version}-build-${site}/${hibernatetoolsBuildID}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
-  
 site=webtools
 webtoolsBuildID=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/nightly/${site}/${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1)
 webtoolsBuildID=${webtoolsBuildID%%/*}
@@ -87,7 +79,6 @@ echo ""
 echo "firefox \
 http://download.jboss.org/jbosstools/builds/staging/jbosstools-${version}-build-core/${coreBuildID}/logs/GIT_REVISION.txt \
 http://download.jboss.org/jbosstools/builds/staging/jbosstools-${version}-build-coretests/${coretestsBuildID}/logs/GIT_REVISION.txt \
-http://download.jboss.org/jbosstools/builds/staging/jbosstools-${version}-build-hibernatetools/${hibernatetoolsBuildID}/logs/GIT_REVISION.txt \
 http://download.jboss.org/jbosstools/builds/staging/jbosstools-${version}-build-webtools/${webtoolsBuildID}/logs/GIT_REVISION.txt" | egrep ">>|${version}"
 
 ----
@@ -107,10 +98,6 @@ echo " >> http://download.jboss.org/jbosstools/updates/staging/mars/jbosstools-$
 
 site=coretests
 echo "rename nightly/${site}/${stream} staging/mars/jbosstools-${version}-updatesite-${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates  
-echo " >> http://download.jboss.org/jbosstools/updates/staging/mars/jbosstools-${version}-updatesite-${site}/" | egrep ">>|${version}"
-
-site=hibernatetools
-echo "rename nightly/${site}/${stream} staging/mars/jbosstools-${version}-updatesite-${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
 echo " >> http://download.jboss.org/jbosstools/updates/staging/mars/jbosstools-${version}-updatesite-${site}/" | egrep ">>|${version}"
 
 site=webtools
@@ -414,12 +401,10 @@ Schedule: https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.p
 Additional update sites:
 * http://download.jboss.org/jbosstools/updates/staging/mars/jbosstools-${version}-updatesite-core/
 * http://download.jboss.org/jbosstools/updates/staging/mars/jbosstools-${version}-updatesite-coretests/
-* http://download.jboss.org/jbosstools/updates/staging/mars/jbosstools-${version}-updatesite-hibernatetools/
 * http://download.jboss.org/jbosstools/updates/staging/mars/jbosstools-${version}-updatesite-webtools/
 and build sites:
 * http://download.jboss.org/jbosstools/builds/staging/jbosstools-${version}-build-core/
 * http://download.jboss.org/jbosstools/builds/staging/jbosstools-${version}-build-coretests/
-* http://download.jboss.org/jbosstools/builds/staging/jbosstools-${version}-build-hibernatetools/
 * http://download.jboss.org/jbosstools/builds/staging/jbosstools-${version}-build-webtools/
 
 "

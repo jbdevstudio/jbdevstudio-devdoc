@@ -287,6 +287,68 @@ to reference the newer site. Edit it locally from the `jbosstools-download.jboss
 
 Then verify the discovery sites are correctly populated: directory.xml contains right entries, with the expected `B??` qualifier and that integration-stack is in.
 
+=== Preserve a copy of the nightly sites after the move
+
+NOTE:
+This step is mandatory only because we dont have a good way to copy stuff remotely (sftp only allows rename). If we could be granted something more powerful with remote copies, we could copy stuff in previous steps instead of moving it, and this step would becomme useless.
+
+First, run it as +hudson+ user from a ci machine
+[source,bash]
+----
+local$ ssh dev01.mw.lab.eng.bos.redhat.com
+dev01$ sudo su - hudson
+dev01$ # set up command prompt and load aliases
+dev01$ . /home/hudson/config_repository/scripts/jbds/prompt.sh 
+----
+or, if you didn't run prompt.sh above, you'll need this
+[source,bash]
+----
+alias   scpr="rsync -aPrz --rsh=ssh --protocol=28"
+
+# You can run this 5 steps in parallel:
+
+version=4.3.0.Alpha2 #a, b, c...
+stream=4.3.mars
+branch=core/${stream}
+scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/luna/jbosstools-${version}-updatesite-core/* /tmp/jbosstools-${version}-updatesite-core/
+scpr /tmp/jbosstools-${version}-updatesite-core/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
+rm -fr /tmp/jbosstools-${version}-updatesite-core/
+echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
+
+version=4.3.0.Alpha2 #a, b, c...
+stream=4.3.mars
+branch=coretests/${stream}
+scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/luna/jbosstools-${version}-updatesite-coretests/* /tmp/jbosstools-${version}-updatesite-coretests/
+scpr /tmp/jbosstools-${version}-updatesite-coretests/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
+rm -fr /tmp/jbosstools-${version}-updatesite-coretests/
+echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
+
+version=4.3.0.Alpha2 #a, b, c...
+stream=4.3.mars
+branch=hibernatetools/${stream}
+scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/luna/jbosstools-${version}-updatesite-hibernatetools/* /tmp/jbosstools-${version}-updatesite-hibernatetools/
+scpr /tmp/jbosstools-${version}-updatesite-hibernatetools/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
+rm -fr /tmp/jbosstools-${version}-updatesite-hibernatetools/
+echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
+
+version=4.3.0.Alpha2 #a, b, c...
+stream=4.3.mars
+branch=webtools/${stream}
+scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/luna/jbosstools-${version}-updatesite-webtools/* /tmp/jbosstools-${version}-updatesite-webtools/
+scpr /tmp/jbosstools-${version}-updatesite-webtools/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
+rm -fr /tmp/jbosstools-${version}-updatesite-webtools/
+echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
+
+# now, discovery site
+version=4.3.0.Alpha2 #a, b, c...
+stream=4.3.mars
+branch=earlyaccess/${stream}
+scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery/staging/${version}/* /tmp/jbosstools-${version}-updatesite-discovery/
+scpr /tmp/jbosstools-${version}-updatesite-discovery/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery/nightly/${branch}/ --delete
+rm -fr /tmp/jbosstools-${version}-updatesite-discovery/
+echo " >> http://download.jboss.org/jbosstools/discovery/nightly/${branch}/" | egrep ">>|${branch}"
+----
+
 == Release the latest QE snapshot to ide-config.properties
 
 Check out this file:

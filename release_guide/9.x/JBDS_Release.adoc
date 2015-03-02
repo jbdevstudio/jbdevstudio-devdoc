@@ -216,6 +216,8 @@ done
 
 == Put a copy of the update site zip on devstudio.redhat.com
 
+NOTE: This might have already been done when staging for QE.
+
 First, ssh to www.qa server. Then, sudo to the hudson user, and run this:
 
 [source,bash]
@@ -223,7 +225,12 @@ First, ssh to www.qa server. Then, sudo to the hudson user, and run this:
 . /home/hudson/config_repository/scripts/jbds/prompt.sh
 version=9.0.0.Alpha1
 cd ~/RHDS/builds/development/${version}-build-core/
-scpr jboss-devstudio-${version}*-updatesite-core.zip jboss-devstudio-${version}*-updatesite-core.zip.MD5 $JBDS/static/updates/9.0.0/
+
+# TODO: use /static/updates/ for .GA, use updates/ for all others.
+scpr jboss-devstudio-${version}*-updatesite-core.zip jboss-devstudio-${version}*-updatesite-core.zip.MD5 $JBDS/updates/9.0.0/
+
+# TODO if releasing a GA, move the bits from /updates/ to /static/updates/
+
 ----
 
 == Cleanup builds and update sites under /development/ and /stable/

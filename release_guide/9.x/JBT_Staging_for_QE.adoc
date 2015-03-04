@@ -240,8 +240,10 @@ version=4.3.0.Alpha1 # a, b, c...
 echo "rename nightly/earlyaccess/${stream} staging/${version}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery/
 echo " >> http://download.jboss.org/jbosstools/discovery/staging/${version}/" | egrep ">>|${version}"
 
-# TODO verify this works for 4.3.0.Alpha1
-# remember to include IS jar in jbosstools-directory.xml
+# TODO: ensure that the latest IS plugin jar is also available in the staging JBT discovery site
+# TODO: remember to include IS jar in jbosstools-directory.xml AND the plugin in the site too
+# TODO: verify this works for 4.3.0.Alpha2
+
 isjar=""
 isjar=`curl -s http://download.jboss.org/jbosstools/updates/stable/mars/jbosstools-directory.xml | grep integration-stack`
 isjar=`curl -s http://download.jboss.org/jbosstools/updates/development/mars/jbosstools-directory.xml | grep integration-stack`

@@ -25,13 +25,22 @@ firefox https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
 == Rename artifacts to remove timestamp and buildID
 
 To comply with Goldengate URL rules, we need to rename artifacts before they go to the CSP. For example
-`jboss-devstudio-8.0.1.GA-v20141020-1042-B317-installer-standalone.jar` must be renamed to `jboss-devstudio-8.0.1.GA-installer-standalone.jar`.
+`jboss-devstudio-8.1.0.Beta1-v20141020-1042-B317-installer-standalone.jar` must be renamed to `jboss-devstudio-8.1.0.Beta1-installer-standalone.jar`.
 
 To achieve that::
-. Log in to dev01 or dev02
-. `sudo su - hudson`
-. `cd /qa/services/http/binaries/RHDS/${version}-build-core`
-. `for f in $(ls jboss-devstudio-${version}-*); do echo $f; newName=$(echo $f | sed s#-v[[:digit:]]*-[[:digit:]]*-B[[:digit:]]*##); mv $f $newName; done`
+. Log in to dev01 or dev02, then:
+
+[source,bash]
+----
+sudo su - hudson
+
+version=8.1.0.Beta1
+cd /qa/services/http/binaries/RHDS/builds/development/${version}-build-core;
+ls -la jboss-devstudio-${version}-*
+for f in $(ls jboss-devstudio-${version}-*); do echo $f; newName=$(echo $f | sed s#-v[[:digit:]]*-[[:digit:]]*-B[[:digit:]]*##); mv $f $newName; done
+ls -la jboss-devstudio-${version}-*
+
+----
 
 == Announce internally for push to CSP staging site
 
@@ -41,12 +50,12 @@ NOTE: As this takes some time and can be easily cancelled, this step can be anti
 ____
 *To* release-engineering@redhat.com +
 and +
-*Cc* cobrien@redhat.com, ldimaggi@redhat.com, mmurray@redhat.com, jpallich@redhat.com, nboldt@redhat.com, mistria@redhat.com, manderse@redhat.com, bsutter@redhat.com +
+*Cc* cobrien@redhat.com, ldimaggi@redhat.com, mhusnain@redhat.com, jpallich@redhat.com, nboldt@redhat.com, mistria@redhat.com, manderse@redhat.com, bsutter@redhat.com +
 
 [source,bash]
 ----
-version=8.0.1.GA
-versionWithRespin=8.0.1.GA # a, b, c...
+version=8.1.0.Beta1
+versionWithRespin=8.1.0.Beta1 # a, b, c...
 echo "
 Subject: 
 
@@ -76,8 +85,8 @@ When pushed, please reply so that QE can review the CSP pages & files for push t
 
 Note that in addition to the new CSP page, eg., [1] or [2], the CSP landing page [3] should also be updated to point to the latest release.
 
-[1] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=8.0.0+CR1
-[2] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=8.0.0
+[1] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=8.1.0+Beta1
+[2] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=8.1.0
 [3] https://access.redhat.com/downloads/
 
 Thanks in advance,
@@ -95,24 +104,29 @@ For GA releases ONLY, there are 4 update sites and 3 update site zips which shou
 
 [source,bash]
 ----
-JBDS=devstudio@filemgmt.jboss.org:www_htdocs/devstudio
-version=8.0.2.GA
-jbtVersion=4.2.2.Final
 
-for f in `echo ls | sftp $JBDS/updates/8.0.0/ 2>/dev/null | egrep "${jbtVersion}|${version}"`; do
-  echo "rename updates/8.0.0/${f} static/updates/8.0.0/${f}" | sftp $JBDS
-done
+isGA=false # or true in case you're doing a GA
 
-regularPath='../8.0.0'
-akamaiPath='../../static/updates/8.0.0'
-now=$(date +%s000)
-wget -O compositeArtifacts.xml http://devstudio.jboss.com/updates/8.0-staging/compositeArtifacts.xml
-wget -O compositeContent.xml http://devstudio.jboss.com/updates/8.0-staging/compositeContent.xml
-sed --regexp-extended --in-place \
-    -e s#[[:digit:]]{13}#$now## \
-    -e s#$regularPath#$akamaiPath## \
-    compositeArtifacts.xml compositeContent.xml
-scp compositeArtifacts.xml compositeContent.jar $JBDS/updates/8.0-staging
+if [[ $isGA == "true" ]]; then 
+  JBDS=devstudio@filemgmt.jboss.org:www_htdocs/devstudio
+  version=8.1.0.Beta1
+  jbtVersion=4.2.3.Beta1
+
+  for f in `echo ls | sftp $JBDS/updates/8.0.0/ 2>/dev/null | egrep "${jbtVersion}|${version}"`; do
+    echo "rename updates/8.0.0/${f} static/updates/8.0.0/${f}" | sftp $JBDS
+  done
+
+  regularPath='../8.0.0'
+  akamaiPath='../../static/updates/8.0.0'
+  now=$(date +%s000)
+  wget -O compositeArtifacts.xml http://devstudio.jboss.com/updates/8.0-staging/compositeArtifacts.xml
+  wget -O compositeContent.xml http://devstudio.jboss.com/updates/8.0-staging/compositeContent.xml
+  sed --regexp-extended --in-place \
+      -e s#[[:digit:]]{13}#$now## \
+      -e s#$regularPath#$akamaiPath## \
+      compositeArtifacts.xml compositeContent.xml
+  scp compositeArtifacts.xml compositeContent.jar $JBDS/updates/8.0-staging
+fi
 ----
 
 == Update composite files and devstudio-directory.xml to point at new discovery jar(s) from staging
@@ -130,9 +144,9 @@ You can run this script from your local machine:
 
 [source,bash]
 ----
-isGA=true # or true in case you're doing a GA
-version=8.0.1.GA
-versionWithRespin=8.0.1.GA
+isGA=false # or true in case you're doing a GA
+version=8.1.0.Beta1
+versionWithRespin=8.1.0.Beta1
 JBDS=devstudio@filemgmt.jboss.org:www_htdocs/devstudio
 
 # set correct path for where you have project cloned on disk
@@ -195,8 +209,8 @@ for d in $dirs; do
   fi
 done
 
-previous=8.0.0.GA
-version=8.0.1.GA
+previous=8.0.2.GA
+version=8.1.0.Beta1
 sed -i "s#${previous}#${version}#" updates/index.html
 
 popd
@@ -223,11 +237,12 @@ First, ssh to www.qa server. Then, sudo to the hudson user, and run this:
 [source,bash]
 ----
 . /home/hudson/config_repository/scripts/jbds/prompt.sh
-version=8.0.1.GA
+version=8.1.0.Beta1
 cd ~/RHDS/builds/development/${version}-build-core/
 
 # TODO: use /static/updates/ for .GA, use updates/ for all others.
-scpr jboss-devstudio-${version}*-updatesite-core.zip jboss-devstudio-${version}*-updatesite-core.zip.MD5 $JBDS/updates/8.0.0/
+scpr jboss-devstudio-${version}*-updatesite-core.zip $JBDS/updates/8.0.0/jboss-devstudio-${version}-updatesite-core.zip
+scpr jboss-devstudio-${version}*-updatesite-core.zip.MD5 $JBDS/updates/8.0.0/jboss-devstudio-${version}-updatesite-core.zip.MD5
 
 # TODO if releasing a GA, move the bits from /updates/ to /static/updates/
 
@@ -239,17 +254,23 @@ First, ssh to www.qa server. Then, sudo to the hudson user, and run this:
 
 [source,bash]
 ----
-. /home/hudson/config_repository/scripts/jbds/prompt.sh
-version=8.0.1.GA
-cd ~/RHDS/builds/development/
-mv ${version}* ../stable
-ln -s ../stable/${version}*
-mv 8.0.1.CR* OLD/
 
-cd ~/RHDS/updates/development/
-mv ${version}* ../stable
-ln -s ../stable/${version}*
-mv 8.0.1.CR* OLD/
+isGA=false # or true in case you're doing a GA
+
+if [[ $isGA == "true" ]]; then 
+  . /home/hudson/config_repository/scripts/jbds/prompt.sh
+  version=8.1.0.Beta1
+  cd ~/RHDS/builds/development/
+  mv ${version}* ../stable
+  ln -s ../stable/${version}*
+  mv 8.1.0.CR* OLD/
+
+  cd ~/RHDS/updates/development/
+  mv ${version}* ../stable
+  ln -s ../stable/${version}*
+  mv 8.1.0.CR* OLD/
+fi
+
 ----
 
 
@@ -264,8 +285,8 @@ And update it it as required, so that the links for the latest milestone point t
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru
 pushd jbosstools-download.jboss.org/jbosstools/configuration
-version=8.0.1.Final # name to use in filenames ie fixVersion in JIRA
-versionWithRespin=8.0.1.Final # Fully qualified version, including respin suffix
+version=8.1.0.Beta1 # name to use in filenames ie fixVersion in JIRA
+versionWithRespin=8.1.0.Beta1 # Fully qualified version, including respin suffix
 
 topic=release-jbosstools-${versionWithRespin}-to-production; branch=master; gw1
 
@@ -297,7 +318,7 @@ git clone https://github.com/jbdevstudio/jbdevstudio-devdoc
 
 # now tag multiple projects in a single step, replacing existing tags if already exist
 jbt_branch=jbosstools-4.2.x
-version=8.0.2.GA
+version=8.1.0.Beta1
 for d in product ci website artwork devdoc; do
   echo "====================================================================="
   echo "Tagging jbdevstudio-${d} from branch ${jbt_branch} as tag ${version}..."
@@ -316,8 +337,8 @@ done
 
 [source,bash]
 ----
-version=8.0.1.GA
-cd jbdevstudio-devdoc/release_guide/8.0
+version=8.1.0.Beta1
+cd jbdevstudio-devdoc/release_guide/8.x
 git commit -m "update release guide for ${version}" .
 git push origin HEAD:master
 ----
@@ -397,7 +418,7 @@ and +
 
 [source,bash]
 ----
-version=8.0.1.GA
+version=8.1.0.Beta1
 echo "
 Subject: 
 

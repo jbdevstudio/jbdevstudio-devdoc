@@ -26,10 +26,10 @@ Whenever you're starting a new shell, you should set those variables:
 
 [sources,bash]
 ----
-versionWithRespin=8.1.0.Beta1
-TARGET_PLATFORM_VERSION_MAX=4.42.0.Beta1-SNAPSHOT
-CENTRAL_TARGET_VERSION=4.42.0.Beta1-SNAPSHOT
-previousFull=8.0.2.GA
+versionWithRespin=8.1.0.CR1
+TARGET_PLATFORM_VERSION_MAX=4.42.0.Final-SNAPSHOT
+CENTRAL_TARGET_VERSION=4.42.0.CR1-SNAPSHOT
+previousFull=8.1.0.Beta1
 now=$(date +%s000)
 isGA=false
 JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
@@ -60,21 +60,22 @@ WARNING: Don't use symlinks are they are too risky to use. Those operations can 
 ----
 # can run 3 steps these in parallel 
 
-versionWithRespin=8.1.0.Beta1 # a, b, c...
+versionWithRespin=8.1.0.CR1 # a, b, c...
 rsync -aPrz /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/installer/* /qa/services/http/binaries/RHDS/builds/development/${versionWithRespin}-build-core/
 rsync -aPrz /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/logs/* /qa/services/http/binaries/RHDS/builds/development/${versionWithRespin}-build-core/
 cd /qa/services/http/binaries/RHDS/builds/development/
 find . -maxdepth 1 -type d -name "${versionWithRespin}*" | grep ${versionWithRespin}
 find . -maxdepth 1 -type d -name "${versionWithRespin}*" | sed "s#\.# >> http://www.qa.jboss.com/binaries/RHDS/builds/development#" | egrep ">>|${versionWithRespin}"
 
-versionWithRespin=8.1.0.Beta1 # a, b, c...
+versionWithRespin=8.1.0.CR1 # a, b, c...
 rsync -aPrz /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/all/repo/* /qa/services/http/binaries/RHDS/updates/development/${versionWithRespin}-updatesite-core/
 cd /qa/services/http/binaries/RHDS/updates/development/
 find . -maxdepth 1 -type d -name "${versionWithRespin}*" | grep ${versionWithRespin}
 find . -maxdepth 1 -type d -name "${versionWithRespin}*" | sed "s#\.# >> http://www.qa.jboss.com/binaries/RHDS/updates/development#" | egrep ">>|${versionWithRespin}"
 
+# {TODO CONTINUE HERE when Central/EA & Discovery sites are rebuilt}
 # earlyaccess site includes one directory.xml file which lists both core and earlyaccess plugins, so use that instead of core site
-versionWithRespin=8.1.0.Beta1 # a, b, c...
+versionWithRespin=8.1.0.CR1 # a, b, c...
 rsync -aPrz /qa/services/http/binaries/RHDS/discovery/nightly/earlyaccess/4.2.luna/* /qa/services/http/binaries/RHDS/discovery/development/${versionWithRespin}/
 ----
 
@@ -117,24 +118,24 @@ If the target platform has not been released (still has -SNAPSHOT version suffix
 
 # can run 4 steps these in parallel 
 
-versionWithRespin=8.1.0.Beta1 # a, b, c...
+versionWithRespin=8.1.0.CR1 # a, b, c...
 JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
 rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/all/repo/* ${JBDS}/updates/8.0.0/jboss-devstudio-${versionWithRespin}-updatesite-core/
 rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/installer/jboss-devstudio-${versionWithRespin}*-updatesite-core.zip ${JBDS}/updates/8.0.0/jboss-devstudio-${versionWithRespin}-updatesite-core.zip
 
 # TODO: verify correct URL and filename for the target zip
-versionWithRespin=8.1.0.Beta1 # a, b, c...
+versionWithRespin=8.1.0.CR1 # a, b, c...
 JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
-TARGET_PLATFORM_VERSION_MAX=4.42.0.Beta1-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.42.0.Final-SNAPSHOT
 unzip -q /qa/services/http/binaries/RHDS/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MAX}/jbdevstudiotarget-${TARGET_PLATFORM_VERSION_MAX}.zip -d /tmp/jboss-devstudio-${versionWithRespin}-target-platform
 rsync -aPrz --rsh=ssh --protocol=28 /tmp/jboss-devstudio-${versionWithRespin}-target-platform ${JBDS}/updates/8.0.0/
 # rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MAX}/jbdevstudiotarget-${TARGET_PLATFORM_VERSION_MAX}.zip ${JBDS}/updates/8.0.0/
 rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MAX}/jbdevstudiotarget-${TARGET_PLATFORM_VERSION_MAX}.zip ${JBDS}/updates/8.0.0/jboss-devstudio-${versionWithRespin}-target-platform.zip
 
 # TODO: verify correct URL and filename for the target zip
-versionWithRespin=8.1.0.Beta1 # a, b, c...
+versionWithRespin=8.1.0.CR1 # a, b, c...
 JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
-CENTRAL_TARGET_VERSION=4.42.0.Beta1-SNAPSHOT
+CENTRAL_TARGET_VERSION=4.42.0.CR1-SNAPSHOT
 # Central discovery
 rm -rf /qa/services/http/binaries/RHDS/targetplatforms/jbtcentraltarget/${CENTRAL_TARGET_VERSION}
 mkdir -p /qa/services/http/binaries/RHDS/targetplatforms/jbtcentraltarget/${CENTRAL_TARGET_VERSION}/
@@ -148,9 +149,9 @@ rsync -aPrz --rsh=ssh --protocol=28 --delete /tmp/jboss-devstudio-${versionWithR
 rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/targetplatforms/jbtcentraltarget/${CENTRAL_TARGET_VERSION}/jbtcentraltarget-${CENTRAL_TARGET_VERSION}.zip ${JBDS}/updates/8.0.0/jboss-devstudio-${versionWithRespin}-updatesite-central.zip
 
 # TODO: verify correct URL and filename for the target zip
-versionWithRespin=8.1.0.Beta1 # a, b, c...
+versionWithRespin=8.1.0.CR1 # a, b, c...
 JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
-CENTRAL_TARGET_VERSION=4.42.0.Beta1-SNAPSHOT
+CENTRAL_TARGET_VERSION=4.42.0.CR1-SNAPSHOT
 # Early Access
 rm -rf /qa/services/http/binaries/RHDS/targetplatforms/jbtearlyaccesstarget/${CENTRAL_TARGET_VERSION}/
 mkdir -p /qa/services/http/binaries/RHDS/targetplatforms/jbtearlyaccesstarget/${CENTRAL_TARGET_VERSION}/
@@ -173,14 +174,14 @@ NOTE: Now that Central content is merged into the same composite as JBDS and its
 
 [source,bash]
 ----
-versionWithRespin=8.1.0.Beta1 # a, b, c...
+versionWithRespin=8.1.0.CR1 # a, b, c...
 now=`date +%s000`
 
-oldTP=jboss-devstudio-8.0.2.GA
+oldTP=jboss-devstudio-8.1.0.Beta1
 newTP=jboss-devstudio-${versionWithRespin}
 # Example for a respin
-# oldTP=jboss-devstudio-8.0.2.GA
-# newTP=jboss-devstudio-8.0.2.GA
+# oldTP=jboss-devstudio-8.1.0.Beta1
+# newTP=jboss-devstudio-8.1.0.Beta1
 
 pushd jbdevstudio-website/content/updates/8.0-staging/
 for d in composite*.xml; do
@@ -203,8 +204,8 @@ popd
 [source,bash]
 ----
 isGA=false # or true in case you're doing a GA
-previousFull=8.1.0.Beta1 # a, b, c...
-versionWithRespin=8.1.0.Beta2 # a, b, c...
+previousFull=8.1.0.CR1 # a, b, c...
+versionWithRespin=8.1.0.CR1 # a, b, c...
 now=`date +%s000`
 
 #TODO: make sure you're in the correct folder here!
@@ -221,16 +222,24 @@ done
 # Latest discovery site is here: http://www.qa.jboss.com/binaries/RHDS/discovery/development/${versionWithRespin}
 pushd updates/8.0-staging/
 rm -f devstudio-directory.xml
-wget -q -nc http://www.qa.jboss.com/binaries/RHDS/discovery/development/${versionWithRespin}/devstudio-directory.xml
+
+# TODO: normally, http works here :(
+# wget -q -nc http://www.qa.jboss.com/binaries/RHDS/discovery/development/${versionWithRespin}/devstudio-directory.xml
+scpr nboldt@dev01.mw.lab.eng.bos.redhat.com:~/RHDS/discovery/development/${versionWithRespin}/devstudio-directory.xml ./
+
 newJars=$(cat devstudio-directory.xml | grep entry | sed -e "s#.\+plugins/#plugins/#g" | sed -e "s#.\+discovery/#discovery/#g" |sed -e "s#\.jar.\+#.jar#g")
 for newJar in $newJars; do 
     if [[ ! ${newJar##*.earlyaccess_*} ]]; then
     newJarEA=${newJar/plugins/discovery}
-    wget -q -nc -O ${newJarEA} http://www.qa.jboss.com/binaries/RHDS/discovery/development/${versionWithRespin}/${newJar} 
+    # TODO: normally, http works here :(
+    # wget -q -nc -O ${newJarEA} http://www.qa.jboss.com/binaries/RHDS/discovery/development/${versionWithRespin}/${newJar}
+    scpr nboldt@dev01.mw.lab.eng.bos.redhat.com:~/RHDS/discovery/development/${versionWithRespin}/${newJar} ./discovery/
     echo "EA: $newJarEA"
   else
     newJarCore=${newJar/plugins/discovery}
-    wget -q -nc -O ${newJarCore} http://www.qa.jboss.com/binaries/RHDS/discovery/development/${versionWithRespin}/${newJar} 
+    # TODO: normally, http works here :(
+    # wget -q -nc -O ${newJarCore} http://www.qa.jboss.com/binaries/RHDS/discovery/development/${versionWithRespin}/${newJar}
+    scpr nboldt@dev01.mw.lab.eng.bos.redhat.com:~/RHDS/discovery/development/${versionWithRespin}/${newJar} ./discovery/
     echo "Core: $newJarCore"
   fi
 done
@@ -369,11 +378,11 @@ echo $theversion
 
 # if value found above for $jbosstoolsversion != current release version, then you need to rebuild foundation w/ a new value inserted.
 
-jboss.discovery.directory.url|devstudio|8.1.0.Beta1=https://devstudio.redhat.com/updates/8.0-staging/devstudio-directory.xml
-jboss.discovery.site.url|devstudio|8.1.0.Beta1=https://devstudio.redhat.com/updates/8.0-staging/
-jboss.discovery.earlyaccess.site.url|devstudio|8.1.0.Beta1=https://devstudio.redhat.com/earlyaccess/8.0-staging/
-jboss.discovery.earlyaccess.list.url|devstudio|8.1.0.Beta1=https://devstudio.redhat.com/updates/8.0-staging/devstudio-earlyaccess.properties
-jboss.discovery.site.integration-stack.url|devstudio|8.1.0.Beta1=https://devstudio.redhat.com/earlyaccess/8.0-staging/
+jboss.discovery.directory.url|devstudio|8.1.0.CR1=https://devstudio.redhat.com/updates/8.0-staging/devstudio-directory.xml
+jboss.discovery.site.url|devstudio|8.1.0.CR1=https://devstudio.redhat.com/updates/8.0-staging/
+jboss.discovery.earlyaccess.site.url|devstudio|8.1.0.CR1=https://devstudio.redhat.com/earlyaccess/8.0-staging/
+jboss.discovery.earlyaccess.list.url|devstudio|8.1.0.CR1=https://devstudio.redhat.com/updates/8.0-staging/devstudio-earlyaccess.properties
+jboss.discovery.site.integration-stack.url|devstudio|8.1.0.CR1=https://devstudio.redhat.com/earlyaccess/8.0-staging/
 ----
 
 
@@ -415,14 +424,14 @@ ____
 
 [source,bash]
 ----
-versionWithRespin=8.1.0.Beta1 # a, b, c...
+versionWithRespin=8.1.0.CR1 # a, b, c...
 respin="respin-"
 TARGET_PLATFORM_VERSION_MIN=4.40.0.Final
-TARGET_PLATFORM_VERSION_MAX=4.42.0.Beta1-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.42.0.Beta1-SNAPSHOT
-TARGET_PLATFORM_EARLYACCESS_MAX=4.42.0.Beta1-SNAPSHOT
-jbdsVersion=8.1.0.Beta1 # no respin suffix here
-jbtVersion=4.2.3.Beta1 # no respin suffix here
+TARGET_PLATFORM_VERSION_MAX=4.42.0.Final-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.42.0.CR1-SNAPSHOT
+TARGET_PLATFORM_EARLYACCESS_MAX=4.42.0.CR1-SNAPSHOT
+jbdsVersion=8.1.0.CR1 # no respin suffix here
+jbtVersion=4.2.3.CR1 # no respin suffix here
 echo "
 Subject: 
 

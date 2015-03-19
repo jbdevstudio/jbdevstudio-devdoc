@@ -58,9 +58,9 @@ On your local machine, using a SFTP client (or the script suggested above), move
 [source,bash]
 ----
 stream=4.2.luna
-version=4.2.3.Beta1 # name to use in filenames ie fixVersion in JIRA
-versionWithRespin=4.2.3.Beta1 # Fully qualified version, including respin suffix
-hibernateToolsVersionWithRespin=4.2.3.Beta1 # it is possible that hibernate tools didn't require the same # of respins, so might have a different version
+version=4.2.3.CR1 # name to use in filenames ie fixVersion in JIRA
+versionWithRespin=4.2.3.CR1 # Fully qualified version, including respin suffix
+hibernateToolsVersionWithRespin=4.2.3.CR1 # it is possible that hibernate tools didn't require the same # of respins, so might have a different version
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 echo "mkdir development/sf.net/${version}" | sftp ${TOOLS}/builds
 
@@ -98,7 +98,7 @@ Once granted a shell, create the release notes page and download the zips
 [source,bash]
 ----
 branch=4.2.3.x # if this is a Final build, use 4.2.x instead of 4.2.3.x
-version=4.2.3.Beta1
+version=4.2.3.CR1
 cd /home/frs/project/jboss/JBossTools/
 mkdir -p jbosstools${branch}
 cd jbosstools${branch}
@@ -118,7 +118,7 @@ rm -f /tmp/index.html
 coreBuildID=`find . -name "*${version}*src.zip" | head -1 | sed "s#./jbosstools-\(.\+\)-src.zip#\1#"`
 echo "Latest build: ${coreBuildID}"
 z=jbosstools-${coreBuildID}-browsersim-standalone.zip
-wget http://download.jboss.org/jbosstools/builds/development/jbosstools-4.2.3.Beta1-browsersim-standalone/jbosstools-4.2.3.Beta1-browsersim-standalone.zip -O $z
+wget http://download.jboss.org/jbosstools/builds/development/jbosstools-4.2.3.CR1-browsersim-standalone/jbosstools-4.2.3.CR1-browsersim-standalone.zip -O $z
 for m in $(md5sum ${z}); do if [[ $m != ${z} ]]; then echo $m > ${z}.MD5; fi; done
 
 # when done, exit the sourceforge shell
@@ -140,8 +140,8 @@ We simply move the content of the latest respin to the release directory (under 
 
 [source,bash]
 ----
-version=4.2.3.Beta1
-versionWithRespin=4.2.3.Beta1 # no respin suffix or a, b, c, d... suffix
+version=4.2.3.CR1
+versionWithRespin=4.2.3.CR1 # no respin suffix or a, b, c, d... suffix
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 
 # if there were no respins, then version = versionWithRespin
@@ -157,7 +157,7 @@ If everything above completed OK, you can then in the background delete all the 
 * /downloads_htdocs/tools/builds/development/
 * /downloads_htdocs/tools/updates/staging/luna
 
-So if you're doing a 4.2.3.Beta1, then you can delete 4.2.Beta1a, etc. folders. A graphical sftp client such as FileZilla or FireFTP (plugin for Firefox) is the easiest way to perform these operations. Looks in the following locations:
+So if you're doing a 4.2.3.CR1, then you can delete 4.2.CR1a, etc. folders. A graphical sftp client such as FileZilla or FireFTP (plugin for Firefox) is the easiest way to perform these operations. Looks in the following locations:
 
 === Update staging to point to new location
 
@@ -178,22 +178,22 @@ Here is an example of a script doing that:
 ----
 cd ~/tru # or where you have jbosstools-download.jboss.org checked out
 
-previous=4.2.2.Final
-versionWithRespin=4.2.3.Beta1
+previous=4.2.2.Beta1
+versionWithRespin=4.2.3.CR1
 eclipseTrain=luna
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 
 pushd jbosstools-download.jboss.org/jbosstools/updates/webtools
   # create new symlink
   mv luna luna_${previous}
-  ln -s ../../static/releases/jbosstools-${version}-updatesite-webtools luna
+  ln -s ../../static/releases/jbosstools-${versionWithRespin}-updatesite-webtools luna
   # move the previous release out of the way
   echo "rename webtools/${eclipseTrain} webtools/${eclipseTrain}_${previous}"                        | sftp ${TOOLS}/updates/
   # push new symlink to server
   rsync -Pzrlt --rsh=ssh --protocol=28 luna $TOOLS/updates/webtools/
   # commit change to github
   git add luna
-  git commit -m "update symlink to point at latest ../../static/releases/jbosstools-${version}-updatesite-webtools release folder" luna
+  git commit -m "update symlink to point at latest ../../static/releases/jbosstools-${versionWithRespin}-updatesite-webtools release folder" luna
   git push origin master
 popd
 
@@ -232,8 +232,8 @@ https://github.com/jbosstools/jbosstools-download.jboss.org/commit/d5306ce940814
 
 cd ~/tru # or where you have jbosstools-download.jboss.org checked out
 
-oldTP=4.41.2.Final
-newTP=4.42.0.Beta1-SNAPSHOT
+oldTP=4.42.0.Beta1-SNAPSHOT
+newTP=4.42.0.Final-SNAPSHOT
 now=`date +%s000`
 eclipseTrain=luna
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
@@ -297,8 +297,8 @@ This can be done similarly for Central/EA as done for JBT/JBDS TPs above:
 eclipseTrain=luna
 now=`date +%s000`
 
-oldTP=4.41.2.Final
-newTP=4.42.0.Beta1 # no -SNAPSHOT suffix here, as we'll remove it as we move to /static/
+oldTP=4.42.0.Beta1-SNAPSHOT
+newTP=4.42.0.CR1-SNAPSHOT # for Final, exclude -SNAPSHOT suffix here, as we'll remove it as we move to /static/
 
 pushd jbosstools-download.jboss.org/jbosstools/targetplatforms/
   for f in jbtcentral jbtearlyaccess; do
@@ -346,10 +346,10 @@ At that time, it is also safe to upgrade the version of the central target defin
 overriding the content of the repository links from _luna_.
 [source,bash]
 ----
-discoveryTP_prev=4.41.2.Final-SNAPSHOT #version for ongoing release
-discoveryTP_next=4.42.0.Beta1-SNAPSHOT #next version on that stream
-JBT_prev=updates/staging/luna/jbosstools-4.2.3.Beta1-updatesite-core
-JBT_next=static/releases/jbosstools-4.2.3.Beta1-updatesite-core
+discoveryTP_prev=4.42.0.CR1-SNAPSHOT #version for ongoing release
+discoveryTP_next=4.42.0.Final-SNAPSHOT #next version on that stream
+JBT_prev=updates/staging/luna/jbosstools-4.2.3.CR1-updatesite-core
+JBT_next=static/releases/jbosstools-4.2.3.CR1-updatesite-core
 
 cd jbosstools-discovery
 for f in *target/pom.xml *target/*/pom.xml *target/*/*-multiple.target; do
@@ -381,8 +381,8 @@ On this repository:
 
 [source,bash]
 ----
-previous=4.2.2.Final
-version=4.2.3.Beta1
+previous=4.2.3.Beta1
+version=4.2.3.CR1
 eclipseTrain=luna
 now=`date +%s000`
 
@@ -440,14 +440,14 @@ Then make the necessary updates for *discovery*
 Script:
 [source,bash]
 ----
-version=4.2.3.Beta1
-versionWithRespin=4.2.3.Beta1
+version=4.2.3.CR1
+versionWithRespin=4.2.3.CR1
 eclipseTrain=luna
 
 isFinal=false # or true in case you're doing a Final
 # set correct path for where you have project cloned on disk
 basedir=${HOME}/tru/jbosstools-download.jboss.org/ # or...
-basedir=`pwd`
+basedir=`pwd`/jbosstools-download.jboss.org
 
 pushd ${basedir}/jbosstools/updates/development/${eclipseTrain}/
 # Replace jbosstools-directory.xml by newest
@@ -577,17 +577,17 @@ And update it it as required, so that the links for the latest milestone point t
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru
 pushd jbosstools-download.jboss.org/jbosstools/configuration
-version=4.2.3.Beta1 # name to use in filenames ie fixVersion in JIRA
-versionWithRespin=4.2.3.Beta1 # Fully qualified version, including respin suffix
+version=4.2.3.CR1 # name to use in filenames ie fixVersion in JIRA
+versionWithRespin=4.2.3.CR1 # Fully qualified version, including respin suffix
 
 topic=release-${versionWithRespin}; branch=master; gw1
 
 st ide-config.properties # or use another editor if not Sublime Text (st)
 
-# remove existing lines with these to make the 4.2.3.Beta1 stuff live as the lastest for 4.2.3 in development/luna
-#jboss.discovery.directory.url|jbosstools|4.2.3.Beta1=http://download.jboss.org/jbosstools/discovery/development/4.2.3.Beta1/jbosstools-directory.xml
-#jboss.discovery.site.url|jbosstools|4.2.3.Beta1=http://download.jboss.org/jbosstools/discovery/development/4.2.3.Beta1/
-#jboss.discovery.earlyaccess.site.url|jbosstools|4.2.3.Beta1=http://download.jboss.org/jbosstools/discovery/development/4.2.3.Beta1/
+# remove existing lines with these to make the 4.2.3.CR1 stuff live as the lastest for 4.2.3 in development/luna
+#jboss.discovery.directory.url|jbosstools|4.2.3.CR1=http://download.jboss.org/jbosstools/discovery/development/4.2.3.CR1/jbosstools-directory.xml
+#jboss.discovery.site.url|jbosstools|4.2.3.CR1=http://download.jboss.org/jbosstools/discovery/development/4.2.3.CR1/
+#jboss.discovery.earlyaccess.site.url|jbosstools|4.2.3.CR1=http://download.jboss.org/jbosstools/discovery/development/4.2.3.CR1/
 
 # commit the change and push to master
 ci "release JBT ${version} (${versionWithRespin}) to production: link to latest dev milestone discovery site" ide-config.properties
@@ -596,18 +596,19 @@ gw3; gw4
 # push updated file to server
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 rsync -Pzrlt --rsh=ssh --protocol=28 ide-config.properties $TOOLS/configuration/ide-config.properties
+google-chrome http://download.jboss.org/jbosstools/configuration/ide-config.properties
 
 ----
 
 == Update Eclipse Marketplace (add/remove features)
 
-WARNING: Only for Beta, CR and GA! We do not release Alphas to Eclipse Marketplace, nor maintenance milestones like 4.2.y.Beta1 while 4.2.x is live in /stable/.
+WARNING: Only for Beta, CR and GA! We do not release Alphas to Eclipse Marketplace, nor maintenance milestones like 4.2.y.CR1 while 4.2.x is live in /stable/.
 
 === If node does not yet exist
 
 This is usually the case of first Beta version.
 
-Create a new node on Marketplace, use content of +http://download.jboss.org/jbosstools/static/releases/jbosstools-4.2.3.Beta1-updatesite-core/site.properties+
+Create a new node on Marketplace, use content of +http://download.jboss.org/jbosstools/static/releases/jbosstools-4.2.3.CR1-updatesite-core/site.properties+
 
 === If node already exists
 
@@ -615,7 +616,7 @@ Access it via +https://marketplace.eclipse.org/content/jboss-tools-luna/edit+ an
 
 * Title to match new version
 * Description to match new version & dependencies
-* Update list of features, using content of +http://download.jboss.org/jbosstools/static/releases/jbosstools-4.2.3.Beta1-updatesite-core/site.properties+
+* Update list of features, using content of +http://download.jboss.org/jbosstools/static/releases/jbosstools-4.2.3.CR1-updatesite-core/site.properties+
 
 == Git tags
 
@@ -638,7 +639,7 @@ Assuming you have the above proejcts already cloned, this script will create the
 # maven-plugins does not get released/branched the same as other projects
 # download.jboss.org removed because might still need to tweak ide-config.properties
 jbt_branch=jbosstools-4.2.x
-version=4.2.3.Beta1
+version=4.2.3.CR1
 for d in build build-ci build-sites devdoc discovery; do 
   echo "====================================================================="
   echo "Tagging jbosstools-${d} from branch ${jbt_branch} as tag ${version}..."
@@ -663,7 +664,7 @@ ____
 [source,bash]
 ----
 branchName=jbosstools-4.2.x
-tagName=jbosstools-4.2.3.Beta1
+tagName=jbosstools-4.2.3.CR1
 echo "
 Subject:
 
@@ -714,7 +715,7 @@ and +
 
 [source,bash]
 ----
-version=4.2.3.Beta1
+version=4.2.3.CR1
 eclipseVersion="Eclipse 4.4.2 Luna SR2"
 echo "
 Subject: 

@@ -355,13 +355,13 @@ https://github.com/jbosstools/jbosstools-website/blob/master/_config/products.ym
 
 Example: https://github.com/jbosstools/jbosstools-website/pull/193
 
-== devstudio.jboss.com
+== www.jboss.org
 
 Goal is to update the following pages: https://www.jboss.org/products/devstudio/download/ and https://www.jboss.org/products/devstudio/overview/
 
 This can be achived by creating a JIRA to JBoss Developer (https://issues.jboss.org/secure/CreateIssue.jspa?pid=12313621&issuetype=3 ) and submitting pull requests for file _products/devstudio/_common/product.yml_ against repository https://github.com/jboss-developer/www.jboss.org 
 
-Example past JIRA: https://issues.jboss.org/browse/DEVELOPER-733 . Relevant pull request is linked from here.
+Example past JIRA: https://issues.jboss.org/browse/DEVELOPER-1285 . Relevant pull request is linked from here.
 
 NOTE: you'll need to get an answer from release-engineering@redhat.com (cf first step) to get the URLs to use for the various files
 

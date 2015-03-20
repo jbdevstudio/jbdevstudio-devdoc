@@ -70,10 +70,29 @@ echo "Latest build: ${coreBuildID}"
 # coreBuildID2=${coreBuildID}
 coreBuildID2=SNAPSHOT
 
-echo "rename staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID2}-updatesite.zip      development/sf.net/${version}/jbosstools-${version}_${coreBuildID}-updatesite-core.zip"         | sftp ${TOOLS}/builds
-echo "rename staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID2}-updatesite.zip.MD5  development/sf.net/${version}/jbosstools-${version}_${coreBuildID}-updatesite-core.zip.MD5"     | sftp ${TOOLS}/builds
-echo "rename staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID2}-src.zip     development/sf.net/${version}/jbosstools-${version}_${coreBuildID}-src.zip"        | sftp ${TOOLS}/builds
-echo "rename staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID2}-src.zip.MD5 development/sf.net/${version}/jbosstools-${version}_${coreBuildID}-src.zip.MD5"    | sftp ${TOOLS}/builds
+#TODO use new paths under mars/ instead of builds/staging/
+
+# TODO VERIFY THIS WORKS - untested!
+# instead of a rename (which breaks JBDS builds because they can't find the sources zip), use rsync to copy
+SFDIR=/tmp/development/sf.net/${version}; mkdir -p $SFDIR; pushd $SFDIR
+scpr ${TOOLS}/builds/staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID2}-updatesite.zip \
+  $SFDIR/jbosstools-${version}_${coreBuildID}-updatesite-core.zip
+scpr ${TOOLS}/builds/staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID2}-updatesite.zip.MD5 \
+  $SFDIR/jbosstools-${version}_${coreBuildID}-updatesite-core.zip.MD5
+scpr ${TOOLS}/builds/staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID2}-src.zip \
+  $SFDIR/jbosstools-${version}_${coreBuildID}-src.zip
+scpr ${TOOLS}/builds/staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID2}-src.zip.MD5 \
+  $SFDIR/jbosstools-${version}_${coreBuildID}-src.zip.MD5
+scpr $SFDIR ${TOOLS}/builds/development/sf.net/
+
+# old way - just rename
+# echo "rename staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID2}-updatesite.zip      development/sf.net/${version}/jbosstools-${version}_${coreBuildID}-updatesite-core.zip"         | sftp ${TOOLS}/builds
+# echo "rename staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID2}-updatesite.zip.MD5  development/sf.net/${version}/jbosstools-${version}_${coreBuildID}-updatesite-core.zip.MD5"     | sftp ${TOOLS}/builds
+# echo "rename staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID2}-src.zip     development/sf.net/${version}/jbosstools-${version}_${coreBuildID}-src.zip"        | sftp ${TOOLS}/builds
+# echo "rename staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID2}-src.zip.MD5 development/sf.net/${version}/jbosstools-${version}_${coreBuildID}-src.zip.MD5"    | sftp ${TOOLS}/builds
+
+# If everything above worked...
+popd; rm -fr $SFDIR
 
 ----
 

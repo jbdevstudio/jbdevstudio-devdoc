@@ -53,7 +53,14 @@ Zips (recommanded for offline installation) are made available on sf.net. sf.net
 
 === Prepare files
 
-On your local machine, using a SFTP client (or the script suggested above), move the files to publish to +http://download.jboss.org/jbosstools/builds/development/sf.net/+ and rename them to conform to pattern.
+On a lab machine, copy the files to publish to +http://download.jboss.org/jbosstools/builds/development/sf.net/+ and rename them to conform to pattern.
+
+[source,bash]
+----
+me@local$ ssh dev01.mw.lab.eng.bos.redhat.com
+me@dev01$ sudo su - hudson
+hudson@dev01$ ...
+----
 
 [source,bash]
 ----
@@ -71,15 +78,47 @@ echo "Latest build: ${coreBuildID}"
 coreBuildID2=${coreBuildID}
 #coreBuildID2=SNAPSHOT
 
-echo "rename staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID2}-updatesite.zip      development/sf.net/${version}/jbosstools-${version}_${coreBuildID}-updatesite-core.zip"         | sftp ${TOOLS}/builds
-echo "rename staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID2}-updatesite.zip.MD5  development/sf.net/${version}/jbosstools-${version}_${coreBuildID}-updatesite-core.zip.MD5"     | sftp ${TOOLS}/builds
-echo "rename staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID2}-src.zip     development/sf.net/${version}/jbosstools-${version}_${coreBuildID}-src.zip"        | sftp ${TOOLS}/builds
-echo "rename staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID2}-src.zip.MD5 development/sf.net/${version}/jbosstools-${version}_${coreBuildID}-src.zip.MD5"    | sftp ${TOOLS}/builds
+# TODO VERIFY THIS WORKS - untested!
+# instead of a rename (which breaks JBDS builds because they can't find the sources zip), use rsync to copy
+SFDIR=/tmp/development/sf.net/${version}; mkdir -p $SFDIR; pushd $SFDIR
+scpr ${TOOLS}/builds/staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID2}-updatesite.zip \
+  $SFDIR/jbosstools-${version}_${coreBuildID}-updatesite-core.zip
+scpr ${TOOLS}/builds/staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID2}-updatesite.zip.MD5 \
+  $SFDIR/jbosstools-${version}_${coreBuildID}-updatesite-core.zip.MD5
+scpr ${TOOLS}/builds/staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID2}-src.zip \
+  $SFDIR/jbosstools-${version}_${coreBuildID}-src.zip
+scpr ${TOOLS}/builds/staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID2}-src.zip.MD5 \
+  $SFDIR/jbosstools-${version}_${coreBuildID}-src.zip.MD5
+scpr $SFDIR ${TOOLS}/builds/development/sf.net/
 
-hibernateToolsBuildID=$(echo "ls 20*" | sftp ${TOOLS}/builds/staging/jbosstools-${hibernateToolsVersionWithRespin}-build-hibernatetools/ 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); hibernateToolsBuildID=${hibernateToolsBuildID%%/*}
-echo "Latest build: ${hibernateToolsBuildID}"
-echo "rename staging/jbosstools-${versionWithRespin}-build-hibernatetools/${hibernateToolsBuildID}/all/jbosstools-build-sites.aggregate.hibernatetools-site_${stream}-${hibernateToolsBuildID}-updatesite.zip development/sf.net/${version}/jbosstools-${version}_${hibernateToolsBuildID}-updatesite-hibernatetools.zip" | sftp ${TOOLS}/builds
-echo "rename staging/jbosstools-${versionWithRespin}-build-hibernatetools/${hibernateToolsBuildID}/all/jbosstools-build-sites.aggregate.hibernatetools-site_${stream}-${hibernateToolsBuildID}-updatesite.zip.MD5 development/sf.net/${version}/jbosstools-${version}_${hibernateToolsBuildID}-updatesite-hibernatetools.zip.MD5" | sftp ${TOOLS}/builds
+# old way - just rename
+# echo "rename staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID2}-updatesite.zip      development/sf.net/${version}/jbosstools-${version}_${coreBuildID}-updatesite-core.zip"         | sftp ${TOOLS}/builds
+# echo "rename staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID2}-updatesite.zip.MD5  development/sf.net/${version}/jbosstools-${version}_${coreBuildID}-updatesite-core.zip.MD5"     | sftp ${TOOLS}/builds
+# echo "rename staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID2}-src.zip     development/sf.net/${version}/jbosstools-${version}_${coreBuildID}-src.zip"        | sftp ${TOOLS}/builds
+# echo "rename staging/jbosstools-${versionWithRespin}-build-core/${coreBuildID}/all/jbosstools-build-sites.aggregate.site_${stream}-${coreBuildID2}-src.zip.MD5 development/sf.net/${version}/jbosstools-${version}_${coreBuildID}-src.zip.MD5"    | sftp ${TOOLS}/builds
+
+# If everything above worked...
+popd; rm -fr $SFDIR
+
+
+htBuildID=$(echo "ls 20*" | sftp ${TOOLS}/builds/staging/jbosstools-${hibernateToolsVersionWithRespin}-build-hibernatetools/ 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); htBuildID=${htBuildID%%/*}
+echo "Latest build: ${htBuildID}"
+
+# TODO VERIFY THIS WORKS - untested!
+# instead of a rename (which breaks JBDS builds because they can't find the sources zip), use rsync to copy
+SFDIR=/tmp/development/sf.net/${version}; mkdir -p $SFDIR; pushd $SFDIR
+scpr ${TOOLS}/builds/staging/jbosstools-${versionWithRespin}-build-hibernatetools/${htBuildID}/all/jbosstools-build-sites.aggregate.hibernatetools-site_${stream}-${htBuildID}-updatesite.zip \
+  $SFDIR/jbosstools-${version}_${htBuildID}-updatesite-hibernatetools.zip
+scpr ${TOOLS}/builds/staging/jbosstools-${versionWithRespin}-build-hibernatetools/${htBuildID}/all/jbosstools-build-sites.aggregate.hibernatetools-site_${stream}-${htBuildID}-updatesite.zip.MD5 \
+  $SFDIR/jbosstools-${version}_${htBuildID}-updatesite-hibernatetools.zip.MD5
+scpr $SFDIR ${TOOLS}/builds/development/sf.net/
+
+# old way - just rename
+# echo "rename staging/jbosstools-${versionWithRespin}-build-hibernatetools/${htBuildID}/all/jbosstools-build-sites.aggregate.hibernatetools-site_${stream}-${htBuildID}-updatesite.zip development/sf.net/${version}/jbosstools-${version}_${htBuildID}-updatesite-hibernatetools.zip" | sftp ${TOOLS}/builds
+# echo "rename staging/jbosstools-${versionWithRespin}-build-hibernatetools/${htBuildID}/all/jbosstools-build-sites.aggregate.hibernatetools-site_${stream}-${htBuildID}-updatesite.zip.MD5 development/sf.net/${version}/jbosstools-${version}_${htBuildID}-updatesite-hibernatetools.zip.MD5" | sftp ${TOOLS}/builds
+
+# If everything above worked...
+popd; rm -fr $SFDIR
 
 ----
 

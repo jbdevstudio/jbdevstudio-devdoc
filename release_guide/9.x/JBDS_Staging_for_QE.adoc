@@ -121,6 +121,9 @@ versionWithRespin=9.0.0.Alpha1 # a, b, c...
 JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
 rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_9.0.mars/all/repo/* ${JBDS}/updates/9.0.0/jboss-devstudio-${versionWithRespin}-updatesite-core/
 rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_9.0.mars/installer/jboss-devstudio-${versionWithRespin}*-updatesite-core.zip ${JBDS}/updates/9.0.0/jboss-devstudio-${versionWithRespin}-updatesite-core.zip
+y=/qa/services/http/binaries/RHDS/builds/staging/devstudio.product_8.0.luna/installer/jboss-devstudio-${versionWithRespin}*-updatesite-core.zip
+for m in $(md5sum ${y}); do if [[ $m != ${y} ]]; then echo $m > ${y}.MD5; fi; done
+rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_9.0.mars/installer/jboss-devstudio-${versionWithRespin}*-updatesite-core.zip.MD5 ${JBDS}/updates/9.0.0/jboss-devstudio-${versionWithRespin}-updatesite-core.zip.MD5
 
 # TODO: verify correct URL and filename for the target zip
 versionWithRespin=9.0.0.Alpha1 # a, b, c...
@@ -130,6 +133,9 @@ unzip -q /qa/services/http/binaries/RHDS/targetplatforms/jbdevstudiotarget/${TAR
 rsync -aPrz --rsh=ssh --protocol=28 /tmp/jboss-devstudio-${versionWithRespin}-target-platform ${JBDS}/updates/9.0.0/
 # rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MAX}/jbdevstudiotarget-${TARGET_PLATFORM_VERSION_MAX}.zip ${JBDS}/updates/9.0.0/
 rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MAX}/jbdevstudiotarget-${TARGET_PLATFORM_VERSION_MAX}.zip ${JBDS}/updates/9.0.0/jboss-devstudio-${versionWithRespin}-target-platform.zip
+y=/qa/services/http/binaries/RHDS/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MAX}/jbdevstudiotarget-${TARGET_PLATFORM_VERSION_MAX}.zip
+for m in $(md5sum ${y}); do if [[ $m != ${y} ]]; then echo $m > ${y}.MD5; fi; done
+rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MAX}/jbdevstudiotarget-${TARGET_PLATFORM_VERSION_MAX}.zip.MD5 ${JBDS}/updates/9.0.0/jboss-devstudio-${versionWithRespin}-target-platform.zip.MD5
 
 # TODO: verify correct URL and filename for the target zip
 versionWithRespin=9.0.0.Alpha1 # a, b, c...
@@ -146,6 +152,9 @@ unzip -q /qa/services/http/binaries/RHDS/targetplatforms/jbtcentraltarget/${CENT
 rsync -aPrz --rsh=ssh --protocol=28 --delete /tmp/jboss-devstudio-${versionWithRespin}-updatesite-central/* ${JBDS}/updates/9.0.0/jboss-devstudio-${versionWithRespin}-updatesite-central/
 # rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/targetplatforms/jbtcentraltarget/${CENTRAL_TARGET_VERSION}/jbtcentraltarget-${CENTRAL_TARGET_VERSION}.zip ${JBDS}/updates/9.0.0/
 rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/targetplatforms/jbtcentraltarget/${CENTRAL_TARGET_VERSION}/jbtcentraltarget-${CENTRAL_TARGET_VERSION}.zip ${JBDS}/updates/9.0.0/jboss-devstudio-${versionWithRespin}-updatesite-central.zip
+y=/qa/services/http/binaries/RHDS/targetplatforms/jbtcentraltarget/${CENTRAL_TARGET_VERSION}/jbtcentraltarget-${CENTRAL_TARGET_VERSION}.zip
+for m in $(md5sum ${y}); do if [[ $m != ${y} ]]; then echo $m > ${y}.MD5; fi; done
+rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/targetplatforms/jbtcentraltarget/${CENTRAL_TARGET_VERSION}/jbtcentraltarget-${CENTRAL_TARGET_VERSION}.zip.MD5 ${JBDS}/updates/9.0.0/jboss-devstudio-${versionWithRespin}-updatesite-central.zip.MD5
 
 # TODO: verify correct URL and filename for the target zip
 versionWithRespin=9.0.0.Alpha1 # a, b, c...
@@ -162,6 +171,9 @@ unzip -q /qa/services/http/binaries/RHDS/targetplatforms/jbtearlyaccesstarget/${
 rsync -aPrz --rsh=ssh --protocol=28 --delete /tmp/jboss-devstudio-${versionWithRespin}-updatesite-earlyaccess/* ${JBDS}/updates/9.0.0/jboss-devstudio-${versionWithRespin}-updatesite-earlyaccess/
 # rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/targetplatforms/jbtearlyaccesstarget/${CENTRAL_TARGET_VERSION}/jbtearlyaccesstarget-${CENTRAL_TARGET_VERSION}.zip ${JBDS}/updates/9.0.0/
 rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/targetplatforms/jbtearlyaccesstarget/${CENTRAL_TARGET_VERSION}/jbtearlyaccesstarget-${CENTRAL_TARGET_VERSION}.zip ${JBDS}/updates/9.0.0/jboss-devstudio-${versionWithRespin}-updatesite-earlyaccess.zip
+y=/qa/services/http/binaries/RHDS/targetplatforms/jbtearlyaccesstarget/${CENTRAL_TARGET_VERSION}/jbtearlyaccesstarget-${CENTRAL_TARGET_VERSION}.zip
+for m in $(md5sum ${y}); do if [[ $m != ${y} ]]; then echo $m > ${y}.MD5; fi; done
+rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/targetplatforms/jbtearlyaccesstarget/${CENTRAL_TARGET_VERSION}/jbtearlyaccesstarget-${CENTRAL_TARGET_VERSION}.zip.MD5 ${JBDS}/updates/9.0.0/jboss-devstudio-${versionWithRespin}-updatesite-earlyaccess.zip.MD5
 
 ----
 

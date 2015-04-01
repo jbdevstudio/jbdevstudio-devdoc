@@ -126,7 +126,7 @@ if [[ $isGA == "true" ]]; then
       -e s#[[:digit:]]{13}#$now## \
       -e s#$regularPath#$akamaiPath## \
       compositeArtifacts.xml compositeContent.xml
-  scp compositeArtifacts.xml compositeContent.jar $JBDS/updates/8.0-staging
+  scp compositeArtifacts.xml compositeContent.xml $JBDS/updates/8.0-staging
 fi
 ----
 

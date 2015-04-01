@@ -157,14 +157,14 @@ rm -f /tmp/index.html
 coreBuildID=`find . -name "*${version}*src.zip" | head -1 | sed "s#./jbosstools-\(.\+\)-src.zip#\1#"`
 echo "Latest build: ${coreBuildID}"
 z=jbosstools-${coreBuildID}-browsersim-standalone.zip
-wget http://download.jboss.org/jbosstools/builds/development/jbosstools-4.2.3.CR1-browsersim-standalone/jbosstools-4.2.3.CR1-browsersim-standalone.zip -O $z
+wget http://download.jboss.org/jbosstools/builds/development/jbosstools-${version}-browsersim-standalone/jbosstools-${version}-browsersim-standalone.zip -O $z
 for m in $(md5sum ${z}); do if [[ $m != ${z} ]]; then echo $m > ${z}.MD5; fi; done
 
 # when done, exit the sourceforge shell
 exit
 
 # check files are on sourceforge (NOTE lowercase folder is new):
-google-chrome http://sourceforge.net/projects/jboss/files/JBossTools/jbosstools4.2.3.x/
+google-chrome http://sourceforge.net/projects/jboss/files/JBossTools/jbosstools${branch}/
 
 ----
   

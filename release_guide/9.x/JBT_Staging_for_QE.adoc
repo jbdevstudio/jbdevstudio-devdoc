@@ -87,7 +87,7 @@ for site in site; do
   if [[ $ID ]]; then
     if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
     echo "Latest build for ${sitename} (${site}): ${ID}"
-    tmpdir=/tmp/jbosstools-build-sites.aggregate.site_${stream}__${ID}
+    tmpdir=/tmp/jbosstools-build-sites.aggregate.${site}_${stream}__${ID}
     rsync -aPrz --rsh=ssh --protocol=28 tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream}/${ID}/* ${tmpdir}/
     # copy build folder
     echo "mkdir jbosstools-${version}-build-${sitename}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/staging/builds/
@@ -109,7 +109,7 @@ for site in coretests-site webtools-site; do
   if [[ $ID ]]; then
     if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
     echo "Latest build for ${sitename} (${site}): ${ID}"
-    tmpdir=/tmp/jbosstools-build-sites.aggregate.site_${stream}__${ID}
+    tmpdir=/tmp/jbosstools-build-sites.aggregate.${site}_${stream}__${ID}
     rsync -aPrz --rsh=ssh --protocol=28 tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream}/${ID}/* ${tmpdir}/
     # copy build folder
     echo "mkdir jbosstools-${version}-build-${sitename}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/staging/builds/
@@ -131,7 +131,7 @@ for site in central-site earlyaccess-site; do
   if [[ $ID ]]; then
     if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
     echo "Latest build for ${sitename} (${site}): ${ID}"
-    tmpdir=/tmp/jbosstools-build-sites.aggregate.site_${stream}__${ID}
+    tmpdir=/tmp/jbosstools-build-sites.aggregate.${site}_${stream}__${ID}
     rsync -aPrz --rsh=ssh --protocol=28 tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream}/${ID}/* ${tmpdir}/
     # copy build folder
     echo "mkdir jbosstools-${version}-build-${sitename}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/staging/builds/
@@ -278,6 +278,8 @@ done
 [source,bash]
 ----
 
+# TODO: verify this works for 4.3.0.Beta1 !
+
 stream=4.3.mars
 version=4.3.0.Alpha2 # a, b, c...
 # earlyaccess site includes one directory.xml file which lists both core and earlyaccess plugins, so use that instead of core site
@@ -286,7 +288,6 @@ echo " >> http://download.jboss.org/jbosstools/discovery/staging/${version}/" | 
 
 # TODO: ensure that the latest IS plugin jar is also available in the staging JBT discovery site
 # TODO: remember to include IS jar in jbosstools-directory.xml AND the plugin in the site too
-# TODO: verify this works for 4.3.0.Beta1 !
 
 isjar=""
 isjar=`curl -s http://download.jboss.org/jbosstools/updates/stable/mars/jbosstools-directory.xml | grep integration-stack`
@@ -353,7 +354,7 @@ rm -f ${thejar}
 popd
 echo "Want ${version}, got $theversion" | grep ${version}
 
-# if value found above for $jbosstoolsversion != current release version, then you need to rebuild foundation w/ a new value inserted.
+# if value found above for $jbosstoolsversion != current release version, then you need to rebuild foundation or JBDS w/ a new value inserted.
 
 version=4.3.0.Alpha2 #a, b, c...
 # adjust these steps to fit your own path location & git workflow
@@ -383,7 +384,7 @@ scp ide-config.properties tools@filemgmt.jboss.org:/downloads_htdocs/tools/confi
 Before notifying team of successful staging process completion, let's check there is no obvious issue
 
 1. Get a recent Eclipse (compatible with the target version of JBT)
-2. Install all content from http://download.jboss.org/jbosstools/updates/staging/mars in it
+2. Install all content from http://download.jboss.org/jbosstools/mars/staging/updates/ in it
 3. Restart as suggested
 4. Open Central Software/Updates tab, enable Early-Access select and install all connectors
 5. Restart as suggested

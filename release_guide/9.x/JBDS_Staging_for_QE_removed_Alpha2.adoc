@@ -1,0 +1,282 @@
+
+=== Push content
+
++devstudio.redhat.com+ is actually hosted on +filemgmt.jboss.org+, accessible from inside Red Hat VPN. So you need both VPN enabled and permissions to write to devstudio@filemgmt. If you don't have access, send a copy of your public SSH key to eng-ops@redhat.com.
+
+First, ssh to dev01, and sudo to the hudson user. From there you will be able to push files to filemgmt.
+
+[source,bash]
+----
+me@local$ ssh dev01.mw.lab.eng.bos.redhat.com
+me@dev01$ sudo su - hudson
+hudson@dev01$ ...
+----
+
+If the target platform has not been released (still has -SNAPSHOT version suffix), make sure you clean the various locations before running this script.
+
+[source,bash]
+----
+
+# TODO: Skipped for Alpha2 as all this content is already pushed (see above) or is a targetplatform/JBT artifact that exists on download.jboss.org.
+# can run 4 steps these in parallel 
+
+versionWithRespin=9.0.0.Alpha2 # a, b, c...
+JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
+rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio.product_9.0.mars/all/repo/* ${JBDS}/updates/9.0.0/jboss-devstudio-${versionWithRespin}-updatesite-core/
+rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio.product_9.0.mars/installer/jboss-devstudio-${versionWithRespin}*-updatesite-core.zip ${JBDS}/updates/9.0.0/jboss-devstudio-${versionWithRespin}-updatesite-core.zip
+y=/qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio.product_8.0.luna/installer/jboss-devstudio-${versionWithRespin}*-updatesite-core.zip
+for m in $(md5sum ${y}); do if [[ $m != ${y} ]]; then echo $m > ${y}.MD5; fi; done
+rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio.product_9.0.mars/installer/jboss-devstudio-${versionWithRespin}*-updatesite-core.zip.MD5 ${JBDS}/updates/9.0.0/jboss-devstudio-${versionWithRespin}-updatesite-core.zip.MD5
+
+# TODO: verify correct URL and filename for the target zip
+versionWithRespin=9.0.0.Alpha2 # a, b, c...
+JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
+TARGET_PLATFORM_VERSION_MAX=4.50.0.Alpha2
+unzip -q /qa/services/http/binaries/RHDS/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MAX}/jbdevstudiotarget-${TARGET_PLATFORM_VERSION_MAX}.zip -d /tmp/jboss-devstudio-${versionWithRespin}-target-platform
+rsync -aPrz --rsh=ssh --protocol=28 /tmp/jboss-devstudio-${versionWithRespin}-target-platform ${JBDS}/updates/9.0.0/
+# rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MAX}/jbdevstudiotarget-${TARGET_PLATFORM_VERSION_MAX}.zip ${JBDS}/updates/9.0.0/
+rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MAX}/jbdevstudiotarget-${TARGET_PLATFORM_VERSION_MAX}.zip ${JBDS}/updates/9.0.0/jboss-devstudio-${versionWithRespin}-target-platform.zip
+y=/qa/services/http/binaries/RHDS/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MAX}/jbdevstudiotarget-${TARGET_PLATFORM_VERSION_MAX}.zip
+for m in $(md5sum ${y}); do if [[ $m != ${y} ]]; then echo $m > ${y}.MD5; fi; done
+rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MAX}/jbdevstudiotarget-${TARGET_PLATFORM_VERSION_MAX}.zip.MD5 ${JBDS}/updates/9.0.0/jboss-devstudio-${versionWithRespin}-target-platform.zip.MD5
+
+# TODO: verify correct URL and filename for the target zip
+versionWithRespin=9.0.0.Alpha2 # a, b, c...
+JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
+CENTRAL_TARGET_VERSION=4.50.0.Alpha2-SNAPSHOT
+# Central discovery
+rm -rf /qa/services/http/binaries/RHDS/targetplatforms/jbtcentraltarget/${CENTRAL_TARGET_VERSION}
+mkdir -p /qa/services/http/binaries/RHDS/targetplatforms/jbtcentraltarget/${CENTRAL_TARGET_VERSION}/
+pushd /qa/services/http/binaries/RHDS/targetplatforms/jbtcentraltarget/${CENTRAL_TARGET_VERSION}/
+wget http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/${CENTRAL_TARGET_VERSION}/jbtcentraltarget-${CENTRAL_TARGET_VERSION}.zip
+popd
+rm -fr /tmp/jboss-devstudio-${versionWithRespin}-updatesite-central
+unzip -q /qa/services/http/binaries/RHDS/targetplatforms/jbtcentraltarget/${CENTRAL_TARGET_VERSION}/jbtcentraltarget-${CENTRAL_TARGET_VERSION}.zip -d /tmp/jboss-devstudio-${versionWithRespin}-updatesite-central
+rsync -aPrz --rsh=ssh --protocol=28 --delete /tmp/jboss-devstudio-${versionWithRespin}-updatesite-central/* ${JBDS}/updates/9.0.0/jboss-devstudio-${versionWithRespin}-updatesite-central/
+# rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/targetplatforms/jbtcentraltarget/${CENTRAL_TARGET_VERSION}/jbtcentraltarget-${CENTRAL_TARGET_VERSION}.zip ${JBDS}/updates/9.0.0/
+rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/targetplatforms/jbtcentraltarget/${CENTRAL_TARGET_VERSION}/jbtcentraltarget-${CENTRAL_TARGET_VERSION}.zip ${JBDS}/updates/9.0.0/jboss-devstudio-${versionWithRespin}-updatesite-central.zip
+y=/qa/services/http/binaries/RHDS/targetplatforms/jbtcentraltarget/${CENTRAL_TARGET_VERSION}/jbtcentraltarget-${CENTRAL_TARGET_VERSION}.zip
+for m in $(md5sum ${y}); do if [[ $m != ${y} ]]; then echo $m > ${y}.MD5; fi; done
+rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/targetplatforms/jbtcentraltarget/${CENTRAL_TARGET_VERSION}/jbtcentraltarget-${CENTRAL_TARGET_VERSION}.zip.MD5 ${JBDS}/updates/9.0.0/jboss-devstudio-${versionWithRespin}-updatesite-central.zip.MD5
+
+# TODO: verify correct URL and filename for the target zip
+versionWithRespin=9.0.0.Alpha2 # a, b, c...
+JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
+CENTRAL_TARGET_VERSION=4.50.0.Alpha2-SNAPSHOT
+# Early Access
+rm -rf /qa/services/http/binaries/RHDS/targetplatforms/jbtearlyaccesstarget/${CENTRAL_TARGET_VERSION}/
+mkdir -p /qa/services/http/binaries/RHDS/targetplatforms/jbtearlyaccesstarget/${CENTRAL_TARGET_VERSION}/
+pushd /qa/services/http/binaries/RHDS/targetplatforms/jbtearlyaccesstarget/${CENTRAL_TARGET_VERSION}/
+wget http://download.jboss.org/jbosstools/targetplatforms/jbtearlyaccesstarget/${CENTRAL_TARGET_VERSION}/jbtearlyaccesstarget-${CENTRAL_TARGET_VERSION}.zip
+popd
+rm -fr /tmp/jboss-devstudio-${versionWithRespin}-updatesite-earlyaccess
+unzip -q /qa/services/http/binaries/RHDS/targetplatforms/jbtearlyaccesstarget/${CENTRAL_TARGET_VERSION}/jbtearlyaccesstarget-${CENTRAL_TARGET_VERSION}.zip -d /tmp/jboss-devstudio-${versionWithRespin}-updatesite-earlyaccess
+rsync -aPrz --rsh=ssh --protocol=28 --delete /tmp/jboss-devstudio-${versionWithRespin}-updatesite-earlyaccess/* ${JBDS}/updates/9.0.0/jboss-devstudio-${versionWithRespin}-updatesite-earlyaccess/
+# rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/targetplatforms/jbtearlyaccesstarget/${CENTRAL_TARGET_VERSION}/jbtearlyaccesstarget-${CENTRAL_TARGET_VERSION}.zip ${JBDS}/updates/9.0.0/
+rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/targetplatforms/jbtearlyaccesstarget/${CENTRAL_TARGET_VERSION}/jbtearlyaccesstarget-${CENTRAL_TARGET_VERSION}.zip ${JBDS}/updates/9.0.0/jboss-devstudio-${versionWithRespin}-updatesite-earlyaccess.zip
+y=/qa/services/http/binaries/RHDS/targetplatforms/jbtearlyaccesstarget/${CENTRAL_TARGET_VERSION}/jbtearlyaccesstarget-${CENTRAL_TARGET_VERSION}.zip
+for m in $(md5sum ${y}); do if [[ $m != ${y} ]]; then echo $m > ${y}.MD5; fi; done
+rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/targetplatforms/jbtearlyaccesstarget/${CENTRAL_TARGET_VERSION}/jbtearlyaccesstarget-${CENTRAL_TARGET_VERSION}.zip.MD5 ${JBDS}/updates/9.0.0/jboss-devstudio-${versionWithRespin}-updatesite-earlyaccess.zip.MD5
+
+----
+
+=== Update latest target platform composite files
+
+Then, update the composite files to have public URLs pointing to these artifacts. Get a clone of repository +https://github.com/jbdevstudio/jbdevstudio-website+, then we can update the necessary composite files to reference new locations. This imply tweaks on some files of the jbdevstudio-website repository. This repo will get later published to devstudio.redhat.com. Those changes can then be performed on your local machine.
+
+NOTE: Now that Central content is merged into the same composite as JBDS and its target platform, you MAY have to edit this file by hand if the JBDS TP and JBDS Central TP versions are not the same.
+
+[source,bash]
+----
+versionWithRespin=9.0.0.Alpha2 # a, b, c...
+now=`date +%s000`
+
+oldTP=jboss-devstudio-9.0.0.Alpha0
+newTP=jboss-devstudio-${versionWithRespin}
+# Example for a respin
+# oldTP=jboss-devstudio-9.0.0.Alpha0
+# newTP=jboss-devstudio-9.0.0.Alpha0
+
+pushd jbdevstudio-website/content/updates/9.0-staging/
+for d in composite*.xml; do
+  sed -i -e "s#${oldTP}#${newTP}#g" $d
+  sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
+done
+popd
+
+pushd jbdevstudio-website/content/earlyaccess/9.0-staging/
+for d in composite*.xml; do
+  sed -i -e "s#${oldTP}#${newTP}#g" $d
+  sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
+done
+popd
+
+----
+
+=== Update composite discovery files
+
+[source,bash]
+----
+isGA=false # or true in case you're doing a GA
+previousFull=9.0.0.Alpha0 # a, b, c...
+versionWithRespin=9.0.0.Alpha2 # a, b, c...
+now=`date +%s000`
+
+#TODO: make sure you're the correct folder here!
+pushd jbdevstudio-website/content/
+for d in updates/9.0-staging/*.*ml earlyaccess/9.0-staging/*.*ml; do
+  akamaiPath='../../static/updates/'
+  regularPath='../'
+  # update composite timestamp
+  sed -i -e "s#${akamaiPath}#${regularPath}#g" -e "s#${previousFull}#${versionWithRespin}#g" -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
+done
+
+# update https://devstudio.redhat.com/updates/9.0-staging/devstudio-directory.xml to point at new Core discovery jar.
+# Latest discovery site is here: http://www.qa.jboss.com/binaries/RHDS/discovery/development/${versionWithRespin}
+pushd updates/9.0-staging/
+rm -f devstudio-directory.xml
+wget -q -nc http://www.qa.jboss.com/binaries/RHDS/discovery/development/${versionWithRespin}/devstudio-directory.xml
+newJars=$(cat devstudio-directory.xml | grep entry | sed -e "s#.\+plugins/#plugins/#g" | sed -e "s#.\+discovery/#discovery/#g" |sed -e "s#\.jar.\+#.jar#g")
+for newJar in $newJars; do 
+    if [[ ! ${newJar##*.earlyaccess_*} ]]; then
+    newJarEA=${newJar/plugins/discovery}
+    wget -q -nc -O ${newJarEA} http://www.qa.jboss.com/binaries/RHDS/discovery/development/${versionWithRespin}/${newJar} 
+    echo "EA: $newJarEA"
+  else
+    newJarCore=${newJar/plugins/discovery}
+    wget -q -nc -O ${newJarCore} http://www.qa.jboss.com/binaries/RHDS/discovery/development/${versionWithRespin}/${newJar} 
+    echo "Core: $newJarCore"
+  fi
+done
+
+# update catalog (discovery/ instead of plugins/)
+sed -i -e "s#discovery/com.jboss.jbds.central.discovery.earlyaccess_.\+\.jar#${newJarEA}#g" devstudio-directory.xml
+sed -i -e "s#discovery/com.jboss.jbds.central.discovery_.\+\.jar#${newJarCore}#g" devstudio-directory.xml
+sed -i -e "s#plugins/com.jboss.jbds.central.discovery.earlyaccess_.\+\.jar#${newJarEA}#g" devstudio-directory.xml
+sed -i -e "s#plugins/com.jboss.jbds.central.discovery_.\+\.jar#${newJarCore}#g" devstudio-directory.xml
+
+unzip -q -d ${newJarEA}{_,}
+pushd ${newJarEA}_ 
+if [ "$isGA" = true ]; then
+  sed -i "s#https://devstudio.redhat.com/earlyaccess/9.0-staging/#https://devstudio.redhat.com/updates/9.0/central/earlyaccess/#g" plugin.xml
+  sed -i "s#https://devstudio.redhat.com/earlyaccess/9.0-development/#https://devstudio.redhat.com/updates/9.0/central/earlyaccess/#g" plugin.xml
+else  # plugin points to the STAGING URL, not the RELEASE one
+  sed -i "s#https://devstudio.redhat.com/updates/9.0/central/earlyaccess/#https://devstudio.redhat.com/earlyaccess/9.0-staging/#g" plugin.xml
+  sed -i "s#https://devstudio.redhat.com/earlyaccess/9.0-development/#https://devstudio.redhat.com/earlyaccess/9.0-staging/#g" plugin.xml
+fi
+zip -u ../../${newJarEA} plugin.xml
+popd
+rm -fr ${newJarEA}_
+
+unzip -q -d ${newJarCore}{_,}
+pushd ${newJarCore}_ 
+if [ "$isGA" = true ]; then
+  sed -i "s#https://devstudio.redhat.com/updates/9.0-staging/#https://devstudio.redhat.com/updates/9.0/#g" plugin.xml
+  sed -i "s#https://devstudio.redhat.com/updates/9.0-development/#https://devstudio.redhat.com/updates/9.0/#g" plugin.xml
+else  # plugin points to the STAGING URL, not the RELEASE one
+  sed -i "s#https://devstudio.redhat.com/updates/9.0/#https://devstudio.redhat.com/updates/9.0-staging/#g" plugin.xml
+  sed -i "s#https://devstudio.redhat.com/updates/9.0-development/#https://devstudio.redhat.com/updates/9.0-staging/#g" plugin.xml
+fi
+zip -u ../../${newJarCore} plugin.xml
+popd
+rm -fr ${newJarCore}_
+
+# don't do this until you're ready to release the content -- not for QE
+# TODO: move this to the Release doc, not the Staging for QE doc
+#if [ "$isGA" = true ]; then # new plugin is also in 9.0/ and 9.0-development/ as well as 9.0-staging/
+#  cp -f jbdevstudio-website/content/updates/9.0-staging/${newJar} jbdevstudio-website/content/updates/9.0-development/${newJar}
+#  cp -f jbdevstudio-website/content/updates/9.0-staging/devstudio-directory.xml jbdevstudio-website/content/updates/9.0-development/devstudio-directory.xml
+#
+#  cp -f jbdevstudio-website/content/updates/9.0-staging/${newJar} jbdevstudio-website/content/updates/9.0/${newJar}
+#  cp -f jbdevstudio-website/content/updates/9.0-staging/devstudio-directory.xml jbdevstudio-website/content/updates/9.0/devstudio-directory.xml
+#fi
+
+# remember to include IS jar in devstudio-directory.xml
+isjar=""
+isjar=`grep integration-stack ../../updates/9.0/devstudio-directory.xml`
+isjar=`grep integration-stack ../../updates/9.0-development/devstudio-directory.xml`
+if [[ ${isjar} ]]; then 
+  # echo "Found integration-stack jar: ${isjar}"
+  isjar2=`grep integration-stack ../../updates/9.0-staging/devstudio-directory.xml`
+  if [[ ! ${isjar2} ]]; then
+    echo "ERROR: no integration stack jar listed in 9.0-staging/devstudio-directory.xml" | grep ERROR
+    echo "Please add this to 9.0-staging/devstudio-directory.xml :"
+    echo ""
+    echo "${isjar}"
+    echo ""
+    pushd ../../updates/9.0-staging/
+      cat devstudio-directory.xml | egrep "<directory|<entry" > devstudio-directory.xml.out
+      echo ${isjar} >> devstudio-directory.xml.out
+      echo "</directory>" >> devstudio-directory.xml.out
+      mv -f devstudio-directory.xml.out devstudio-directory.xml
+      cat devstudio-directory.xml | grep integration-stack
+    popd
+  else
+    echo "OK: directory.xml includes ${isjar}" | egrep "OK|integration-stack"
+  fi
+fi
+
+# check in / sync changes
+git add ${newJarEA} ${newJarCore}
+git add . discovery/*.jar
+git add ../../earlyaccess/9.0-staging/
+# TODO: make sure you're using a PR & topic branch!
+pushd ../..
+git commit -m "release ${versionWithRespin} for QE" .
+popd
+
+# add new discovery plugins ${newJarCore}, ${newJarEA}
+# update devstudio-directory.xml
+# update HTML pages" 
+
+# TODO: make sure you've merged in others' changes!
+git push origin master # in case of doubt, prefer pushing to a local repostiory and using a pull-request to ask for review
+
+JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
+rsync -aPrz --rsh=ssh --protocol=28 * ${JBDS}/updates/9.0-staging/
+pushd ../../earlyaccess/9.0-staging/
+rsync -aPrz --rsh=ssh --protocol=28 * ${JBDS}/earlyaccess/9.0-staging/
+popd
+
+popd # pop updates/9.0-staging and get back to jbdevstudio-website/content
+
+# TODO: move this to the Release doc, not the Staging for QE doc
+#if [ "$isGA" = true ]; then
+#  pushd updates/9.0/
+#  git add ${newJar}
+#  git status .
+#  git diff --color=always -w .
+#  # TODO: make sure you're using a PR & topic branch!
+#  git commit "release ${versionWithRespin} for QE: add new discovery plugins ${newJarCore}, ${newJarEA} + update devstudio-directory.xml" . discovery/*.jar
+#  # TODO: make sure you've merged in others' changes!
+#  git push origin master # in case of doubt, prefer pushing to a local repostiory and using a pull-request to ask for review
+#  popd
+#  rsync -aPrz --rsh=ssh --protocol=28 jbdevstudio-website/updates/9.0/*  devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/9.0/
+#fi
+
+popd # pop jbdevstudio-website/content and get back to jbdevstudio-website/..
+----
+
+== Update documentation
+
+In case something change, update relevant documentation in +jbdevstudio-devdoc+ repository. As this is a shared documentation, it's better to create a pull request and ask reviews from other potential users (Nick, Mickael, Max, Denis... and anyone else who can be interested). 
+
+
+== Release the latest devstudio-earlyaccess.properties
+
+NOTE: Should be automated together with publication of new discovery site, so this operation would be automatically part
+of moving/copying discovery site to staging location.
+
+Get the file __earlyaccess.properties__ from discovery job, in workspace folder __jbdevstudio/com.jboss.devstudio.discovery.earlyaccess__: 
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/job/jbosstools-discovery_4.3.mars/ws/sources/jbdevstudio/com.jboss.jbds.central.discovery.earlyaccess/devstudio-earlyaccess.properties
+and copy it do __https://devstudio.redhat.com/earlyaccess/9.0-staging/devstudio-earlyaccess.properties__.
+
+[source,bash]
+----
+pushd jbdevstudio-website/content/earlyaccess/9.0-staging
+rm -f devstudio-earlyaccess.properties
+wget --no-check-certificate https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/job/jbosstools-discovery_4.3.mars/ws/sources/jbdevstudio/com.jboss.jbds.central.discovery.earlyaccess/devstudio-earlyaccess.properties --user=nboldt --password PASSWORD
+scp devstudio-earlyaccess.properties ${JBDS}/earlyaccess/9.0-staging
+
+----
+

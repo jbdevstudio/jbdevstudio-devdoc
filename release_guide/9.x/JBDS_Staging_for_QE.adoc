@@ -10,7 +10,7 @@ TODO:
 
 == Update Discovery Sites and URLs
 
-See details in JBT_4.3.*_Staging_For_QE.adoc
+See details in JBT_Staging_For_QE.adoc
 
 == Disable jobs
 
@@ -26,10 +26,10 @@ Whenever you're starting a new shell, you should set those variables:
 
 [sources,bash]
 ----
-versionWithRespin=9.0.0.Alpha1
-TARGET_PLATFORM_VERSION_MAX=4.50.0.Alpha1
-CENTRAL_TARGET_VERSION=4.50.0.Alpha1-SNAPSHOT
-previousFull=9.0.0.Alpha0
+versionWithRespin=9.0.0.Alpha2
+TARGET_PLATFORM_VERSION_MAX=4.50.0.Alpha2
+CENTRAL_TARGET_VERSION=4.50.0.Alpha2-SNAPSHOT
+previousFull=9.0.0.Alpha1
 now=$(date +%s000)
 isGA=false
 JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
@@ -50,7 +50,7 @@ Then copy the latest JBDS artifacts:
 
 * installer
 * update site
-* discovery site
+* discovery sites
 
 WARNING: Don't use symlinks are they are too risky to use. Those operations can be done in parallel (using multiple terminals is the easiest way)
 
@@ -60,21 +60,23 @@ WARNING: Don't use symlinks are they are too risky to use. Those operations can 
 ----
 # can run 3 steps these in parallel 
 
-versionWithRespin=9.0.0.Alpha1 # a, b, c...
+# TODO: make JBDS jenkins job publish to /snapshots/, so we can copy from there to /staging/
+
+versionWithRespin=9.0.0.Alpha2 # a, b, c...
 rsync -aPrz /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_9.0.mars/installer/* /qa/services/http/binaries/RHDS/builds/development/${versionWithRespin}-build-core/
 rsync -aPrz /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_9.0.mars/logs/* /qa/services/http/binaries/RHDS/builds/development/${versionWithRespin}-build-core/
 cd /qa/services/http/binaries/RHDS/builds/development/
 find . -maxdepth 1 -type d -name "${versionWithRespin}*" | grep ${versionWithRespin}
 find . -maxdepth 1 -type d -name "${versionWithRespin}*" | sed "s#\.# >> http://www.qa.jboss.com/binaries/RHDS/builds/development#" | egrep ">>|${versionWithRespin}"
 
-versionWithRespin=9.0.0.Alpha1 # a, b, c...
+versionWithRespin=9.0.0.Alpha2 # a, b, c...
 rsync -aPrz /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_9.0.mars/all/repo/* /qa/services/http/binaries/RHDS/updates/development/${versionWithRespin}-updatesite-core/
 cd /qa/services/http/binaries/RHDS/updates/development/
 find . -maxdepth 1 -type d -name "${versionWithRespin}*" | grep ${versionWithRespin}
 find . -maxdepth 1 -type d -name "${versionWithRespin}*" | sed "s#\.# >> http://www.qa.jboss.com/binaries/RHDS/updates/development#" | egrep ">>|${versionWithRespin}"
 
 # earlyaccess site includes one directory.xml file which lists both core and earlyaccess plugins, so use that instead of core site
-versionWithRespin=9.0.0.Alpha1 # a, b, c...
+versionWithRespin=9.0.0.Alpha2 # a, b, c...
 rsync -aPrz /qa/services/http/binaries/RHDS/discovery/nightly/earlyaccess/4.3.mars/* /qa/services/http/binaries/RHDS/discovery/development/${versionWithRespin}/
 ----
 
@@ -117,7 +119,7 @@ If the target platform has not been released (still has -SNAPSHOT version suffix
 
 # can run 4 steps these in parallel 
 
-versionWithRespin=9.0.0.Alpha1 # a, b, c...
+versionWithRespin=9.0.0.Alpha2 # a, b, c...
 JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
 rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_9.0.mars/all/repo/* ${JBDS}/updates/9.0.0/jboss-devstudio-${versionWithRespin}-updatesite-core/
 rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_9.0.mars/installer/jboss-devstudio-${versionWithRespin}*-updatesite-core.zip ${JBDS}/updates/9.0.0/jboss-devstudio-${versionWithRespin}-updatesite-core.zip
@@ -126,9 +128,9 @@ for m in $(md5sum ${y}); do if [[ $m != ${y} ]]; then echo $m > ${y}.MD5; fi; do
 rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/builds/staging/devstudio.product_9.0.mars/installer/jboss-devstudio-${versionWithRespin}*-updatesite-core.zip.MD5 ${JBDS}/updates/9.0.0/jboss-devstudio-${versionWithRespin}-updatesite-core.zip.MD5
 
 # TODO: verify correct URL and filename for the target zip
-versionWithRespin=9.0.0.Alpha1 # a, b, c...
+versionWithRespin=9.0.0.Alpha2 # a, b, c...
 JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
-TARGET_PLATFORM_VERSION_MAX=4.50.0.Alpha1
+TARGET_PLATFORM_VERSION_MAX=4.50.0.Alpha2
 unzip -q /qa/services/http/binaries/RHDS/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MAX}/jbdevstudiotarget-${TARGET_PLATFORM_VERSION_MAX}.zip -d /tmp/jboss-devstudio-${versionWithRespin}-target-platform
 rsync -aPrz --rsh=ssh --protocol=28 /tmp/jboss-devstudio-${versionWithRespin}-target-platform ${JBDS}/updates/9.0.0/
 # rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MAX}/jbdevstudiotarget-${TARGET_PLATFORM_VERSION_MAX}.zip ${JBDS}/updates/9.0.0/
@@ -138,9 +140,9 @@ for m in $(md5sum ${y}); do if [[ $m != ${y} ]]; then echo $m > ${y}.MD5; fi; do
 rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/targetplatforms/jbdevstudiotarget/${TARGET_PLATFORM_VERSION_MAX}/jbdevstudiotarget-${TARGET_PLATFORM_VERSION_MAX}.zip.MD5 ${JBDS}/updates/9.0.0/jboss-devstudio-${versionWithRespin}-target-platform.zip.MD5
 
 # TODO: verify correct URL and filename for the target zip
-versionWithRespin=9.0.0.Alpha1 # a, b, c...
+versionWithRespin=9.0.0.Alpha2 # a, b, c...
 JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
-CENTRAL_TARGET_VERSION=4.50.0.Alpha1-SNAPSHOT
+CENTRAL_TARGET_VERSION=4.50.0.Alpha2-SNAPSHOT
 # Central discovery
 rm -rf /qa/services/http/binaries/RHDS/targetplatforms/jbtcentraltarget/${CENTRAL_TARGET_VERSION}
 mkdir -p /qa/services/http/binaries/RHDS/targetplatforms/jbtcentraltarget/${CENTRAL_TARGET_VERSION}/
@@ -157,9 +159,9 @@ for m in $(md5sum ${y}); do if [[ $m != ${y} ]]; then echo $m > ${y}.MD5; fi; do
 rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/targetplatforms/jbtcentraltarget/${CENTRAL_TARGET_VERSION}/jbtcentraltarget-${CENTRAL_TARGET_VERSION}.zip.MD5 ${JBDS}/updates/9.0.0/jboss-devstudio-${versionWithRespin}-updatesite-central.zip.MD5
 
 # TODO: verify correct URL and filename for the target zip
-versionWithRespin=9.0.0.Alpha1 # a, b, c...
+versionWithRespin=9.0.0.Alpha2 # a, b, c...
 JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
-CENTRAL_TARGET_VERSION=4.50.0.Alpha1-SNAPSHOT
+CENTRAL_TARGET_VERSION=4.50.0.Alpha2-SNAPSHOT
 # Early Access
 rm -rf /qa/services/http/binaries/RHDS/targetplatforms/jbtearlyaccesstarget/${CENTRAL_TARGET_VERSION}/
 mkdir -p /qa/services/http/binaries/RHDS/targetplatforms/jbtearlyaccesstarget/${CENTRAL_TARGET_VERSION}/
@@ -185,7 +187,7 @@ NOTE: Now that Central content is merged into the same composite as JBDS and its
 
 [source,bash]
 ----
-versionWithRespin=9.0.0.Alpha1 # a, b, c...
+versionWithRespin=9.0.0.Alpha2 # a, b, c...
 now=`date +%s000`
 
 oldTP=jboss-devstudio-9.0.0.Alpha0
@@ -216,7 +218,7 @@ popd
 ----
 isGA=false # or true in case you're doing a GA
 previousFull=9.0.0.Alpha0 # a, b, c...
-versionWithRespin=9.0.0.Alpha1 # a, b, c...
+versionWithRespin=9.0.0.Alpha2 # a, b, c...
 now=`date +%s000`
 
 #TODO: make sure you're the correct folder here!
@@ -382,9 +384,9 @@ echo $theversion
 
 # if value found above for $jbosstoolsversion != current release version, then you need to rebuild foundation w/ a new value inserted.
 
-jboss.discovery.directory.url|devstudio|9.0.0.Alpha1=https://devstudio.redhat.com/updates/9.0-staging/devstudio-directory.xml
-jboss.discovery.site.url|devstudio|9.0.0.Alpha1=https://devstudio.redhat.com/updates/9.0-staging/
-jboss.discovery.earlyaccess.site.url|devstudio|9.0.0.Alpha1=https://devstudio.redhat.com/earlyaccess/9.0-staging/
+jboss.discovery.directory.url|devstudio|9.0.0.Alpha2=https://devstudio.redhat.com/updates/9.0-staging/devstudio-directory.xml
+jboss.discovery.site.url|devstudio|9.0.0.Alpha2=https://devstudio.redhat.com/updates/9.0-staging/
+jboss.discovery.earlyaccess.site.url|devstudio|9.0.0.Alpha2=https://devstudio.redhat.com/earlyaccess/9.0-staging/
 ----
 
 
@@ -424,14 +426,14 @@ ____
 
 [source,bash]
 ----
-versionWithRespin=9.0.0.Alpha1 # a, b, c...
+versionWithRespin=9.0.0.Alpha2 # a, b, c...
 respin="respin-"
 TARGET_PLATFORM_VERSION_MIN=4.40.0.Final
-TARGET_PLATFORM_VERSION_MAX=4.50.0.Alpha1
-TARGET_PLATFORM_CENTRAL_MAX=4.50.0.Alpha1-SNAPSHOT
-TARGET_PLATFORM_EARLYACCESS_MAX=4.50.0.Alpha1-SNAPSHOT
-jbdsVersion=9.0.0.Alpha1 # no respin suffix here
-jbtVersion=4.3.0.Alpha1 # no respin suffix here
+TARGET_PLATFORM_VERSION_MAX=4.50.0.Alpha2
+TARGET_PLATFORM_CENTRAL_MAX=4.50.0.Alpha2-SNAPSHOT
+TARGET_PLATFORM_EARLYACCESS_MAX=4.50.0.Alpha2-SNAPSHOT
+jbdsVersion=9.0.0.Alpha2 # no respin suffix here
+jbtVersion=4.3.0.Alpha2 # no respin suffix here
 echo "
 Subject: 
 

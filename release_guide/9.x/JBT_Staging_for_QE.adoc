@@ -34,88 +34,128 @@ If any of the root poms have not been correctly updated, simply re-open the task
 
 Once the above conditions have been met, you can proceed to the next steps.
 
+== Disable jobs
+
+To prevent accidentally rebuilding something while you're copying it away, make sure that all the stable branch jobs (4.3.mars, 9.0.mars) are disabled. These include all product, composite and aggregate jobs:
+
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/job/jbosstools-composite-install_4.3.mars/
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/job/jbosstools-build-sites.aggregate.site_4.3.mars/
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/job/jbosstools-build-sites.aggregate.coretests-site_4.3.mars/
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/job/jbosstools-build-sites.aggregate.child-sites_4.3.mars/
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/job/devstudio.product_9.0.mars/
+
+You may also want to disable these:
+
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/job/jbosstools-build.parent_4.3.mars/
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/job/jbosstools-buildflow_4.3.mars/
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/job/jbosstools-centraltarget_4.3.mars/
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/job/devstudio.versionwatch_9.0.mars/
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstoolstargetplatforms-matrix/
+
+If you want to disable all jobs from the https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/[9.0.mars view], see https://github.com/jbdevstudio/jbdevstudio-ci/blob/master/bin/toggleJenkinsJobs.py[toggleJenkinsJobs.py]. See also https://github.com/jbdevstudio/jbdevstudio-ci/blob/master/bin/toggleJenkinsJobs.py.examples.txt[usage examples].
+
+Should a respin be needed, they can be re-enabled as needed.
 
 == Stage to download.jboss.org
 
-=== Promote builds from "nightly" to "staging"
+=== Copy & rename builds & update sites from "snapshots" to "staging"
 
-*Staging* is where we store builds for staging. This contains build metadata. The URL for staging sites pattern is +http://download.jboss.org/jbosstools/staging/<version>.<siteName>/<buildId>::
-. *Core* site (which contains JBoss Tools): Move the most recent build available from +http://downloads.jboss.org/jbosstools/builds/nightly/core/4.3.mars+ to +http://downloads.jboss.org/jbosstools/builds/staging/jbosstools-4.3.0.Alpha1-updatesite-core/+
-. *Core Tests* site (which contains JBoss Tools tests): Move the most recent build available from +http://downloads.jboss.org/jbosstools/builds/nightly/coretests/4.3.mars+ to +http://downloads.jboss.org/jbosstools/builds/staging/jbosstools-4.3.0.Alpha1-updatesite-coretests/+
-. *WebTools* site (which contains only WTP connectors for AS/WildFly/EAP): Move the most recent build available from +http://downloads.jboss.org/jbosstools/builds/nightly/webtools/4.3.mars+ to +http://downloads.jboss.org/jbosstools/builds/staging/jbosstools-4.3.0.Alpha1-updatesite-webtools/+ 
+@Since JBT 4.3.0.Alpha2 / JBDS 9.0.Alpha2
 
-Here is a script that does this:
-[source,bash]
-----
-stream=4.3.mars
-version=4.3.0.Alpha1 # a, b, c...
+Nightly builds are continuously built in http://download.jboss.org/jbosstools/mars/snapshots/builds/. Aggregate sites are also copied into http://download.jboss.org/jbosstools/mars/snapshots/updates/.
 
-site=core
-# Retrieve latest build and remove trailing slash
-coreBuildID=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/nightly/${site}/${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1) 
-coreBuildID=${coreBuildID%%/*}
-echo "Latest build for ${site}: ${coreBuildID}"
-# Create target directory and populate it
-echo "mkdir staging/jbosstools-${version}-build-${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
-echo "rename nightly/${site}/${stream}/${coreBuildID} staging/jbosstools-${version}-build-${site}/${coreBuildID}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
+Staging builds are the ones prepped for QE, which are then moved to /development/ if approved.
 
-site=coretests
-# Repeat operation
-coretestsBuildID=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/nightly/${site}/${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1)
-coretestsBuildID=${coretestsBuildID%%/*}
-echo "Latest build for ${site}: ${coretestsBuildID}"
-echo "mkdir staging/jbosstools-${version}-build-${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
-echo "rename nightly/${site}/${stream}/${coretestsBuildID} staging/jbosstools-${version}-build-${site}/${coretestsBuildID}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
-  
-site=webtools
-webtoolsBuildID=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/nightly/${site}/${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1)
-webtoolsBuildID=${webtoolsBuildID%%/*}
-echo "Latest build for ${site}: ${webtoolsBuildID}"
-echo "mkdir staging/jbosstools-${version}-build-${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
-echo "rename nightly/${site}/${stream}/${webtoolsBuildID} staging/jbosstools-${version}-build-${site}/${webtoolsBuildID}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds
-
-echo "Then verify sites are correctly populated with build metadata, by checking if logs/GIT_REVISION.txt exist for each one:"
-echo ""
-echo "firefox \
-http://download.jboss.org/jbosstools/builds/staging/jbosstools-${version}-build-core/${coreBuildID}/logs/GIT_REVISION.txt \
-http://download.jboss.org/jbosstools/builds/staging/jbosstools-${version}-build-coretests/${coretestsBuildID}/logs/GIT_REVISION.txt \
-http://download.jboss.org/jbosstools/builds/staging/jbosstools-${version}-build-webtools/${webtoolsBuildID}/logs/GIT_REVISION.txt" | egrep ">>|${version}"
-
-----
-
-=== Stage update sites
-
-p2 repositories are expected to be under the +http://download.jboss.org/jbosstools/updates+ directory. Similarly to the build sites, we move them there.
+First connect to dev01.mw.lab.eng.bos.redhat.com as +hudson+ user (requires permissions).
 
 [source,bash]
 ----
-stream=4.3.mars
-version=4.3.0.Alpha1 # a, b, c...
-
-site=core
-echo "rename nightly/${site}/${stream} staging/mars/jbosstools-${version}-updatesite-${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates  
-echo " >> http://download.jboss.org/jbosstools/updates/staging/mars/jbosstools-${version}-updatesite-${site}/" | egrep ">>|${version}"
-
-site=coretests
-echo "rename nightly/${site}/${stream} staging/mars/jbosstools-${version}-updatesite-${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates  
-echo " >> http://download.jboss.org/jbosstools/updates/staging/mars/jbosstools-${version}-updatesite-${site}/" | egrep ">>|${version}"
-
-site=webtools
-echo "rename nightly/${site}/${stream} staging/mars/jbosstools-${version}-updatesite-${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates
-echo " >> http://download.jboss.org/jbosstools/updates/staging/mars/jbosstools-${version}-updatesite-${site}/" | egrep ">>|${version}"
-
+me@local$ ssh dev01.mw.lab.eng.bos.redhat.com
+me@dev01$ sudo su - hudson
+hudson@dev01$ ...
 ----
 
-Then verify those 4 sites are correctly populated.
+Here is a script that performs the copy (& rename) from /snapshots/ to /staging/:
 
-=== Rebuild aggregates
+[source,bash]
+----
+for site in site; do
+  stream=4.3.mars
+  version=4.3.0.Alpha2 # a, b, c...
+  ID=""
+  ID=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
+  if [[ $ID ]]; then
+    if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
+    echo "Latest build for ${sitename} (${site}): ${ID}"
+    tmpdir=/tmp/jbosstools-build-sites.aggregate.site_${stream}__${ID}
+    rsync -aPrz --rsh=ssh --protocol=28 tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream}/${ID}/* ${tmpdir}/
+    # copy build folder
+    echo "mkdir jbosstools-${version}-build-${sitename}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/staging/builds/
+    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/staging/builds/jbosstools-${version}-build-${sitename}/${ID}/
+    # copy update site
+    echo "mkdir ${sitename}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/staging/updates/
+    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/all/repo/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/staging/updates/${sitename}/${version}/
+    rm -fr $tmpdir
+  else
+    echo "ERROR: no latest build found for ${site}" | grep ERROR
+  fi
+done
 
-Since the nightly sites for branch may be used by QA folks, those should be rebuilt to not break them. Since no component is meant to be rebuilt in the
-meantime, content of nightly sites will be the same as promoted content (except some timestamps in index.html and p2 repo metadata, but they don't matter).
+for site in coretests-site webtools-site; do
+  stream=4.3.mars
+  version=4.3.0.Alpha2 # a, b, c...
+  ID=""
+  ID=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
+  if [[ $ID ]]; then
+    if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
+    echo "Latest build for ${sitename} (${site}): ${ID}"
+    tmpdir=/tmp/jbosstools-build-sites.aggregate.site_${stream}__${ID}
+    rsync -aPrz --rsh=ssh --protocol=28 tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream}/${ID}/* ${tmpdir}/
+    # copy build folder
+    echo "mkdir jbosstools-${version}-build-${sitename}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/staging/builds/
+    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/staging/builds/jbosstools-${version}-build-${sitename}/${ID}/
+    # copy update site
+    echo "mkdir ${sitename}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/staging/updates/
+    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/all/repo/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/staging/updates/${sitename}/${version}/
+    rm -fr $tmpdir
+  else
+    echo "ERROR: no latest build found for ${site}" | grep ERROR
+  fi
+done
+
+for site in central-site earlyaccess-site; do
+  stream=4.3.mars
+  version=4.3.0.Alpha2 # a, b, c...
+  ID=""
+  ID=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
+  if [[ $ID ]]; then
+    if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
+    echo "Latest build for ${sitename} (${site}): ${ID}"
+    tmpdir=/tmp/jbosstools-build-sites.aggregate.site_${stream}__${ID}
+    rsync -aPrz --rsh=ssh --protocol=28 tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream}/${ID}/* ${tmpdir}/
+    # copy build folder
+    echo "mkdir jbosstools-${version}-build-${sitename}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/staging/builds/
+    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/staging/builds/jbosstools-${version}-build-${sitename}/${ID}/
+    # copy update site
+    echo "mkdir ${sitename}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/staging/updates/
+    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/all/repo/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/staging/updates/${sitename}/${version}/
+    rm -fr $tmpdir
+  else
+    echo "ERROR: no latest build found for ${site}" | grep ERROR
+  fi
+done
+
+#  verify sites are correctly populated:
+for site in site coretests-site webtools-site central-site earlyaccess-site; do
+  if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
+  echo "http://download.jboss.org/jbosstools/mars/staging/builds/jbosstools-${version}-build-${sitename}/ *AND* http://download.jboss.org/jbosstools/mars/staging/updates/${sitename}/${version}/"
+done
+
+----
 
 === Update composite site metadata for staged updates
 
-Update files __http://download.jboss.org/jbosstools/updates/staging/mars/composite*.xml__ , with SFTP/SCP via command-line or your 
+Update files __http://download.jboss.org/jbosstools/mars/staging/updates/composite*.xml__ , with SFTP/SCP via command-line or your 
 favourite SFTP GUI client (such as Eclipse RSE).
 
 This site needs to contain:
@@ -125,26 +165,26 @@ This site needs to contain:
 
 [source,bash]
 ----
-versionWithRespin_PREV=4.3.0.Alpha0
-TARGET_PLATFORM_VERSION_MAX_PREV=4.50.0.Alpha0
-TARGET_PLATFORM_CENTRAL_MAX_PREV=4.50.0.Alpha0-SNAPSHOT
+versionWithRespin_PREV=4.3.0.Alpha1
+TARGET_PLATFORM_VERSION_MAX_PREV=4.50.0.Alpha1
+TARGET_PLATFORM_CENTRAL_MAX_PREV=4.50.0.Alpha1-SNAPSHOT
 
-versionWithRespin=4.3.0.Alpha1
-TARGET_PLATFORM_VERSION_MAX=4.50.0.Alpha1
-TARGET_PLATFORM_CENTRAL_MAX=4.50.0.Alpha1-SNAPSHOT
+versionWithRespin=4.3.0.Alpha2
+TARGET_PLATFORM_VERSION_MAX=4.50.0.Alpha2
+TARGET_PLATFORM_CENTRAL_MAX=4.50.0.Alpha2-SNAPSHOT
 
-cd jbosstools-download.jboss.org/jbosstools/updates/staging/mars
+cd jbosstools-download.jboss.org/jbosstools/mars/staging/updates
 git fetch origin master
 git checkout FETCH_HEAD
 
-# replace static/releases with updates/staging/mars/, then replace all the versions
+# replace static/releases with mars/staging/updates, then replace all the versions
 now=`date +%s000`
 for c in compositeContent.xml compositeArtifacts.xml; do 
   sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#" $c
-  sed -i -e "s#/static/releases/#/updates/staging/mars/#" $c
-  sed -i -e "s#${versionWithRespin_PREV}#${versionWithRespin}#" $c
-  sed -i -e "s#${TARGET_PLATFORM_VERSION_MAX_PREV}#${TARGET_PLATFORM_VERSION_MAX}#" $c
+  sed -i -e "s#/static/releases/#/mars/staging/updates/#" $c
   sed -i -e "s#${TARGET_PLATFORM_CENTRAL_MAX_PREV}#${TARGET_PLATFORM_CENTRAL_MAX}#" $c
+  sed -i -e "s#${TARGET_PLATFORM_VERSION_MAX_PREV}#${TARGET_PLATFORM_VERSION_MAX}#" $c
+  sed -i -e "s#${versionWithRespin_PREV}#${versionWithRespin}#" $c
 done
 cat $c | egrep "${versionWithRespin}|${TARGET_PLATFORM_VERSION_MAX}|${TARGET_PLATFORM_CENTRAL_MAX}|timestamp"
 
@@ -154,95 +194,99 @@ git commit -m "release JBT ${versionWithRespin} to QE" composite*.xml
 git push origin HEAD:master
 
 # push updated file to server
-scp composite*.xml tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/mars/
+scp composite*.xml tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/staging/updates/
 
 ----
-
-
-== Rebuild Target Platforms for Central and Early Access
-
-WARNING: This step is very important! It can take long time to perform the TP update and make it available. While
-some jobs are running for that task, you can get a bit forward and start re-populating nighly sites in parallel.
-
-NOTE: Since these changes are actually necessary because of JBoss Developer Studio (which only contains a subseet of JBT 
-so that it needs to put additions in the Central .target), we are working on https://issues.jboss.org/browse/JBIDE-19025
-to remove needs for this step as part of JBoss Tools staging and release process.
-
-Central and Early Access target platforms contain parts of JBoss Tools which have not yet been released, so these target platforms need to be rebuilt with every push to QE.
-
-Without this step, QE will be confused why there are Beta2 bits in the CR2 Central - eg., for Arquillian or Cordovasim.
-
-* Update the .target files and pom.xml files to replace the previous URL for JBoss Tools artifact by the one you just created
-(this could be including the correct respin label -"" for a first build, "a" or "b" for subsequent respins-, or increasing the minor version). Examples
-** `http://download.jboss.org/jbosstools/static/releases/jbosstools-4.3.0.CR1-updatesite-core/` -> `http://download.jboss.org/jbosstools/static/releases/jbosstools-4.3.0.CR1a-updatesite-core/`
-** `http://download.jboss.org/jbosstools/static/releases/jbosstools-4.3.0.Alpha1-updatesite-core/` -> `http://download.jboss.org/jbosstools/static/releases/jbosstools-4.3.2.Final-updatesite-core/`
-* When this is done, update the .target files to use the newer versions of listed units. You can use the https://github.com/jbosstools/jbosstools-maven-plugins/wiki#update-versions-of-ius-in-target-file[fix-versions mojo]
-on the modified .target files to automatically get a fixed version of those .target files.
-* If target files have changes, and that version was not bumped since last staging/release, bump version of target artifacts, in
-`.target` and, more important, in `pom.xml`.
-* Then verify it works with verifyTarget.sh. 
-
-https://github.com/jbosstools/jbosstools-build-ci/blob/master/util/verifyTarget.sh
-
-For example:
-
-[source,bash]
-----
-
-/path/to/verifyTarget.sh -b /path/to/jbosstools-discovery -p \
-jbtcentral -x -u http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/4.50.0.Alpha1/,http://download.jboss.org/jbosstools/updates/nightly/core/4.3.mars/
-
-/path/to/verifyTarget.sh -b /path/to/jbosstools-discovery -p \
-jbtearlyaccess -x -u http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/4.50.0.Alpha1/,http://download.jboss.org/jbosstools/updates/nightly/core/4.3.mars/,\
-file:///path/to/jbosstools-discovery/jbtcentraltarget/multiple/target/jbtcentral-multiple.target.repo/
-
-----
-
-* Commit your changes.
-
-* Run the job https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/job/jbosstools-centraltarget_4.3.mars to pick up the new commit, and verify that updated TP sites
-(http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/4.50.0.Alpha1-SNAPSHOT/ and http://download.jboss.org/jbosstools/targetplatforms/jbtearlyaccesstarget/4.50.0.Alpha1-SNAPSHOT/ ) now
-contain newer artifacts.
 
 
 == Update Discovery URLs
 
 [[update-discovery-urls]]
-Update the *stable branch* discovery job ( https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/job/jbosstools-discovery_4.3.mars/configure ) to publish to the right URL, according to JBT and JBDS versions +
+Update the *stable branch* discovery job ( https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/job/jbosstools-discovery_4.3.mars/configure ) to use the correct source URLs and versions +
 
-* Update property +JBTCENTRALTARGET_VERSION+ to 4.50.0.Alpha1-SNAPSHOT
-* Update property +JBTEARLYACCESSTARGET_VERSION+ to 4.50.0.Alpha1-SNAPSHOT
+TARGET_PLATFORM_VERSION  = "4.50.0.Alpha2"
+TARGET_PLATFORM_VERSION_MAXIMUM  = "4.50.0.Alpha2"
 
-* Update property +JBT_UPDATE_SITE+ to http://download.jboss.org/jbosstools/updates/staging/mars/
-* Update property +JBDS_UPDATE_SITE+ to https://devstudio.redhat.com/updates/9.0-staging/
+JBTCENTRALTARGET_VERSION   = "4.50.0.Alpha2-SNAPSHOT"
+JBTEARLYACCESSTARGET_VERSION   = "4.50.0.Alpha2-SNAPSHOT"
+
+JBT_UPDATE_SITE  = "http://download.jboss.org/jbosstools/mars/staging/updates/core/4.3.0.Alpha2"
+JBT_CENTRAL_UPDATE_SITE  = "http://download.jboss.org/jbosstools/mars/staging/updates/central/4.3.0.Alpha2"
+JBT_EARLYACCESS_UPDATE_SITE  = "http://download.jboss.org/jbosstools/mars/staging/updates/earlyaccess/4.3.0.Alpha2"
+JBT_EARLYACCESS_PROPERTIES   = "http://download.jboss.org/jbosstools/mars/snapshots/updates/earlyaccess/jbosstools-earlyaccess.properties"
+
+JBDS_UPDATE_SITE   = "https://devstudio.redhat.com/9.0/staging/updates/earlyaccess/4.3.0.Alpha2"
+JBDS_EARLYACCESS_PROPERTIES  = "https://devstudio.redhat.com/9.0/snapshots/updates/earlyaccess/devstudio-earlyaccess.properties"
 
 Then respin the job and verify that sites were correctly populated:
 
-* http://download.jboss.org/jbosstools/discovery/nightly/core/4.3.mars/
-* http://www.qa.jboss.com/binaries/RHDS/discovery/nightly/core/4.3.mars/
+* http://download.jboss.org/jbosstools/mars/snapshots/builds/jbosstools-discovery.central_4.3.mars/
+* http://download.jboss.org/jbosstools/mars/snapshots/builds/jbosstools-discovery.earlyaccess_4.3.mars/
 
 
 === Stage discovery site 
 
 WARNING: Make sure you performed the step <<update-discovery-urls,Update Discovery URLs>> above.
 
-It consists of 3 steps:
+There are 2 things to do:
 
-. Moving discovery site to there staging URL
-. Update them to include reference to latest Integration-Stack, if not already defined.
+. copy & rename the discovery sites from /snapshots/ to /staging/
+. ensure any references to the latest Integration Stack jar(s) are included
 
-This script automates the 
+First connect to dev01.mw.lab.eng.bos.redhat.com as +hudson+ user (requires permissions).
+
 [source,bash]
 ----
+me@local$ ssh dev01.mw.lab.eng.bos.redhat.com
+me@dev01$ sudo su - hudson
+hudson@dev01$ ...
+----
+
+[source,bash]
+----
+
+for site in discovery.central discovery.earlyaccess; do
+  stream=4.3.mars
+  version=4.3.0.Alpha2 # a, b, c...
+  ID=""
+  ID=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/snapshots/builds/jbosstools-${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
+  if [[ $ID ]]; then
+    if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
+    echo "Latest build for ${sitename} (${site}): ${ID}"
+    tmpdir=/tmp/jbosstools-build-sites.aggregate.site_${stream}__${ID}
+    rsync -aPrz --rsh=ssh --protocol=28 tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/snapshots/builds/jbosstools-${site}_${stream}/${ID}/* ${tmpdir}/
+    # copy build folder
+    echo "mkdir jbosstools-${version}-build-${sitename}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/staging/builds/
+    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/staging/builds/jbosstools-${version}-build-${sitename}/${ID}/
+    # copy update site
+    echo "mkdir ${sitename}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/staging/updates/
+    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/all/repo/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/staging/updates/${sitename}/${version}/
+    rm -fr $tmpdir
+  else
+    echo "ERROR: no latest build found for ${site}" | grep ERROR
+  fi
+done
+
+#  verify sites are correctly populated:
+for site in discovery.central discovery.earlyaccess; do
+  if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
+  echo "http://download.jboss.org/jbosstools/mars/staging/builds/jbosstools-${version}-build-${sitename}/ *AND* http://download.jboss.org/jbosstools/mars/staging/updates/${sitename}/${version}/"
+done
+
+----
+
+[source,bash]
+----
+
 stream=4.3.mars
-version=4.3.0.Alpha1 # a, b, c...
+version=4.3.0.Alpha2 # a, b, c...
 # earlyaccess site includes one directory.xml file which lists both core and earlyaccess plugins, so use that instead of core site
 echo "rename nightly/earlyaccess/${stream} staging/${version}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery/
 echo " >> http://download.jboss.org/jbosstools/discovery/staging/${version}/" | egrep ">>|${version}"
 
 # TODO: ensure that the latest IS plugin jar is also available in the staging JBT discovery site
 # TODO: remember to include IS jar in jbosstools-directory.xml AND the plugin in the site too
-# TODO: verify this works for 4.3.0.Alpha2
+# TODO: verify this works for 4.3.0.Beta1 !
 
 isjar=""
 isjar=`curl -s http://download.jboss.org/jbosstools/updates/stable/mars/jbosstools-directory.xml | grep integration-stack`
@@ -283,73 +327,6 @@ if [[ ${isjar} ]]; then
 fi
 ----
 
-[start=3]
-. If Central target-platform version changed since previous staging version, update the `composite*.xml` file http://downaload.jboss.org/updates/staging/mars
-to reference the newer site. Edit it locally from the `jbosstools-download.jboss.org` repository, commit and push (to Git and to `download.jboss.org` with scp)
-
-Then verify the discovery sites are correctly populated: directory.xml contains right entries, with the expected `B??` qualifier and that integration-stack is in.
-
-=== Preserve a copy of the nightly sites after the move
-
-NOTE:
-This step is mandatory only because we dont have a good way to copy stuff remotely (sftp only allows rename). If we could be granted something more powerful with remote copies, we could copy stuff in previous steps instead of moving it, and this step would becomme useless.
-
-First, run it as +hudson+ user from a ci machine
-[source,bash]
-----
-local$ ssh dev01.mw.lab.eng.bos.redhat.com
-dev01$ sudo su - hudson
-dev01$ # set up command prompt and load aliases
-dev01$ . /home/hudson/config_repository/scripts/jbds/prompt.sh 
-----
-or, if you didn't run prompt.sh above, you'll need this
-[source,bash]
-----
-alias   scpr="rsync -aPrz --rsh=ssh --protocol=28"
-
-# You can run this 5 steps in parallel:
-
-version=4.3.0.Alpha2 #a, b, c...
-stream=4.3.mars
-branch=core/${stream}
-scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/luna/jbosstools-${version}-updatesite-core/* /tmp/jbosstools-${version}-updatesite-core/
-scpr /tmp/jbosstools-${version}-updatesite-core/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
-rm -fr /tmp/jbosstools-${version}-updatesite-core/
-echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
-
-version=4.3.0.Alpha2 #a, b, c...
-stream=4.3.mars
-branch=coretests/${stream}
-scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/luna/jbosstools-${version}-updatesite-coretests/* /tmp/jbosstools-${version}-updatesite-coretests/
-scpr /tmp/jbosstools-${version}-updatesite-coretests/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
-rm -fr /tmp/jbosstools-${version}-updatesite-coretests/
-echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
-
-version=4.3.0.Alpha2 #a, b, c...
-stream=4.3.mars
-branch=hibernatetools/${stream}
-scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/luna/jbosstools-${version}-updatesite-hibernatetools/* /tmp/jbosstools-${version}-updatesite-hibernatetools/
-scpr /tmp/jbosstools-${version}-updatesite-hibernatetools/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
-rm -fr /tmp/jbosstools-${version}-updatesite-hibernatetools/
-echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
-
-version=4.3.0.Alpha2 #a, b, c...
-stream=4.3.mars
-branch=webtools/${stream}
-scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/staging/luna/jbosstools-${version}-updatesite-webtools/* /tmp/jbosstools-${version}-updatesite-webtools/
-scpr /tmp/jbosstools-${version}-updatesite-webtools/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/nightly/${branch}/ --delete
-rm -fr /tmp/jbosstools-${version}-updatesite-webtools/
-echo " >> http://download.jboss.org/jbosstools/updates/nightly/${branch}/" | egrep ">>|${branch}"
-
-# now, discovery site
-version=4.3.0.Alpha2 #a, b, c...
-stream=4.3.mars
-branch=earlyaccess/${stream}
-scpr tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery/staging/${version}/* /tmp/jbosstools-${version}-updatesite-discovery/
-scpr /tmp/jbosstools-${version}-updatesite-discovery/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery/nightly/${branch}/ --delete
-rm -fr /tmp/jbosstools-${version}-updatesite-discovery/
-echo " >> http://download.jboss.org/jbosstools/discovery/nightly/${branch}/" | egrep ">>|${branch}"
-----
 
 == Release the latest QE snapshot to ide-config.properties
 
@@ -362,21 +339,23 @@ And update it it as required, so that the links for the latest milestone point t
 [source,bash]
 ----
 
-# @since JBT 4.3.1 / JBDS 9.0.1
+# @Since JBT 4.2.1 / JBDS 8.0.1
 # JBIDE-18820, JBIDE-18806 check the version set in o.j.t.foundation.core's currentversion.properties value of default.version
+version=4.3.0.Alpha2 #a, b, c...
 updatesiteURL=http://www.qa.jboss.com/binaries/RHDS/builds/staging/devstudio.product_9.0.mars/all/repo/plugins/
-updatesiteURL=http://download.jboss.org/jbosstools/updates/nightly/core/4.3.mars/plugins/
+updatesiteURL=http://download.jboss.org/jbosstools/mars/staging/updates/core/${version}/plugins/
 pushd /tmp; wget -q -nc $updatesiteURL
 thejar=`cat index.html | egrep -v "source|pack.gz" | egrep "core.central|foundation.core" | sed -e "s#.\+href=\"\([^\"]\+\)\">.\+#\1#" | sort | head -1; rm -f index.html`
 wget -q -nc ${updatesiteURL}/${thejar}
 theversion=`unzip -p ${thejar} */currentversion.properties | grep version= | sed -e "s/version=//" | tail -1`
+theversion=${theversion/-SNAPSHOT/} # remove -SNAPSHOT suffix from version
 rm -f ${thejar}
 popd
-echo $theversion
+echo "Want ${version}, got $theversion" | grep ${version}
 
 # if value found above for $jbosstoolsversion != current release version, then you need to rebuild foundation w/ a new value inserted.
 
-version=4.3.0.Alpha1 #a, b, c...
+version=4.3.0.Alpha2 #a, b, c...
 # adjust these steps to fit your own path location & git workflow
 cd jbosstools-download.jboss.org/jbosstools/configuration
 git fetch origin master
@@ -384,10 +363,11 @@ git checkout FETCH_HEAD
 vim ide-config.properties # or use another editor 
 
 # otherwise, replace existing lines with these to make the lastest milestone live
-jboss.discovery.directory.url|jbosstools|4.3.0.Alpha1=http://download.jboss.org/jbosstools/discovery/staging/${version}/jbosstools-directory.xml
-jboss.discovery.site.url|jbosstools|4.3.0.Alpha1=http://download.jboss.org/jbosstools/updates/staging/mars/
-jboss.discovery.earlyaccess.site.url|jbosstools|4.3.0.Alpha1=http://download.jboss.org/jbosstools/discovery/staging/${version}/
-jboss.discovery.earlyaccess.list.url|jbosstools|4.3.0.Alpha1=http://download.jboss.org/jbosstools/discovery/staging/${version}/jbosstools-earlyaccess.properties
+jboss.discovery.directory.url|jbosstools|4.3.0.Alpha2=http://download.jboss.org/jbosstools/mars/staging/updates/discovery.central/4.3.0.Alpha2/jbosstools-directory.xml
+jboss.discovery.site.url|jbosstools|4.3.0.Alpha2=http://download.jboss.org/jbosstools/mars/staging/updates/discovery.central/4.3.0.Alpha2/
+jboss.discovery.earlyaccess.site.url|jbosstools|4.3.0.Alpha2=http://download.jboss.org/jbosstools/mars/staging/updates/discovery.earlyaccess/4.3.0.Alpha2/
+jboss.discovery.earlyaccess.list.url|jbosstools|4.3.0.Alpha2=http://download.jboss.org/jbosstools/mars/staging/updates/discovery.earlyaccess/4.3.0.Alpha2/jbosstools-earlyaccess.properties
+jboss.discovery.site.integration-stack.url|jbosstools|4.3.0.Alpha2=
 
 # commit the change and push to master
 git add ide-config.properties
@@ -397,15 +377,6 @@ git push origin HEAD:master
 # push updated file to server
 scp ide-config.properties tools@filemgmt.jboss.org:/downloads_htdocs/tools/configuration/ide-config.properties
 ----
-
-== Disable jobs
-
-All stable branch jobs from the https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/[9.0.mars view] should be disabled.
-
-Quick way to do so is with https://github.com/jbdevstudio/jbdevstudio-ci/blob/master/bin/toggleJenkinsJobs.py[toggleJenkinsJobs.py]. 
-See https://github.com/jbdevstudio/jbdevstudio-ci/blob/master/bin/toggleJenkinsJobs.py.examples.txt[usage examples].
-
-Should a respin be needed, they can be re-enabled at that time.
 
 == Test sites
 
@@ -425,14 +396,14 @@ ____
 
 [source,bash]
 ----
-version=4.3.0.Alpha1 # a, b, c...
+version=4.3.0.Alpha2 # a, b, c...
 respin="respin-"
-TARGET_PLATFORM_VERSION_MIN=4.40.0.Final
-TARGET_PLATFORM_VERSION_MAX=4.50.0.Alpha1
-TARGET_PLATFORM_CENTRAL_MAX=4.50.0.Alpha1-SNAPSHOT
-TARGET_PLATFORM_EARLYACCESS_MAX=4.50.0.Alpha1-SNAPSHOT
-jbdsFixVersion=9.0.1.Final # no respin suffix here
-jbtFixVersion=4.3.0.Alpha1 # no respin suffix here
+#TARGET_PLATFORM_VERSION_MIN=4.50.0.Alpha2
+TARGET_PLATFORM_VERSION_MAX=4.50.0.Alpha2
+TARGET_PLATFORM_CENTRAL_MAX=4.50.0.Alpha2-SNAPSHOT
+TARGET_PLATFORM_EARLYACCESS_MAX=4.50.0.Alpha2-SNAPSHOT
+jbdsFixVersion=9.0.0.Alpha2 # no respin suffix here
+jbtFixVersion=4.3.0.Alpha2 # no respin suffix here
 echo "
 Subject: 
 
@@ -442,17 +413,10 @@ Body:
 
 As always, these are not FINAL bits, but preliminary results for QE & community testing. Not for use by customers or end users. 
 
-Update site: http://download.jboss.org/jbosstools/updates/staging/mars/
+Update site: http://download.jboss.org/jbosstools/mars/staging/updates/
 
-Target platforms: 
-* http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MIN} 
+Target platform: 
 * http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MAX} 
-
-Until the above target platform site is released, you may need to add it to Eclipse to resolve dependencies at install time. 
-Once released, dependencies will be found automatically from here:
-* http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/mars/ (latest release)
-* http://download.jboss.org/jbosstools/targetplatforms/jbtcentraltarget/${TARGET_PLATFORM_CENTRAL_MAX}/ (upcoming milestone)
-* http://download.jboss.org/jbosstools/targetplatforms/jbtearlyaccesstarget/${TARGET_PLATFORM_EARLYACCESS_MAX}/ (upcoming milestone)
 
 New + noteworthy (subject to change): 
 * https://github.com/jbosstools/jbosstools-website/tree/master/documentation/whatsnew
@@ -463,13 +427,16 @@ Schedule: https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.p
 --
 
 Additional update sites:
-* http://download.jboss.org/jbosstools/updates/staging/mars/jbosstools-${version}-updatesite-core/
-* http://download.jboss.org/jbosstools/updates/staging/mars/jbosstools-${version}-updatesite-coretests/
-* http://download.jboss.org/jbosstools/updates/staging/mars/jbosstools-${version}-updatesite-webtools/
-and build sites:
-* http://download.jboss.org/jbosstools/builds/staging/jbosstools-${version}-build-core/
-* http://download.jboss.org/jbosstools/builds/staging/jbosstools-${version}-build-coretests/
-* http://download.jboss.org/jbosstools/builds/staging/jbosstools-${version}-build-webtools/
+* http://download.jboss.org/jbosstools/mars/staging/updates/core/${version}/
+* http://download.jboss.org/jbosstools/mars/staging/updates/coretests/${version}/
+* http://download.jboss.org/jbosstools/mars/staging/updates/webtools/${version}/
+
+Discovery sites:
+* http://download.jboss.org/jbosstools/mars/staging/updates/discovery.central/${version}/
+* http://download.jboss.org/jbosstools/mars/staging/updates/discovery.earlyaccess/${version}/
+
+Build folders (for build logs & update site zips):
+* http://download.jboss.org/jbosstools/mars/staging/builds/
 
 "
 if [[ $respin != "respin-" ]]; then

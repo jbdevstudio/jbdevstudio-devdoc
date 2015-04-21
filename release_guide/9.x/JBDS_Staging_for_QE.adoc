@@ -49,7 +49,8 @@ hudson@dev01$ ...
 Then copy the latest JBDS artifacts:
 
 * installer
-* update site
+* target platforms & zips
+* update sites & zips
 * discovery sites
 
 WARNING: Don't use symlinks are they are too risky to use. Those operations can be done in parallel (using multiple terminals is the easiest way)
@@ -58,10 +59,60 @@ WARNING: Don't use symlinks are they are too risky to use. Those operations can 
 
 [source,bash]
 ----
-# can run 3 steps these in parallel 
+# can run these 5 steps in parallel
 
-stream=9.0.mars
+# copy JBDS target platform zips
 version=9.0.0.Alpha2 # a, b, c...
+TARGET_PLATFORM_VERSION_MAX=4.50.0.Alpha2
+CENTRAL_TARGET_VERSION=4.50.0.Alpha2-SNAPSHOT
+for targetname in jbdevstudio jbtcentral jbtearlyaccess; do
+  if [[ ${targetname} == "jbdevstudio" ]]; then
+    TARGET_PLATFORM_VERSION=${TARGET_PLATFORM_VERSION_MAX}
+    suffix="-target-platform"
+  else
+    TARGET_PLATFORM_VERSION=${CENTRAL_TARGET_VERSION}
+    suffix="-target-platform-${targetname:3}"
+  fi
+  y=/qa/services/http/binaries/RHDS/targetplatforms/${targetname}target/${TARGET_PLATFORM_VERSION}/${targetname}target-${TARGET_PLATFORM_VERSION}.zip
+  for m in $(md5sum ${y}); do if [[ $m != ${y} ]]; then echo $m > ${y}.MD5; fi; done
+  rsync -aPrz --rsh=ssh --protocol=28 ${y} ${JBDS}/9.0/staging/updates/core/jboss-devstudio-${version}${suffix}.zip
+  rsync -aPrz --rsh=ssh --protocol=28 ${y}.MD5 ${JBDS}/9.0/staging/updates/core/jboss-devstudio-${version}${suffix}.zip.MD5
+done
+
+
+# copy JBT Central/EA update sites & zips
+version=9.0.0.Alpha2 # a, b, c...
+stream=4.3.mars # NOT 9.0, use jbosstools stream here
+for site in central-site earlyaccess-site; do
+  ID=""
+  ID=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
+  if [[ $ID ]]; then
+    if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
+    echo "Latest build for ${sitename} (${site}): ${ID}"
+    tmpdir=/tmp/jbosstools-build-sites.aggregate.${site}_${stream}__${ID}
+    rsync -aPrz --rsh=ssh --protocol=28 tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream}/${ID}/* ${tmpdir}/
+    # copy build folder
+    echo "mkdir jbosstools-${version}-build-${sitename}" | sftp ${JBDS}/9.0/staging/builds/
+    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${JBDS}/9.0/staging/builds/devstudio-${version}-build-${sitename}/${ID}/
+    # copy update site
+    echo "mkdir ${sitename}" | sftp ${JBDS}/9.0/staging/updates/
+    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/all/repo/* ${JBDS}/9.0/staging/updates/${sitename}/${version}/
+    # copy update site zip
+    y=${tmpdir}/all/repository.zip
+    for m in $(md5sum ${y}); do if [[ $m != ${y} ]]; then echo $m > ${y}.MD5; fi; done
+    suffix=-updatesite-${sitename}
+    rsync -aPrz --rsh=ssh --protocol=28 ${y} ${JBDS}/9.0/staging/updates/core/jboss-devstudio-${version}${suffix}.zip
+    rsync -aPrz --rsh=ssh --protocol=28 ${y}.MD5 ${JBDS}/9.0/staging/updates/core/jboss-devstudio-${version}${suffix}.zip.MD5
+    rm -fr $tmpdir
+  else
+    echo "ERROR: no latest build found for ${site}" | grep ERROR
+  fi
+done
+
+
+# copy JBDS installers: snapshots/builds/ to staging/builds/
+version=9.0.0.Alpha2 # a, b, c...
+stream=9.0.mars
 ID=""
 ID=$(cd /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${stream} && ls 20* | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%:*}
 if [[ $ID ]]; then
@@ -74,19 +125,24 @@ else
 fi
 
 
-stream=9.0.mars
+# copy JBDS update: snapshots/builds/*/repo/* to staging/updates/core/${version}; also copy updatesite-core.zip
 version=9.0.0.Alpha2 # a, b, c...
+stream=9.0.mars
 ID=""
 ID=$(cd /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${stream} && ls 20* | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%:*}
 sitename="core"
 # copy update site
 echo "mkdir ${sitename}" | sftp ${JBDS}/9.0/staging/updates/
 rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${stream}/${ID}/all/repo/* ${JBDS}/9.0/staging/updates/${sitename}/${version}/
+y=/qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${stream}/${ID}/installer/jboss-devstudio-*-updatesite-core.zip
+rsync -aPrz --rsh=ssh --protocol=28 ${y} ${JBDS}/9.0/staging/updates/${sitename}/jboss-devstudio-${version}-updatesite-core.zip
+rsync -aPrz --rsh=ssh --protocol=28 ${y}.MD5 ${JBDS}/9.0/staging/updates/${sitename}/jboss-devstudio-${version}-updatesite-core.zip.MD5
 
 
+# copy JBDS discovery sites to staging/builds/ and staging/updates/
+version=9.0.0.Alpha2 # a, b, c...
+stream=4.3.mars # NOT 9.0, use jbosstools stream here
 for site in discovery.central discovery.earlyaccess; do
-  stream=4.3.mars # NOT 9.0, use jbosstools stream here
-  version=9.0.0.Alpha2 # a, b, c...
   ID=""
   ID=$(echo "ls 20*" | sftp ${JBDS}/9.0/snapshots/builds/jbosstools-${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
@@ -106,10 +162,11 @@ for site in discovery.central discovery.earlyaccess; do
   fi
 done
 #  verify sites are correctly populated:
-for site in discovery.central discovery.earlyaccess; do
+for site in central earlyaccess discovery.central discovery.earlyaccess; do
   if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
   echo "https://devstudio.redhat.com/9.0/staging/builds/devstudio-${version}-build-${sitename}/ *AND* https://devstudio.redhat.com/9.0/staging/updates/${sitename}/${version}/"
 done
+echo "https://devstudio.redhat.com/9.0/staging/builds/ *AND* https://devstudio.redhat.com/9.0/staging/updates/core/ (all the zips)"
 
 ----
 

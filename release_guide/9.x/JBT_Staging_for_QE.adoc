@@ -39,6 +39,7 @@ Once the above conditions have been met, you can proceed to the next steps.
 To prevent accidentally rebuilding something while you're copying it away, make sure that all the stable branch jobs (4.3.mars, 9.0.mars) are disabled. These include all product, composite and aggregate jobs:
 
 https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/job/jbosstools-composite-install_4.3.mars/
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/job/jbosstools-browsersim-standalone_4.3.mars/
 https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/job/jbosstools-build-sites.aggregate.site_4.3.mars/
 https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/job/jbosstools-build-sites.aggregate.coretests-site_4.3.mars/
 https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/job/jbosstools-build-sites.aggregate.child-sites_4.3.mars/
@@ -79,6 +80,8 @@ Here is a script that performs the copy (& rename) from /snapshots/ to /staging/
 
 [source,bash]
 ----
+
+# JBT aggregate site
 for site in site; do
   stream=4.3.mars
   version=4.3.0.Alpha2 # a, b, c...
@@ -101,6 +104,7 @@ for site in site; do
   fi
 done
 
+# JBT tests and webtools sites
 for site in coretests-site webtools-site; do
   stream=4.3.mars
   version=4.3.0.Alpha2 # a, b, c...
@@ -123,6 +127,7 @@ for site in coretests-site webtools-site; do
   fi
 done
 
+# Central and EA sites
 for site in central-site earlyaccess-site; do
   stream=4.3.mars
   version=4.3.0.Alpha2 # a, b, c...
@@ -145,11 +150,37 @@ for site in central-site earlyaccess-site; do
   fi
 done
 
+# Browsersim Standalone Zip, ~16M
+for site in browsersim-standalone; do
+  stream=4.3.mars
+  version=4.3.0.Alpha2 # a, b, c...
+  ID=""
+  ID=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/snapshots/builds/jbosstools-${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
+  if [[ $ID ]]; then
+    if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
+    echo "Latest build for ${sitename} (${site}): ${ID}"
+    tmpdir=/tmp/jbosstools-${site}_${stream}__${ID}
+    rsync -aPrz --rsh=ssh --protocol=28 tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/snapshots/builds/jbosstools-${site}_${stream}/${ID}/* ${tmpdir}/
+    # copy build folder
+    echo "mkdir jbosstools-${version}-build-${sitename}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/staging/builds/
+    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/staging/builds/jbosstools-${version}-build-${sitename}/${ID}/
+    rm -fr $tmpdir
+    # copy update site
+    rsync -aPrz --rsh=ssh --protocol=28 tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/snapshots/updates/${sitename}/${stream}/* ${tmpdir}/
+    echo "mkdir ${sitename}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/staging/updates/
+    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/staging/updates/${sitename}/${version}/
+    rm -fr $tmpdir
+  else
+    echo "ERROR: no latest build found for ${site}" | grep ERROR
+  fi
+done
+
 #  verify sites are correctly populated:
-for site in site coretests-site webtools-site central-site earlyaccess-site; do
+for site in site coretests-site webtools-site central-site earlyaccess-site browsersim-standalone; do
   if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
   echo "http://download.jboss.org/jbosstools/mars/staging/builds/jbosstools-${version}-build-${sitename}/ *AND* http://download.jboss.org/jbosstools/mars/staging/updates/${sitename}/${version}/"
 done
+
 
 ----
 

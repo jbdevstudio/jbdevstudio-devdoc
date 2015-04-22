@@ -165,11 +165,6 @@ for site in browsersim-standalone; do
     echo "mkdir jbosstools-${version}-build-${sitename}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/staging/builds/
     rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/staging/builds/jbosstools-${version}-build-${sitename}/${ID}/
     rm -fr $tmpdir
-    # copy update site
-    rsync -aPrz --rsh=ssh --protocol=28 tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/snapshots/updates/${sitename}/${stream}/* ${tmpdir}/
-    echo "mkdir ${sitename}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/staging/updates/
-    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/staging/updates/${sitename}/${version}/
-    rm -fr $tmpdir
   else
     echo "ERROR: no latest build found for ${site}" | grep ERROR
   fi

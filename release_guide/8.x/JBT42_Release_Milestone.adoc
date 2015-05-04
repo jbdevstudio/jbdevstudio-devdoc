@@ -196,7 +196,12 @@ If everything above completed OK, you can then in the background delete all the 
 * /downloads_htdocs/tools/builds/development/
 * /downloads_htdocs/tools/updates/staging/luna
 
-So if you're doing a 4.2.3.CR1, then you can delete 4.2.CR1a, etc. folders. A graphical sftp client such as FileZilla or FireFTP (plugin for Firefox) is the easiest way to perform these operations. Looks in the following locations:
+So if you're doing a 4.2.3.CR1, then you can delete 4.2.CR1a, etc. folders. A graphical sftp client such as FileZilla or FireFTP (plugin for Firefox) is the easiest way to perform these operations. Looks in the following locations.
+
+=== Move build folders for archiving purposes
+
+* Move .Final build folders (eg., jbosstools-4.2.0.Final-build-core) under $TOOLS/builds/staging/ into $TOOLS/builds/stable/ (if the last build was CR2b or something, rename it while moving)
+* Move old pre-Final builds under $TOOLS/builds/staging/ into $TOOLS/builds/staging.previous/ (could also just delete them?)
 
 === Update staging to point to new location
 

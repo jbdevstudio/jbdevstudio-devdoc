@@ -666,22 +666,22 @@ Access it via +https://marketplace.eclipse.org/content/jboss-tools-luna/edit+ an
 
 === Create tags for build-related repositories
 
-Tag the following repositories:
-
-* https://github.com/jbosstools/jbosstools-build
-* https://github.com/jbosstools/jbosstools-build-ci
-* https://github.com/jbosstools/jbosstools-build-sites
-* https://github.com/jbosstools/jbosstools-devdoc
-* https://github.com/jbosstools/jbosstools-discovery
-* https://github.com/jbosstools/jbosstools-download.jboss.org
-* https://github.com/jbosstools/jbosstools-maven-plugins
-
-Assuming you have the above proejcts already cloned, this script will create the tags if run from the location with your git clones:
+Once cloned to disk, this script will create the tags if run from the location with your git clones. If tags exist, no new tag will be created.
 
 [source,bash]
 ----
-# maven-plugins does not get released/branched the same as other projects
-# download.jboss.org removed because might still need to tweak ide-config.properties
+# if not already cloned, the do this:
+git clone https://github.com/jbosstools/jbosstools-build
+git clone https://github.com/jbosstools/jbosstools-build-ci
+git clone https://github.com/jbosstools/jbosstools-build-sites
+git clone https://github.com/jbosstools/jbosstools-devdoc
+git clone https://github.com/jbosstools/jbosstools-discovery
+git clone https://github.com/jbosstools/jbosstools-download.jboss.org
+git clone https://github.com/jbosstools/jbosstools-maven-plugins
+
+# maven-plugins does not get released/branched the same as other projects, but tag it anyway
+# download.jboss.org tag might not be valid as tweaks to ide-config.properties happen frequently
+
 jbt_branch=jbosstools-4.2.x
 version=4.2.3.CR1
 for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins; do 

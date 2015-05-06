@@ -312,6 +312,8 @@ rsync -Pzrlt --rsh=ssh --protocol=28 ide-config.properties $TOOLS/configuration/
 
 == Tag Git
 
+Once cloned to disk, this script will create the tags if run from the location with your git clones. If tags exist, no new tag will be created.
+
 [source,bash]
 ----
 # if not already cloned, the do this:
@@ -321,7 +323,6 @@ git clone https://github.com/jbdevstudio/jbdevstudio-website
 git clone https://github.com/jbdevstudio/jbdevstudio-artwork
 git clone https://github.com/jbdevstudio/jbdevstudio-devdoc
 
-# now tag multiple projects in a single step, replacing existing tags if already exist
 jbt_branch=jbosstools-4.2.x
 version=8.1.0.CR1
 for d in product ci website artwork devdoc; do

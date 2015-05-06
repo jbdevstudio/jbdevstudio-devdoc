@@ -720,7 +720,7 @@ Assuming you have the above proejcts already cloned, this script will create the
 # download.jboss.org removed because might still need to tweak ide-config.properties
 jbt_branch=jbosstools-4.3.0.Alpha2x
 version=4.3.0.Alpha2
-for d in build build-ci build-sites devdoc discovery; do 
+for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins; do 
   echo "====================================================================="
   echo "Tagging jbosstools-${d} from branch ${jbt_branch} as tag ${version}..."
   pushd jbosstools-${d}

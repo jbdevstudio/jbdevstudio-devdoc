@@ -1,0 +1,58 @@
+== Branching JBoss Tools
+
+[source,bash]
+----
+# if not already cloned, the do this:
+git clone https://github.com/jbosstools/jbosstools-build
+git clone https://github.com/jbosstools/jbosstools-build-ci
+git clone https://github.com/jbosstools/jbosstools-build-sites
+git clone https://github.com/jbosstools/jbosstools-devdoc
+git clone https://github.com/jbosstools/jbosstools-discovery
+git clone https://github.com/jbosstools/jbosstools-download.jboss.org
+git clone https://github.com/jbosstools/jbosstools-maven-plugins
+
+# maven-plugins does not get released/branched the same as other projects
+# download.jboss.org removed because might still need to tweak ide-config.properties
+jbt_branch=jbosstools-4.3.0.Alpha2x
+for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins; do 
+  echo "====================================================================="
+  echo "Branching jbosstools-${d} from branch ${jbt_branch}..."
+  pushd jbosstools-${d}
+  git checkout master
+  git pull origin master
+  git checkout -b ${jbt_branch}
+  git push origin ${jbt_branch}
+  echo ">>> https://github.com/jbosstools/jbosstools-${d}/tree/${jbt_branch}"
+  popd >/dev/null 
+  echo "====================================================================="
+  echo ""
+done
+----
+
+== Branching Developer Studio
+
+[source,bash]
+----
+# if not already cloned, the do this:
+git clone https://github.com/jbdevstudio/jbdevstudio-product
+git clone https://github.com/jbdevstudio/jbdevstudio-ci
+git clone https://github.com/jbdevstudio/jbdevstudio-website
+git clone https://github.com/jbdevstudio/jbdevstudio-artwork
+git clone https://github.com/jbdevstudio/jbdevstudio-devdoc
+
+# now tag multiple projects in a single step, replacing existing tags if already exist
+jbt_branch=jbosstools-4.3.0.Alpha2x
+for d in product ci website artwork devdoc; do
+  echo "====================================================================="
+  echo "Branching jbdevstudio-${d} from branch ${jbt_branch}..."
+  pushd jbdevstudio-${d}
+  git checkout master
+  git pull origin master
+  git checkout -b ${jbt_branch}
+  git push origin ${jbt_branch}
+  echo ">>> https://github.com/jbosstools/jbosstools-${d}/tree/${jbt_branch}"
+  popd >/dev/null 
+  echo "====================================================================="
+  echo ""
+done
+----

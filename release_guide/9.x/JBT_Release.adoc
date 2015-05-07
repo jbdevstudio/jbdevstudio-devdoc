@@ -182,6 +182,8 @@ for site in core; do
   rm -fr $tmpdir
 done
 
+#TODO: JBIDE-19757 as of Beta1 we should no longer require the webtools-site anymore; instead we need to create a symlink from http://download.jboss.org/jbosstools/updates/webtools/mars/ into http://download.jboss.org/jbosstools/mars/development/updates/
+
 stream=4.3.mars
 version=4.3.0.Alpha2 # a, b, c...
 # TODO stop publishing webtools this way, once upstream supports a better approach

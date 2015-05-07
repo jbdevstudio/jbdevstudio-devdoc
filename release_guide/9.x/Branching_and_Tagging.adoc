@@ -12,9 +12,10 @@ git clone https://github.com/jbosstools/jbosstools-devdoc
 git clone https://github.com/jbosstools/jbosstools-discovery
 git clone https://github.com/jbosstools/jbosstools-download.jboss.org
 git clone https://github.com/jbosstools/jbosstools-maven-plugins
+git clone https://github.com/jbosstools/jbosstools-versionwatch
 
 jbt_branch=jbosstools-4.3.0.Alpha2x
-for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins; do 
+for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins versionwatch; do 
   echo "====================================================================="
   echo "Branching jbosstools-${d} from branch ${jbt_branch}..."
   pushd jbosstools-${d}
@@ -70,13 +71,14 @@ git clone https://github.com/jbosstools/jbosstools-devdoc
 git clone https://github.com/jbosstools/jbosstools-discovery
 git clone https://github.com/jbosstools/jbosstools-download.jboss.org
 git clone https://github.com/jbosstools/jbosstools-maven-plugins
+git clone https://github.com/jbosstools/jbosstools-versionwatch
 
 # maven-plugins does not get released/branched the same as other projects, but tag it anyway
 # download.jboss.org tag might not be valid as tweaks to ide-config.properties happen frequently
 
 jbt_branch=jbosstools-4.3.0.Alpha2x
 version=4.3.0.Alpha2
-for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins; do 
+for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins versionwatch; do 
   echo "====================================================================="
   echo "Tagging jbosstools-${d} from branch ${jbt_branch} as tag ${version}..."
   pushd jbosstools-${d}

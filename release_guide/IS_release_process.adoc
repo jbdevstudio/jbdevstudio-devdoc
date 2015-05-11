@@ -16,7 +16,9 @@ Note:  Many steps require privileged access to JBoss servers, Developer Studio s
 
 == Update Process
 
-The Integration Stack project is open source (naturally) and can be found here: https://github.com/jbosstools/jbosstools-integration-stack
+The Integration Stack project is open source (naturally) and can be found here: 
+
+https://github.com/jbosstools/jbosstools-integration-stack
 
 Typical updates most frequently occur to the aggregate site composite files.  These would change if a new version of Teiid Designer needed to be included for example.
 
@@ -28,12 +30,15 @@ These files define the IS component update sites.  Note that with rare exception
 The second most frequent update occurs in the tycho mojo target platform definition files:
 
 https://github.com/jbosstools/jbosstools-integration-stack/blob/master/target-platform/integration-stack-base.target
+https://github.com/jbosstools/jbosstools-integration-stack/blob/master/target-platform/integration-stack-base-ea.target
 https://github.com/jbosstools/jbosstools-integration-stack/blob/master/target-platform/core-base.target
 https://github.com/jbosstools/jbosstools-integration-stack/blob/master/target-platform/community.target
 
 [NOTE]
 ----
-Note: The Github source branch jbosstools-4.1.x should be used for JBTIS 4.1.x (Kepler) builds.
+Note: Github source branch jbosstools-4.1.x should be used for JBTIS 4.1.x (Kepler) builds.
+      Github source branch jbosstools-4.2.x should be used for JBTIS 4.2.x (Luna) builds.
+      Github source branch master should be used for JBTIS 4.3.x (Mars) builds.
 ----
 
 == Build/ Publish Process
@@ -67,67 +72,68 @@ The JBoss Tools Integration Stack Target Platform project creates four target fi
 
 [source,bash]
 ----
-	1. released integration-stack specific target dependencies:   integration-stack-base.target
-	2. the JBoss Tools core target dependencies:                + core-base.target
-	3. the JBoss Tools unified core target dependencies:        + jbosstools-multiple.target
-                                                                      -----------------------------
-	   to generate an aggregate base target dependencies file:    aggregate-base.target
+   1. released integration-stack specific target dependencies:   integration-stack-base.target
+   2. the JBoss Tools core target dependencies:                + core-base.target
+   3. the JBoss Tools unified core target dependencies:        + jbosstools-multiple.target
+                                                                 -----------------------------
+      to generate an aggregate base target dependencies file:    aggregate-base.target
 ----
-e.g.  http://download.jboss.org/jbosstools/builds/staging/JBTIS-target-platform/4.2.1.Final/aggregate-base.target
+e.g.  http://download.jboss.org/jbosstools/builds/staging/JBTIS-target-platform/4.2.3.Final/aggregate-base.target
 
 * An aggregate of the JBoss Tools Core target dependencies and JBoss Tools multiple dependencies + early access Integration Stack base target dependencies (base-ea).
 
 [source,bash]
 ----
-	1. released integration-stack specific target dependencies:   integration-stack-base-ea.target
-	2. the JBoss Tools core target dependencies:                + core-base.target
-	3. the JBoss Tools unified core target dependencies:        + jbosstools-multiple.target
-                                                                      --------------------------------
-           to generate an aggregate base target dependencies file:    aggregate-base-ea.target
+   1. released integration-stack specific target dependencies:   integration-stack-base-ea.target
+   2. the JBoss Tools core target dependencies:                + core-base.target
+   3. the JBoss Tools unified core target dependencies:        + jbosstools-multiple.target
+                                                                 --------------------------------
+      to generate an aggregate base target dependencies file:    aggregate-base-ea.target
 ----
-e.g.  http://download.jboss.org/jbosstools/builds/staging/JBTIS-target-platform/4.2.1.Final/aggregate-base-ea.target
+e.g.  http://download.jboss.org/jbosstools/builds/staging/JBTIS-target-platform/4.2.3.Final/aggregate-base-ea.target
 
 * An aggregate of the JBoss Tools Core target dependencies + Integration Stack base target dependencies + any other community dependencies (full).
 
 [source,bash]
 ----
-	1. the previously generated aggregate base EA target file:    aggregate-base.target
-	2. the community-specific target dependencies:              + community.target
-                                                                      ---------------------
-           to generate the full community target dependencies file:   aggregate-full.target
+   1. the previously generated aggregate base EA target file:    aggregate-base.target
+   2. the community-specific target dependencies:              + community.target
+                                                                 ---------------------
+      to generate the full community target dependencies file:   aggregate-full.target
 ----
-e.g.  http://download.jboss.org/jbosstools/builds/staging/JBTIS-target-platform/4.2.1.Final/aggregate-full.target
+e.g.  http://download.jboss.org/jbosstools/builds/staging/JBTIS-target-platform/4.2.3.Final/aggregate-full.target
 
 * An aggregate of the JBoss Tools Core target dependencies + early access Integration Stack base target dependencies + any other community dependencies (full-ea).
 
 [source,bash]
 ----
-	1. the previously generated aggregate base EA target file:    aggregate-base-ea.target
-	2. the community-specific target dependencies:              + community.target
-                                                                      ------------------------
-           to generate the full community target dependencies file:   aggregate-full-ea.target
+   1. the previously generated aggregate base EA target file:    aggregate-base-ea.target
+   2. the community-specific target dependencies:              + community.target
+                                                                 ------------------------
+      to generate the full community target dependencies file:   aggregate-full-ea.target
 ----
-e.g.  http://download.jboss.org/jbosstools/builds/staging/JBTIS-target-platform/4.2.1.Final/aggregate-full-ea.target
+e.g.  http://download.jboss.org/jbosstools/builds/staging/JBTIS-target-platform/4.2.3.Final/aggregate-full-ea.target
 
 The JBoss Tools Integration Stack Target Platform project also creates four repositories:
 
-e.g.  http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.2.1.Final/jbtis/REPO/
+* http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.2.3.Final/jbtis/REPO/
 
-e.g.  http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.2.1.Final/jbtis/earlyaccess/REPO/
+* http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.2.3.Final/jbtis/earlyaccess/REPO/
 
-e.g.  http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.2.1.Final/jbdsis/REPO/
+* http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.2.3.Final/jbdsis/REPO/
 
-e.g.  http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.2.1.Final/jbdsis/earlyaccess/REPO/
+* http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.2.3.Final/jbdsis/earlyaccess/REPO/
 
 The jbdsis repositories are built separately so as to avoid pulling in any community bits.
 
 The integration-stack tycho target dependency (.target) files are deployed to the JBoss nexus releases repository for use by the integration stack component projects.  If you are an integration stack component developer or potentially a QE test developer, your maven POM target-platform-configuration should reference one of these as your target-platform artifact.
 
-e.g.  https://repository.jboss.org/nexus/content/repositories/releases/org/jboss/tools/integration-stack/target-platform/4.2.1.Final/
+* https://repository.jboss.org/nexus/content/repositories/releases/org/jboss/tools/integration-stack/target-platform/4.2.3.Final/
 
 Target artifacts local to the IS:
 
 * integration-stack-base.target - integration stack component required dependencies
+* integration-stack-base-ea.target - integration stack early access component required dependencies
 * core.base.target - JBoss tools core required dependencies
 * community.target - dependencies specific to the community (not required for JBDS)
 
@@ -137,7 +143,7 @@ Target artifacts drawn from org.jboss.tools.targetplatforms:
 
 If an IS component causes a new target dependency, this JBTIS TP build procedure must be executed.  The result is a new JBTIS TP in nexus.  That must then be used by the requesting component POM which will produce a new component update site.  That update site must then be referenced by the JBTIS Aggregate/Discovery procedure.  For example, if Teiid has a new target platform dependency it would be necessary to first build JBTIS TP, then rebuild Teiid, then build JBTIS - modifying the aggregate composites to reference the new Teiid update site.
 
-The following process should be followed for updating the JBTIS target platform:
+The following JBoss Tools target platform update process should be followed for updating the JBTIS target platform:
 
 link:https://github.com/jbosstools/jbosstools-devdoc/blob/master/building/target_platforms/target_platforms_updates.adoc[JBoss target platform updates]
 
@@ -150,15 +156,23 @@ As an example, the JBDS core target dependencies need to be updated from 4.2.0.B
 [source,bash]
 ----
 # Clone the jbosstools-integration-stack locally.  
-# Modify jbosstools-integration-stack/target-platform/core-base.target  
+# Modify repository URLs in jbosstools-integration-stack/target-platform/*.target  
 # Clone or otherwise retrieve the verifyTarget.sh bash script from  
 https://github.com/jbosstools/jbosstools-build-ci/blob/master/util/verifyTarget.sh  
-  
-./verifyTarget.sh -x -b ~/git-clone/jbosstools-integration-stack/target-platform -p target-platform  
-     -z ~/install/eclipse-jee-luna-M7-linux-gtk-x86_64.tar.gz
 
-# p2 diff the generated Integration Stack target platform - i.e.:
-p2diff file:///home/pleacu/git-clone/jbosstools-integration-stack.orig/target-platform/target/target-platform.target.repo file:///home/pleacu/git-clone/jbosstools-integration-stack/target-platform/target/target-platform.target.repo
+# Update component versions based on new repository URLs.
+cd ~/bin
+./verifyTarget.sh -x -b ~/git-clone/jbosstools-integration-stack/target-platform -p target-platform -z ~/install/eclipse-jee-luna-SR2-linux-gtk-x86_64.tar.gz
+
+# p2 diff the generated Integration Stack released target platform - i.e.:
+p2diff \
+ file:///home/pleacu/git-clone/jbosstools-integration-stack.orig/target-platform/target/target-platform.target.repo \
+ file:///home/pleacu/git-clone/jbosstools-integration-stack/target-platform/target/target-platform.target.repo
+
+# p2 diff the generated Integration Stack early access target platform - i.e.:
+p2diff \
+ file:///home/pleacu/git-clone/jbosstools-integration-stack.orig/target-platform/target/target-platform-ea.target.repo \
+ file:///home/pleacu/git-clone/jbosstools-integration-stack/target-platform/target/target-platform-ea.target.repo
 ----
 
 Git diff the core-base.target file.  Commit and issue a PR.
@@ -198,9 +212,9 @@ Note:  A non-API-change dependant update (micro-release update) may be done with
 
 ==== Jenkins JBTIS Target Platform Build:
 
-As an example, lets build JBTIS target platform 4.1.8.Final for Kepler using the 4.1.x specific Jenkins job:
+As an example, lets build JBTIS target platform 4.2.3.Final for Luna using the specific Jenkins job:
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBTIS-target-platform-4.1.x/
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBTIS-target-platform-4.2.x/
 
 * Tag a label onto the GIT target platform sources associated with any target platform build committed to nexus.
 * Label the Jenkins build and set 'keep forever".
@@ -209,16 +223,16 @@ The staging checkbox simply controls whether the generated artifacts are publish
 
 ==== Publish the Community IS Target Platform Components
 
-Given a successful build from the previous step, make the JBTIS TP public.  This example uses a 4.2.1.Final-based target platform for Luna.
+Given a successful build from the previous step, make the JBTIS TP public.  This example uses a 4.2.3.Final-based target platform for Luna.
 
 [source,bash]
 ----
 # Copy the TP locally from staging  
 cd ~/temp; mkdir -p tp; cd tp  
-scp -r tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/staging/JBTIS-target-platform/4.2.1.Final .  
+scp -r tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/staging/JBTIS-target-platform/4.2.3.Final .  
  
 # Now copy the TP files onto jbosstools   
-scp -r 4.2.1.Final tools@filemgmt.jboss.org:/downloads_htdocs/tools/targetplatforms/jbtistarget/ 
+scp -r 4.2.3.Final tools@filemgmt.jboss.org:/downloads_htdocs/tools/targetplatforms/jbtistarget/ 
 ----
 
 Update the jbosstools target platform composites.
@@ -241,7 +255,6 @@ Once the PR has been issued and merged to https://github.com/jbosstools/jbosstoo
 [source,bash]
 ----
 # Push committed changes to the JBoss tools server.
-cd /home/pleacu/git-clone/PR/jbosstools-download.jboss.org/jbosstools/targetplatforms/jbtistarget/luna  
 sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/targetplatforms/jbtistarget/luna  
 put compositeArtifacts.xml  
 put compositeContent.xml  
@@ -250,11 +263,11 @@ bye
 
 Verify:
 ----
-http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.2.1.Final/
-http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.2.1.Final/jbtis/REPO
-http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.2.1.Final/jbtis/earlyaccess/REPO
-http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.2.1.Final/jbdsis/REPO
-http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.2.1.Final/jbdsis/earlyaccess/REPO
+http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.2.3.Final/
+http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.2.3.Final/jbtis/REPO
+http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.2.3.Final/jbtis/earlyaccess/REPO
+http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.2.3.Final/jbdsis/REPO
+http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.2.3.Final/jbdsis/earlyaccess/REPO
 http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/luna/
 ----
 
@@ -269,9 +282,11 @@ The JBTIS target platform is now built and published but we're still not done.  
 # First build and deploy to staging  
 git clone -o origin https://github.com/jbosstools/jbosstools-integration-stack.git ./jbosstools-integration-stack  
 cd ./jbosstools-integration-stack/target-platform  
+
+# Set the correct production branch (if necessary)
+git checkout jbosstools-4.2.x
 ----
 
-* Edit pom.xml - change n.n.n-SNAPSHOT to n.n.n.Final (or Alphax, Betax - just not SNAPSHOT).
 * Clear out your local maven repository and build/ deploy enabling the jboss-release profile:
 
 [source,bash]
@@ -293,14 +308,13 @@ Look for 'jboss_releases_staging_profile-nnnn' - the Maven deploy from the previ
 * Once the close has completed - click 'Refresh'
 * Select the 'Release' button
 
-Verify - https://repository.jboss.org/nexus/content/repositories/releases/org/jboss/tools/integration-stack/target-platform/4.2.1.Final/
+Verify - https://repository.jboss.org/nexus/content/repositories/releases/org/jboss/tools/integration-stack/target-platform/4.2.3.Final/
 
 [NOTE]
 ----
 Note:  A simple listing of the above URL will not cause the deployed directory to become visible.  An artifact must be requested by name to update the cache.  To be sure - check the origin URL to see that the nexus deployment completed successfully.  e.g.
-
-http://origin-repository.jboss.org/nexus/content/repositories/releases/org/jboss/tools/integration-stack/target-platform/ 
 ----
+http://origin-repository.jboss.org/nexus/content/repositories/releases/org/jboss/tools/integration-stack/target-platform/ 
 
 Send out a notification to jbds-is-pm and QE indicating that a new JBTIS target platform is available.  e.g.
 
@@ -328,6 +342,51 @@ Send out a notification to jbds-is-pm and QE indicating that a new JBTIS target 
 ----
 
 *This completes the JBTIS Target Platform build/ release process.*
+
+=== SAP Tooling Build/ Release Process
+This section describes the process of building and releasing the SAP tooling p2 update site for both community and devstudio.
+
+Git ref: https://github.com/jbosstools/jbosstools-fuse-extras/tree/master/jboss-fuse-sap-tool-suite
+
+==== Jenkins SAP Build
+
+As an example, lets build SAP 7.3.0.Beta2 for Luna using the Jenkins job:
+
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-fuse-sap-tooling-7.3.x/
+
+The build parameters are self-explanatory.  Use care in deciding which Fuse tooling URL to use as there are class dependencies.
+
+i.e.
+fuse-tooling-url: http://download.jboss.org/jbosstools/updates/development/luna/integration-stack/fuse-tooling/7.3.0.Beta5/all/repo/
+
+Upon successful completion, this build will invoke the SAP tooling publish Jenkins job:
+
+Git ref: https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-fuse-sap-tooling-publish-7.3.x/
+
+For a development build, our example yields the following:
+
+http://download.jboss.org/jbosstools/updates/development/luna/integration-stack/jboss-fuse-sap-tool-suite/7.3.0.Beta2/all/
+
+This effectively publishes the community SAP tooling bits.  The production devstudio bits require that the tooling update site is rsync'd to the devstudio.redhat.com server.
+
+==== Publish the Community SAP Update Site
+
+[source,bash]
+----
+mkdir -p ~/temp/release;  cd ~/temp/release  
+  
+rsync -arzq --protocol=28 tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/development/luna/integration-stack/jboss-fuse-sap-tool-suite/compositeArtifacts.xml .
+rsync -arzq --protocol=28 tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/development/luna/integration-stack/jboss-fuse-sap-tool-suite/compositeContent.xml .
+rsync -arzq --protocol=28 tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/development/luna/integration-stack/jboss-fuse-sap-tool-suite/7.3.0.Beta2a .
+
+rsync -arzq --protocol=28 compositeArtifacts.xml devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0/integration-stack/jboss-fuse-sap-tool-suite/
+rsync -arzq --protocol=28 compositeContent.xml devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0/integration-stack/jboss-fuse-sap-tool-suite/
+rsync -arzq --protocol=28 7.3.0.Beta2a devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0/integration-stack/jboss-fuse-sap-tool-suite/
+----
+Verify
+
+http://download.jboss.org/jbosstools/updates/development/luna/integration-stack/jboss-fuse-sap-tool-suite/7.3.0.Beta2a/
+https://devstudio.redhat.com/updates/8.0/integration-stack/jboss-fuse-sap-tool-suite/7.3.0.Beta2a/
 
 === JBTIS Aggregate/ Discovery Build/ Release Process
 This section describes the process of building and releasing the JBTIS aggregate p2 update site and the JBoss Central update site.  The project architecture is as follows:
@@ -361,7 +420,7 @@ Git ref: https://github.com/jbosstools/jbosstools-integration-stack/tree/master/
 
 ==== Jenkins JBTIS Aggregate Discovery Build
 
-As an example, lets build JBTIS 4.2.0.CR2 for Luna using the Jenkins job:
+As an example, lets build JBTIS 4.3.0.Alpha2 for Mars using the Jenkins job:
 
 https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBTIS-aggregate-disc/
 
@@ -369,7 +428,7 @@ The build type is selectable.  Use "integration" for builds that are better than
 
 Upon successful completion, this build will invoke the early access aggregate build:
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBTIS-aggregate-disc-luna-ea
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBTIS-aggregate-disc-mars-ea
 
 Fun Facts:
 
@@ -387,6 +446,7 @@ There exists a separate Jenkins job to move the build artifacts out of the JBoss
 
 https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBTIS-aggregate-publish/
 https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBTIS-aggregate-publish-4.1.x/
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBTIS-aggregate-publish-4.2.x/
 
 Match the build type to the aggregate build type from the previous section and match the target folder to the aggregate build version string.  Upon successful completion, the JBTIS-aggregate-publish project will invoke the early access aggregate publish job:
 
@@ -399,36 +459,36 @@ Verify - note that the offline zip version is also created:
 http://download.jboss.org/jbosstools/updates/development/kepler/integration-stack/aggregate/4.1.5.CR1/
 http://download.jboss.org/jbosstools/updates/development/kepler/integration-stack/aggregate/jbosstools-integration-stack-aggregate-4.1.5.CR1.zip
 
-http://download.jboss.org/jbosstools/updates/development/luna/integration-stack/aggregate/4.2.0.CR2/
-http://download.jboss.org/jbosstools/updates/development/luna/integration-stack/aggregate/4.2.0.CR2/earlyaccess/
-http://download.jboss.org/jbosstools/updates/development/luna/integration-stack/aggregate/jbosstools-integration-stack-aggregate-4.2.0.CR2.zip
-http://download.jboss.org/jbosstools/updates/development/luna/integration-stack/aggregate/jbosstools-integration-stack-aggregate-4.2.0.CR2-earlyaccess.zip
+http://download.jboss.org/jbosstools/updates/development/mars/integration-stack/aggregate/4.3.0.Alpha2/
+http://download.jboss.org/jbosstools/updates/development/mars/integration-stack/aggregate/4.3.0.Alpha2/earlyaccess/
+http://download.jboss.org/jbosstools/updates/development/mars/integration-stack/aggregate/jbosstools-integration-stack-aggregate-4.3.0.Alpha2.zip
+http://download.jboss.org/jbosstools/updates/development/mars/integration-stack/aggregate/jbosstools-integration-stack-aggregate-4.3.0.Alpha2-earlyaccess.zip
 ----
 
 ==== Publish and Push the JBTIS Aggregate p2 Update Site
 
-In this example we'll use the development 4.2.0.CR2 build.  Clone jbosstools-download.jboss.org and update the composites in both the integration-stack directory and integration-stack/aggregate to reflect the new version and then update the timestamps.  Remember to update both the released composites as well as the early access composites.
+In this example we'll use the development 4.3.0.Alpha2 build.  Clone jbosstools-download.jboss.org and update the composites in both the integration-stack directory and integration-stack/aggregate to reflect the new version and then update the timestamps.  Remember to update both the released composites as well as the early access composites.
 
 [source,bash]
 ----
 # Clone https://github.com/jbosstools/jbosstools-download.jboss.org  
 # Edit composite*.xml - update version and also change timestamp.  
-cd /home/pleacu/git-clone/jbosstools-download.jboss.org/jbosstools/updates/development/luna/integration-stack/  
+cd /home/pleacu/git-clone/jbosstools-download.jboss.org/jbosstools/updates/development/mars/integration-stack/  
 vi compositeArtifacts.xml (compositeContent.xml)
 <esc> :call ReplaceTimestamp()  
 <esc> :wq!  
       
-cd /home/pleacu/git-clone/jbosstools-download.jboss.org/jbosstools/updates/development/luna/integration-stack/aggregate  
+cd /home/pleacu/git-clone/jbosstools-download.jboss.org/jbosstools/updates/development/mars/integration-stack/aggregate  
 vi compositeArtifacts.xml  (compositeContent.xml) 
 <esc> :call ReplaceTimestamp()  
 <esc> :wq!  
 
-cd /home/pleacu/git-clone/jbosstools-download.jboss.org/jbosstools/updates/development/luna/integration-stack/earlyaccess
+cd /home/pleacu/git-clone/jbosstools-download.jboss.org/jbosstools/updates/development/mars/integration-stack/earlyaccess
 vi compositeArtifacts.xml  (compositeContent.xml) 
 <esc> :call ReplaceTimestamp()  
 <esc> :wq!  
       
-cd /home/pleacu/git-clone/jbosstools-download.jboss.org/jbosstools/updates/development/luna/integration-stack/earlyaccess
+cd /home/pleacu/git-clone/jbosstools-download.jboss.org/jbosstools/updates/development/mars/integration-stack/earlyaccess
 vi compositeArtifacts.xml  (compositeContent.xml)
 <esc> :call ReplaceTimestamp()  
 <esc> :wq!  
@@ -439,18 +499,18 @@ Commit and issue a PR.  Once the PR is merged, push the changes to the JBoss too
 [source,bash]
 ----
 # Push the development changes to the server  
-cd /home/pleacu/git-clone/jbosstools-download.jboss.org/jbosstools/updates/development/luna/integration-stack/  
+cd /home/pleacu/git-clone/jbosstools-download.jboss.org/jbosstools/updates/development/mars/integration-stack/  
 sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/development/luna/integration-stack/  
 put compositeArtifacts.xml  
 put compositeContent.xml  
 bye  
   
-cd /home/pleacu/git-clone/jbosstools-download.jboss.org/jbosstools/updates/development/luna/integration-stack/aggregate  
+cd /home/pleacu/git-clone/jbosstools-download.jboss.org/jbosstools/updates/development/mars/integration-stack/aggregate  
 sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/development/luna/integration-stack/aggregate  
 put compositeArtifacts.xml  
 put compositeContent.xml  
 
-cd /home/pleacu/git-clone/jbosstools-download.jboss.org/jbosstools/updates/development/luna/integration-stack/earlyaccess
+cd /home/pleacu/git-clone/jbosstools-download.jboss.org/jbosstools/updates/development/mars/integration-stack/earlyaccess
 sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/development/luna/integration-stack/earlyaccess
 put compositeArtifacts.xml  
 put compositeContent.xml  
@@ -471,19 +531,22 @@ scp -r 4.1.6.Final  tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/dev
 
 - or -
 
-scp -r tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/stable/luna/integration-stack/aggregate/4.2.0.CR2 .  
-scp -r 4.2.0.CR2  tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/development/luna/integration-stack/aggregate/  
+scp -r tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/stable/luna/integration-stack/aggregate/4.2.2.Final .  
+scp -r 4.2.2.Final  tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/development/luna/integration-stack/aggregate/  
 
+- or -
+
+scp -r tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/stable/mars/integration-stack/aggregate/4.3.0.Alpha2 .  
+scp -r 4.3.0.Alpha2  tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/development/mars/integration-stack/aggregate/  
 ----
 
 Verify (development):
 
 http://download.jboss.org/jbosstools/updates/development/kepler/integration-stack/
-http://download.jboss.org/jbosstools/updates/development/kepler/integration-stack/aggregate
 
 http://download.jboss.org/jbosstools/updates/development/luna/integration-stack/
-http://download.jboss.org/jbosstools/updates/development/luna/integration-stack/aggregate
 
+http://download.jboss.org/jbosstools/updates/development/mars/integration-stack/
 
 Verify (stable):
 
@@ -498,21 +561,23 @@ The JBoss Central discovery jar is actually committed to the discovery download 
 [source,bash]
 ----
 mkdir -p ~/temp/disc-jbtis;  cd ~/temp/disc-jbtis
-wget http://download.jboss.org/jbosstools/discovery/development/integration-stack/4.2.0.CR2/org.jboss.tools.central.discovery.integration-stack_4.2.0.CR2-v20150204-1353-B322.jar
+wget http://download.jboss.org/jbosstools/discovery/development/integration-stack/4.2.2.CR1/org.jboss.tools.central.discovery.integration-stack_4.2.2.CR1-v20150326-2110-B348.jar
+wget http://download.jboss.org/jbosstools/discovery/development/integration-stack/4.2.2.CR1/org.jboss.tools.central.discovery.integration-stack.earlyaccess_4.2.2.CR1-v20150326-2110-B348.jar
  
 # clone jbosstools-download.jboss.org 
 
 cd /home/pleacu/git-clone/jbosstools-download.jboss.org/jbosstools/updates/development/luna/plugins  
-cp ~/temp/disc-jbtis/org.jboss.tools.central.discovery.integration-stack_4.2.0.CR2-v20150204-1353-B322.jar .
-
-# mv the jar to earlyaccess if necessary
-# mv org.jboss.tools.central.discovery.integration-stack_4.2.0.CR2-v20150204-1353-B322.jar org.jboss.tools.central.discovery.integration-stack.earlyaccess_4.2.0.CR2-v20150204-1353-B322.jar
+cp ~/temp/disc-jbtis/org.jboss.tools.central.discovery.integration-stack_4.2.2.CR1-v20150326-2110-B348.jar .
+cp ~/temp/disc-jbtis/org.jboss.tools.central.discovery.integration-stack.earlyaccess_4.2.2.CR1-v20150326-2110-B348.jar .
 
 cd .. 
-# edit jbosstools-directory.xml: update org.jboss.tools.central.discovery.integration-stack_4.2.0.CR2-v20150204-1353-B322.jar
-# edit jbosstools-earlyaccess.properties: add any IUs that are early access
-----
+# edit jbosstools-directory.xml: 
+# update org.jboss.tools.central.discovery.integration-stack_4.2.2.CR1-v20150326-2110-B348.jar 
+# update org.jboss.tools.central.discovery.integration-stack.earlyaccess_4.2.2.CR1-v20150326-2110-B348.jar
 
+# edit jbosstools-earlyaccess.properties: 
+# add/ update any IUs that are early access
+----
 [NOTE]
 ----
 Note: If committing a stable discovery jar/ directory XML - repeat the steps into the development directory (e.g.):
@@ -521,7 +586,6 @@ Note: If committing a stable discovery jar/ directory XML - repeat the steps int
 
 Commit and issue a PR to http://download.jboss.org/jbosstools.  Once the PR has been merged, manually push the updated jar and jbosstools-directory.xml onto the JBoss server.
 ----
-
 [source,bash]
 ----
 cd /home/pleacu/git-clone/jbosstools-download.jboss.org/jbosstools/updates/development/luna
@@ -532,10 +596,10 @@ bye
 
 cd /home/pleacu/git-clone/jbosstools-download.jboss.org/jbosstools/updates/development/luna/plugins  
 sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/development/luna/plugins  
-put org.jboss.tools.central.discovery.integration-stack_4.2.0.Beta2-v20140918-1259-B281.jar
+put org.jboss.tools.central.discovery.integration-stack_4.2.2.CR1-v20150326-2110-B348.jar
+put org.jboss.tools.central.discovery.integration-stack.earlyaccess_4.2.2.CR1-v20150326-2110-B348.jar
 bye 
 ----
-
 Verify:
 
 http://download.jboss.org/jbosstools/updates/development/luna/jbosstools-directory.xml
@@ -598,8 +662,8 @@ Add...
    -Djboss.discovery.site.url=p://download.jboss.org/jbosstools/discovery/development/integration-stack/4.1.5.CR1  
 
 # Using Eclipse Luna, install 'JBoss Tools 4.2.0.Final' from Marketplace:  
-./eclipse -vmargs -Djboss.discovery.directory.url=http://download.jboss.org/jbosstools/discovery/development/integration-stack/4.2.0.CR2/jbosstools-integration-stack-directory.xml
-   -Djboss.discovery.site.integration-stack.url=http://download.jboss.org/jbosstools/discovery/development/integration-stack/4.2.0.CR2
+./eclipse -vmargs -Djboss.discovery.directory.url=http://download.jboss.org/jbosstools/discovery/development/integration-stack/4.3.0.Alpha2/jbosstools-integration-stack-directory.xml
+   -Djboss.discovery.site.integration-stack.url=http://download.jboss.org/jbosstools/discovery/development/integration-stack/4.3.0.Alpha2
 ----
 
 ==== Generate Release Notes
@@ -656,8 +720,10 @@ Update JBoss Tools blog:
 [source,bash]
 ----
 # Clone jbosstools-website  
-cd /home/pleacu/git-clone/jbosstools-website/blog  
-cp 2014-10-09-JBTIS-4.1.6.Final.adoc 2014-??-??-JBTIS-4.?.?.Final.adoc 
+cd /home/pleacu/git-clone/jbosstools-website/blog 
+
+# Use an older one as a template - note only one dot in file name 
+cp 2015-03-11-JBTIS-420-Final.adoc 2015-03-18-JBTIS-421-Final.adoc
 ----
 
 Test JBoss Tools web site:
@@ -677,10 +743,15 @@ bundle install
 rake clean preview
 
 # In a web browser...
+http://localhost:4242/blog/2015-03-18-JBTIS-417-Final.html
 http://localhost:4242/downloads/jbosstools_is/kepler/4.1.6.Final.html
 ----
 
 See xcoulon to push the PR.
+
+Verify:
+
+http://tools.jboss.org/blog/
 
 *This completes the JBTIS aggregate/ discovery build/ release process.*
 
@@ -692,21 +763,21 @@ The production JBDSIS build draws its content from the JBTIS build.  Consequentl
 
 *The JBDSIS target platform is built separately from the JBTIS target platform and is a result of different merge targets.*  The JBDSIS target platform does not merge in the community.target file.  It is created under the common JBTIS target platform build.
 
-In this example the 8.0.0.GA target platform (Luna) repository is created.  First update the common and static update release areas.
+In this example the 8.0.2.GA target platform (Luna) repository is created.  First update the common and static update release areas.
 
 [source,bash]
 ----
 # Copy the TP locally from jbosstools (community)
 cd ~/temp; mkdir -p tp; cd tp
-scp -r tools@filemgmt.jboss.org:/downloads_htdocs/tools/targetplatforms/jbtistarget/4.2.1.Final .
+scp -r tools@filemgmt.jboss.org:/downloads_htdocs/tools/targetplatforms/jbtistarget/4.2.3.Final .
 
-rsync -arzq --protocol=28 4.2.1.Final/jbdsis/ devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0.0/8.0.0.GA.jbds-is-target-platform
-rsync -arzq --protocol=28 4.2.1.Final/jbdsis/ devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/static/updates/8.0.0/8.0.0.GA.jbds-is-target-platform
+rsync -arzq --protocol=28 4.2.3.Final/jbdsis devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0.0/8.0.2.GA.jbds-is-target-platform
+rsync -arzq --protocol=28 4.2.3.Final/jbdsis devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/static/updates/8.0.0/8.0.2.GA.jbds-is-target-platform
 ----
 
 URL:
-https://devstudio.redhat.com/updates/8.0.0/8.0.0.GA.jbds-is-target-platform/REPO
-https://devstudio.redhat.com/updates/8.0.0/8.0.0.GA.jbds-is-target-platform/earlyaccess/REPO
+https://devstudio.redhat.com/updates/8.0.0/8.0.2.CR1.jbds-is-target-platform/jbdsis/REPO
+https://devstudio.redhat.com/updates/8.0.0/8.0.2.CR1.jbds-is-target-platform/jbdsis/earlyaccess/REPO
 
 Next update the QE test staging area:
 
@@ -715,15 +786,19 @@ Next update the QE test staging area:
 ssh dev01.mw.lab.eng.bos.redhat.com  
 sudo su - hudson  
 cd /qa/services/http/binaries/RHDS/targetplatforms/jbdsistarget/  
-scp -r tools@filemgmt.jboss.org:/downloads_htdocs/tools/targetplatforms/jbtistarget/4.2.1.Final .  
+scp -r tools@filemgmt.jboss.org:/downloads_htdocs/tools/targetplatforms/jbtistarget/4.2.3.Final .  
 
 # Edit composites - change jbtis to jbdsis; Inspect  
-mv 4.2.1.Final 8.0.0.GA
+mv 4.2.3.Final 8.0.2.GA
 ----
 
 Verify:
 
-http://www.qa.jboss.com/binaries/RHDS/targetplatforms/jbdsistarget/8.0.0.GA/
+http://www.qa.jboss.com/binaries/RHDS/targetplatforms/jbdsistarget/8.0.2.GA/
+https://devstudio.redhat.com/updates/8.0.0/8.0.2.CR1.jbds-is-target-platform/jbdsis/REPO
+https://devstudio.redhat.com/updates/8.0.0/8.0.2.CR1.jbds-is-target-platform/jbdsis/earlyaccess/REPO
+https://devstudio.redhat.com/static/updates/8.0.0/8.0.2.CR1.jbds-is-target-platform/jbdsis/REPO
+https://devstudio.redhat.com/static/updates/8.0.0/8.0.2.CR1.jbds-is-target-platform/jbdsis/earlyaccess/REPO
 
 *** This completes the JBDSIS TP build/ release process.
 
@@ -779,7 +854,7 @@ Match the build type to the aggregate build type from the previous section.  Mat
 
 Verify:
 
-http://www.qa.jboss.com/binaries/RHDS/updates/development/kepler/integration-stack/aggregate/7.0.2.CR2/
+http://www.qa.jboss.com/binaries/RHDS/updates/development/kepler/integration-stack/aggregate/8.0.2.CR2/
 http://www.qa.jboss.com/binaries/RHDS/updates/development/luna/integration-stack/aggregate/8.0.0.CR2/
  
 ==== Publish and Push the JBDSIS Aggregate p2 Update Site
@@ -798,15 +873,23 @@ rsync -arzq --protocol=28 8.0.0.CR2/ devstudio@filemgmt.jboss.org:/www_htdocs/de
      
 # Copy the p2 update site zip to the devstudio update areas:  
 rsync --rsh=ssh pleacu@dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/updates/development/luna/integration-stack/aggregate/devstudio-integration-stack-aggregate-8.0.0.Beta2.zip devstudio-integration-stack-aggregate-8.0.0.Beta2.zip
+rsync --rsh=ssh pleacu@dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/updates/development/luna/integration-stack/aggregate/devstudio-integration-stack-aggregate-8.0.2.GA-earlyaccess.zip devstudio-integration-stack-aggregate-8.0.2.GA-earlyaccess.zip
 
 rsync -arzq --protocol=28 devstudio-integration-stack-aggregate-8.0.0.Beta2.zip devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0.0/jbdevstudio-integration-stack-updatesite-8.0.0.Beta2.zip
 rsync -arzq --protocol=28 devstudio-integration-stack-aggregate-8.0.0.Beta2.zip devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/static/updates/8.0.0/jbdevstudio-integration-stack-updatesite-8.0.0.Beta2.zip
 
+rsync -arzq --protocol=28 devstudio-integration-stack-aggregate-8.0.2.GA-earlyaccess.zip devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0.0/jbdevstudio-integration-stack-updatesite-8.0.2.GA-earlyaccess.zip
+rsync -arzq --protocol=28 devstudio-integration-stack-aggregate-8.0.2.GA-earlyaccess.zip devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/static/updates/8.0.0/jbdevstudio-integration-stack-updatesite-8.0.2.GA-earlyaccess.zip
+
 # Copy the p2 update site MD5 to the devstudio update areas:  
 rsync --rsh=ssh pleacu@dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/updates/development/luna/integration-stack/aggregate/devstudio-integration-stack-aggregate-8.0.0.Beta2a.zip.MD5 devstudio-integration-stack-aggregate-8.0.0.Beta2a.zip.MD5
+rsync --rsh=ssh pleacu@dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/updates/development/luna/integration-stack/aggregate/devstudio-integration-stack-aggregate-8.0.2.GA-earlyaccess.zip.MD5 devstudio-integration-stack-aggregate-8.0.2.GA-earlyaccess.zip.MD5
 
 rsync -arzq --protocol=28 devstudio-integration-stack-aggregate-8.0.0.Beta2a.zip.MD5 devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0.0/jbdevstudio-integration-stack-updatesite-8.0.0.Beta2a.zip.MD5
 rsync -arzq --protocol=28 devstudio-integration-stack-aggregate-8.0.0.Beta2a.zip.MD5 devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/static/updates/8.0.0/jbdevstudio-integration-stack-updatesite-8.0.0.Beta2a.zip.MD5
+
+rsync -arzq --protocol=28 devstudio-integration-stack-aggregate-8.0.2.GA-earlyaccess.zip.MD5 devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0.0/jbdevstudio-integration-stack-updatesite-8.0.2.GA-earlyaccess.zip.MD5
+rsync -arzq --protocol=28 devstudio-integration-stack-aggregate-8.0.2.GA-earlyaccess.zip.MD5 devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/static/updates/8.0.0/jbdevstudio-integration-stack-updatesite-8.0.2.GA-earlyaccess.zip.MD5
 ----
 
 Note that a stable build will be retrieved from a corresponding stable path.  If you update stable make sure to update development as well.
@@ -832,8 +915,24 @@ vi compositeArtifacts.xml
 <esc> :call ReplaceTimestamp()  
 <esc> :wq!
 
+# Update https://devstudio.redhat.com/updates/8.0-development/integration-stack/earlyaccess/compositeContent.xml, compositeArtifacts.xml, index.html  
+ cd /home/pleacu/git-clone/jbdevstudio-website/content/updates/8.0-development/integration-stack/earlyaccess
+# update compositeArtifacts.xml,  compositeContent.xml, index.html  
+# edit composite*.xml - also change timestamp!  
+vi compositeArtifacts.xml  
+<esc> :call ReplaceTimestamp()  
+<esc> :wq!
+
 # Update https://devstudio.redhat.com/updates/8.0-staging/integration-stack/compositeContent.xml, compositeArtifacts.xml, index.html  
  cd /home/pleacu/git-clone/jbdevstudio-website/content/updates/8.0-staging/integration-stack  
+# update compositeArtifacts.xml,  compositeContent.xml, index.html  
+# edit composite*.xml - also change timestamp!  
+vi compositeArtifacts.xml  
+<esc> :call ReplaceTimestamp()  
+<esc> :wq!
+
+# Update https://devstudio.redhat.com/updates/8.0-staging/integration-stack/earlyaccess/compositeContent.xml, compositeArtifacts.xml, index.html  
+ cd /home/pleacu/git-clone/jbdevstudio-website/content/updates/8.0-staging/integration-stack/earlyaccess
 # update compositeArtifacts.xml,  compositeContent.xml, index.html  
 # edit composite*.xml - also change timestamp!  
 vi compositeArtifacts.xml  
@@ -847,6 +946,18 @@ vi compositeArtifacts.xml
 vi compositeArtifacts.xml  
 <esc> :call ReplaceTimestamp()  
 <esc> :wq!
+
+# Update https://devstudio.redhat.com/updates/8.0/integration-stack/earlyaccess/compositeContent.xml, compositeArtifacts.xml, index.html  
+ cd /home/pleacu/git-clone/jbdevstudio-website/content/updates/8.0/integration-stack/earlyaccess
+# update compositeArtifacts.xml,  compositeContent.xml, index.html  
+# edit composite*.xml - also change timestamp!  
+vi compositeArtifacts.xml  
+<esc> :call ReplaceTimestamp()  
+<esc> :wq!
+
+ cd /home/pleacu/git-clone/jbdevstudio-website/content/updates/8.0-development/central/integration-stack  
+# edit index.html
+
 ----
 
 If this is an earlyaccess jar - update the earlyaccess (devstudio/earlyaccess) composites.
@@ -868,14 +979,6 @@ vi compositeArtifacts.xml
 vi compositeArtifacts.xml  
 <esc> :call ReplaceTimestamp()  
 <esc> :wq!
-
-# Update https://devstudio.redhat.com/updates/8.0/compositeContent.xml, compositeArtifacts.xml
- cd /home/pleacu/git-clone/jbdevstudio-website/content/earlyaccess/8.0
-# update compositeArtifacts.xml,  compositeContent.xml
-# edit composite*.xml - also change timestamp!  
-vi compositeArtifacts.xml  
-<esc> :call ReplaceTimestamp()  
-<esc> :wq!
 ----
 
 Commit and issue a PR.  Once the PR is merged, push the changes to the devstudio tools server:
@@ -889,6 +992,13 @@ sftp> put compositeContent.xml
 sftp> put index.html  
 sftp> bye
 
+cd /home/pleacu/git-clone/PR/jbdevstudio-website/content/updates/8.0-development/integration-stack/earlyaccess
+sftp devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0-development/integration-stack/earlyaccess  
+sftp> put compositeArtifacts.xml  
+sftp> put compositeContent.xml     
+sftp> put index.html  
+sftp> bye
+
 cd /home/pleacu/git-clone/PR/jbdevstudio-website/content/updates/8.0-staging/integration-stack  
 sftp devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0-staging/integration-stack  
 sftp> put compositeArtifacts.xml  
@@ -896,8 +1006,8 @@ sftp> put compositeContent.xml
 sftp> put index.html  
 sftp> bye
 
-cd /home/pleacu/git-clone/PR/jbdevstudio-website/content/updates/8.0/integration-stack  
-sftp devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0/integration-stack  
+cd /home/pleacu/git-clone/PR/jbdevstudio-website/content/updates/8.0-staging/integration-stack/earlyaccess
+sftp devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0-staging/integration-stack/earlyaccess
 sftp> put compositeArtifacts.xml  
 sftp> put compositeContent.xml     
 sftp> put index.html  
@@ -914,12 +1024,6 @@ sftp devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/earlyaccess/8.0-staging
 sftp> put compositeArtifacts.xml  
 sftp> put compositeContent.xml     
 sftp> bye
-
-cd /home/pleacu/git-clone/PR/jbdevstudio-website/content/earlyaccess/8.0
-sftp devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/earlyaccess/8.0
-sftp> put compositeArtifacts.xml  
-sftp> put compositeContent.xml     
-sftp> bye
 ----
 
 Update the QE test staging area:
@@ -928,14 +1032,9 @@ Update the QE test staging area:
 ----
 ssh dev01.mw.lab.eng.bos.redhat.com  
 sudo su - hudson  
-cp -r /qa/services/http/binaries/RHDS/updates/development/kepler/integration-stack/aggregate/7.0.2.CR2 /qa/services/http/binaries/RHDS/builds/staging/jbdsis-7.0.2-updatesite/ 
+cp -r /qa/services/http/binaries/RHDS/updates/development/kepler/integration-stack/aggregate/8.0.2.CR2 /qa/services/http/binaries/RHDS/builds/staging/jbdsis-8.0.2-updatesite/ 
 - or - 
 cp -r /qa/services/http/binaries/RHDS/updates/development/luna/integration-stack/aggregate/8.0.0.Beta2a /qa/services/http/binaries/RHDS/builds/staging/jbdsis-8.0.0.beta2a-updatesite/
-----
-
-[NOTE]
-----
-Note: If you updated a stable version, update the development version with the same bits.  That way development is never behind stable.
 ----
 
 ==== Publish and Push the JBDSIS JBoss Central Discovery Jar
@@ -945,48 +1044,39 @@ The JBoss Central discovery jar is actually committed to the discovery download 
 [source,bash]
 ----
 mkdir -p ~/temp/disc;  cd ~/temp/disc
-wget http://www.qa.jboss.com/binaries/RHDS/discovery/integration/integration-stack/8.0.0.Beta2a/com.jboss.jbds.central.discovery.integration-stack_8.0.0.Beta2a-v20141222-1727-B72.jar
-
-# For early access - change the jar name
-mv com.jboss.jbds.central.discovery.integration-stack_8.0.0.Beta2a-v20141222-1727-B72.jar com.jboss.jbds.central.discovery.integration-stack.earlyaccess_8.0.0.Beta2a-v20141222-1727-B72.jar
+wget http://www.qa.jboss.com/binaries/RHDS/discovery/integration/integration-stack/8.0.1.GA/com.jboss.jbds.central.discovery.integration-stack_8.0.1.GA-v20150408-1203-B104.jar
+wget http://www.qa.jboss.com/binaries/RHDS/discovery/integration/integration-stack/8.0.1.GA/com.jboss.jbds.central.discovery.integration-stack.earlyaccess_8.0.1.GA-v20150408-1203-B104.jar 
 
 # clone jbdevstudio-website
 
 cd /home/pleacu/git-clone/jbdevstudio-website/content/updates/8.0-development/discovery
-cp ~/temp/disc/com.jboss.jbds.central.discovery.integration-stack_8.0.0.Beta2a-v20141222-1727-B72.jar .
+cp ~/temp/disc/com.jboss.jbds.central.discovery.integration-stack_8.0.1.GA-v20150408-1203-B104.jar .
+cp ~/temp/disc/com.jboss.jbds.central.discovery.integration-stack.earlyaccess_8.0.1.GA-v20150408-1203-B104.jar .
 
 cd ..
 # edit devstudio-directory.xml: update com.jboss.jbds.central.discovery.integration-stack.earlyaccess_8.0.0.Beta2-v20141001-1500-B67.jar
 # edit devstudio-earlyaccess.properties: add any IUs that are early access
 
 cd /home/pleacu/git-clone/jbdevstudio-website/content/updates/8.0-staging/discovery
-cp ~/temp/disc/com.jboss.jbds.central.discovery.integration-stack_8.0.0.Beta2a-v20141222-1727-B72.jar .
+cp ~/temp/disc/com.jboss.jbds.central.discovery.integration-stack_8.0.1.GA-v20150408-1203-B104.jar .
+cp ~/temp/disc/com.jboss.jbds.central.discovery.integration-stack.earlyaccess_8.0.1.GA-v20150408-1203-B104.jar .
 
 cd ..
 # edit devstudio-directory.xml, devstudio-earlyaccess.properties
 
-cd /home/pleacu/git-clone/jbdevstudio-website/content/updates/8.0/discovery
-cp ~/temp/disc/com.jboss.jbds.central.discovery.integration-stack_8.0.0.Beta2a-v20141222-1727-B72.jar .
-
-cd ..
-# edit devstudio-directory.xml, devstudio-earlyaccess.properties
 ----
 
 [NOTE]
 ----
-Note: If committing a stable discovery jar/ directory XML - repeat the steps into the development directory (e.g.):
-
 Commit and issue a PR to https://github.com/jbdevstudio/jbdevstudio-website.  Once the PR has been merged, manually push the updated jar and devstudio-directory.xml onto the JBoss server.
 ----
 
 [source,bash]
 ----
-# Copy the JBDSIS central jar and meta files into position  
+# Copy the JBDSIS central jar and metadata files into position  
  cd ~/temp/disc  
  wget http://www.qa.jboss.com/binaries/RHDS/discovery/integration/integration-stack/8.0.0.Beta2/com.jboss.jbds.central.discovery.integration-stack.earlyaccess_8.0.0.Beta2-v20141023-1623-B69.jar  
 
- sftp devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0/discovery 
- - or -
  sftp devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0-development/discovery  
  - or -
  sftp devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0-staging/discovery  
@@ -1007,38 +1097,105 @@ Git ref: https://github.com/jbdevstudio/jbdevstudio-website
 
 Verify: https://devstudio.redhat.com/updates/8.0-development/devstudio-directory.xml
 
+==== Go live!
 [source,bash]
 ----
-# Go live!  
-cd /home/pleacu/git-clone/jbdevstudio-website/content/updates/7.0/discovery  
-cp ~/temp/disc/com.jboss.jbds.central.discovery.integration-stack_7.0.3.GA-v20140409-1834-B7.jar .  
-cd ..  
+cd /home/pleacu/git-clone/jbdevstudio-website/content/updates/8.0/discovery  
+cp ~/temp/disc/com.jboss.jbds.central.discovery.integration-stack_8.0.2.GA-v20150408-1203-B104.jar .
+cp ~/temp/disc/com.jboss.jbds.central.discovery.integration-stack.earlyaccess_8.0.2.GA-v20150408-1203-B104.jar .
+sftp devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0/discovery 
+   sftp> put com.jboss.jbds.central.discovery.integration-stack_8.0.2.GA-v20150408-1203-B104.jar
+   sftp> put com.jboss.jbds.central.discovery.integration-stack.earlyaccess_8.0.2.GA-v20150408-1203-B104.jar
+   sftp> bye
 
-# edit devstudio-directory.xml - add:  
-<entry url="discovery/com.jboss.jbds.central.discovery.integration-stack_7.0.1.GA-v20140409-1834-B7.jar" permitCategories="true"/>  
-      
-cd /home/pleacu/git-clone/jbdevstudio-website/content/updates/7.0/integration-stack  
-
-# update compositeArtifacts.xml, compositeContent.xml, index.html - versions and timestamps  
-cd /home/pleacu/git-clone/PR/jbdevstudio-website/content/updates/7.0/integration-stack  
-sftp devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/7.0/integration-stack  
-   sftp> put compositeArtifacts.xml  
-   sftp> put compositeContent.xml  
-   sftp> put index.html  
-      
-cd /home/pleacu/git-clone/jbdevstudio-website/content/updates/7.0/central/integration-stack  
-sftp devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/7.0/central/integration-stack/  
-   sftp> put compositeArtifacts.xml  
-   sftp> put compositeContent.xml  
-   sftp> put index.html  
-      
-cd /home/pleacu/git-clone/jbdevstudio-website/content/updates/7.0/discovery  
-sftp devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/7.0/discovery  
-   sftp> put com.jboss.jbds.central.discovery.integration-stack_7.0.1.GA-v20140409-1834-B7.jar  
-      
-cd /home/pleacu/git-clone/jbdevstudio-website/content/updates/7.0  
-sftp devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/7.0  
+cd ..
+# edit devstudio-directory.xml, devstudio-earlyaccess.properties
+sftp devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0  
    sftp> put devstudio-directory.xml
+   sftp> put devstudio-earlyaccess.properties
+      
+# update compositeArtifacts.xml, compositeContent.xml, index.html - versions and timestamps  
+cd /home/pleacu/git-clone/PR/jbdevstudio-website/content/updates/8.0/integration-stack  
+sftp devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0/integration-stack  
+   sftp> put compositeArtifacts.xml  
+   sftp> put compositeContent.xml     
+   sftp> put index.html  
+   sftp> bye
+
+cd /home/pleacu/git-clone/PR/jbdevstudio-website/content/updates/8.0/integration-stack/earlyaccess
+sftp devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0/integration-stack/earlyaccess
+   sftp> put compositeArtifacts.xml  
+   sftp> put compositeContent.xml     
+   sftp> put index.html  
+   sftp> bye
+
+cd /home/pleacu/git-clone/jbdevstudio-website/content/updates/8.0/central/integration-stack  
+sftp devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0/central/integration-stack/  
+   sftp> put compositeArtifacts.xml  
+   sftp> put compositeContent.xml  
+   sftp> put index.html  
+      
+# Update https://devstudio.redhat.com/updates/8.0/compositeContent.xml, compositeArtifacts.xml
+cd /home/pleacu/git-clone/jbdevstudio-website/content/earlyaccess/8.0
+# update compositeArtifacts.xml,  compositeContent.xml
+# edit composite*.xml - also change timestamp!  
+vi compositeArtifacts.xml  
+<esc> :call ReplaceTimestamp()  
+<esc> :wq!
+
+sftp devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/earlyaccess/8.0
+   sftp> put compositeArtifacts.xml  
+   sftp> put compositeContent.xml     
+   sftp> bye
+----
+
+[NOTE]
+----
+Note: If you updated a stable version, update the development version with the same bits.  That way development is never behind stable.
+----
+
+==== Git Status
+
+Your git status should appear something like this:
+
+[source,bash]
+----
+# On branch JBTIS-406
+# Changes not staged for commit:
+#   (use "git add <file>..." to update what will be committed)
+#   (use "git checkout -- <file>..." to discard changes in working directory)
+#
+#	modified:   earlyaccess/8.0-development/compositeArtifacts.xml
+#	modified:   earlyaccess/8.0-development/compositeContent.xml
+#	modified:   earlyaccess/8.0-staging/compositeArtifacts.xml
+#	modified:   earlyaccess/8.0-staging/compositeContent.xml
+#	modified:   earlyaccess/8.0/compositeArtifacts.xml
+#	modified:   earlyaccess/8.0/compositeContent.xml
+#	modified:   updates/8.0-development/devstudio-directory.xml
+#	modified:   updates/8.0-development/devstudio-earlyaccess.properties
+#	modified:   updates/8.0-development/integration-stack/compositeArtifacts.xml
+#	modified:   updates/8.0-development/integration-stack/compositeContent.xml
+#	modified:   updates/8.0-development/integration-stack/index.html
+#	modified:   updates/8.0-staging/devstudio-directory.xml
+#	modified:   updates/8.0-staging/devstudio-earlyaccess.properties
+#	modified:   updates/8.0-staging/integration-stack/compositeArtifacts.xml
+#	modified:   updates/8.0-staging/integration-stack/compositeContent.xml
+#	modified:   updates/8.0-staging/integration-stack/index.html
+#	modified:   updates/8.0/devstudio-directory.xml
+#	modified:   updates/8.0/devstudio-earlyaccess.properties
+#	modified:   updates/8.0/integration-stack/compositeArtifacts.xml
+#	modified:   updates/8.0/integration-stack/compositeContent.xml
+#	modified:   updates/8.0/integration-stack/index.html
+#
+# Untracked files:
+#   (use "git add <file>..." to include in what will be committed)
+#
+#	updates/8.0-development/discovery/com.jboss.jbds.central.discovery.integration-stack.earlyaccess_8.0.2.GA-v20150220-1139-B91.jar
+#	updates/8.0-development/integration-stack/earlyaccess/
+#	updates/8.0-staging/discovery/com.jboss.jbds.central.discovery.integration-stack.earlyaccess_8.0.2.GA-v20150220-1139-B91.jar
+#	updates/8.0-staging/integration-stack/earlyaccess/
+#	updates/8.0/discovery/com.jboss.jbds.central.discovery.integration-stack.earlyaccess_8.0.2.GA-v20150220-1139-B91.jar
+#	updates/8.0/integration-stack/earlyaccess/
 ----
 
 ==== Test Eclipse p2 Update
@@ -1056,8 +1213,8 @@ Start jbdevstudio or eclipse-with-jbds, then:
 
 [source,bash]
 ----
-./jbdevstudio -vmargs -Djboss.discovery.directory.url=http://www.qa.jboss.com/binaries/RHDS/discovery/integration/integration-stack/7.0.2.CR2/devstudio-integration-stack-directory.xml  
-      -Djboss.discovery.site.url=http://www.qa.jboss.com/binaries/RHDS/discovery/integration/integration-stack/7.0.2.CR2
+./jbdevstudio -vmargs -Djboss.discovery.directory.url=http://www.qa.jboss.com/binaries/RHDS/discovery/integration/integration-stack/8.0.2.CR2/devstudio-integration-stack-directory.xml  
+      -Djboss.discovery.site.url=http://www.qa.jboss.com/binaries/RHDS/discovery/integration/integration-stack/8.0.2.CR2
 
 ./jbdevstudio -vmargs -Djboss.discovery.directory.url=http://www.qa.jboss.com/binaries/RHDS/discovery/integration/integration-stack/8.0.0.Beta2/devstudio-integration-stack-directory.xml  
       -Djboss.discovery.site.url=http://www.qa.jboss.com/binaries/RHDS/discovery/integration/integration-stack/8.0.0.Beta2
@@ -1074,7 +1231,7 @@ To install JBDSIS in a completely offline way, you need three zips or jars to ac
 
 Retrieve the offline JBDS zips:
 
-https://devstudio.redhat.com/updates/7.0/#offline
+https://devstudio.redhat.com/updates/8.0/#offline
 
 If you don't already have installFromTarget.sh, see this:
 
@@ -1085,15 +1242,19 @@ Install JBDS into ~/offline, then:
 [source,bash]
 ----
 ~/bin/installFromTarget.sh -ECLIPSE ~/offline/studio/ -INSTALL_PLAN  
-'jar:file:///home/pleacu/install/jbdevstudio-integration-stack-updatesite-7.0.2.CR1.zip!/,jar:file:///home/pleacu/install/jbdevstudio-updatesite-7.1.1.GA-v20140314-2145-B688.zip!/,jar:file:///home/pleacu/install/jbdevstudiotarget-4.32.0.Final.zip!/'  
+'jar:file:///home/pleacu/install/jbdevstudio-integration-stack-updatesite-8.0.2.CR1.zip!/,jar:file:///home/pleacu/install/jbdevstudio-updatesite-7.1.1.GA-v20140314-2145-B688.zip!/,jar:file:///home/pleacu/install/jbdevstudiotarget-4.32.0.Final.zip!/'  
 ----
 
 ==== Update the Customer Support Portal
 
-Generate a ticket with engineering services.  Ref: https://engineering.redhat.com/rt/Ticket/Display.html?id=296645
+Generate a ticket with engineering services. 
+[source,bash]
+---- 
+Ref: https://engineering.redhat.com/rt/Ticket/Display.html?id=296645
+Ref: https://engineering.redhat.com/rt/Ticket/Display.html?id=341933
+----
+Verify:
 
-Update the JBDS site - e.g:
-
-https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=7.1.1
+https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=8.0.0
 
 *This completes the JBDSIS aggregate/ discovery build/ release process.*

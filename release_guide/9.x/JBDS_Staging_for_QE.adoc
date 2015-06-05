@@ -12,6 +12,25 @@ TODO:
 
 See details in JBT_Staging_For_QE.adoc
 
+
+== Verify correct version set in com.jboss.devstudio.central.core
+
+# @since JBT 4.3.0 / JBDS 9.0.0
+# JBIDE-18820, JBIDE-18806 check the version set in c.j.d.central.core's currentversion.properties value of default.version
+version=9.0.0.Beta1 #a, b, c...
+updatesiteURL=https://devstudio.redhat.com/9.0/staging/updates/core/${version}/plugins/
+pushd /tmp; wget -q -nc $updatesiteURL
+thejar=`cat index.html | egrep -v "source|pack.gz" | egrep "core.central|foundation.core" | sed -e "s#.\+href=\"\([^\"]\+\)\">.\+#\1#" | sort | head -1; rm -f index.html`
+echo ${updatesiteURL}/${thejar} | egrep "core.central|foundation.core"
+cd /tmp; wget -q -nc ${updatesiteURL}/${thejar}
+theversion=`unzip -p ${thejar} */currentversion.properties | grep version= | sed -e "s/version=//" | tail -1`
+rm -f ${thejar}
+popd
+echo "Want ${version}, got $theversion" | grep ${version}
+
+# if value found above for $jbosstoolsversion != current release version, then you need to rebuild foundation or JBDS w/ a new value inserted.
+
+
 == Disable jobs
 
 All stable branch jobs from the https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/[9.0.mars view] should be disabled.
@@ -26,10 +45,10 @@ Whenever you're starting a new shell, you should set those variables:
 
 [sources,bash]
 ----
-versionWithRespin=9.0.0.Alpha2
-TARGET_PLATFORM_VERSION_MAX=4.50.0.Alpha2
-CENTRAL_TARGET_VERSION=4.50.0.Alpha2-SNAPSHOT
-previousFull=9.0.0.Alpha1
+versionWithRespin=9.0.0.Beta1
+TARGET_PLATFORM_VERSION_MAX=4.50.0.Beta1-SNAPSHOT
+CENTRAL_TARGET_VERSION=4.50.0.Beta1-SNAPSHOT
+previousFull=9.0.0.Alpha2
 now=$(date +%s000)
 isGA=false
 JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
@@ -62,9 +81,9 @@ WARNING: Don't use symlinks are they are too risky to use. Those operations can 
 # can run these 5 steps in parallel
 
 # copy JBDS target platform zips
-version=9.0.0.Alpha2 # a, b, c...
-TARGET_PLATFORM_VERSION_MAX=4.50.0.Alpha2
-CENTRAL_TARGET_VERSION=4.50.0.Alpha2-SNAPSHOT
+version=9.0.0.Beta1 # a, b, c...
+TARGET_PLATFORM_VERSION_MAX=4.50.0.Beta1-SNAPSHOT
+CENTRAL_TARGET_VERSION=4.50.0.Beta1-SNAPSHOT
 for targetname in jbdevstudio jbtcentral jbtearlyaccess; do
   if [[ ${targetname} == "jbdevstudio" ]]; then
     TARGET_PLATFORM_VERSION=${TARGET_PLATFORM_VERSION_MAX}
@@ -74,14 +93,13 @@ for targetname in jbdevstudio jbtcentral jbtearlyaccess; do
     suffix="-target-platform-${targetname:3}"
   fi
   y=/qa/services/http/binaries/RHDS/targetplatforms/${targetname}target/${TARGET_PLATFORM_VERSION}/${targetname}target-${TARGET_PLATFORM_VERSION}.zip
-  for m in $(md5sum ${y}); do if [[ $m != ${y} ]]; then echo $m > ${y}.MD5; fi; done
   rsync -aPrz --rsh=ssh --protocol=28 ${y} ${JBDS}/9.0/staging/updates/core/jboss-devstudio-${version}${suffix}.zip
-  rsync -aPrz --rsh=ssh --protocol=28 ${y}.MD5 ${JBDS}/9.0/staging/updates/core/jboss-devstudio-${version}${suffix}.zip.MD5
+  rsync -aPrz --rsh=ssh --protocol=28 ${y}.sha1 ${JBDS}/9.0/staging/updates/core/jboss-devstudio-${version}${suffix}.zip.sha1
 done
 
 
 # copy JBT Central/EA update sites & zips
-version=9.0.0.Alpha2 # a, b, c...
+version=9.0.0.Beta1 # a, b, c...
 stream=4.3.mars # NOT 9.0, use jbosstools stream here
 for site in central-site earlyaccess-site; do
   ID=""
@@ -89,20 +107,19 @@ for site in central-site earlyaccess-site; do
   if [[ $ID ]]; then
     if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
     echo "Latest build for ${sitename} (${site}): ${ID}"
-    tmpdir=/tmp/jbosstools-build-sites.aggregate.${site}_${stream}__${ID}
+    tmpdir=/tmp/devstudio-build-sites.aggregate.${site}_${stream}__${ID}
     rsync -aPrz --rsh=ssh --protocol=28 tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream}/${ID}/* ${tmpdir}/
     # copy build folder
-    echo "mkdir jbosstools-${version}-build-${sitename}" | sftp ${JBDS}/9.0/staging/builds/
+    echo "mkdir devstudio-${version}-build-${sitename}" | sftp ${JBDS}/9.0/staging/builds/
     rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${JBDS}/9.0/staging/builds/devstudio-${version}-build-${sitename}/${ID}/
     # copy update site
     echo "mkdir ${sitename}" | sftp ${JBDS}/9.0/staging/updates/
     rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/all/repo/* ${JBDS}/9.0/staging/updates/${sitename}/${version}/
     # copy update site zip
     y=${tmpdir}/all/repository.zip
-    for m in $(md5sum ${y}); do if [[ $m != ${y} ]]; then echo $m > ${y}.MD5; fi; done
     suffix=-updatesite-${sitename}
     rsync -aPrz --rsh=ssh --protocol=28 ${y} ${JBDS}/9.0/staging/updates/core/jboss-devstudio-${version}${suffix}.zip
-    rsync -aPrz --rsh=ssh --protocol=28 ${y}.MD5 ${JBDS}/9.0/staging/updates/core/jboss-devstudio-${version}${suffix}.zip.MD5
+    rsync -aPrz --rsh=ssh --protocol=28 ${y}.sha1 ${JBDS}/9.0/staging/updates/core/jboss-devstudio-${version}${suffix}.zip.sha1
     rm -fr $tmpdir
   else
     echo "ERROR: no latest build found for ${site}" | grep ERROR
@@ -111,7 +128,7 @@ done
 
 
 # copy JBDS installers: snapshots/builds/ to staging/builds/
-version=9.0.0.Alpha2 # a, b, c...
+version=9.0.0.Beta1 # a, b, c...
 stream=9.0.mars
 ID=""
 ID=$(cd /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${stream} && ls 20* | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%:*}
@@ -126,7 +143,7 @@ fi
 
 
 # copy JBDS update: snapshots/builds/*/repo/* to staging/updates/core/${version}; also copy updatesite-core.zip
-version=9.0.0.Alpha2 # a, b, c...
+version=9.0.0.Beta1 # a, b, c...
 stream=9.0.mars
 ID=""
 ID=$(cd /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${stream} && ls 20* | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%:*}
@@ -136,11 +153,11 @@ echo "mkdir ${sitename}" | sftp ${JBDS}/9.0/staging/updates/
 rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${stream}/${ID}/all/repo/* ${JBDS}/9.0/staging/updates/${sitename}/${version}/
 y=/qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${stream}/${ID}/installer/jboss-devstudio-*-updatesite-core.zip
 rsync -aPrz --rsh=ssh --protocol=28 ${y} ${JBDS}/9.0/staging/updates/${sitename}/jboss-devstudio-${version}-updatesite-core.zip
-rsync -aPrz --rsh=ssh --protocol=28 ${y}.MD5 ${JBDS}/9.0/staging/updates/${sitename}/jboss-devstudio-${version}-updatesite-core.zip.MD5
+rsync -aPrz --rsh=ssh --protocol=28 ${y}.sha1 ${JBDS}/9.0/staging/updates/${sitename}/jboss-devstudio-${version}-updatesite-core.zip.sha1
 
 
 # copy JBDS discovery sites to staging/builds/ and staging/updates/
-version=9.0.0.Alpha2 # a, b, c...
+version=9.0.0.Beta1 # a, b, c...
 stream=4.3.mars # NOT 9.0, use jbosstools stream here
 for site in discovery.central discovery.earlyaccess; do
   ID=""
@@ -188,14 +205,32 @@ This should point to the latest staging bits. Just copy what's in discovery.cent
 ----
 
 stream=4.3.mars # NOT 9.0, use jbosstools stream here
-version=9.0.0.Alpha2 # a, b, c...
+versionWithRespin=9.0.0.Beta1
+TARGET_PLATFORM_VERSION_MAX=4.50.0.Beta1-SNAPSHOT
+CENTRAL_TARGET_VERSION=4.50.0.Beta1-SNAPSHOT
 
 pushd ~/truu/jbdevstudio-website/content/9.0/staging/updates
-rsync -aPrz --rsh=ssh --protocol=28 ${JBDS}/9.0/staging/updates/discovery.central/9.0.0.Alpha2/composite*xml ./
-rsync -aPrz --rsh=ssh --protocol=28 ./composte*xml ${JBDS}/9.0/staging/updates/
+rsync -aPrz --rsh=ssh --protocol=28 ${JBDS}/9.0/staging/updates/discovery.central/9.0.0.Beta1/composite*xml ./
+# replace dl.jb.o and 4.3-> ds.rh.c and 9.0
+now=`date +%s000`
+for c in compositeContent.xml compositeArtifacts.xml; do 
+  sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#" $c
+  sed -i -e "s#http://download.jboss.org/jbosstools/mars/#https://devstudio.redhat.com/9.0/#" $c
+  sed -i -e "s#http://download.jboss.org/jbosstools/targetplatforms/#https://devstudio.redhat.com/targetplatforms/#" $c
+  sed -i -e "s#4\.3\.0#9\.0\.0#" $c
+done
+cat $c | egrep "${versionWithRespin}|${TARGET_PLATFORM_VERSION_MAX}|${CENTRAL_TARGET_VERSION}|timestamp"
+
+# update index.html 
+previous=9.0.0.Alpha2
+sed -i "s#${previous}#${versionWithRespin}#" index.html
+
+# push changes to server
+rsync -aPrz --rsh=ssh --protocol=28 ./composite*xml ${JBDS}/9.0/staging/updates/discovery.central/9.0.0.Beta1/
+rsync -aPrz --rsh=ssh --protocol=28 ./composite*xml ./index.html ${JBDS}/9.0/staging/updates/
 popd
 
-# then push to github
+# then push changes to github
 
 ----
 
@@ -210,38 +245,13 @@ And update it it as required, so that the links for the latest milestone point t
 [source,bash]
 ----
 
-# @since JBT 4.3.0 / JBDS 9.0.0
-# JBIDE-18820, JBIDE-18806 check the version set in c.j.d.central.core's currentversion.properties value of default.version
-version=9.0.0.Alpha2 #a, b, c...
-updatesiteURL=https://devstudio.redhat.com/9.0/staging/updates/core/${version}/plugins/
-pushd /tmp; wget -q -nc $updatesiteURL
-thejar=`cat index.html | egrep -v "source|pack.gz" | egrep "core.central|foundation.core" | sed -e "s#.\+href=\"\([^\"]\+\)\">.\+#\1#" | sort | head -1; rm -f index.html`
-cd /tmp; wget -q -nc ${updatesiteURL}/${thejar}
-theversion=`unzip -p ${thejar} */currentversion.properties | grep version= | sed -e "s/version=//" | tail -1`
-rm -f ${thejar}
-popd
-echo "Want ${version}, got $theversion" | grep ${version}
-
-# if value found above for $jbosstoolsversion != current release version, then you need to rebuild foundation or JBDS w/ a new value inserted.
-
-version=9.0.0.Alpha2 #a, b, c...
+version=9.0.0.Beta1 #a, b, c...
 # adjust these steps to fit your own path location & git workflow
 cd jbosstools-download.jboss.org/jbosstools/configuration
 git fetch origin master
 git checkout FETCH_HEAD
 vim ide-config.properties # or use another editor 
 
-# otherwise, replace existing lines with these to make the lastest milestone live
-
-jboss.discovery.directory.url|devstudio|9.0.0.Alpha2=https://devstudio.redhat.com/9.0/staging/updates/discovery.central/9.0.0.Alpha2/devstudio-directory.xml
-jboss.discovery.site.url|devstudio|9.0.0.Alpha2=https://devstudio.redhat.com/9.0/staging/updates/discovery.central/9.0.0.Alpha2/
-jboss.discovery.earlyaccess.site.url|devstudio|9.0.0.Alpha2=https://devstudio.redhat.com/9.0/staging/updates/discovery.earlyaccess/9.0.0.Alpha2/
-jboss.discovery.earlyaccess.list.url|devstudio|9.0.0.Alpha2=https://devstudio.redhat.com/9.0/staging/updates/discovery.earlyaccess/9.0.0.Alpha2/devstudio-earlyaccess.properties
-jboss.discovery.site.integration-stack.url|devstudio|9.0.0.Alpha2=
-
-jboss.discovery.directory.url|devstudio|9.0.0.Alpha2=https://devstudio.redhat.com/updates/9.0-staging/devstudio-directory.xml
-jboss.discovery.site.url|devstudio|9.0.0.Alpha2=https://devstudio.redhat.com/updates/9.0-staging/
-jboss.discovery.earlyaccess.site.url|devstudio|9.0.0.Alpha2=https://devstudio.redhat.com/earlyaccess/9.0-staging/
 ----
 
 == Minimal testing
@@ -249,7 +259,7 @@ jboss.discovery.earlyaccess.site.url|devstudio|9.0.0.Alpha2=https://devstudio.re
 Make sure that the very basic installation scenario works:
 
 1. Get a recent Eclipse (compatible with the target version of JBT)
-2. Install all content from http://download.jboss.org/jbosstools/mars/staging/updates/ in it
+2. Install all content from http://devstudio.redhat.com/9.0/staging/updates/ in it
 3. Restart as suggested
 4. Open Central Software/Updates tab, enable Early-Access select and install all connectors
 
@@ -267,10 +277,10 @@ ____
 
 [source,bash]
 ----
-versionWithRespin=9.0.0.Alpha2 # a, b, c...
+versionWithRespin=9.0.0.Beta1 # a, b, c...
 respin="respin-"
-jbdsVersion=9.0.0.Alpha2 # no respin suffix here
-jbtVersion=4.3.0.Alpha2 # no respin suffix here
+jbdsVersion=9.0.0.Beta1 # no respin suffix here
+jbtVersion=4.3.0.Beta1 # no respin suffix here
 echo "
 Subject: 
 
@@ -284,7 +294,7 @@ Universal Installers: http://www.qa.jboss.com/binaries/RHDS/9.0/staging/builds/d
 
 Update Sites:
 * https://devstudio.redhat.com/9.0/staging/updates/ (includes ${versionWithRespin} Core + Target Platform + JBoss Central)
-* https://devstudio.redhat.com/9.0/staging/updates/discovery.earlyaccess/9.0.0.Alpha2/ (includes the above site + Early Access)
+* https://devstudio.redhat.com/9.0/staging/updates/discovery.earlyaccess/9.0.0.Beta1/ (includes the above site + Early Access)
 
 New + Noteworthy (subject to change):
 * https://github.com/jbosstools/jbosstools-website/tree/master/documentation/whatsnew

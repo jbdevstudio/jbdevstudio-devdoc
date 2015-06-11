@@ -210,27 +210,43 @@ TARGET_PLATFORM_VERSION_MAX=4.50.0.Beta1-SNAPSHOT
 CENTRAL_TARGET_VERSION=4.50.0.Beta1-SNAPSHOT
 
 pushd ~/truu/jbdevstudio-website/content/9.0/staging/updates
-rsync -aPrz --rsh=ssh --protocol=28 ${JBDS}/9.0/staging/updates/discovery.central/9.0.0.Beta1/composite*xml ./
-# replace dl.jb.o and 4.3-> ds.rh.c and 9.0
-now=`date +%s000`
-for c in compositeContent.xml compositeArtifacts.xml; do 
-  sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#" $c
-  sed -i -e "s#http://download.jboss.org/jbosstools/mars/#https://devstudio.redhat.com/9.0/#" $c
-  sed -i -e "s#http://download.jboss.org/jbosstools/targetplatforms/#https://devstudio.redhat.com/targetplatforms/#" $c
-  sed -i -e "s#4\.3\.0#9\.0\.0#" $c
+
+for d in discovery.central discovery.earlyaccess; do
+  mkdir -p ${d}/${versionWithRespin}/; pushd ${d}/${versionWithRespin}/
+  rsync -aPrz --rsh=ssh --protocol=28 ${JBDS}/9.0/staging/updates/${d}/${versionWithRespin}/composite*xml ./
+  # replace dl.jb.o and 4.3-> ds.rh.c and 9.0
+  now=`date +%s000`
+  for c in compositeContent.xml compositeArtifacts.xml; do 
+    sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#" $c
+    sed -i -e "s#http://download.jboss.org/jbosstools/mars/#https://devstudio.redhat.com/9.0/#" $c
+    sed -i -e "s#http://download.jboss.org/jbosstools/targetplatforms/#https://devstudio.redhat.com/targetplatforms/#" $c
+    sed -i -e "s#4\.3\.0#9\.0\.0#" $c
+  done
+  cat $c | egrep "${versionWithRespin}|${TARGET_PLATFORM_VERSION_MAX}|${CENTRAL_TARGET_VERSION}|timestamp"
+  popd
 done
-cat $c | egrep "${versionWithRespin}|${TARGET_PLATFORM_VERSION_MAX}|${CENTRAL_TARGET_VERSION}|timestamp"
+rsync discovery.central/${versionWithRespin}/composite*.xml ./
 
 # update index.html 
 previous=9.0.0.Alpha2
 sed -i "s#${previous}#${versionWithRespin}#" index.html
 
 # push changes to server
-rsync -aPrz --rsh=ssh --protocol=28 ./composite*xml ${JBDS}/9.0/staging/updates/discovery.central/9.0.0.Beta1/
+rsync -aPrz --rsh=ssh --protocol=28 discovery.central/${versionWithRespin}/composite*xml ${JBDS}/9.0/staging/updates/discovery.central/${versionWithRespin}/
+rsync -aPrz --rsh=ssh --protocol=28 discovery.earlyaccess/${versionWithRespin}/composite*xml ${JBDS}/9.0/staging/updates/discovery.earlyaccess/${versionWithRespin}/
 rsync -aPrz --rsh=ssh --protocol=28 ./composite*xml ./index.html ${JBDS}/9.0/staging/updates/
-popd
 
-# then push changes to github
+# verify changes
+echo "https://devstudio.redhat.com/9.0/staging/updates/discovery.central/${versionWithRespin}/compositeContent.xml
+https://devstudio.redhat.com/9.0/staging/updates/discovery.earlyaccess/${versionWithRespin}/compositeContent.xml
+https://devstudio.redhat.com/9.0/staging/updates/compositeContent.xml"
+
+# then push changes to github (no need to commit new folders, just changes to staging/updates/*ml)
+# and remove new discovery.central/ and discovery.earlyaccess/ folders
+rm -fr discovery.central/composite*.xml discovery.earlyaccess/composite*.xml
+
+# done
+popd
 
 ----
 

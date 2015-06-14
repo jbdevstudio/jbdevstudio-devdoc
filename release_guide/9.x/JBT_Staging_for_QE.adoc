@@ -15,11 +15,16 @@ A Jenkins job can then be triggered to sync changes to download.jboss.org: https
 # @Since JBT 4.2.1 / JBDS 8.0.1
 # JBIDE-18820, JBIDE-18806 check the version set in o.j.t.foundation.core's currentversion.properties value of default.version
 version=4.3.0.Beta1 #a, b, c...
-updatesiteURL=http://www.qa.jboss.com/binaries/RHDS/builds/staging/devstudio.product_9.0.mars/all/repo/plugins/
+pluginName=foundation.core
+updatesiteURL=https://devstudio.redhat.com/9.0/staging/updates/core/${version}/plugins/
+updatesiteURL=https://devstudio.redhat.com/9.0/snapshots/updates/core/4.3.mars/plugins/
 updatesiteURL=http://download.jboss.org/jbosstools/mars/staging/updates/core/${version}/plugins/
+updatesiteURL=http://download.jboss.org/jbosstools/mars/snapshots/updates/core/4.3.mars/plugins/
 pushd /tmp; wget -q -nc $updatesiteURL
-thejar=`cat index.html | egrep -v "source|pack.gz" | egrep "core.central|foundation.core" | sed -e "s#.\+href=\"\([^\"]\+\)\">.\+#\1#" | sort | head -1; rm -f index.html`
-echo ${updatesiteURL}/${thejar} | egrep "core.central|foundation.core"
+thejars=`cat index.html | egrep -v "source|pack.gz" | egrep ${pluginName} | sed -e "s#.\+href=\"\([^\"]\+\)\">.\+#\1#" | sort`
+echo "Found: $thejars" | egrep ${pluginName}
+thejar=`cat index.html | egrep -v "source|pack.gz" | egrep ${pluginName} | sed -e "s#.\+href=\"\([^\"]\+\)\">.\+#\1#" | sort | tail -1; rm -f index.html`
+echo ${updatesiteURL}/${thejar} | egrep ${pluginName}
 wget -q -nc ${updatesiteURL}/${thejar}
 theversion=`unzip -p ${thejar} */currentversion.properties | grep version= | sed -e "s/version=//" | tail -1`
 theversion=${theversion/-SNAPSHOT/} # remove -SNAPSHOT suffix from version
@@ -103,7 +108,7 @@ Here is a script that performs the copy (& rename) from /snapshots/ to /staging/
 # JBT aggregate site
 for site in site; do
   stream=4.3.mars
-  version=4.3.0.Beta1 # a, b, c...
+  version=4.3.0.Beta1a # a, b, c...
   ID=""
   ID=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
@@ -126,7 +131,7 @@ done
 # JBT tests site
 for site in coretests-site; do
   stream=4.3.mars
-  version=4.3.0.Beta1 # a, b, c...
+  version=4.3.0.Beta1a # a, b, c...
   ID=""
   ID=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
@@ -150,7 +155,7 @@ done
 # webtools sites
 for site in webtools-site; do
   stream=4.3.mars
-  version=4.3.0.Beta1 # a, b, c...
+  version=4.3.0.Beta1a # a, b, c...
   ID=""
   ID=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
@@ -173,7 +178,7 @@ done
 # Central and EA sites
 for site in central-site earlyaccess-site; do
   stream=4.3.mars
-  version=4.3.0.Beta1 # a, b, c...
+  version=4.3.0.Beta1a # a, b, c...
   ID=""
   ID=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
@@ -196,7 +201,7 @@ done
 # Browsersim Standalone Zip, ~16M
 for site in browsersim-standalone; do
   stream=4.3.mars
-  version=4.3.0.Beta1 # a, b, c...
+  version=4.3.0.Beta1a # a, b, c...
   ID=""
   ID=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/snapshots/builds/jbosstools-${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
@@ -238,12 +243,12 @@ This site needs to contain:
 
 [source,bash]
 ----
-versionWithRespin_PREV=4.3.0.Alpha2
-TARGET_PLATFORM_VERSION_MAX_PREV=4.50.0.Alpha2
-TARGET_PLATFORM_CENTRAL_MAX_PREV=4.50.0.Alpha2-SNAPSHOT
+versionWithRespin_PREV=4.3.0.Beta1
+TARGET_PLATFORM_VERSION_MAX_PREV=4.50.0.Beta1-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX_PREV=4.50.0.Beta1-SNAPSHOT
 
-versionWithRespin=4.3.0.Beta1
-TARGET_PLATFORM_VERSION_MAX=4.50.0.Beta1-SNAPSHOT
+versionWithRespin=4.3.0.Beta1a # a, b, c...
+TARGET_PLATFORM_VERSION_MAX=4.50.0.Beta1
 TARGET_PLATFORM_CENTRAL_MAX=4.50.0.Beta1-SNAPSHOT
 
 cd jbosstools-download.jboss.org/jbosstools/mars/staging/updates
@@ -277,17 +282,9 @@ scp composite*.xml tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/staging
 [[update-discovery-urls]]
 Update the *stable branch* discovery job ( https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/job/jbosstools-discovery_4.3.mars/configure ) to use the correct source URLs and versions +
 
-TARGET_PLATFORM_VERSION  = "4.50.0.Beta1-SNAPSHOT"
-TARGET_PLATFORM_VERSION_MAXIMUM  = "4.50.0.Beta1-SNAPSHOT"
-
+VERSION = "Beta1a" (not SNAPSHOT!)
+TARGET_PLATFORM_VERSION_MAXIMUM  = "4.50.0.Beta1"
 JBTCENTRALTARGET_VERSION   = "4.50.0.Beta1-SNAPSHOT"
-JBTEARLYACCESSTARGET_VERSION   = "4.50.0.Beta1-SNAPSHOT"
-
-JBT_UPDATE_SITE  = "http://download.jboss.org/jbosstools/mars/staging/updates/core/4.3.0.Beta1/"
-JBT_CENTRAL_UPDATE_SITE  = "http://download.jboss.org/jbosstools/mars/staging/updates/central/4.3.0.Beta1/"
-JBT_EARLYACCESS_UPDATE_SITE  = "http://download.jboss.org/jbosstools/mars/staging/updates/earlyaccess/4.3.0.Beta1/"
-JBDS_UPDATE_SITE   = "https://devstudio.redhat.com/9.0/staging/updates/core/9.0.0.Beta1/"
-
 
 Then respin the job and verify that sites were correctly populated:
 
@@ -318,7 +315,7 @@ hudson@dev01$ ...
 
 for site in discovery.central discovery.earlyaccess; do
   stream=4.3.mars
-  version=4.3.0.Beta1 # a, b, c...
+  version=4.3.0.Beta1a # a, b, c...
   ID=""
   ID=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/snapshots/builds/jbosstools-${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
@@ -353,7 +350,7 @@ done
 # new EA properties is here: http://download.jboss.org/jbosstools/mars/staging/updates/discovery.earlyaccess/4.3.0.Beta1/jbosstools-earlyaccess.properties
 
 stream=4.3.mars
-version=4.3.0.Beta1 # a, b, c...
+version=4.3.0.Beta1a # a, b, c...
 # earlyaccess site includes one directory.xml file which lists both core and earlyaccess plugins, so use that instead of core site
 echo "rename nightly/earlyaccess/${stream} staging/${version}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery/
 echo " >> http://download.jboss.org/jbosstools/discovery/staging/${version}/" | egrep ">>|${version}"
@@ -453,18 +450,17 @@ ____
 
 [source,bash]
 ----
-version=4.3.0.Beta1 # a, b, c...
-respin="respin-"
-#TARGET_PLATFORM_VERSION_MIN=4.50.0.Beta1-SNAPSHOT
-TARGET_PLATFORM_VERSION_MAX=4.50.0.Beta1-SNAPSHOT
+versionWithRespin=4.3.0.Beta1a # a, b, c...
+respin="respin-a"
+#TARGET_PLATFORM_VERSION_MIN=4.50.0.Beta1
+TARGET_PLATFORM_VERSION_MAX=4.50.0.Beta1
 TARGET_PLATFORM_CENTRAL_MAX=4.50.0.Beta1-SNAPSHOT
-TARGET_PLATFORM_EARLYACCESS_MAX=4.50.0.Beta1-SNAPSHOT
 jbdsFixVersion=9.0.0.Beta1 # no respin suffix here
 jbtFixVersion=4.3.0.Beta1 # no respin suffix here
 echo "
 Subject: 
 
-JBoss Tools Core ${version} bits available for QE testing
+JBoss Tools Core ${versionWithRespin} bits available for QE testing
 
 Body:
 
@@ -484,13 +480,13 @@ Schedule: https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.p
 --
 
 Additional update sites:
-* http://download.jboss.org/jbosstools/mars/staging/updates/core/${version}/
-* http://download.jboss.org/jbosstools/mars/staging/updates/coretests/${version}/
-* http://download.jboss.org/jbosstools/mars/staging/updates/webtools/${version}/
+* http://download.jboss.org/jbosstools/mars/staging/updates/core/${versionWithRespin}/
+* http://download.jboss.org/jbosstools/mars/staging/updates/coretests/${versionWithRespin}/
+* http://download.jboss.org/jbosstools/mars/staging/updates/webtools/${versionWithRespin}/
 
 Discovery sites:
-* http://download.jboss.org/jbosstools/mars/staging/updates/discovery.central/${version}/
-* http://download.jboss.org/jbosstools/mars/staging/updates/discovery.earlyaccess/${version}/
+* http://download.jboss.org/jbosstools/mars/staging/updates/discovery.central/${versionWithRespin}/
+* http://download.jboss.org/jbosstools/mars/staging/updates/discovery.earlyaccess/${versionWithRespin}/
 
 Build folders (for build logs & update site zips):
 * http://download.jboss.org/jbosstools/mars/staging/builds/
@@ -505,10 +501,11 @@ Changes prompting this $respin are:
 
 https://issues.jboss.org/issues/?jql=labels%20in%20%28%22${respin}%22%29%20and%20%28%28project%20in%20%28%22JBDS%22%29%20and%20fixversion%20in%20%28%22${jbdsFixVersion}%22%29%29%20or%20%28project%20in%20%28%22JBIDE%22%2C%22TOOLSDOC%22%29%20and%20fixversion%20in%20%28%22${jbtFixVersion}%22%29%29%29
 
-To compare the upcoming version of Central (${version}) against an older version, add lines similar to these your eclipse.ini file after the -vmargs line for the appropriate version & URLs:
- -Djboss.discovery.directory.url=http://download.jboss.org/jbosstools/discovery/staging/${version}/jbosstools-directory.xml
- -Djboss.discovery.site.url=http://download.jboss.org/jbosstools/discovery/staging/${version}/
- -Djboss.discovery.earlyaccess.site.url=http://download.jboss.org/jbosstools/discovery/staging/${version}/
+To compare the upcoming version of Central (${versionWithRespin}) against an older version, add lines similar to these your eclipse.ini file after the -vmargs line for the appropriate version & URLs:
+ -Djboss.discovery.directory.url=http://download.jboss.org/jbosstools/mars/staging/updates/discovery.central/${versionWithRespin}/jbosstools-directory.xml
+ -Djboss.discovery.site.url=http://download.jboss.org/jbosstools/mars/staging/updates/
+ -Djboss.discovery.earlyaccess.site.url=http://download.jboss.org/jbosstools/mars/staging/updates/discovery.earlyaccess/${versionWithRespin}/
+ -Djboss.discovery.earlyaccess.list.url=http://download.jboss.org/jbosstools/mars/staging/updates/discovery.earlyaccess/${versionWithRespin}/jbosstools-earlyaccess.properties
 "
 fi
 

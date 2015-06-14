@@ -18,10 +18,14 @@ See details in JBT_Staging_For_QE.adoc
 # @since JBT 4.3.0 / JBDS 9.0.0
 # JBIDE-18820, JBIDE-18806 check the version set in c.j.d.central.core's currentversion.properties value of default.version
 version=9.0.0.Beta1 #a, b, c...
+pluginName=core.central
 updatesiteURL=https://devstudio.redhat.com/9.0/staging/updates/core/${version}/plugins/
+updatesiteURL=https://devstudio.redhat.com/9.0/snapshots/updates/core/4.3.mars/plugins/
 pushd /tmp; wget -q -nc $updatesiteURL
-thejar=`cat index.html | egrep -v "source|pack.gz" | egrep "core.central|foundation.core" | sed -e "s#.\+href=\"\([^\"]\+\)\">.\+#\1#" | sort | head -1; rm -f index.html`
-echo ${updatesiteURL}/${thejar} | egrep "core.central|foundation.core"
+thejars=`cat index.html | egrep -v "source|pack.gz" | egrep ${pluginName} | sed -e "s#.\+href=\"\([^\"]\+\)\">.\+#\1#" | sort`
+echo "Found: $thejars" | egrep ${pluginName}
+thejar=`cat index.html | egrep -v "source|pack.gz" | egrep ${pluginName} | sed -e "s#.\+href=\"\([^\"]\+\)\">.\+#\1#" | sort | tail -1; rm -f index.html`
+echo ${updatesiteURL}/${thejar} | egrep ${pluginName}
 cd /tmp; wget -q -nc ${updatesiteURL}/${thejar}
 theversion=`unzip -p ${thejar} */currentversion.properties | grep version= | sed -e "s/version=//" | tail -1`
 rm -f ${thejar}
@@ -78,10 +82,10 @@ WARNING: Don't use symlinks are they are too risky to use. Those operations can 
 
 [source,bash]
 ----
-# can run these 5 steps in parallel
+# can run these 6 steps in parallel
 
 # copy JBDS target platform zips
-version=9.0.0.Beta1 # a, b, c...
+version=9.0.0.Beta1a # a, b, c...
 TARGET_PLATFORM_VERSION_MAX=4.50.0.Beta1-SNAPSHOT
 CENTRAL_TARGET_VERSION=4.50.0.Beta1-SNAPSHOT
 for targetname in jbdevstudio jbtcentral jbtearlyaccess; do
@@ -99,7 +103,7 @@ done
 
 
 # copy JBT Central/EA update sites & zips
-version=9.0.0.Beta1 # a, b, c...
+version=9.0.0.Beta1a # a, b, c...
 stream=4.3.mars # NOT 9.0, use jbosstools stream here
 for site in central-site earlyaccess-site; do
   ID=""
@@ -127,23 +131,42 @@ for site in central-site earlyaccess-site; do
 done
 
 
-# copy JBDS installers: snapshots/builds/ to staging/builds/
-version=9.0.0.Beta1 # a, b, c...
+# copy JBDS installers: snapshots/builds/ to staging/builds/ [INTERNAL - both installers]
+version=9.0.0.Beta1a # a, b, c...
 stream=9.0.mars
 ID=""
 ID=$(cd /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${stream} && ls 20* | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%:*}
 if [[ $ID ]]; then
-  echo "Latest build for ${site}: ${ID}"
+  echo "Latest build for installers: ${ID}"
   # copy build folder
-  mkdir -p /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio.product_${stream}/${ID}/
-  rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${stream}/${ID}/* /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio.product_${stream}/${ID}/
+  mkdir -p /qa/services/http/binaries/RHDS/9.0/staging/builds/jboss-devstudio-${version}-build-product/${ID}/
+  rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${stream}/${ID}/* /qa/services/http/binaries/RHDS/9.0/staging/builds/jboss-devstudio-${version}-build-product/${ID}/
 else
-  echo "ERROR: no latest build found for ${site}" | grep ERROR
+  echo "ERROR: no latest build found for installers" | grep ERROR
+fi
+
+
+# copy JBDS installers: snapshots/builds/ to staging/builds/ [EXTERNAL - Standalone installer only]
+version=9.0.0.Beta1a # a, b, c...
+stream=9.0.mars
+ID=""
+ID=$(echo "ls 20*" | sftp ${JBDS}/9.0/snapshots/builds/devstudio.product_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
+if [[ $ID ]]; then
+  echo "Latest build for installer: ${ID}"
+  # copy build folder
+  tmpdir=/tmp/jboss-devstudio-${version}-build-product__${ID}
+  rsync -aPrz --rsh=ssh --protocol=28 ${JBDS}/9.0/snapshots/builds/devstudio.product_${stream}/${ID}/* ${tmpdir}/
+  # copy standalone installer
+  echo "mkdir jboss-devstudio-${version}-build-product" | sftp ${JBDS}/9.0/staging/builds/
+  rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${JBDS}/9.0/staging/builds/jboss-devstudio-${version}-build-product/${ID}/
+  rm -fr $tmpdir
+else
+  echo "ERROR: no latest build found for installer" | grep ERROR
 fi
 
 
 # copy JBDS update: snapshots/builds/*/repo/* to staging/updates/core/${version}; also copy updatesite-core.zip
-version=9.0.0.Beta1 # a, b, c...
+version=9.0.0.Beta1a # a, b, c...
 stream=9.0.mars
 ID=""
 ID=$(cd /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${stream} && ls 20* | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%:*}
@@ -157,7 +180,7 @@ rsync -aPrz --rsh=ssh --protocol=28 ${y}.sha1 ${JBDS}/9.0/staging/updates/${site
 
 
 # copy JBDS discovery sites to staging/builds/ and staging/updates/
-version=9.0.0.Beta1 # a, b, c...
+version=9.0.0.Beta1a # a, b, c...
 stream=4.3.mars # NOT 9.0, use jbosstools stream here
 for site in discovery.central discovery.earlyaccess; do
   ID=""
@@ -183,6 +206,7 @@ for site in central earlyaccess discovery.central discovery.earlyaccess; do
   if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
   echo "https://devstudio.redhat.com/9.0/staging/builds/devstudio-${version}-build-${sitename}/ *AND* https://devstudio.redhat.com/9.0/staging/updates/${sitename}/${version}/"
 done
+echo "https://devstudio.redhat.com/9.0/staging/builds/devstudio-${version}-build-product/ *AND* http://www.qa.jboss.com/binaries/RHDS/9.0/staging/builds/devstudio-${version}-build-product/"
 echo "https://devstudio.redhat.com/9.0/staging/builds/ *AND* https://devstudio.redhat.com/9.0/staging/updates/core/ (all the zips)"
 
 ----
@@ -205,8 +229,8 @@ This should point to the latest staging bits. Just copy what's in discovery.cent
 ----
 
 stream=4.3.mars # NOT 9.0, use jbosstools stream here
-versionWithRespin=9.0.0.Beta1
-TARGET_PLATFORM_VERSION_MAX=4.50.0.Beta1-SNAPSHOT
+versionWithRespin=9.0.0.Beta1a # a, b, c...
+TARGET_PLATFORM_VERSION_MAX=4.50.0.Beta1
 CENTRAL_TARGET_VERSION=4.50.0.Beta1-SNAPSHOT
 
 pushd ~/truu/jbdevstudio-website/content/9.0/staging/updates
@@ -228,7 +252,7 @@ done
 rsync discovery.central/${versionWithRespin}/composite*.xml ./
 
 # update index.html 
-previous=9.0.0.Alpha2
+previous=9.0.0.Beta1
 sed -i "s#${previous}#${versionWithRespin}#" index.html
 
 # push changes to server
@@ -243,7 +267,7 @@ https://devstudio.redhat.com/9.0/staging/updates/compositeContent.xml"
 
 # then push changes to github (no need to commit new folders, just changes to staging/updates/*ml)
 # and remove new discovery.central/ and discovery.earlyaccess/ folders
-rm -fr discovery.central/composite*.xml discovery.earlyaccess/composite*.xml
+rm -fr discovery.central/${versionWithRespin}/composite*.xml discovery.earlyaccess/${versionWithRespin}/composite*.xml
 
 # done
 popd
@@ -293,8 +317,8 @@ ____
 
 [source,bash]
 ----
-versionWithRespin=9.0.0.Beta1 # a, b, c...
-respin="respin-"
+versionWithRespin=9.0.0.Beta1a # a, b, c...
+respin="respin-a"
 jbdsVersion=9.0.0.Beta1 # no respin suffix here
 jbtVersion=4.3.0.Beta1 # no respin suffix here
 echo "
@@ -306,11 +330,13 @@ Body:
 
 As always, these are not FINAL bits, but preliminary results for QE testing. Not for redistribution to customers. Update sites are public; installers require VPN access.
 
-Universal Installers: http://www.qa.jboss.com/binaries/RHDS/9.0/staging/builds/devstudio.product_9.0.mars/ (Internal, VPN required)
+Universal Installers: 
+* http://www.qa.jboss.com/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/ (VPN required)
+* https://devstudio.redhat.com/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/
 
 Update Sites:
 * https://devstudio.redhat.com/9.0/staging/updates/ (includes ${versionWithRespin} Core + Target Platform + JBoss Central)
-* https://devstudio.redhat.com/9.0/staging/updates/discovery.earlyaccess/9.0.0.Beta1/ (includes the above site + Early Access)
+* https://devstudio.redhat.com/9.0/staging/updates/discovery.earlyaccess/${versionWithRespin}/ (includes the above site + Early Access)
 
 New + Noteworthy (subject to change):
 * https://github.com/jbosstools/jbosstools-website/tree/master/documentation/whatsnew
@@ -319,10 +345,19 @@ New + Noteworthy (subject to change):
 Schedule / Upcoming Releases: https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.plugin.system.project%3Aversions-panel
 
 "
-
 if [[ $respin != "respin-" ]]; then
 echo " 
+
+--
+
 Changes prompting this $respin are: https://issues.jboss.org/issues/?jql=labels%20in%20%28%22${respin}%22%29%20and%20%28%28project%20in%20%28%22JBDS%22%29%20and%20fixversion%20in%20%28%22${jbdsVersion}%22%29%29%20or%20%28project%20in%20%28%22JBIDE%22%2C%22TOOLSDOC%22%29%20and%20fixversion%20in%20%28%22${jbtVersion}%22%29%29%29
+
+To compare the upcoming version of Central (${versionWithRespin}) against an older version, add lines similar to these your eclipse.ini file after the -vmargs line for the appropriate version & URLs:
+ -Djboss.discovery.directory.url=https://devstudio.redhat.com/9.0/staging/updates/discovery.central/${versionWithRespin}/devstudio-directory.xml
+ -Djboss.discovery.site.url=https://devstudio.redhat.com/9.0/staging/updates/
+ -Djboss.discovery.earlyaccess.site.url=https://devstudio.redhat.com/9.0/staging/updates/discovery.earlyaccess/${versionWithRespin}/
+ -Djboss.discovery.earlyaccess.list.url=https://devstudio.redhat.com/9.0/staging/updates/discovery.earlyaccess/${versionWithRespin}/devstudio-earlyaccess.properties
+
 "
 fi
 

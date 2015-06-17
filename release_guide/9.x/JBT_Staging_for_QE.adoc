@@ -14,6 +14,7 @@ A Jenkins job can then be triggered to sync changes to download.jboss.org: https
 
 # @Since JBT 4.2.1 / JBDS 8.0.1
 # JBIDE-18820, JBIDE-18806 check the version set in o.j.t.foundation.core's currentversion.properties value of default.version
+# TODO: verify that for Beta2, we only get ONE copy of the plugin, not multiple old (orphaned?) ones too.
 version=4.3.0.Beta1 #a, b, c...
 pluginName=foundation.core
 updatesiteURL=https://devstudio.redhat.com/9.0/staging/updates/core/${version}/plugins/

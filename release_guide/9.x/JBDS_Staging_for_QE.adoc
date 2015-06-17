@@ -2,10 +2,7 @@
 
 This document describe how to provide a valid JBoss Developer Studio build to QE so they can test us.
 
-TODO:
-
-* in product/features/com.jboss.jbds.product.feature/p2.inf
-* when releasing GA make sure to :%s/development/stable/g and :%s/9.0-staging/9.0/g
+TODO JBDS-3462: when releasing GA make sure to :%s/development/stable/g and :%s/9.0-staging/9.0/g
 
 
 == Update Discovery Sites and URLs
@@ -17,6 +14,7 @@ See details in JBT_Staging_For_QE.adoc
 
 # @since JBT 4.3.0 / JBDS 9.0.0
 # JBIDE-18820, JBIDE-18806 check the version set in c.j.d.central.core's currentversion.properties value of default.version
+# TODO: verify that for Beta2, we only get ONE copy of the plugin, not multiple old (orphaned?) ones too.
 version=9.0.0.Beta1 #a, b, c...
 pluginName=core.central
 updatesiteURL=https://devstudio.redhat.com/9.0/staging/updates/core/${version}/plugins/
@@ -211,16 +209,6 @@ echo "https://devstudio.redhat.com/9.0/staging/builds/ *AND* https://devstudio.r
 
 ----
 
-== Stage files to devstudio.redhat.com
-
-TODO: discovery composites should point at stuff exclusively on devstudio.redhat.com, not a mix of stuff on download.jboss.org and devstudio.redhat.com. But this needs to be fixed upstream when publishing the following 5 artifacts:
-
-a) JBDS target platform
-b) JBDS Central & EA update sites
-c) JBDS Central & EA target platforms
-
-Then these URLs can be entirely controlled from the jbosstools-discovery jobs.
-
 === Update contents of devstudio.jboss.com/9.0/staging/updates
 
 This should point to the latest staging bits. Just copy what's in discovery.central/composite*.xml into this folder.
@@ -242,9 +230,10 @@ for d in discovery.central discovery.earlyaccess; do
   now=`date +%s000`
   for c in compositeContent.xml compositeArtifacts.xml; do 
     sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#" $c
-    sed -i -e "s#http://download.jboss.org/jbosstools/mars/#https://devstudio.redhat.com/9.0/#" $c
-    sed -i -e "s#http://download.jboss.org/jbosstools/targetplatforms/#https://devstudio.redhat.com/targetplatforms/#" $c
-    sed -i -e "s#4\.3\.0#9\.0\.0#" $c
+    # TODO: are these next 3 sed steps still needed?
+      sed -i -e "s#http://download.jboss.org/jbosstools/mars/#https://devstudio.redhat.com/9.0/#" $c
+      sed -i -e "s#http://download.jboss.org/jbosstools/targetplatforms/#https://devstudio.redhat.com/targetplatforms/#" $c
+      sed -i -e "s#4\.3\.0#9\.0\.0#" $c
   done
   cat $c | egrep "${versionWithRespin}|${TARGET_PLATFORM_VERSION_MAX}|${CENTRAL_TARGET_VERSION}|timestamp"
   popd

@@ -2,6 +2,12 @@
 
 This document describe how to provide a valid JBoss Tools build to QE so they can test us.
 
+TODO: use consistent variables for version, versionWithRespin, previous, previousFull, versionWithRespin_PREV
+
+TODO: use consistent instructions for fetching sources from git & pushing changes
+
+TODO: use consistent instructions for updating ide-config.properties
+
 [NOTE]
 ====
 Note that +sftp://tools@filemgmt.jboss.org/downloads_htdocs/tools/+ maps to +http://download.jboss.org/jbosstools/+ +
@@ -109,7 +115,7 @@ Here is a script that performs the copy (& rename) from /snapshots/ to /staging/
 # JBT aggregate site
 for site in site; do
   stream=4.3.mars
-  version=4.3.0.Beta1a # a, b, c...
+  version=4.3.0.Beta1b # a, b, c...
   ID=""
   ID=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
@@ -132,7 +138,7 @@ done
 # JBT tests site
 for site in coretests-site; do
   stream=4.3.mars
-  version=4.3.0.Beta1a # a, b, c...
+  version=4.3.0.Beta1b # a, b, c...
   ID=""
   ID=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
@@ -156,7 +162,7 @@ done
 # webtools sites
 for site in webtools-site; do
   stream=4.3.mars
-  version=4.3.0.Beta1a # a, b, c...
+  version=4.3.0.Beta1b # a, b, c...
   ID=""
   ID=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
@@ -179,7 +185,7 @@ done
 # Central and EA sites
 for site in central-site earlyaccess-site; do
   stream=4.3.mars
-  version=4.3.0.Beta1a # a, b, c...
+  version=4.3.0.Beta1b # a, b, c...
   ID=""
   ID=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
@@ -202,7 +208,7 @@ done
 # Browsersim Standalone Zip, ~16M
 for site in browsersim-standalone; do
   stream=4.3.mars
-  version=4.3.0.Beta1a # a, b, c...
+  version=4.3.0.Beta1b # a, b, c...
   ID=""
   ID=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/snapshots/builds/jbosstools-${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
@@ -244,11 +250,11 @@ This site needs to contain:
 
 [source,bash]
 ----
-versionWithRespin_PREV=4.3.0.Beta1
-TARGET_PLATFORM_VERSION_MAX_PREV=4.50.0.Beta1-SNAPSHOT
+versionWithRespin_PREV=4.3.0.Beta1a
+TARGET_PLATFORM_VERSION_MAX_PREV=4.50.0.Beta1
 TARGET_PLATFORM_CENTRAL_MAX_PREV=4.50.0.Beta1-SNAPSHOT
 
-versionWithRespin=4.3.0.Beta1a # a, b, c...
+versionWithRespin=4.3.0.Beta1b # a, b, c...
 TARGET_PLATFORM_VERSION_MAX=4.50.0.Beta1
 TARGET_PLATFORM_CENTRAL_MAX=4.50.0.Beta1-SNAPSHOT
 
@@ -283,7 +289,7 @@ scp composite*.xml tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/staging
 [[update-discovery-urls]]
 Update the *stable branch* discovery job ( https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/job/jbosstools-discovery_4.3.mars/configure ) to use the correct source URLs and versions +
 
-VERSION = "Beta1a" (not SNAPSHOT!)
+VERSION = "Beta1b" (not SNAPSHOT!)
 TARGET_PLATFORM_VERSION_MAXIMUM  = "4.50.0.Beta1"
 JBTCENTRALTARGET_VERSION   = "4.50.0.Beta1-SNAPSHOT"
 
@@ -316,7 +322,7 @@ hudson@dev01$ ...
 
 for site in discovery.central discovery.earlyaccess; do
   stream=4.3.mars
-  version=4.3.0.Beta1a # a, b, c...
+  version=4.3.0.Beta1b # a, b, c...
   ID=""
   ID=$(echo "ls 20*" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/snapshots/builds/jbosstools-${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
@@ -351,7 +357,7 @@ done
 # new EA properties is here: http://download.jboss.org/jbosstools/mars/staging/updates/discovery.earlyaccess/4.3.0.Beta1/jbosstools-earlyaccess.properties
 
 stream=4.3.mars
-version=4.3.0.Beta1a # a, b, c...
+version=4.3.0.Beta1b # a, b, c...
 # earlyaccess site includes one directory.xml file which lists both core and earlyaccess plugins, so use that instead of core site
 echo "rename nightly/earlyaccess/${stream} staging/${version}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/discovery/
 echo " >> http://download.jboss.org/jbosstools/discovery/staging/${version}/" | egrep ">>|${version}"
@@ -451,8 +457,8 @@ ____
 
 [source,bash]
 ----
-versionWithRespin=4.3.0.Beta1a # a, b, c...
-respin="respin-a"
+versionWithRespin=4.3.0.Beta1b # a, b, c...
+respin="respin-b"
 #TARGET_PLATFORM_VERSION_MIN=4.50.0.Beta1
 TARGET_PLATFORM_VERSION_MAX=4.50.0.Beta1
 TARGET_PLATFORM_CENTRAL_MAX=4.50.0.Beta1-SNAPSHOT

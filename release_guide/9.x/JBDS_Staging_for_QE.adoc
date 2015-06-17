@@ -4,6 +4,11 @@ This document describe how to provide a valid JBoss Developer Studio build to QE
 
 TODO JBDS-3462: when releasing GA make sure to :%s/development/stable/g and :%s/9.0-staging/9.0/g
 
+TODO: use consistent variables for version, versionWithRespin, previous, previousFull, versionWithRespin_PREV
+
+TODO: use consistent instructions for fetching sources from git & pushing changes
+
+TODO: use consistent instructions for updating ide-config.properties
 
 == Update Discovery Sites and URLs
 
@@ -47,10 +52,10 @@ Whenever you're starting a new shell, you should set those variables:
 
 [sources,bash]
 ----
-versionWithRespin=9.0.0.Beta1
+versionWithRespin=9.0.0.Beta1b # a, b, c...
 TARGET_PLATFORM_VERSION_MAX=4.50.0.Beta1-SNAPSHOT
 CENTRAL_TARGET_VERSION=4.50.0.Beta1-SNAPSHOT
-previousFull=9.0.0.Alpha2
+previousFull=9.0.0.Beta1a
 now=$(date +%s000)
 isGA=false
 JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
@@ -83,7 +88,7 @@ WARNING: Don't use symlinks are they are too risky to use. Those operations can 
 # can run these 6 steps in parallel
 
 # copy JBDS target platform zips
-version=9.0.0.Beta1a # a, b, c...
+version=9.0.0.Beta1b # a, b, c...
 TARGET_PLATFORM_VERSION_MAX=4.50.0.Beta1-SNAPSHOT
 CENTRAL_TARGET_VERSION=4.50.0.Beta1-SNAPSHOT
 for targetname in jbdevstudio jbtcentral jbtearlyaccess; do
@@ -101,7 +106,7 @@ done
 
 
 # copy JBT Central/EA update sites & zips
-version=9.0.0.Beta1a # a, b, c...
+version=9.0.0.Beta1b # a, b, c...
 stream=4.3.mars # NOT 9.0, use jbosstools stream here
 for site in central-site earlyaccess-site; do
   ID=""
@@ -130,7 +135,7 @@ done
 
 
 # copy JBDS installers: snapshots/builds/ to staging/builds/ [INTERNAL - both installers]
-version=9.0.0.Beta1a # a, b, c...
+version=9.0.0.Beta1b # a, b, c...
 stream=9.0.mars
 ID=""
 ID=$(cd /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${stream} && ls 20* | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%:*}
@@ -145,7 +150,7 @@ fi
 
 
 # copy JBDS installers: snapshots/builds/ to staging/builds/ [EXTERNAL - Standalone installer only]
-version=9.0.0.Beta1a # a, b, c...
+version=9.0.0.Beta1b # a, b, c...
 stream=9.0.mars
 ID=""
 ID=$(echo "ls 20*" | sftp ${JBDS}/9.0/snapshots/builds/devstudio.product_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
@@ -164,7 +169,7 @@ fi
 
 
 # copy JBDS update: snapshots/builds/*/repo/* to staging/updates/core/${version}; also copy updatesite-core.zip
-version=9.0.0.Beta1a # a, b, c...
+version=9.0.0.Beta1b # a, b, c...
 stream=9.0.mars
 ID=""
 ID=$(cd /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${stream} && ls 20* | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%:*}
@@ -178,7 +183,7 @@ rsync -aPrz --rsh=ssh --protocol=28 ${y}.sha1 ${JBDS}/9.0/staging/updates/${site
 
 
 # copy JBDS discovery sites to staging/builds/ and staging/updates/
-version=9.0.0.Beta1a # a, b, c...
+version=9.0.0.Beta1b # a, b, c...
 stream=4.3.mars # NOT 9.0, use jbosstools stream here
 for site in discovery.central discovery.earlyaccess; do
   ID=""
@@ -217,7 +222,7 @@ This should point to the latest staging bits. Just copy what's in discovery.cent
 ----
 
 stream=4.3.mars # NOT 9.0, use jbosstools stream here
-versionWithRespin=9.0.0.Beta1a # a, b, c...
+versionWithRespin=9.0.0.Beta1b # a, b, c...
 TARGET_PLATFORM_VERSION_MAX=4.50.0.Beta1
 CENTRAL_TARGET_VERSION=4.50.0.Beta1-SNAPSHOT
 
@@ -241,7 +246,7 @@ done
 rsync discovery.central/${versionWithRespin}/composite*.xml ./
 
 # update index.html 
-previous=9.0.0.Beta1
+previous=9.0.0.Beta1a
 sed -i "s#${previous}#${versionWithRespin}#" index.html
 
 # push changes to server
@@ -306,8 +311,8 @@ ____
 
 [source,bash]
 ----
-versionWithRespin=9.0.0.Beta1a # a, b, c...
-respin="respin-a"
+versionWithRespin=9.0.0.Beta1b # a, b, c...
+respin="respin-b"
 jbdsVersion=9.0.0.Beta1 # no respin suffix here
 jbtVersion=4.3.0.Beta1 # no respin suffix here
 echo "

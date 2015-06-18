@@ -2,8 +2,6 @@
 
 This document describe how to publish a valid JBoss Developer Studio build to production after being verified by QE.
 
-CAUTION: TODO: when releasing GA make sure to :%s/development/stable/g and :%s/9.0-staging/9.0/g in product/features/com.jboss.jbds.product.feature/p2.inf
-
 == Verify that all JIRAs assigned to the current milestone are resolved
 
 Launch the config pages for JBIDE and JBDS and using the gear icons, release the milestone version in JIRA. 
@@ -25,13 +23,50 @@ firefox https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
 == Rename artifacts to remove timestamp and buildID
 
 To comply with Goldengate URL rules, we need to rename artifacts before they go to the CSP. For example
-`jboss-devstudio-9.0.0.Alpha1-v20141020-1042-B317-installer-standalone.jar` must be renamed to `jboss-devstudio-9.0.0.Alpha1-installer-standalone.jar`.
+`jboss-devstudio-9.0.0.Beta1-v20141020-1042-B317-installer-standalone.jar` must be renamed to `jboss-devstudio-9.0.0.Beta1-installer-standalone.jar`.
 
-To achieve that::
-. Log in to dev01 or dev02
-. `sudo su - hudson`
-. `cd /qa/services/http/binaries/RHDS/${version}-build-core`
-. `for f in $(ls jboss-devstudio-${version}-*); do echo $f; newName=$(echo $f | sed s#-v[[:digit:]]*-[[:digit:]]*-B[[:digit:]]*##); mv $f $newName; done`
+Connect to dev01.mw.lab.eng.bos.redhat.com as +hudson+ user (requires permissions).
+
+[source,bash]
+----
+me@local$ ssh dev01.mw.lab.eng.bos.redhat.com
+me@dev01$ sudo su - hudson
+hudson@dev01$ ...
+----
+
+Then:
+
+[source,bash]
+----
+version=9.0.0.Beta1
+versionWithRespin=9.0.0.Beta1b # a, b, c...
+pushd /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/installer/
+for f in $(ls jboss-devstudio-${version}-*); do g=$(echo $f | sed s#-v[[:digit:]]*-[[:digit:]]*-B[[:digit:]]*##); echo "mv $f $g"; mv $f $g; done
+ls -l
+popd
+----
+
+== Verify install instructions are correct
+
+Look at the .txt and .html files in /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/installer/ 
+
+Verify that they contain correct install/usage instructions & versions.
+
+If anything is wrong, fix it by hand, then also commit your changes to the templates. 
+
+https://github.com/jbdevstudio/jbdevstudio-product/commit/3827045dca85e73c5ae339cc13f514591e3c1835
+
+
+== Submit JIRA and PR to update https://www.jboss.org/products/devstudio/
+
+Goal is to update the following pages: https://www.jboss.org/products/devstudio/download/ and https://www.jboss.org/products/devstudio/overview/
+
+* Open a JIRA: https://issues.jboss.org/secure/CreateIssue.jspa?pid=12313621&issuetype=3 
+* Past example: https://issues.jboss.org/browse/DEVELOPER-1347 
+* Attach a pull request for https://github.com/jboss-developer/www.jboss.org/blob/master/products/devstudio/_common/product.yml 
+* Past example: https://github.com/jboss-developer/www.jboss.org/pull/841/files
+
+Once you have the JIRA, you can link to it when sending the note to release-engineering@ below.
 
 == Announce internally for push to CSP staging site
 
@@ -41,29 +76,39 @@ NOTE: As this takes some time and can be easily cancelled, this step can be anti
 ____
 *To* release-engineering@redhat.com +
 and +
-*Cc* cobrien@redhat.com, ldimaggi@redhat.com, mmurray@redhat.com, jpallich@redhat.com, nboldt@redhat.com, mistria@redhat.com, manderse@redhat.com, bsutter@redhat.com +
+*Cc* cobrien@redhat.com, ldimaggi@redhat.com, mhusnain@redhat.com, jpallich@redhat.com, nboldt@redhat.com, mistria@redhat.com, manderse@redhat.com, bsutter@redhat.com, pmuir@redhat.com, paul.robinson@redhat.com +
 
 [source,bash]
 ----
-version=9.0.0.Alpha1
-versionWithRespin=9.0.0.Alpha1 # a, b, c...
+version=9.0.0.Beta1
+versionWithRespin=9.0.0.Beta1b # a, b, c...
+JIRA=-1347
+if [[ ${version} != ${versionWithRespin} ]]; then
+  versionFriendlyName="${version} (to be renamed from ${versionWithRespin})"
+else
+  versionFriendlyName="${version}"
+fi
 echo "
 Subject: 
 
-JBoss Developer Studio ${version} available for push to CSP staging server
+JBoss Developer Studio ${versionFriendlyName} available for push to CSP staging server
 
 Body:
 
-JBoss Developer Studio ${version} (to be renamed from ${versionWithRespin}) is available to push to CSP staging server, for subsequent smoke test & review by QE.
+JBoss Developer Studio ${versionFriendlyName} is available to push to CSP staging server, for subsequent smoke test & review by QE.
 
 Please include the 5 jars/zips listed here:
 
-* http://www.qa.jboss.com/binaries/RHDS/builds/development/${versionWithRespin}-build-core/
+* http://www.qa.jboss.com/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/installer/
 
 We will also need GoldenGate links for the 5 artifacts above, as they need to be linked from these pages:
 
 * https://www.jboss.org/products/devstudio/overview/
 * https://www.jboss.org/products/devstudio/download/
+
+Please provide the GoldenGate links on this JIRA:
+
+* https://issues.jboss.org/browse/DEVELOPER${JIRA}
 
 Only ONE of those artifacts [0] require sign in, as it bundles EAP. The rest are free. 
 
@@ -76,13 +121,14 @@ When pushed, please reply so that QE can review the CSP pages & files for push t
 
 Note that in addition to the new CSP page, eg., [1] or [2], the CSP landing page [3] should also be updated to point to the latest release.
 
-[1] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=9.0.0+Alpha1
+[1] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=9.0.0+Beta1
 [2] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=9.0.0
 [3] https://access.redhat.com/downloads/
 
 Thanks in advance,
 
 "
+
 ----
 ____
 
@@ -96,8 +142,8 @@ For GA releases ONLY, there are 4 update sites and 3 update site zips which shou
 [source,bash]
 ----
 JBDS=devstudio@filemgmt.jboss.org:www_htdocs/devstudio
-version=9.0.0.Alpha1
-jbtVersion=4.3.0.Alpha1
+version=9.0.0.Beta1
+jbtVersion=4.3.0.Beta1
 
 for f in `echo ls | sftp $JBDS/updates/9.0.0/ 2>/dev/null | egrep "${jbtVersion}|${version}"`; do
   echo "rename updates/9.0.0/${f} static/updates/9.0.0/${f}" | sftp $JBDS
@@ -131,8 +177,8 @@ You can run this script from your local machine:
 [source,bash]
 ----
 isGA=false # or true in case you're doing a GA
-version=9.0.0.Alpha1
-versionWithRespin=9.0.0.Alpha1
+version=9.0.0.Beta1
+versionWithRespin=9.0.0.Beta1
 JBDS=devstudio@filemgmt.jboss.org:www_htdocs/devstudio
 
 # set correct path for where you have project cloned on disk
@@ -198,8 +244,8 @@ for d in $dirs; do
   fi
 done
 
-previous=9.0.0.Alpha0
-version=9.0.0.Alpha1
+previous=9.0.0.Alpha1
+version=9.0.0.Beta1
 sed -i "s#${previous}#${version}#" updates/index.html
 
 popd
@@ -226,7 +272,7 @@ First, ssh to www.qa server. Then, sudo to the hudson user, and run this:
 [source,bash]
 ----
 . /home/hudson/config_repository/scripts/jbds/prompt.sh
-version=9.0.0.Alpha1
+version=9.0.0.Beta1
 cd ~/RHDS/builds/development/${version}-build-core/
 
 # TODO: use /static/updates/ for .GA, use updates/ for all others.
@@ -243,7 +289,7 @@ First, ssh to www.qa server. Then, sudo to the hudson user, and run this:
 [source,bash]
 ----
 . /home/hudson/config_repository/scripts/jbds/prompt.sh
-version=9.0.0.Alpha1
+version=9.0.0.Beta1
 cd ~/RHDS/builds/development/
 mv ${version}* ../stable
 ln -s ../stable/${version}*
@@ -267,8 +313,8 @@ And update it it as required, so that the links for the latest milestone point t
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru
 pushd jbosstools-download.jboss.org/jbosstools/configuration
-version=9.0.0.Alpha1 # name to use in filenames ie fixVersion in JIRA
-versionWithRespin=9.0.0.Alpha1 # Fully qualified version, including respin suffix
+version=9.0.0.Beta1b # name to use in filenames ie fixVersion in JIRA
+versionWithRespin=9.0.0.Beta1b # Fully qualified version, including respin suffix
 
 topic=release-jbosstools-${versionWithRespin}-to-production; branch=master; gw1
 
@@ -300,8 +346,8 @@ git clone https://github.com/jbdevstudio/jbdevstudio-website
 git clone https://github.com/jbdevstudio/jbdevstudio-artwork
 git clone https://github.com/jbdevstudio/jbdevstudio-devdoc
 
-jbt_branch=jbosstools-4.3.0.Alpha1x
-version=9.0.0.Alpha1
+jbt_branch=jbosstools-4.3.0.Beta1x
+version=9.0.0.Beta1
 for d in product ci website artwork devdoc; do
   echo "====================================================================="
   echo "Tagging jbdevstudio-${d} from branch ${jbt_branch} as tag ${version}..."
@@ -320,7 +366,7 @@ done
 
 [source,bash]
 ----
-version=9.0.0.Alpha1
+version=9.0.0.Beta1
 cd jbdevstudio-devdoc/release_guide/9.0
 git commit -m "update release guide for ${version}" .
 git push origin HEAD:master
@@ -336,16 +382,6 @@ Provide a PR to add the latest JBT & JBDS milestones to this listing:
 https://github.com/jbosstools/jbosstools-website/blob/master/_config/products.yml
 
 Example: https://github.com/jbosstools/jbosstools-website/pull/193
-
-== devstudio.jboss.com
-
-Goal is to update the following pages: https://www.jboss.org/products/devstudio/download/ and https://www.jboss.org/products/devstudio/overview/
-
-This can be achived by creating a JIRA to JBoss Developer (https://issues.jboss.org/secure/CreateIssue.jspa?pid=12313621&issuetype=3 ) and submitting pull requests for file _products/devstudio/_common/product.yml_ against repository https://github.com/jboss-developer/www.jboss.org 
-
-Example past JIRA: https://issues.jboss.org/browse/DEVELOPER-733 . Relevant pull request is linked from here.
-
-NOTE: you'll need to get an answer from release-engineering@redhat.com (cf first step) to get the URLs to use for the various files
 
 
 == Update Marketplace entry
@@ -401,7 +437,7 @@ and +
 
 [source,bash]
 ----
-version=9.0.0.Alpha1
+version=9.0.0.Beta1
 echo "
 Subject: 
 

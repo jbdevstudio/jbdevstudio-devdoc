@@ -141,9 +141,18 @@ ID=""
 ID=$(cd /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${stream} && ls 20* | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%:*}
 if [[ $ID ]]; then
   echo "Latest build for installers: ${ID}"
+  tmpdir=/tmp/jboss-devstudio-${version}-build-product_INTERNAL__${ID}
   # copy build folder
-  mkdir -p /qa/services/http/binaries/RHDS/9.0/staging/builds/jboss-devstudio-${version}-build-product/${ID}/
-  rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${stream}/${ID}/* /qa/services/http/binaries/RHDS/9.0/staging/builds/jboss-devstudio-${version}-build-product/${ID}/
+  mkdir -p /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio-${version}-build-product/${ID}/
+  rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${stream}/${ID}/* /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio-${version}-build-product/${ID}/
+  # create latest symlinks
+  mkdir -p ${tmpdir}; pushd $tmpdir >/dev/null; ln -s ${ID} latest
+    rm -f /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${stream}/latest 
+    rsync --protocol=28 -l latest /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${stream}/
+    rm -f /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio-${version}-build-product/latest
+    rsync --protocol=28 -l latest /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio-${version}-build-product/
+  popd >/dev/null
+  rm -fr $tmpdir
 else
   echo "ERROR: no latest build found for installers" | grep ERROR
 fi
@@ -157,11 +166,13 @@ ID=$(echo "ls 20*" | sftp ${JBDS}/9.0/snapshots/builds/devstudio.product_${strea
 if [[ $ID ]]; then
   echo "Latest build for installer: ${ID}"
   # copy build folder
-  tmpdir=/tmp/jboss-devstudio-${version}-build-product__${ID}
+  tmpdir=/tmp/jboss-devstudio-${version}-build-product_EXTERNAL__${ID}
   rsync -aPrz --rsh=ssh --protocol=28 ${JBDS}/9.0/snapshots/builds/devstudio.product_${stream}/${ID}/* ${tmpdir}/
   # copy standalone installer
   echo "mkdir jboss-devstudio-${version}-build-product" | sftp ${JBDS}/9.0/staging/builds/
-  rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${JBDS}/9.0/staging/builds/jboss-devstudio-${version}-build-product/${ID}/
+  rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${JBDS}/9.0/staging/builds/devstudio-${version}-build-product/${ID}/
+  # create latest symlink
+  mkdir -p ${tmpdir}; pushd $tmpdir >/dev/null; ln -s ${ID} latest; rsync --protocol=28 -l latest ${JBDS}/9.0/staging/builds/devstudio-${version}-build-product/; rm -f latest; popd >/dev/null
   rm -fr $tmpdir
 else
   echo "ERROR: no latest build found for installer" | grep ERROR
@@ -325,8 +336,8 @@ Body:
 As always, these are not FINAL bits, but preliminary results for QE testing. Not for redistribution to customers. Update sites are public; installers require VPN access.
 
 Universal Installers: 
-* http://www.qa.jboss.com/binaries/RHDS/9.0/staging/builds/jboss-devstudio-${versionWithRespin}-build-product/ (VPN required)
-* https://devstudio.redhat.com/9.0/staging/builds/jboss-devstudio-${versionWithRespin}-build-product/
+* http://www.qa.jboss.com/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/ (VPN required)
+* https://devstudio.redhat.com/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/
 
 Update Sites:
 * https://devstudio.redhat.com/9.0/staging/updates/ (includes ${versionWithRespin} Core + Target Platform + JBoss Central)

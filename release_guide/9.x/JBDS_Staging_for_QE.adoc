@@ -323,7 +323,7 @@ ____
 [source,bash]
 ----
 versionWithRespin=9.0.0.Beta1c # a, b, c...
-respin="respin-b"
+respin="respin-c"
 jbdsVersion=9.0.0.Beta1 # no respin suffix here
 jbtVersion=4.3.0.Beta1 # no respin suffix here
 echo "
@@ -336,8 +336,8 @@ Body:
 As always, these are not FINAL bits, but preliminary results for QE testing. Not for redistribution to customers. Update sites are public; installers require VPN access.
 
 Universal Installers: 
-* http://www.qa.jboss.com/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/ (VPN required)
-* https://devstudio.redhat.com/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/
+* http://www.qa.jboss.com/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/ (EAP bundles; VPN required)
+* https://devstudio.redhat.com/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/ (Standalone only)
 
 Update Sites:
 * https://devstudio.redhat.com/9.0/staging/updates/ (includes ${versionWithRespin} Core + Target Platform + JBoss Central)

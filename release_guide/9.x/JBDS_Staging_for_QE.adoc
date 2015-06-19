@@ -52,10 +52,10 @@ Whenever you're starting a new shell, you should set those variables:
 
 [sources,bash]
 ----
-versionWithRespin=9.0.0.Beta1b # a, b, c...
+versionWithRespin=9.0.0.Beta1c # a, b, c...
 TARGET_PLATFORM_VERSION_MAX=4.50.0.Beta1-SNAPSHOT
 CENTRAL_TARGET_VERSION=4.50.0.Beta1-SNAPSHOT
-previousFull=9.0.0.Beta1a
+previousFull=9.0.0.Beta1b
 now=$(date +%s000)
 isGA=false
 JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
@@ -88,7 +88,7 @@ WARNING: Don't use symlinks are they are too risky to use. Those operations can 
 # can run these 6 steps in parallel
 
 # copy JBDS target platform zips
-version=9.0.0.Beta1b # a, b, c...
+version=9.0.0.Beta1c # a, b, c...
 TARGET_PLATFORM_VERSION_MAX=4.50.0.Beta1-SNAPSHOT
 CENTRAL_TARGET_VERSION=4.50.0.Beta1-SNAPSHOT
 for targetname in jbdevstudio jbtcentral jbtearlyaccess; do
@@ -106,7 +106,7 @@ done
 
 
 # copy JBT Central/EA update sites & zips
-version=9.0.0.Beta1b # a, b, c...
+version=9.0.0.Beta1c # a, b, c...
 stream=4.3.mars # NOT 9.0, use jbosstools stream here
 for site in central-site earlyaccess-site; do
   ID=""
@@ -135,7 +135,7 @@ done
 
 
 # copy JBDS installers: snapshots/builds/ to staging/builds/ [INTERNAL - both installers]
-version=9.0.0.Beta1b # a, b, c...
+version=9.0.0.Beta1c # a, b, c...
 stream=9.0.mars
 ID=""
 ID=$(cd /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${stream} && ls 20* | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%:*}
@@ -159,7 +159,7 @@ fi
 
 
 # copy JBDS installers: snapshots/builds/ to staging/builds/ [EXTERNAL - Standalone installer only]
-version=9.0.0.Beta1b # a, b, c...
+version=9.0.0.Beta1c # a, b, c...
 stream=9.0.mars
 ID=""
 ID=$(echo "ls 20*" | sftp ${JBDS}/9.0/snapshots/builds/devstudio.product_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
@@ -169,7 +169,7 @@ if [[ $ID ]]; then
   tmpdir=/tmp/jboss-devstudio-${version}-build-product_EXTERNAL__${ID}
   rsync -aPrz --rsh=ssh --protocol=28 ${JBDS}/9.0/snapshots/builds/devstudio.product_${stream}/${ID}/* ${tmpdir}/
   # copy standalone installer
-  echo "mkdir jboss-devstudio-${version}-build-product" | sftp ${JBDS}/9.0/staging/builds/
+  echo "mkdir devstudio-${version}-build-product" | sftp ${JBDS}/9.0/staging/builds/
   rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${JBDS}/9.0/staging/builds/devstudio-${version}-build-product/${ID}/
   # create latest symlink
   mkdir -p ${tmpdir}; pushd $tmpdir >/dev/null; ln -s ${ID} latest; rsync --protocol=28 -l latest ${JBDS}/9.0/staging/builds/devstudio-${version}-build-product/; rm -f latest; popd >/dev/null
@@ -180,7 +180,7 @@ fi
 
 
 # copy JBDS update: snapshots/builds/*/repo/* to staging/updates/core/${version}; also copy updatesite-core.zip
-version=9.0.0.Beta1b # a, b, c...
+version=9.0.0.Beta1c # a, b, c...
 stream=9.0.mars
 ID=""
 ID=$(cd /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${stream} && ls 20* | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%:*}
@@ -194,7 +194,7 @@ rsync -aPrz --rsh=ssh --protocol=28 ${y}.sha1 ${JBDS}/9.0/staging/updates/${site
 
 
 # copy JBDS discovery sites to staging/builds/ and staging/updates/
-version=9.0.0.Beta1b # a, b, c...
+version=9.0.0.Beta1c # a, b, c...
 stream=4.3.mars # NOT 9.0, use jbosstools stream here
 for site in discovery.central discovery.earlyaccess; do
   ID=""
@@ -233,7 +233,7 @@ This should point to the latest staging bits. Just copy what's in discovery.cent
 ----
 
 stream=4.3.mars # NOT 9.0, use jbosstools stream here
-versionWithRespin=9.0.0.Beta1b # a, b, c...
+versionWithRespin=9.0.0.Beta1c # a, b, c...
 TARGET_PLATFORM_VERSION_MAX=4.50.0.Beta1
 CENTRAL_TARGET_VERSION=4.50.0.Beta1-SNAPSHOT
 
@@ -257,7 +257,7 @@ done
 rsync discovery.central/${versionWithRespin}/composite*.xml ./
 
 # update index.html 
-previous=9.0.0.Beta1a
+previous=9.0.0.Beta1b
 sed -i "s#${previous}#${versionWithRespin}#" index.html
 
 # push changes to server
@@ -322,7 +322,7 @@ ____
 
 [source,bash]
 ----
-versionWithRespin=9.0.0.Beta1b # a, b, c...
+versionWithRespin=9.0.0.Beta1c # a, b, c...
 respin="respin-b"
 jbdsVersion=9.0.0.Beta1 # no respin suffix here
 jbtVersion=4.3.0.Beta1 # no respin suffix here

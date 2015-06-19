@@ -39,7 +39,7 @@ Then:
 [source,bash]
 ----
 version=9.0.0.Beta1
-versionWithRespin=9.0.0.Beta1b # a, b, c...
+versionWithRespin=9.0.0.Beta1c # a, b, c...
 pushd /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/installer/
 for f in $(ls jboss-devstudio-${version}-*); do g=$(echo $f | sed s#-v[[:digit:]]*-[[:digit:]]*-B[[:digit:]]*##); echo "mv $f $g"; mv $f $g; done
 ls -l
@@ -81,7 +81,7 @@ and +
 [source,bash]
 ----
 version=9.0.0.Beta1
-versionWithRespin=9.0.0.Beta1b # a, b, c...
+versionWithRespin=9.0.0.Beta1c # a, b, c...
 JIRA=-1347
 if [[ ${version} != ${versionWithRespin} ]]; then
   versionFriendlyName="${version} (to be renamed from ${versionWithRespin})"
@@ -178,7 +178,7 @@ You can run this script from your local machine:
 ----
 isGA=false # or true in case you're doing a GA
 version=9.0.0.Beta1
-versionWithRespin=9.0.0.Beta1
+versionWithRespin=9.0.0.Beta1c
 JBDS=devstudio@filemgmt.jboss.org:www_htdocs/devstudio
 
 # set correct path for where you have project cloned on disk
@@ -313,8 +313,8 @@ And update it it as required, so that the links for the latest milestone point t
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru
 pushd jbosstools-download.jboss.org/jbosstools/configuration
-version=9.0.0.Beta1b # name to use in filenames ie fixVersion in JIRA
-versionWithRespin=9.0.0.Beta1b # Fully qualified version, including respin suffix
+version=9.0.0.Beta1c # name to use in filenames ie fixVersion in JIRA
+versionWithRespin=9.0.0.Beta1c # Fully qualified version, including respin suffix
 
 topic=release-jbosstools-${versionWithRespin}-to-production; branch=master; gw1
 

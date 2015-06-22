@@ -2,6 +2,10 @@
 
 This document describe how to publish a valid JBoss Developer Studio build to production after being verified by QE.
 
+= Prerelease Steps
+
+These steps can be done before the actual release (eg., on the Thurs or Fri before the Monday release, as long as QE has more-or-less signed off). Check with QE before proceeding.
+
 == Verify that all JIRAs assigned to the current milestone are resolved
 
 Launch the config pages for JBIDE and JBDS and using the gear icons, release the milestone version in JIRA. 
@@ -63,17 +67,25 @@ Goal is to update the following pages: https://www.jboss.org/products/devstudio/
 
 * Open a JIRA: https://issues.jboss.org/secure/CreateIssue.jspa?pid=12313621&issuetype=3 
 * Past example: https://issues.jboss.org/browse/DEVELOPER-1347 
-* Attach a pull request for https://github.com/jboss-developer/www.jboss.org/blob/master/products/devstudio/_common/product.yml 
+* Attach a pull request for https://github.com/jboss-developer/www.jboss.org/blob/master/products/devstudio/_common/product.yml_
 * Past example: https://github.com/jboss-developer/www.jboss.org/pull/841/files
 
 Once you have the JIRA, you can link to it when sending the note to release-engineering@ below.
+
+== Submit PR to update tools.jboss.org
+
+Provide a PR to add the latest JBDS milestones to this listing:
+
+https://github.com/jbosstools/jbosstools-website/blob/master/_config/products.yml_
+
+Example: https://github.com/jbosstools/jbosstools-website/pull/193
 
 == Announce internally for push to CSP staging site
 
 First thing is to ask for availability of the binaries to CSP (Red Hat Customer Portal) and Golden Gate (JBoss products portal).
 
 NOTE: As this takes some time and can be easily cancelled, this step can be anticipated a few days before release.
-____
+
 *To* release-engineering@redhat.com +
 and +
 *Cc* cobrien@redhat.com, ldimaggi@redhat.com, mhusnain@redhat.com, jpallich@redhat.com, nboldt@redhat.com, mistria@redhat.com, manderse@redhat.com, bsutter@redhat.com, pmuir@redhat.com, paul.robinson@redhat.com +
@@ -130,177 +142,160 @@ Thanks in advance,
 "
 
 ----
-____
 
-As an answer, you get the links to the files on both portals. Keep them as you'll need them later.
+As an answer, you get the links to the GoldenGate files, eg., /content/origin/files/sha256/2c/2c92b68d122db901e3acbb74f06950116f4fe29402c25f4391761f9a93e65bba/jboss-devstudio-9.0.0.Beta1-updatesite-core.zip
+
+Communicate with Paul Robinson, Chris Obrien, etc. to coordinate the release. All the above can happen in parallel / before the updates below.
 
 
-== Move GA content to /static/
+= Release steps
 
-For GA releases ONLY, there are 4 update sites and 3 update site zips which should be moved to /static/ for Akamai caching.
+Once QE has signed off, and bits are staged to CSP, you can proceed w/ the rest of the release on Monday (release day).
+
+== Copy from /staging/ into /development/
+
+First connect to dev01.mw.lab.eng.bos.redhat.com as +hudson+ user (requires permissions).
 
 [source,bash]
 ----
-JBDS=devstudio@filemgmt.jboss.org:www_htdocs/devstudio
-version=9.0.0.Beta1
-jbtVersion=4.3.0.Beta1
+me@local$ ssh dev01.mw.lab.eng.bos.redhat.com
+me@dev01$ sudo su - hudson
+hudson@dev01$ ...
+----
 
-for f in `echo ls | sftp $JBDS/updates/9.0.0/ 2>/dev/null | egrep "${jbtVersion}|${version}"`; do
-  echo "rename updates/9.0.0/${f} static/updates/9.0.0/${f}" | sftp $JBDS
+Then copy the latest JBDS artifacts:
+
+* installer
+* target platforms & zips
+* update sites & zips
+* discovery sites
+
+[source,bash]
+----
+# can run these 4 steps in parallel to save time
+
+
+# copy JBDS update site (> 800M)
+version=9.0.0.Beta1
+versionWithRespin=9.0.0.Beta1c # a, b, c...
+tmpdir=/tmp/release_${version}_update_site
+for site in core; do
+  mkdir -p ${tmpdir}/9.0/development/updates/${site}/${version}
+  # rename from staging/*/versionWithRespin to development/*/version/
+  rsync -aPrz --rsh=ssh --protocol=28 ${JBDS}/9.0/staging/updates/${site}/${versionWithRespin}/* ${tmpdir}/9.0/development/updates/${site}/${version}/
+  # push to remote
+  echo "mkdir ${site} | sftp ${JBDS}/9.0/development/updates/"
+  echo "mkdir ${version} | sftp ${JBDS}/9.0/development/updates/${site}"
+  rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/9.0/development/updates/${site}/${version} ${JBDS}/9.0/development/updates/${site}/
 done
+rm -fr $tmpdir
 
-regularPath='../9.0.0'
-akamaiPath='../../static/updates/9.0.0'
-now=$(date +%s000)
-wget -O compositeArtifacts.xml http://devstudio.jboss.com/updates/9.0-staging/compositeArtifacts.xml
-wget -O compositeContent.xml http://devstudio.jboss.com/updates/9.0-staging/compositeContent.xml
-sed --regexp-extended --in-place \
-    -e s#[[:digit:]]{13}#$now## \
-    -e s#$regularPath#$akamaiPath## \
-    compositeArtifacts.xml compositeContent.xml
-scp compositeArtifacts.xml compositeContent.jar $JBDS/updates/9.0-staging
-----
 
-== Update composite files and devstudio-directory.xml to point at new discovery jar(s) from staging
-
-[IMPORTANT]
-====
-TODO for CRx and GA: VERIFY CONTENTS OF DISCOVERY JAR ARE CORRECTLY POINTING AT
-
-*  9.0 for /9.0/
-*  9.0-development for /9.0-development/
-*  9.0-staging for /9.0-staging/
-====
-
-You can run this script from your local machine:
-
-[source,bash]
-----
-isGA=false # or true in case you're doing a GA
+# copy small sites (< 8M), and update metadata refs in discovery sites
 version=9.0.0.Beta1
-versionWithRespin=9.0.0.Beta1c
-JBDS=devstudio@filemgmt.jboss.org:www_htdocs/devstudio
-
-# set correct path for where you have project cloned on disk
-pushd jbdevstudio-website/content
-basedir=$(pwd)
-
-dirs="9.0-staging 9.0-development"
-if [[ $isGA == "true" ]]; then dirs="9.0-staging 9.0-development 9.0"; fi
-
-for d in $dirs; do
-  if [[ $d == "9.0-staging" ]]; then
-    pushd ${basedir}/updates/${d}
-      # Update URLs in discovery jars
-      newJars=$(cat devstudio-directory.xml | grep entry | grep -v "integration-stack" | sed -e "s#.\+discovery/#discovery/#g" | sed -e "s#\.jar.\+#.jar#g")
-      for newJar in $newJars; do 
-        wget -q -nc https://devstudio.redhat.com/updates/${SRC_SITE}/discovery/${newJar}
-        if [[ ! ${newJar##*.earlyaccess_*} ]] && [[ ${newJar##*integration-stack*} ]]; then
-          newJarEA=${newJar}
-          echo "EA: $newJarEA"
-        elif [[ ${newJar##*integration-stack*} ]]; then
-          newJarCore=${newJar}
-          echo "Core: $newJarCore"
-        fi
-        git add $newJar
-      done
-
-      for newJar in ${newJarEA} ${newJarCore}; do
-        unzip -q -d ${basedir}/updates/${d}/${newJar}{_,}
-        pushd ${newJar}_ >/dev/null 
-        if [ "$isGA" = true ]; then
-          sed -i "s#/9.0-staging/#/9.0/#g" plugin.xml
-          sed -i "s#/9.0-development/#/9.0/#g" plugin.xml
-        else  # plugin points to the STAGING URL, not the RELEASE one
-          sed -i "s#/9.0-staging/#/9.0-development/#g" plugin.xml
-          sed -i "s#/9.0/#/9.0-development/#g" plugin.xml
-        fi
-        zip -u ${basedir}/updates/${d}/${newJar} plugin.xml
-        git add ${basedir}/updates/${d}/${newJar}
-        popd >/dev/null
-        rm -fr ${basedir}/updates/${d}/${newJar}_
-      done
-
-      # cleanup previous discovery jars
-      others=$(ls -1 ${basedir}/updates/${d}/discovery | egrep -v "$(basename $newJarEA)|$(basename $newJarCore)|integration-stack")
-      echo "Clean these old jars: $others"
-      git rm -f $others
-    popd
-  else  
-    pushd ${basedir}/updates/9.0-staging
-      rsync -aPrz --rsh=ssh --protocol=28 ./* ${basedir}/updates/${d}/
-    popd
-    # now fix URLs in html pages
-    pushd ${basedir}/updates/${d}/
-      # set correct page label
-      if [[ $d == "9.0" ]]; then
-        sed -i "s#Development Milestone#Stable Release#" index.html
-        sed -i "s#devstudio.jboss.com/updates/${d}.0/\(.*\)\.zip#devstudio.jboss.com/static/updates/${d}.0/\1.zip#" index.html
-      fi
-      if [[ $d == "9.0-development" ]]; then sed -i "s#9.0-staging#9.0-development#" index.html; fi
-      sed -i "s#9.0-staging#9.0#" index.html
-    popd
-
+versionWithRespin=9.0.0.Beta1c # a, b, c...
+tmpdir=/tmp/release_${version}_small_sites
+for site in central earlyaccess discovery.central discovery.earlyaccess; do
+  mkdir -p ${tmpdir}/9.0/development/updates/${site}/${version}
+  # rename from staging/*/versionWithRespin to development/*/version/
+  rsync -arzq --rsh=ssh --protocol=28 ${JBDS}/9.0/staging/updates/${site}/${versionWithRespin}/* ${tmpdir}/9.0/development/updates/${site}/${version}/
+  # sed .xml files to point at /development/ instead of /staging/, and ${version} instead of $versionWithRespin}
+  if [[ ${site/discovery/} != ${site} ]]; then 
+    pushd ${tmpdir}/9.0/development/updates/${site}/${version}/ >/dev/null
+    now=`date +%s000`
+    for c in compositeContent.xml compositeArtifacts.xml; do 
+      sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#" $c
+      sed -i -e "s#staging#development#" $c
+      sed -i -e "s#${versionWithRespin}#${version}#" $c
+    done
+    cat compositeContent.xml | egrep "staging|development|${version}|${versionWithRespin}"
+    popd >/dev/null
   fi
+  # push to remote
+  echo "mkdir ${site}" | sftp ${JBDS}/9.0/development/updates/
+  echo "mkdir ${version}" | sftp ${JBDS}/9.0/development/updates/${site}
+  rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/9.0/development/updates/${site}/${version} ${JBDS}/9.0/development/updates/${site}/
 done
+rm -fr $tmpdir
 
-previous=9.0.0.Alpha1
+
+# copy 6 zips & SHAs
+# jboss-devstudio-9.0.0.Beta1c-target-platform-central.zip           jboss-devstudio-9.0.0.Beta1c-target-platform.zip          jboss-devstudio-9.0.0.Beta1c-updatesite-core.zip
+# jboss-devstudio-9.0.0.Beta1c-target-platform-earlyaccess.zip       jboss-devstudio-9.0.0.Beta1c-updatesite-central.zip       jboss-devstudio-9.0.0.Beta1c-updatesite-earlyaccess.zip
 version=9.0.0.Beta1
-sed -i "s#${previous}#${version}#" updates/index.html
-
-popd
-
-# verify all files are correct before pusing to git and server
-# TODO: make sure we're using /static/updates/ not /updates/ in composite*.xml for all GA files, and just /updates/ for pre-GA files
-
-git push origin HEAD:master
-
-# push both staging and development folders to devstudio.redhat.com
-JBDS=devstudio@filemgmt.jboss.org:www_htdocs/devstudio
-for d in $dirs; do
-  rsync -aPrz --rsh=ssh --protocol=28 ${basedir}/updates/${d}/* ${JBDS}/updates/${d}/
-  rsync -aPrz --rsh=ssh --protocol=28 ${basedir}/earlyaccess/${d}/* ${JBDS}/earlyaccess/${d}/
+versionWithRespin=9.0.0.Beta1c # a, b, c...
+tmpdir=/tmp/release_${version}_zips
+for site in core; do
+  mkdir -p ${tmpdir}/9.0/development/updates/${site}
+  # get zips
+  rsync -aPrz --rsh=ssh --protocol=28 ${JBDS}/9.0/staging/updates/${site}/jboss-devstudio-${versionWithRespin}*.zip* ${tmpdir}/9.0/development/updates/${site}/
+  echo "mkdir ${site}" | sftp ${JBDS}/9.0/development/updates/
+  # rename from staging/*/versionWithRespin to development/*/version/
+  for zip in ${tmpdir}/9.0/development/updates/${site}/jboss-devstudio-${versionWithRespin}*.zip*; do
+    zipNew=${zip/${versionWithRespin}/${version}}; echo $zipNew
+    zipNew=${zipNew##*/}; echo $zipNew
+    rsync -aPrz --rsh=ssh --protocol=28 ${zip} ${JBDS}/9.0/development/updates/${site}/${zipNew}
+  done
 done
+rm -fr $tmpdir
+
+
+# copy installer jar
+version=9.0.0.Beta1
+versionWithRespin=9.0.0.Beta1c # a, b, c...
+tmpdir=/tmp/release_${version}_installer
+for site in builds; do
+  mkdir -p ${tmpdir}/9.0/development/${site}/installer/${version}
+  # rename from staging/*/versionWithRespin to development/*/version/
+  rsync -aPrz --rsh=ssh --protocol=28 ${JBDS}/9.0/staging/${site}/devstudio-${versionWithRespin}-build-product/latest/installer/jboss-devstudio-*.jar* ${tmpdir}/9.0/development/${site}/installer/${version}
+  # push to remote
+  echo "mkdir ${site}" | sftp ${JBDS}/9.0/development/
+  echo "mkdir installer" | sftp ${JBDS}/9.0/development/${site}
+  echo "mkdir ${version}" | sftp ${JBDS}/9.0/development/${site}/installer
+  rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/9.0/development/${site}/installer/${version} ${JBDS}/9.0/development/${site}/installer/
+done
+rm -fr $tmpdir
+
 ----
 
-== Put a copy of the update site zip on devstudio.redhat.com
+== Update https://devstudio.redhat.com/9.0/development/updates/
 
-NOTE: This might have already been done when staging for QE.
-
-First, ssh to www.qa server. Then, sudo to the hudson user, and run this:
+To update the content in https://devstudio.redhat.com/9.0/development/updates/ ...
 
 [source,bash]
 ----
-. /home/hudson/config_repository/scripts/jbds/prompt.sh
 version=9.0.0.Beta1
-cd ~/RHDS/builds/development/${version}-build-core/
+versionWithRespin=9.0.0.Beta1c # a, b, c...
 
-# TODO: use /static/updates/ for .GA, use updates/ for all others.
-scpr jboss-devstudio-${version}*-updatesite-core.zip jboss-devstudio-${version}*-updatesite-core.zip.MD5 $JBDS/updates/9.0.0/
+# adjust these steps to fit your own path location & git workflow
+cd ~/truu
+pushd jbdevstudio-website/content/9.0/
 
-# TODO if releasing a GA, move the bits from /updates/ to /static/updates/
+# merge updates in 9.0/staging/updates/ into 9.0/development/updates/
+rsync -aPrz staging/updates/*.*ml development/updates/
+
+# sed *.*ml files to point at /development/ instead of /staging/, and ${version} instead of $versionWithRespin}
+pushd development/updates/ >/dev/null
+now=`date +%s000`
+for c in compositeContent.xml compositeArtifacts.xml index.html; do 
+  sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#" $c
+  sed -i -e "s#staging#development#" $c
+  sed -i -e "s#${versionWithRespin}#${version}#" $c
+done
+egrep "staging|development|${version}|${versionWithRespin}" index.html
+echo "------------"
+egrep "staging|development|${version}|${versionWithRespin}" compositeContent.xml
+popd >/dev/null
+
+# commit changes to git, then...
+
+# push changes to server
+rsync -Pzrlt --rsh=ssh --protocol=28 development/updates/*.*ml $JBDS/9.0/development/updates/
+
+# done
+popd >/dev/null
 
 ----
-
-== Cleanup builds and update sites under /development/ and /stable/
-
-First, ssh to www.qa server. Then, sudo to the hudson user, and run this:
-
-[source,bash]
-----
-. /home/hudson/config_repository/scripts/jbds/prompt.sh
-version=9.0.0.Beta1
-cd ~/RHDS/builds/development/
-mv ${version}* ../stable
-ln -s ../stable/${version}*
-mv 9.0.0.Alpha* OLD/
-
-cd ~/RHDS/updates/development/
-mv ${version}* ../stable
-ln -s ../stable/${version}*
-mv 9.0.0.Alpha* OLD/
-----
-
 
 == Release the latest milestone to ide-config.properties
 
@@ -313,9 +308,8 @@ And update it it as required, so that the links for the latest milestone point t
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru
 pushd jbosstools-download.jboss.org/jbosstools/configuration
-version=9.0.0.Beta1c # name to use in filenames ie fixVersion in JIRA
-versionWithRespin=9.0.0.Beta1c # Fully qualified version, including respin suffix
-
+version=9.0.0.Beta1
+versionWithRespin=9.0.0.Beta1c # a, b, c...
 topic=release-jbosstools-${versionWithRespin}-to-production; branch=master; gw1
 
 st ide-config.properties # or use another editor if not Sublime Text (st)
@@ -373,26 +367,13 @@ git push origin HEAD:master
 ----
 
 
-== Update websites
-
-=== tools.jboss.org
-
-Provide a PR to add the latest JBT & JBDS milestones to this listing:
-
-https://github.com/jbosstools/jbosstools-website/blob/master/_config/products.yml
-
-Example: https://github.com/jbosstools/jbosstools-website/pull/193
-
-
 == Update Marketplace entry
 
-WARNING: Alpha versions are not published to market place. So ignore this step for Alpha versions.
+WARNING: Only applies to Beta and better versions.
 
 === If node doesn't exist yet
 
-This is usually the case of first Beta version.
-
-Create a new node on Marketplace, listing the single "BYOE" feature: com.jboss.devstudio.core.feature
+Create a new node on Marketplace, listing the single "BYOE" feature, com.jboss.devstudio.core.feature
 
 === If node already exists
 
@@ -400,7 +381,7 @@ Access it via +http://marketplace.eclipse.org/content/red-hat-jboss-developer-st
 
 * Title to match new version
 * Description to match new version & dependencies
-* Notes / warnings (if applicable, eg., JDK 7/8 issues)
+* Notes / warnings (if applicable, eg., JDK issues)
 
 == Mark release as complete in JIRA
 

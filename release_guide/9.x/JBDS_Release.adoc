@@ -428,15 +428,9 @@ Body:
 
 JBoss Developer Studio ${version} is available!
 
-Download page and installer: 
-* https://tools.jboss.org/downloads/devstudio/mars/${version}.html
-* https://www.jboss.org/products/devstudio/overview/
+Download page: https://www.jboss.org/products/devstudio/overview/
 
-Update site: https://devstudio.jboss.com/updates/9.0-development/
-
-Early Access site: https://devstudio.jboss.com/earlyaccess/9.0-development/
-
---
+Update site: https://devstudio.redhat.com/9.0/development/updates/ 
 
 Eclipse Marketplace: https://marketplace.eclipse.org/content/red-hat-jboss-developer-studio-mars
 

@@ -616,6 +616,7 @@ Example:
 * https://github.com/jbosstools/jbosstools-website/pull/211 (only JBT part of the change)
 * https://github.com/jbosstools/jbosstools-website/pull/343 (ony JBT)
 * https://github.com/jbosstools/jbosstools-website/pull/388 (only JBT)
+* https://github.com/jbosstools/jbosstools-website/pull/418 (JBT / JBDS Beta1)
 
 == Notify Max 
 
@@ -632,7 +633,7 @@ ____
 ----
 version=4.3.0.Beta1
 eclipseVersion="Eclipse 4.5.0.R Mars"
-pullrequestURL=https://github.com/jbosstools/jbosstools-website/pull/388
+pullrequestURL=https://github.com/jbosstools/jbosstools-website/pull/418
 blogURL=/blog/2015-06-22-beta1-for-mars.html
 echo "
 Subject: 
@@ -661,9 +662,9 @@ This is a development release aimed at ${eclipseVersion} users.
 
 Announcement Blog: http://tools.jboss.org/blog/
 
-Eclipse Marketplace: https://marketplace.eclipse.org/content/jboss-tools-mars (once available for Beta)
+Eclipse Marketplace: https://marketplace.eclipse.org/content/jboss-tools-mars
 
-Update Site: http://download.jboss.org/jbosstools/updates/development/mars/
+Update Site: http://download.jboss.org/jbosstools/mars/development/updates/
 
 Update Site Zips: 
 

@@ -6,6 +6,8 @@ With distractions (email, IRC), this process took ~90 mins for the Beta3 release
 
 WARNING: this requires write access to http://sourceforge.net/projects/jboss/files/JBossTools/
 
+TODO: JBIDE-20143 switch from SHA1 to SHA256
+
 == Verify that all JIRAs assigned to the current milestone are resolved
 
 Launch the config pages for JBIDE and JBDS and using the gear icons, release the milestone version in JIRA. 
@@ -102,7 +104,7 @@ scpr ${TOOLS}/mars/staging/builds/jbosstools-${versionWithRespin}-build-browsers
 for m in $(sha1sum ${y}); do if [[ $m != ${y} ]]; then echo $m > ${y}.sha1; fi; done
 popd
 
-# then, push zips and MD5s to destination
+# then, push zips and SHAs to destination
 scpr $SFDIR ${TOOLS}/mars/staging/builds/sf.net/
 echo "http://download.jboss.org/jbosstools/mars/staging/builds/sf.net/${version}/"
 

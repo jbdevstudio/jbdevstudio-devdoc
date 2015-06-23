@@ -61,8 +61,8 @@ On your local machine, using a SFTP client (or the script suggested above), copy
 # can run these 3 steps in parallel
 
 stream=4.3.mars
-version=4.3.0.Beta1 # name to use in filenames ie fixVersion in JIRA
-versionWithRespin=4.3.0.Beta1c # a, b, c... # Fully qualified version, including respin suffix
+version=4.3.0.Beta1
+versionWithRespin=4.3.0.Beta1c # a, b, c...
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 SFDIR=/tmp/development_sf.net_${version}; mkdir -p $SFDIR; pushd $SFDIR
 echo "mkdir ${version}" | sftp ${TOOLS}/mars/staging/builds/sf.net/
@@ -75,8 +75,8 @@ popd
 
 
 stream=4.3.mars
-version=4.3.0.Beta1 # name to use in filenames ie fixVersion in JIRA
-versionWithRespin=4.3.0.Beta1c # a, b, c... # Fully qualified version, including respin suffix
+version=4.3.0.Beta1
+versionWithRespin=4.3.0.Beta1c # a, b, c...
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 SFDIR=/tmp/development_sf.net_${version}; mkdir -p $SFDIR; pushd $SFDIR
 echo "mkdir ${version}" | sftp ${TOOLS}/mars/staging/builds/sf.net/
@@ -89,8 +89,8 @@ popd
 
 
 stream=4.3.mars
-version=4.3.0.Beta1 # name to use in filenames ie fixVersion in JIRA
-versionWithRespin=4.3.0.Beta1c # a, b, c... # Fully qualified version, including respin suffix
+version=4.3.0.Beta1
+versionWithRespin=4.3.0.Beta1c # a, b, c...
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 SFDIR=/tmp/development_sf.net_${version}; mkdir -p $SFDIR; pushd $SFDIR
 echo "mkdir ${version}" | sftp ${TOOLS}/mars/staging/builds/sf.net/
@@ -182,10 +182,10 @@ versionWithRespin=4.3.0.Beta1c # a, b, c...
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 for site in core; do
   tmpdir=/tmp/jbosstools-static-development-updates-${site}_${versionWithRespin}
-  rsync -aPrz --rsh=ssh --protocol=28 tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/staging/updates/${site}/${versionWithRespin}/* ${tmpdir}/
+  rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/mars/staging/updates/${site}/${versionWithRespin}/* ${tmpdir}/
   # copy update site
-  echo "mkdir ${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/static/mars/development/updates/
-  rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/static/mars/development/updates/${site}/${version}/
+  echo "mkdir ${site}" | sftp ${TOOLS}/static/mars/development/updates/
+  rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${TOOLS}/static/mars/development/updates/${site}/${version}/
   rm -fr $tmpdir
 done
 
@@ -196,10 +196,10 @@ TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 # TODO stop publishing webtools this way, once upstream supports a better approach
 for site in coretests webtools; do
   tmpdir=/tmp/jbosstools-static-development-updates-${site}_${versionWithRespin}
-  rsync -aPrz --rsh=ssh --protocol=28 tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/staging/updates/${site}/${versionWithRespin}/* ${tmpdir}/
+  rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/mars/staging/updates/${site}/${versionWithRespin}/* ${tmpdir}/
   # copy update site
-  echo "mkdir ${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/static/mars/development/updates/
-  rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/static/mars/development/updates/${site}/${version}/
+  echo "mkdir ${site}" | sftp ${TOOLS}/static/mars/development/updates/
+  rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${TOOLS}/static/mars/development/updates/${site}/${version}/
   rm -fr $tmpdir
 done
 
@@ -208,10 +208,10 @@ versionWithRespin=4.3.0.Beta1c # a, b, c...
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 for site in central earlyaccess; do
   tmpdir=/tmp/jbosstools-static-development-updates-${site}_${versionWithRespin}
-  rsync -aPrz --rsh=ssh --protocol=28 tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/staging/updates/${site}/${versionWithRespin}/* ${tmpdir}/
+  rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/mars/staging/updates/${site}/${versionWithRespin}/* ${tmpdir}/
   # copy update site
-  echo "mkdir ${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/static/mars/development/updates/
-  rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/static/mars/development/updates/${site}/${version}/
+  echo "mkdir ${site}" | sftp ${TOOLS}/static/mars/development/updates/
+  rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${TOOLS}/static/mars/development/updates/${site}/${version}/
   rm -fr $tmpdir
 done
 
@@ -221,7 +221,7 @@ versionWithRespin=4.3.0.Beta1c # a, b, c...
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 for site in discovery.central discovery.earlyaccess; do
   tmpdir=/tmp/jbosstools-static-development-updates-${site}_${versionWithRespin}
-  rsync -aPrz --rsh=ssh --protocol=28 tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/staging/updates/${site}/${versionWithRespin}/* ${tmpdir}/
+  rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/mars/staging/updates/${site}/${versionWithRespin}/* ${tmpdir}/
   # sed .xml files to point at /development/ instead of /staging/, and ${version} instead of $versionWithRespin}
   if [[ ${site/discovery/} != ${site} ]]; then 
     pushd ${tmpdir}/ >/dev/null
@@ -236,8 +236,8 @@ for site in discovery.central discovery.earlyaccess; do
     popd >/dev/null
   fi
   # copy update site
-  echo "mkdir ${site}" | sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/development/updates/
-  rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/development/updates/${site}/${version}/
+  echo "mkdir ${site}" | sftp ${TOOLS}/mars/development/updates/
+  rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${TOOLS}/mars/development/updates/${site}/${version}/
   rm -fr $tmpdir
 done
 
@@ -271,7 +271,6 @@ cd jbosstools-download.jboss.org/jbosstools/mars/development/updates
 git fetch origin master
 git checkout FETCH_HEAD
 
-previous=4.3.0.Alpha2
 versionWithRespin_PREV=4.3.0.Alpha2
 TARGET_PLATFORM_VERSION_MAX_PREV=4.50.0.Alpha2
 TARGET_PLATFORM_CENTRAL_MAX_PREV=4.50.0.Alpha2-SNAPSHOT
@@ -318,8 +317,9 @@ git commit -m "release JBT ${versionWithRespin} to QE" composite*.xml core/compo
 git push origin HEAD:master
 
 # push updated file to server
-scp composite*.xml tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/development/updates/
-scp core/composite*.xml core/index.html tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/development/updates/core/
+TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
+scp composite*.xml ${TOOLS}/mars/development/updates/
+scp core/composite*.xml core/index.html ${TOOLS}/mars/development/updates/core/
 
 # verify site contents are shown
 echo "http://download.jboss.org/jbosstools/mars/development/updates/compositeContent.xml
@@ -334,11 +334,11 @@ http://download.jboss.org/jbosstools/mars/development/updates/core/compositeCont
 
 ==== Publish Site
 
-Webtools site is expected to be found in +http://download.jboss.org/tools/updates/webtools/${eclipseTrain}+ (where eclipseTrain is for example "mars"). So, with a sftp client, on filemgmt.jboss.org
+Webtools site is expected to be found in +http://download.jboss.org/tools/updates/webtools/mars+. So, with a sftp client, on filemgmt.jboss.org
 
 
-1. Rename +/downloads_htdocs/tools/updates/webtools/${eclipseTrain}+ into +/downloads_htdocs/tools/updates/webtools/${eclipseTrain}_${previousVersion}+, with ${previous} being the name of previous release
-1. Move last build in +/downloads_htdocs/tools/mars/staging/updates/jbosstools-${version}-updatesite-webtools+ to +/downloads_htdocs/tools/updates/webtools/${eclipseTrain}+
+1. Rename +/updates/webtools/mars+ to +/updates/webtools/mars_${version_PREV}+, with ${version_PREV} being the name of last release before this one
+2. Symlink from +/updates/webtools/mars+ to http://download.jboss.org/jbosstools/static/mars/development/updates/core/${version}/
 
 Here is an example of a script doing that:
 
@@ -346,19 +346,17 @@ Here is an example of a script doing that:
 ----
 cd ~/tru # or where you have jbosstools-download.jboss.org checked out
 
-previous=4.3.0.Alpha2
 version=4.3.0.Beta1
+version_PREV=4.3.0.Alpha2
 versionWithRespin=4.3.0.Beta1c # a, b, c...
-eclipseTrain=mars
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 
-#TODO: https://issues.jboss.org/browse/JBIDE-19757 should we just point the symlink at ../../static/mars/development/updates/core/${version}
 pushd jbosstools-download.jboss.org/jbosstools/updates/webtools
   # create new symlink
-  mv mars mars_${previous}
-  ln -s ../../static/mars/development/updates/webtools/${version} mars
-  # move the previous release out of the way
-  echo "rename webtools/${eclipseTrain} webtools/${eclipseTrain}_${previous}" | sftp ${TOOLS}/updates/ #formatting_glitch_
+  mv mars mars_${version_PREV}
+  ln -s ../../static/mars/development/updates/core/${version} mars
+  # move the old symlink out of the way
+  echo "rename webtools/mars webtools/mars_${version_PREV}" | sftp ${TOOLS}/updates/ #formatting_glitch_
   # push new symlink to server
   rsync -Pzrlt --rsh=ssh --protocol=28 mars $TOOLS/updates/webtools/
   # commit change to github
@@ -369,22 +367,20 @@ popd
 
 # verify site contents are shown
 echo "http://download.jboss.org/jbosstools/updates/webtools/
-http://download.jboss.org/jbosstools/updates/webtools/${eclipseTrain}"
+http://download.jboss.org/jbosstools/updates/webtools/mars"
 
 ----
 
 ==== Notify webtools project
 
-If this is the first milestone release (ie if you had to create the 'updates/webtools/${eclipseReleaseTrain}' directory (where ${eclipseReleaseTrain} can be for 
-example 'mars' or 'mars'), ensure that upstream project Web Tools (WTP) knows to include this new URL in their server adapter wizard. New bugzilla required!
+If this is the first milestone release (ie if you had to create the 'updates/webtools/mars' directory (next year will be "neon"), ensure that upstream project Web Tools (WTP) knows to include this new URL in their server adapter wizard. New bugzilla required!
 
 * https://issues.jboss.org/browse/JBIDE-18921
 * https://bugs.eclipse.org/454810
 
 == Update Target Platforms
 
-This is only necessary if this new milestone uses a new Target Platform. In case there is no change in Target Platform between this milestone/release and the 
-previous one, you can ignore these steps.
+If this new release includes a new Target Platform, you need to release the latest target platform. If not, there's nothing to do here.
 
 === Final/GA releases 
 
@@ -409,23 +405,22 @@ https://github.com/jbosstools/jbosstools-download.jboss.org/commit/d5306ce940814
 
 cd ~/tru # or where you have jbosstools-download.jboss.org checked out
 
-oldTP=4.50.0.Alpha2
-newTP=4.50.0.Beta1  # no -SNAPSHOT suffix here
+TARGET_PLATFORM_VERSION_MAX_PREV=4.50.0.Alpha2
+TARGET_PLATFORM_VERSION_MAX=4.50.0.Beta1
 now=`date +%s000`
-eclipseTrain=mars
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 
 pushd jbosstools-download.jboss.org/jbosstools/targetplatforms/
   for f in jbosstools; do
     pushd ${f}target
-      mkdir ${newTP}
-      for d in ${eclipseTrain}/composite*.xml; do
-        sed -i -e "s#${oldTP}#${newTP}#g" $d
+      mkdir ${TARGET_PLATFORM_VERSION_MAX}
+      for d in mars/composite*.xml; do
+        sed -i -e "s#${TARGET_PLATFORM_VERSION_MAX_PREV}#${TARGET_PLATFORM_VERSION_MAX}#g" $d
         sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d
       done
-      mkdir -p ${newTP}/REPO/
-      cp -f ${eclipseTrain}/composite* ${newTP}/
-      cp -f ${eclipseTrain}/composite* ${newTP}/REPO/
+      mkdir -p ${TARGET_PLATFORM_VERSION_MAX}/REPO/
+      cp -f mars/composite* ${TARGET_PLATFORM_VERSION_MAX}/
+      cp -f mars/composite* ${TARGET_PLATFORM_VERSION_MAX}/REPO/
     popd
   done
 
@@ -435,23 +430,23 @@ pushd jbosstools-download.jboss.org/jbosstools/targetplatforms/
   for f in jbosstools; do
     git add ${f}target
     # move actual TP to /static/ folder
-    echo "rename targetplatforms/${f}target/${newTP} static/targetplatforms/${f}target/${newTP}" | sftp ${TOOLS}/
+    echo "rename targetplatforms/${f}target/${TARGET_PLATFORM_VERSION_MAX} static/targetplatforms/${f}target/${TARGET_PLATFORM_VERSION_MAX}" | sftp ${TOOLS}/
     # create composite pointer
-    rsync -Pzrlt --rsh=ssh --protocol=28 ${f}target/${newTP}/* $TOOLS/targetplatforms/${f}target/${newTP}/
-    # update eclipseTrain pointer
-    rsync -Pzrlt --rsh=ssh --protocol=28 ${f}target/${eclipseTrain}/* $TOOLS/targetplatforms/${f}target/${eclipseTrain}/
+    rsync -Pzrlt --rsh=ssh --protocol=28 ${f}target/${TARGET_PLATFORM_VERSION_MAX}/* $TOOLS/targetplatforms/${f}target/${TARGET_PLATFORM_VERSION_MAX}/
+    # update mars pointer
+    rsync -Pzrlt --rsh=ssh --protocol=28 ${f}target/mars/* $TOOLS/targetplatforms/${f}target/mars/
   done
   # commit changes to github
-  git commit -m "move target platforms into /static/ and update composite pointers to latest $eclipseTrain => ${newTP}" .
+  git commit -m "move target platforms into /static/ and update composite pointers to latest mars => ${TARGET_PLATFORM_VERSION_MAX}" .
   git push origin master
 popd
 
 # verify all files are correct
 firefox \
-view-source:http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${eclipseTrain}/compositeContent.xml \
-view-source:http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${newTP}/compositeContent.xml \
-view-source:http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${newTP}/REPO/compositeContent.xml \
-http://download.jboss.org/jbosstools/static/targetplatforms/jbosstoolstarget/${newTP}/ 
+view-source:http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/mars/compositeContent.xml \
+view-source:http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MAX}/compositeContent.xml \
+view-source:http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MAX}/REPO/compositeContent.xml \
+http://download.jboss.org/jbosstools/static/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MAX}/ 
 
 ----
 
@@ -474,11 +469,9 @@ http://download.jboss.org/jbosstools/mars/development/updates/discovery.central/
 
 == Release the latest milestone to ide-config.properties
 
-Check out this file:
+Check out http://download.jboss.org/jbosstools/configuration/ide-config.properties
 
-http://download.jboss.org/jbosstools/configuration/ide-config.properties
-
-And update it it as required, so that the links for the latest milestone point to valid URLs, eg.,
+Update it so that the links for the latest milestone point to valid URLs. Comment out staging links as required.
 
 [source,bash]
 ----
@@ -486,20 +479,12 @@ And update it it as required, so that the links for the latest milestone point t
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru
 pushd jbosstools-download.jboss.org/jbosstools/configuration
-version=4.3.0.Beta1 # name to use in filenames ie fixVersion in JIRA
-versionWithRespin=4.3.0.Beta1c # a, b, c... # Fully qualified version, including respin suffix
+version=4.3.0.Beta1
+versionWithRespin=4.3.0.Beta1c # a, b, c...
 
 topic=release-jbosstools-${versionWithRespin}-to-production; branch=master; gw1
 
-st ide-config.properties # or use another editor if not Sublime Text (st)
-
-# remove existing lines with these to make this milestone live as the lastest for 4.3
-# TODO: should we copy *.xml and *.properties under 4.3.0.Beta1/ folders into ../ ?
-# jboss.discovery.directory.url|jbosstools|4.3=http://download.jboss.org/jbosstools/mars/development/updates/discovery.central/4.3.0.Beta1/jbosstools-directory.xml
-# jboss.discovery.site.url|jbosstools|4.3=http://download.jboss.org/jbosstools/mars/development/updates/core/
-# jboss.discovery.earlyaccess.site.url|jbosstools|4.3=http://download.jboss.org/jbosstools/mars/development/updates/earlyaccess/
-# jboss.discovery.earlyaccess.list.url|jbosstools|4.3=http://download.jboss.org/jbosstools/mars/development/updates/earlyaccess/4.3.0.Beta1/jbosstools-earlyaccess.properties
-# jboss.discovery.site.integration-stack.url|jbosstools|4.3=
+vim ide-config.properties 
 
 # commit the change and push to master
 ci "release JBT ${version} (${versionWithRespin}) to production: link to latest dev milestone discovery site" ide-config.properties
@@ -528,6 +513,17 @@ Access it via +https://marketplace.eclipse.org/content/jboss-tools-mars/edit+ an
 * Title to match new version
 * Description to match new version & dependencies
 * Update list of features, using content of +http://download.jboss.org/jbosstools/static/releases/jbosstools-4.3.0.Beta1-updatesite-core/site.properties+
+
+
+== Smoke test the release
+
+Before notifying team of staged release, must check for obvious problems.
+
+1. Get a recent Eclipse (compatible with the target version of JBT)
+2. Install Abridged category from http://download.jboss.org/jbosstools/mars/development/updates/ ; restart
+3. Open Central Software/Updates tab, enable Early-Access select and install all connectors; restart
+4. Check log, start an example project, check log again
+
 
 == Git tags
 
@@ -575,6 +571,7 @@ ____
 
 [source,bash]
 ----
+version=4.3.0.Beta1
 branchName=jbosstools-4.3.0.Beta1x
 tagName=jbosstools-4.3.0.Beta1
 echo "
@@ -589,6 +586,10 @@ Component leads, please tag your repositories!
 $ git fetch jbosstools ${branchName} #assuming remote is called jbosstools, also often called origin
 $ git tag ${tagName} FETCH_HEAD
 $ git push jbosstools ${tagName}
+
+The complete list of projects in JBoss Tools, and the SHAs used to build those projects, can be seen here:
+
+http://download.jboss.org/jbosstools/static/mars/development/updates/core/${version}/buildinfo.json
 "
 ----
 ____
@@ -634,7 +635,8 @@ ____
 version=4.3.0.Beta1
 eclipseVersion="Eclipse 4.5.0.R Mars"
 pullrequestURL=https://github.com/jbosstools/jbosstools-website/pull/418
-blogURL=/blog/2015-06-22-beta1-for-mars.html
+# NOTE: if releasing on Monday, use Tuesday's date since generally it takes a day for Max to get the blog out.
+blogURL=/blog/beta2-for-mars.html
 echo "
 Subject: 
 
@@ -647,6 +649,12 @@ Here's a PR for adding ${version} JBoss Tools download page:
 ${pullrequestURL}
 
 Suggested blog filename: ${blogURL}
+
+The complete list of projects in JBoss Tools, and the SHAs used to build those projects, can be seen here:
+
+http://download.jboss.org/jbosstools/static/mars/development/updates/core/${version}/buildinfo.json
+
+From that list you can create all the jbosstools-${version} tags in Github, should you so desire.
 
 Below is a sample email you could send to the jbosstools-dev mailing list when the blog is live.
 

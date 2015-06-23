@@ -113,6 +113,8 @@ Please include the 5 jars/zips listed here:
 
 * http://www.qa.jboss.com/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/installer/
 
+Please includes the pre-generated the HTML and text content in the above folder when creating new CSP pages.
+
 We will also need GoldenGate links for the 5 artifacts above, as they need to be linked from these pages:
 
 * https://www.jboss.org/products/devstudio/overview/
@@ -125,9 +127,6 @@ Please provide the GoldenGate links on this JIRA:
 Only ONE of those artifacts [0] require sign in, as it bundles EAP. The rest are free. 
 
 [0] jboss-devstudio-*-installer-eap.jar 
-
-Please note that the new CSP pages should include similar documentation
-to the previous release but now I've pre-generated the HTML and text content in the above folder.
 
 When pushed, please reply so that QE can review the CSP pages & files for push to production.
 
@@ -326,6 +325,23 @@ gw2; gw3; gw4
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 rsync -Pzrlt --rsh=ssh --protocol=28 ide-config.properties $TOOLS/configuration/ide-config.properties
 ----
+
+
+== Smoke test the release
+
+Before notifying team of staged release, must check for obvious problems.
+
+1. Get a recent Eclipse (compatible with the target version of JBT)
+2. Install BYOE category from http://devstudio.redhat.com/9.0/development/updates/ ; restart
+3. Open Central Software/Updates tab, enable Early-Access select and install all connectors; restart
+4. Check log, start an example project, check log again
+
+1. Download JBDS installer from https://devstudio.redhat.com/9.0/development/builds/installer/ and install
+2. Open Central Software/Updates tab, enable Early-Access select and install all connectors; restart
+3. Check log, start an example project, check log again
+
+If this fails, it is most likely due to a bug or a failure in a step above. If possible, fix it before notifying team below.
+
 
 == Tag Git
 

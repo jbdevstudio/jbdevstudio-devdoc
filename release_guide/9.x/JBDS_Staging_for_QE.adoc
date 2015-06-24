@@ -2,8 +2,6 @@
 
 This document describe how to provide a valid JBoss Developer Studio build to QE so they can test us.
 
-TODO JBDS-3462: when releasing GA make sure to :%s/development/stable/g
-
 TODO: use consistent instructions for fetching sources from git & pushing changes
 
 TODO: JBIDE-20143 switch from SHA1 to SHA256

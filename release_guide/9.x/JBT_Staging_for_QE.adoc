@@ -122,6 +122,8 @@ Here is a script that performs the copy (& rename) from /snapshots/ to /staging/
 [source,bash]
 ----
 
+# Do these 4 steps in parallel to save time
+
 # JBT aggregate site
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 for site in site; do
@@ -145,6 +147,7 @@ for site in site; do
     echo "ERROR: no latest build found for ${site}" | grep ERROR
   fi
 done
+
 
 # JBT tests site
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
@@ -170,30 +173,6 @@ for site in coretests-site; do
   fi
 done
 
-#TODO: JBIDE-19757 as of Beta1 we should no longer require the webtools-site anymore; instead we need to create a symlink from http://download.jboss.org/jbosstools/updates/webtools/mars/ into http://download.jboss.org/jbosstools/mars/development/updates/
-# webtools sites
-TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
-for site in webtools-site; do
-  stream=4.3.mars
-  versionWithRespin=4.3.0.Beta1c # a, b, c...
-  ID=""
-  ID=$(echo "ls 20*" | sftp ${TOOLS}/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
-  if [[ $ID ]]; then
-    if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
-    echo "Latest build for ${sitename} (${site}): ${ID}"
-    tmpdir=/tmp/jbosstools-build-sites.aggregate.${site}_${stream}__${ID}
-    rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream}/${ID}/* ${tmpdir}/
-    # copy build folder
-    echo "mkdir jbosstools-${versionWithRespin}-build-${sitename}" | sftp ${TOOLS}/mars/staging/builds/
-    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${TOOLS}/mars/staging/builds/jbosstools-${versionWithRespin}-build-${sitename}/${ID}/
-    # copy update site
-    echo "mkdir ${sitename}" | sftp ${TOOLS}/mars/staging/updates/
-    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/all/repo/* ${TOOLS}/mars/staging/updates/${sitename}/${versionWithRespin}/
-    rm -fr $tmpdir
-  else
-    echo "ERROR: no latest build found for ${site}" | grep ERROR
-  fi
-done
 
 # Central and EA sites
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
@@ -219,6 +198,7 @@ for site in central-site earlyaccess-site; do
   fi
 done
 
+
 # Browsersim Standalone Zip, ~16M
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 for site in browsersim-standalone; do
@@ -240,8 +220,9 @@ for site in browsersim-standalone; do
   fi
 done
 
+
 #  verify sites are correctly populated:
-for site in site coretests-site webtools-site central-site earlyaccess-site; do
+for site in site coretests-site central-site earlyaccess-site; do
   if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
   echo "http://download.jboss.org/jbosstools/mars/staging/builds/jbosstools-${versionWithRespin}-build-${sitename}/ *AND* http://download.jboss.org/jbosstools/mars/staging/updates/${sitename}/${versionWithRespin}/"
 done
@@ -501,7 +482,6 @@ Schedule: https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.p
 Additional update sites:
 * http://download.jboss.org/jbosstools/mars/staging/updates/core/${versionWithRespin}/
 * http://download.jboss.org/jbosstools/mars/staging/updates/coretests/${versionWithRespin}/
-* http://download.jboss.org/jbosstools/mars/staging/updates/webtools/${versionWithRespin}/
 
 Discovery sites:
 * http://download.jboss.org/jbosstools/mars/staging/updates/discovery.central/${versionWithRespin}/

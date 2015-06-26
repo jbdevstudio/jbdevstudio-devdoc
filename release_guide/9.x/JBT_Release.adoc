@@ -177,7 +177,7 @@ Here is a script that performs the copy from /staging/ to /development/:
 # TODO: add a step to check if versionWithRespin ends with ".Final"; if so, use /stable/ instead of /development/
 # copy from staging to development (under /static/ for Akamai performance)
 
-# Do these 4 steps in parallel to save time
+# Do these 3 steps in parallel to save time
 
 version=4.3.0.Beta1
 versionWithRespin=4.3.0.Beta1c # a, b, c...
@@ -191,19 +191,6 @@ for site in core; do
   rm -fr $tmpdir
 done
 
-#TODO: JBIDE-19757 as of Beta1 we should no longer require the webtools-site anymore; instead we need to create a symlink from http://download.jboss.org/jbosstools/updates/webtools/mars/ into http://download.jboss.org/jbosstools/mars/development/updates/
-version=4.3.0.Beta1
-versionWithRespin=4.3.0.Beta1c # a, b, c...
-TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
-# TODO stop publishing webtools this way, once upstream supports a better approach
-for site in coretests webtools; do
-  tmpdir=/tmp/jbosstools-static-development-updates-${site}_${versionWithRespin}
-  rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/mars/staging/updates/${site}/${versionWithRespin}/* ${tmpdir}/
-  # copy update site
-  echo "mkdir ${site}" | sftp ${TOOLS}/static/mars/development/updates/
-  rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${TOOLS}/static/mars/development/updates/${site}/${version}/
-  rm -fr $tmpdir
-done
 
 version=4.3.0.Beta1
 versionWithRespin=4.3.0.Beta1c # a, b, c...
@@ -216,6 +203,7 @@ for site in central earlyaccess; do
   rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${TOOLS}/static/mars/development/updates/${site}/${version}/
   rm -fr $tmpdir
 done
+
 
 # unlike above, don't use /static/ paths here because we're going to have to change the content to point to correct paths below
 version=4.3.0.Beta1
@@ -243,13 +231,13 @@ for site in discovery.central discovery.earlyaccess; do
   rm -fr $tmpdir
 done
 
+
 # verify site are correct:
 version=4.3.0.Beta1
 echo "http://download.jboss.org/jbosstools/static/mars/development/updates/core/${version}
 http://download.jboss.org/jbosstools/static/mars/development/updates/coretests/${version}
 http://download.jboss.org/jbosstools/static/mars/development/updates/central/${version}
 http://download.jboss.org/jbosstools/static/mars/development/updates/earlyaccess/${version}
-http://download.jboss.org/jbosstools/static/mars/development/updates/webtools/${version}
   and 
 http://download.jboss.org/jbosstools/mars/development/updates/discovery.earlyaccess/${version}
 http://download.jboss.org/jbosstools/mars/development/updates/discovery.central/${version}

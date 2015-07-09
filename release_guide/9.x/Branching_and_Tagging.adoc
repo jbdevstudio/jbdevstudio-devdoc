@@ -30,6 +30,46 @@ for d in build build-ci build-sites devdoc discovery download.jboss.org maven-pl
 done
 ----
 
+If you have just branched for a.b.x (rather than a.b.0.y), please make sure you update "master" symlinks to now point to "a.b.simrel" instead.
+
+[source,bash]
+----
+pushd jbosstools-download.jboss.org/jbosstools/
+
+pushd mars/snapshots/updates/
+ls -l com*
+# lrwxrwxrwx  compositeArtifacts.xml -> discovery.central/master/compositeArtifacts.xml
+# lrwxrwxrwx  compositeContent.xml -> discovery.central/master/compositeContent.xml
+rm -f compositeArtifacts.xml compositeContent.xml
+stream=4.3.mars # not master
+ln -s discovery.central/${stream}/compositeArtifacts.xml
+ln -s discovery.central/${stream}/compositeContent.xml
+popd
+
+# then commit changes to github and rsync new symlinks to to $TOOLS/mars/snapshots/updates/
+# ...
+
+# may also want to create new/updated symlinks for future release Eclipse 4.6 Neon / JBDS 10.0
+
+pushd updates/snapshots
+ls -l 9.0 mars master
+# lrwxrwxrwx  mars -> ../../mars/snapshots/updates/
+# lrwxrwxrwx  9.0 -> mars/
+# lrwxrwxrwx  master -> mars/
+rm -f master
+ln -s ../../neon/snapshots/updates/ neon
+ln -s neon/ 10.0
+ln -s neon/ master
+popd
+
+# then commit changes to github and rsync new symlinks to to $TOOLS/updates/snapshots/
+# ...
+
+popd
+
+----
+
+
 == Branching Developer Studio
 
 [source,bash]
@@ -56,6 +96,46 @@ for d in product ci website artwork devdoc; do
   echo ""
 done
 ----
+
+If you have just branched for a.b.x (rather than a.b.0.y), please make sure you update "master" symlinks to now point to "a.b.simrel" instead.
+
+[source,bash]
+----
+pushd jbdevstudio-website/content/
+
+pushd 9.0/snapshots/updates/
+ls -l com*
+# lrwxrwxrwx  compositeArtifacts.xml -> discovery.central/master/compositeArtifacts.xml
+# lrwxrwxrwx  compositeContent.xml -> discovery.central/master/compositeContent.xml
+rm -f compositeArtifacts.xml compositeContent.xml
+stream=4.3.mars # not master
+ln -s discovery.central/${stream}/compositeArtifacts.xml
+ln -s discovery.central/${stream}/compositeContent.xml
+popd
+
+# then commit changes to github and rsync new symlinks to to $JBDS/9.0/snapshots/updates/
+# ...
+
+# may also want to create new/updated symlinks for future release Eclipse 4.6 Neon / JBDS 10.0
+
+pushd updates/snapshots
+ls -l 9.0 mars master
+# lrwxrwxrwx  9.0 -> ../../9.0/snapshots/updates/
+# lrwxrwxrwx  mars -> 9.0/
+# lrwxrwxrwx  master -> 9.0/
+rm -f master
+ln -s ../../10.0/snapshots/updates/ 10.0
+ln -s 10.0 neon
+ln -s 10.0/ master
+popd
+
+# then commit changes to github and rsync new symlinks to to $JBDS/updates/snapshots/
+# ...
+
+popd
+
+----
+
 
 = Tagging
 

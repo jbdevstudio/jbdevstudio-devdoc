@@ -12,7 +12,7 @@ Launch the config pages for JBIDE and JBDS and using the gear icons, release the
 
 Note: If there are unresolved issues with a fixversion set to the current milestone, make sure those issues will not be lost / forgotten. 
 
-Send an email to jbosstools-dev@ and external-exadel-list@  reminding people to close out their JIRAs or move them to the next milestone fixversion.
+Send an email to jbosstools-dev@ and jboss-devstudio-list@  reminding people to close out their JIRAs or move them to the next milestone fixversion.
 
 Sample email: http://lists.jboss.org/pipermail/jbosstools-dev/2014-April/008799.html
 
@@ -193,8 +193,8 @@ rm -fr $tmpdir
 # copy small sites (< 8M), and update metadata refs in discovery sites
 version=9.0.0.Beta1
 versionWithRespin=9.0.0.Beta1c # a, b, c...
-tmpdir=/tmp/release_${version}_small_sites
 for site in central earlyaccess discovery.central discovery.earlyaccess; do
+  tmpdir=/tmp/release__${site}__${version}
   mkdir -p ${tmpdir}/9.0/development/updates/${site}/${version}
   # rename from staging/*/versionWithRespin to development/*/version/
   rsync -arzq --rsh=ssh --protocol=28 ${JBDS}/9.0/staging/updates/${site}/${versionWithRespin}/* ${tmpdir}/9.0/development/updates/${site}/${version}/
@@ -214,8 +214,8 @@ for site in central earlyaccess discovery.central discovery.earlyaccess; do
   echo "mkdir ${site}" | sftp ${JBDS}/9.0/development/updates/
   echo "mkdir ${version}" | sftp ${JBDS}/9.0/development/updates/${site}
   rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/9.0/development/updates/${site}/${version} ${JBDS}/9.0/development/updates/${site}/
+  rm -fr $tmpdir
 done
-rm -fr $tmpdir
 
 
 # copy 6 zips & SHAs
@@ -426,7 +426,7 @@ ____
 
 *To* jbosstools-dev@lists.jboss.org +
 and +
-*To* external-exadel-list@redhat.com +
+*To* jboss-devstudio-list@redhat.com +
 and +
 *To* jboss-announce@redhat.com (optional for major milestones, recommended for GA releases) +
 and +

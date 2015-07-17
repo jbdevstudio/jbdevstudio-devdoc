@@ -4,8 +4,6 @@ This document describe how to provide a valid JBoss Developer Studio build to QE
 
 TODO: use consistent instructions for fetching sources from git & pushing changes
 
-TODO: JBIDE-20143 switch from SHA1 to SHA256
-
 == Update Discovery Sites and URLs
 
 See details in JBT_Staging_For_QE.adoc
@@ -19,10 +17,8 @@ Check c.j.d.central.core's currentversion.properties for the correct value of de
 ----
 # @since JBT 4.3.0 / JBDS 9.0.0 - JBIDE-18820, JBIDE-18806 
 
-# TODO: verify that for Beta2, we only get ONE copy of the plugin, not multiple old (orphaned?) ones too.
-
-version=9.0.0.Beta1
-versionWithRespin=9.0.0.Beta1c # a, b, c...
+version=9.0.0.Beta2
+versionWithRespin=9.0.0.Beta2 # a, b, c...
 
 if [[ ${version:0:1} == "4" ]]; then # JBT
   pluginName=foundation.core
@@ -65,10 +61,10 @@ Whenever you're starting a new shell, you should set those variables:
 
 [sources,bash]
 ----
-version=9.0.0.Beta1
-versionWithRespin=9.0.0.Beta1c # a, b, c...
-TARGET_PLATFORM_VERSION_MAX=4.50.0.Beta1-SNAPSHOT
-CENTRAL_TARGET_VERSION=4.50.0.Beta1-SNAPSHOT
+version=9.0.0.Beta2
+versionWithRespin=9.0.0.Beta2 # a, b, c...
+TARGET_PLATFORM_VERSION_MAX=4.50.0.Beta2
+CENTRAL_TARGET_VERSION=4.50.0.Beta2-SNAPSHOT
 now=$(date +%s000)
 isGA=false
 JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
@@ -101,9 +97,9 @@ WARNING: Don't use symlinks are they are too risky to use. Those operations can 
 # can run these 6 steps in parallel
 
 # copy JBDS target platform zips
-versionWithRespin=9.0.0.Beta1c # a, b, c...
-TARGET_PLATFORM_VERSION_MAX=4.50.0.Beta1-SNAPSHOT
-CENTRAL_TARGET_VERSION=4.50.0.Beta1-SNAPSHOT
+versionWithRespin=9.0.0.Beta2 # a, b, c...
+TARGET_PLATFORM_VERSION_MAX=4.50.0.Beta2
+CENTRAL_TARGET_VERSION=4.50.0.Beta2-SNAPSHOT
 for targetname in jbdevstudio jbtcentral jbtearlyaccess; do
   if [[ ${targetname} == "jbdevstudio" ]]; then
     TARGET_PLATFORM_VERSION=${TARGET_PLATFORM_VERSION_MAX}
@@ -114,12 +110,12 @@ for targetname in jbdevstudio jbtcentral jbtearlyaccess; do
   fi
   y=/qa/services/http/binaries/RHDS/targetplatforms/${targetname}target/${TARGET_PLATFORM_VERSION}/${targetname}target-${TARGET_PLATFORM_VERSION}.zip
   rsync -aPrz --rsh=ssh --protocol=28 ${y} ${JBDS}/9.0/staging/updates/core/jboss-devstudio-${versionWithRespin}${suffix}.zip
-  rsync -aPrz --rsh=ssh --protocol=28 ${y}.sha1 ${JBDS}/9.0/staging/updates/core/jboss-devstudio-${versionWithRespin}${suffix}.zip.sha1
+  rsync -aPrz --rsh=ssh --protocol=28 ${y}.sha256 ${JBDS}/9.0/staging/updates/core/jboss-devstudio-${versionWithRespin}${suffix}.zip.sha256
 done
 
 
 # copy JBT Central/EA update sites & zips
-versionWithRespin=9.0.0.Beta1c # a, b, c...
+versionWithRespin=9.0.0.Beta2 # a, b, c...
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 JBT_stream=4.3.mars
 for site in central-site earlyaccess-site; do
@@ -128,7 +124,7 @@ for site in central-site earlyaccess-site; do
   if [[ $ID ]]; then
     if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
     echo "Latest build for ${sitename} (${site}): ${ID}"
-    tmpdir=/tmp/devstudio-build-sites.aggregate.${site}_${JBT_stream}__${ID}
+    tmpdir=/tmp/devstudio-staging__${site}_${JBT_stream}__${ID}
     rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${JBT_stream}/${ID}/* ${tmpdir}/
     # copy build folder
     echo "mkdir devstudio-${versionWithRespin}-build-${sitename}" | sftp ${JBDS}/9.0/staging/builds/
@@ -140,7 +136,7 @@ for site in central-site earlyaccess-site; do
     y=${tmpdir}/all/repository.zip
     suffix=-updatesite-${sitename}
     rsync -aPrz --rsh=ssh --protocol=28 ${y} ${JBDS}/9.0/staging/updates/core/jboss-devstudio-${versionWithRespin}${suffix}.zip
-    rsync -aPrz --rsh=ssh --protocol=28 ${y}.sha1 ${JBDS}/9.0/staging/updates/core/jboss-devstudio-${versionWithRespin}${suffix}.zip.sha1
+    rsync -aPrz --rsh=ssh --protocol=28 ${y}.sha256 ${JBDS}/9.0/staging/updates/core/jboss-devstudio-${versionWithRespin}${suffix}.zip.sha256
     rm -fr $tmpdir
   else
     echo "ERROR: no latest build found for ${site}" | grep ERROR
@@ -149,7 +145,7 @@ done
 
 
 # copy JBDS installers: snapshots/builds/ to staging/builds/ [INTERNAL - both installers]
-versionWithRespin=9.0.0.Beta1c # a, b, c...
+versionWithRespin=9.0.0.Beta2 # a, b, c...
 JBDS_stream=9.0.mars
 ID=""
 ID=$(cd /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${JBDS_stream} && ls 20* | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%:*}
@@ -173,7 +169,7 @@ fi
 
 
 # copy JBDS installers: snapshots/builds/ to staging/builds/ [EXTERNAL - Standalone installer only]
-versionWithRespin=9.0.0.Beta1c # a, b, c...
+versionWithRespin=9.0.0.Beta2 # a, b, c...
 JBDS_stream=9.0.mars
 ID=""
 ID=$(echo "ls 20*" | sftp ${JBDS}/9.0/snapshots/builds/devstudio.product_${JBDS_stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
@@ -194,7 +190,7 @@ fi
 
 
 # copy JBDS update: snapshots/builds/*/repo/* to staging/updates/core/${versionWithRespin}; also copy updatesite-core.zip
-versionWithRespin=9.0.0.Beta1c # a, b, c...
+versionWithRespin=9.0.0.Beta2 # a, b, c...
 JBDS_stream=9.0.mars
 ID=""
 ID=$(cd /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${JBDS_stream} && ls 20* | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%:*}
@@ -202,13 +198,13 @@ sitename="core"
 # copy update site
 echo "mkdir ${sitename}" | sftp ${JBDS}/9.0/staging/updates/
 rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${JBDS_stream}/${ID}/all/repo/* ${JBDS}/9.0/staging/updates/${sitename}/${versionWithRespin}/
-y=/qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${JBDS_stream}/${ID}/installer/jboss-devstudio-*-updatesite-core.zip
+y=/qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${JBDS_stream}/${ID}/all/jboss-devstudio-*-updatesite-core.zip
 rsync -aPrz --rsh=ssh --protocol=28 ${y} ${JBDS}/9.0/staging/updates/${sitename}/jboss-devstudio-${versionWithRespin}-updatesite-core.zip
-rsync -aPrz --rsh=ssh --protocol=28 ${y}.sha1 ${JBDS}/9.0/staging/updates/${sitename}/jboss-devstudio-${versionWithRespin}-updatesite-core.zip.sha1
+rsync -aPrz --rsh=ssh --protocol=28 ${y}.sha256 ${JBDS}/9.0/staging/updates/${sitename}/jboss-devstudio-${versionWithRespin}-updatesite-core.zip.sha256
 
 
 # copy JBDS discovery sites to staging/builds/ and staging/updates/
-versionWithRespin=9.0.0.Beta1c # a, b, c...
+versionWithRespin=9.0.0.Beta2 # a, b, c...
 JBT_stream=4.3.mars
 for site in discovery.central discovery.earlyaccess; do
   ID=""
@@ -216,7 +212,7 @@ for site in discovery.central discovery.earlyaccess; do
   if [[ $ID ]]; then
     if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
     echo "Latest build for ${sitename} (${site}): ${ID}"
-    tmpdir=/tmp/jbosstools-build-sites.aggregate.site_${JBT_stream}__${ID}
+    tmpdir=/tmp/devstudio-staging__${site}_${JBT_stream}__${ID}
     rsync -aPrz --rsh=ssh --protocol=28 ${JBDS}/9.0/snapshots/builds/jbosstools-${site}_${JBT_stream}/${ID}/* ${tmpdir}/
     # copy build folder (and rename from jbosstools to devstudio)
     echo "mkdir devstudio-${versionWithRespin}-build-${sitename}" | sftp ${JBDS}/9.0/staging/builds/
@@ -246,11 +242,11 @@ This should point to the latest staging bits. Just copy what's in discovery.cent
 [source,bash]
 ----
 
-version=9.0.0.Beta1
-versionWithRespin_PREV=9.0.0.Beta1b
-versionWithRespin=9.0.0.Beta1c # a, b, c...
-TARGET_PLATFORM_VERSION_MAX=4.50.0.Beta1
-CENTRAL_TARGET_VERSION=4.50.0.Beta1-SNAPSHOT
+version=9.0.0.Beta2
+versionWithRespin_PREV=9.0.0.Beta1c # a, b, c...
+versionWithRespin=9.0.0.Beta2 # a, b, c...
+TARGET_PLATFORM_VERSION_MAX=4.50.0.Beta2
+CENTRAL_TARGET_VERSION=4.50.0.Beta2-SNAPSHOT
 
 pushd ~/truu/jbdevstudio-website/content/9.0/staging/updates
 
@@ -305,15 +301,15 @@ Update it so that the links for the latest milestone point to valid URLs. Commen
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru
 pushd jbosstools-download.jboss.org/jbosstools/configuration
-version=9.0.0.Beta1
-versionWithRespin=9.0.0.Beta1c # a, b, c...
+version=9.0.0.Beta2
+versionWithRespin=9.0.0.Beta2 # a, b, c...
 
-topic=release-jbosstools-${versionWithRespin}-to-production; branch=master; gw1
+topic=release-jbosstools-${versionWithRespin}-to-staging; branch=master; gw1
 
 vim ide-config.properties 
 
 # commit the change and push to master
-ci "release JBT ${version} (${versionWithRespin}) to production: link to latest dev milestone discovery site" ide-config.properties
+ci "release JBT ${version} (${versionWithRespin}) to staging: link to latest dev milestone discovery site" ide-config.properties
 gw2; gw3; gw4
 
 # push updated file to server
@@ -327,7 +323,7 @@ rsync -Pzrlt --rsh=ssh --protocol=28 ide-config.properties $TOOLS/configuration/
 Before notifying team of staged release, must check for obvious problems.
 
 1. Get a recent Eclipse (compatible with the target version of JBT)
-2. Install BYOE category from http://devstudio.redhat.com/9.0/staging/updates/ ; restart
+2. Install BYOE category from https://devstudio.redhat.com/9.0/staging/updates/ ; restart
 3. Open Central Software/Updates tab, enable Early-Access select and install all connectors; restart
 4. Check log, start an example project, check log again
 
@@ -339,14 +335,14 @@ If this fails, it is most likely due to a bug or a failure in a step above. If p
 
 == Notify the team (send 1 email)
 ____
-*To* external-exadel-list@redhat.com +
+*To* jboss-devstudio-list@redhat.com +
 
 [source,bash]
 ----
-version_JBT=4.3.0.Beta1
-version=9.0.0.Beta1
-versionWithRespin=9.0.0.Beta1c # a, b, c...
-respin="respin-c"
+version_JBT=4.3.0.Beta2
+version=9.0.0.Beta2
+versionWithRespin=9.0.0.Beta2 # a, b, c...
+respin="respin-"
 echo "
 Subject: 
 
@@ -358,7 +354,7 @@ As always, these are not FINAL bits, but preliminary results for QE testing. Not
 
 Universal Installers: 
 * http://www.qa.jboss.com/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/ (EAP bundles; VPN required)
-* https://devstudio.redhat.com/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/ (Standalone only)
+* https://devstudio.redhat.com/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/ (Standalone + other zips)
 
 Update Sites:
 * https://devstudio.redhat.com/9.0/staging/updates/ (includes ${versionWithRespin} Core + Target Platform + JBoss Central)

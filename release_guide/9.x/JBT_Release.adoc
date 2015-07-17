@@ -14,7 +14,7 @@ Launch the config pages for JBIDE and JBDS and using the gear icons, release the
 
 Note: If there are unresolved issues with a fixversion set to the current milestone, make sure those issues will not be lost / forgotten. 
 
-Send an email to jbosstools-dev@ and external-exadel-list@  reminding people to close out their JIRAs or move them to the next milestone fixversion.
+Send an email to jbosstools-dev@ and jboss-devstudio-list@  reminding people to close out their JIRAs or move them to the next milestone fixversion.
 
 Sample email: http://lists.jboss.org/pipermail/jbosstools-dev/2014-April/008799.html
 

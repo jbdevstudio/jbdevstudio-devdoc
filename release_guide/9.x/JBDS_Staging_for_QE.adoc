@@ -18,7 +18,7 @@ Check c.j.d.central.core's currentversion.properties for the correct value of de
 # @since JBT 4.3.0 / JBDS 9.0.0 - JBIDE-18820, JBIDE-18806 
 
 version=9.0.0.Beta2
-versionWithRespin=9.0.0.Beta2 # a, b, c...
+versionWithRespin=9.0.0.Beta2a # a, b, c...
 
 if [[ ${version:0:1} == "4" ]]; then # JBT
   pluginName=foundation.core
@@ -62,7 +62,7 @@ Whenever you're starting a new shell, you should set those variables:
 [sources,bash]
 ----
 version=9.0.0.Beta2
-versionWithRespin=9.0.0.Beta2 # a, b, c...
+versionWithRespin=9.0.0.Beta2a # a, b, c...
 TARGET_PLATFORM_VERSION_MAX=4.50.0.Beta2
 CENTRAL_TARGET_VERSION=4.50.0.Beta2-SNAPSHOT
 now=$(date +%s000)
@@ -97,7 +97,7 @@ WARNING: Don't use symlinks are they are too risky to use. Those operations can 
 # can run these 6 steps in parallel
 
 # copy JBDS target platform zips
-versionWithRespin=9.0.0.Beta2 # a, b, c...
+versionWithRespin=9.0.0.Beta2a # a, b, c...
 TARGET_PLATFORM_VERSION_MAX=4.50.0.Beta2
 CENTRAL_TARGET_VERSION=4.50.0.Beta2-SNAPSHOT
 for targetname in jbdevstudio jbtcentral jbtearlyaccess; do
@@ -115,7 +115,7 @@ done
 
 
 # copy JBT Central/EA update sites & zips
-versionWithRespin=9.0.0.Beta2 # a, b, c...
+versionWithRespin=9.0.0.Beta2a # a, b, c...
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 JBT_stream=4.3.mars
 for site in central-site earlyaccess-site; do
@@ -145,7 +145,7 @@ done
 
 
 # copy JBDS installers: snapshots/builds/ to staging/builds/ [INTERNAL - both installers]
-versionWithRespin=9.0.0.Beta2 # a, b, c...
+versionWithRespin=9.0.0.Beta2a # a, b, c...
 JBDS_stream=9.0.mars
 ID=""
 ID=$(cd /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${JBDS_stream} && ls 20* | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%:*}
@@ -169,7 +169,7 @@ fi
 
 
 # copy JBDS installers: snapshots/builds/ to staging/builds/ [EXTERNAL - Standalone installer only]
-versionWithRespin=9.0.0.Beta2 # a, b, c...
+versionWithRespin=9.0.0.Beta2a # a, b, c...
 JBDS_stream=9.0.mars
 ID=""
 ID=$(echo "ls 20*" | sftp ${JBDS}/9.0/snapshots/builds/devstudio.product_${JBDS_stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
@@ -190,7 +190,7 @@ fi
 
 
 # copy JBDS update: snapshots/builds/*/repo/* to staging/updates/core/${versionWithRespin}; also copy updatesite-core.zip
-versionWithRespin=9.0.0.Beta2 # a, b, c...
+versionWithRespin=9.0.0.Beta2a # a, b, c...
 JBDS_stream=9.0.mars
 ID=""
 ID=$(cd /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${JBDS_stream} && ls 20* | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%:*}
@@ -204,7 +204,7 @@ rsync -aPrz --rsh=ssh --protocol=28 ${y}.sha256 ${JBDS}/9.0/staging/updates/${si
 
 
 # copy JBDS discovery sites to staging/builds/ and staging/updates/
-versionWithRespin=9.0.0.Beta2 # a, b, c...
+versionWithRespin=9.0.0.Beta2a # a, b, c...
 JBT_stream=4.3.mars
 for site in discovery.central discovery.earlyaccess; do
   ID=""
@@ -243,8 +243,8 @@ This should point to the latest staging bits. Just copy what's in discovery.cent
 ----
 
 version=9.0.0.Beta2
-versionWithRespin_PREV=9.0.0.Beta1c # a, b, c...
-versionWithRespin=9.0.0.Beta2 # a, b, c...
+versionWithRespin_PREV=9.0.0.Beta2 # a, b, c...
+versionWithRespin=9.0.0.Beta2a # a, b, c...
 TARGET_PLATFORM_VERSION_MAX=4.50.0.Beta2
 CENTRAL_TARGET_VERSION=4.50.0.Beta2-SNAPSHOT
 
@@ -302,7 +302,7 @@ Update it so that the links for the latest milestone point to valid URLs. Commen
 cd ~/tru
 pushd jbosstools-download.jboss.org/jbosstools/configuration
 version=9.0.0.Beta2
-versionWithRespin=9.0.0.Beta2 # a, b, c...
+versionWithRespin=9.0.0.Beta2a # a, b, c...
 
 topic=release-jbosstools-${versionWithRespin}-to-staging; branch=master; gw1
 
@@ -341,8 +341,8 @@ ____
 ----
 version_JBT=4.3.0.Beta2
 version=9.0.0.Beta2
-versionWithRespin=9.0.0.Beta2 # a, b, c...
-respin="respin-"
+versionWithRespin=9.0.0.Beta2a # a, b, c...
+respin="respin-a"
 echo "
 Subject: 
 

@@ -21,7 +21,7 @@ Check o.j.t.foundation.core's currentversion.properties for the correct value of
 # @Since JBT 4.2.1 / JBDS 8.0.1 - JBIDE-18820, JBIDE-18806
 
 version=4.3.0.Beta2
-versionWithRespin=4.3.0.Beta2 # a, b, c...
+versionWithRespin=4.3.0.Beta2a # a, b, c...
 
 if [[ ${version:0:1} == "4" ]]; then # JBT
   pluginName=foundation.core
@@ -126,7 +126,7 @@ Here is a script that performs the copy (& rename) from /snapshots/ to /staging/
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 for site in site; do
   stream=4.3.mars
-  versionWithRespin=4.3.0.Beta2 # a, b, c...
+  versionWithRespin=4.3.0.Beta2a # a, b, c...
   ID=""
   ID=$(echo "ls 20*" | sftp ${TOOLS}/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
@@ -151,7 +151,7 @@ done
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 for site in coretests-site; do
   stream=4.3.mars
-  versionWithRespin=4.3.0.Beta2 # a, b, c...
+  versionWithRespin=4.3.0.Beta2a # a, b, c...
   ID=""
   ID=$(echo "ls 20*" | sftp ${TOOLS}/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
@@ -176,7 +176,7 @@ done
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 for site in central-site earlyaccess-site; do
   stream=4.3.mars
-  versionWithRespin=4.3.0.Beta2 # a, b, c...
+  versionWithRespin=4.3.0.Beta2a # a, b, c...
   ID=""
   ID=$(echo "ls 20*" | sftp ${TOOLS}/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
@@ -201,7 +201,7 @@ done
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 for site in browsersim-standalone; do
   stream=4.3.mars
-  versionWithRespin=4.3.0.Beta2 # a, b, c...
+  versionWithRespin=4.3.0.Beta2a # a, b, c...
   ID=""
   ID=$(echo "ls 20*" | sftp ${TOOLS}/mars/snapshots/builds/jbosstools-${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
@@ -244,11 +244,11 @@ This site needs to contain:
 
 [source,bash]
 ----
-versionWithRespin_PREV=4.3.0.Beta1c # a, b, c...
-TARGET_PLATFORM_VERSION_MAX_PREV=4.50.0.Beta1
-TARGET_PLATFORM_CENTRAL_MAX_PREV=4.50.0.Beta1-SNAPSHOT
+versionWithRespin_PREV=4.3.0.Beta2 # a, b, c...
+TARGET_PLATFORM_VERSION_MAX_PREV=4.50.0.Beta2
+TARGET_PLATFORM_CENTRAL_MAX_PREV=4.50.0.Beta2-SNAPSHOT
 
-versionWithRespin=4.3.0.Beta2 # a, b, c...
+versionWithRespin=4.3.0.Beta2a # a, b, c...
 TARGET_PLATFORM_VERSION_MAX=4.50.0.Beta2
 TARGET_PLATFORM_CENTRAL_MAX=4.50.0.Beta2-SNAPSHOT
 
@@ -284,7 +284,7 @@ scp composite*.xml ${TOOLS}/mars/staging/updates/
 [[update-discovery-urls]]
 Update the *stable branch* discovery job ( https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/job/jbosstools-discovery_4.3.mars/configure ) to use the correct source URLs and versions +
 
-VERSION = "Beta2" (not SNAPSHOT!)
+VERSION = "Beta2a" (not SNAPSHOT!) # a, b, c...
 TARGET_PLATFORM_VERSION_MAXIMUM  = "4.50.0.Beta2"
 JBTCENTRALTARGET_VERSION   = "4.50.0.Beta2-SNAPSHOT"
 
@@ -318,7 +318,7 @@ hudson@dev01$ ...
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 for site in discovery.central discovery.earlyaccess; do
   stream=4.3.mars
-  versionWithRespin=4.3.0.Beta2 # a, b, c...
+  versionWithRespin=4.3.0.Beta2a # a, b, c...
   ID=""
   ID=$(echo "ls 20*" | sftp ${TOOLS}/mars/snapshots/builds/jbosstools-${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
@@ -353,7 +353,7 @@ done
 # new EA properties is here: http://download.jboss.org/jbosstools/mars/staging/updates/discovery.earlyaccess/*/jbosstools-earlyaccess.properties
 
 stream=4.3.mars
-versionWithRespin=4.3.0.Beta2 # a, b, c...
+versionWithRespin=4.3.0.Beta2a # a, b, c...
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 # earlyaccess site includes one directory.xml file which lists both core and earlyaccess plugins, so use that instead of core site
 echo "rename nightly/earlyaccess/${stream} staging/${versionWithRespin}" | sftp ${TOOLS}/discovery/
@@ -416,7 +416,7 @@ Update it so that the links for the latest milestone point to valid URLs. Commen
 cd ~/tru
 pushd jbosstools-download.jboss.org/jbosstools/configuration
 version=4.3.0.Beta2
-versionWithRespin=4.3.0.Beta2 # a, b, c...
+versionWithRespin=4.3.0.Beta2a # a, b, c...
 
 topic=release-jbosstools-${versionWithRespin}-to-staging; branch=master; gw1
 
@@ -449,8 +449,8 @@ ____
 
 [source,bash]
 ----
-versionWithRespin=4.3.0.Beta2 # a, b, c...
-respin="respin-"
+versionWithRespin=4.3.0.Beta2a # a, b, c...
+respin="respin-a"
 #TARGET_PLATFORM_VERSION_MIN=4.50.0.Beta2
 TARGET_PLATFORM_VERSION_MAX=4.50.0.Beta2
 TARGET_PLATFORM_CENTRAL_MAX=4.50.0.Beta2-SNAPSHOT

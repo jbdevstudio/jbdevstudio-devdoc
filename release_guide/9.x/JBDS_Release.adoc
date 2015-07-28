@@ -27,7 +27,7 @@ firefox https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
 == Rename artifacts to remove timestamp and buildID
 
 To comply with Goldengate URL rules, we need to rename artifacts before they go to the CSP. For example
-`jboss-devstudio-9.0.0.Beta1-v20141020-1042-B317-installer-standalone.jar` must be renamed to `jboss-devstudio-9.0.0.Beta1-installer-standalone.jar`.
+`jboss-devstudio-9.0.0.Beta2-v20141020-1042-B317-installer-standalone.jar` must be renamed to `jboss-devstudio-9.0.0.Beta2-installer-standalone.jar`.
 
 Connect to dev01.mw.lab.eng.bos.redhat.com as +hudson+ user (requires permissions).
 
@@ -42,8 +42,8 @@ Then:
 
 [source,bash]
 ----
-version=9.0.0.Beta1
-versionWithRespin=9.0.0.Beta1c # a, b, c...
+version=9.0.0.Beta2
+versionWithRespin=9.0.0.Beta2b # a, b, c...
 pushd /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/installer/
 for f in $(ls jboss-devstudio-${version}-*); do g=$(echo $f | sed s#-v[[:digit:]]*-[[:digit:]]*-B[[:digit:]]*##); echo "mv $f $g"; mv $f $g; done
 ls -l
@@ -92,8 +92,8 @@ and +
 
 [source,bash]
 ----
-version=9.0.0.Beta1
-versionWithRespin=9.0.0.Beta1c # a, b, c...
+version=9.0.0.Beta2
+versionWithRespin=9.0.0.Beta2b # a, b, c...
 JIRA=-1347
 if [[ ${version} != ${versionWithRespin} ]]; then
   versionFriendlyName="${version} (to be renamed from ${versionWithRespin})"
@@ -132,7 +132,7 @@ When pushed, please reply so that QE can review the CSP pages & files for push t
 
 Note that in addition to the new CSP page, eg., [1] or [2], the CSP landing page [3] should also be updated to point to the latest release.
 
-[1] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=9.0.0+Beta1
+[1] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=9.0.0.Beta2
 [2] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=9.0.0
 [3] https://access.redhat.com/downloads/
 
@@ -142,7 +142,7 @@ Thanks in advance,
 
 ----
 
-As an answer, you get the links to the GoldenGate files, eg., /content/origin/files/sha256/2c/2c92b68d122db901e3acbb74f06950116f4fe29402c25f4391761f9a93e65bba/jboss-devstudio-9.0.0.Beta1-updatesite-core.zip
+As an answer, you get the links to the GoldenGate files, eg., /content/origin/files/sha256/2c/2c92b68d122db901e3acbb74f06950116f4fe29402c25f4391761f9a93e65bba/jboss-devstudio-9.0.0.Beta2-updatesite-core.zip
 
 Communicate with Paul Robinson, Chris Obrien, etc. to coordinate the release. All the above can happen in parallel / before the updates below.
 
@@ -175,8 +175,8 @@ Then copy the latest JBDS artifacts:
 
 
 # copy JBDS update site (> 800M)
-version=9.0.0.Beta1
-versionWithRespin=9.0.0.Beta1c # a, b, c...
+version=9.0.0.Beta2
+versionWithRespin=9.0.0.Beta2b # a, b, c...
 tmpdir=/tmp/release_${version}_update_site
 for site in core; do
   mkdir -p ${tmpdir}/9.0/development/updates/${site}/${version}
@@ -191,8 +191,8 @@ rm -fr $tmpdir
 
 
 # copy small sites (< 8M), and update metadata refs in discovery sites
-version=9.0.0.Beta1
-versionWithRespin=9.0.0.Beta1c # a, b, c...
+version=9.0.0.Beta2
+versionWithRespin=9.0.0.Beta2b # a, b, c...
 for site in central earlyaccess discovery.central discovery.earlyaccess; do
   tmpdir=/tmp/release__${site}__${version}
   mkdir -p ${tmpdir}/9.0/development/updates/${site}/${version}
@@ -219,10 +219,10 @@ done
 
 
 # copy 6 zips & SHAs
-# jboss-devstudio-9.0.0.Beta1c-target-platform-central.zip           jboss-devstudio-9.0.0.Beta1c-target-platform.zip          jboss-devstudio-9.0.0.Beta1c-updatesite-core.zip
-# jboss-devstudio-9.0.0.Beta1c-target-platform-earlyaccess.zip       jboss-devstudio-9.0.0.Beta1c-updatesite-central.zip       jboss-devstudio-9.0.0.Beta1c-updatesite-earlyaccess.zip
-version=9.0.0.Beta1
-versionWithRespin=9.0.0.Beta1c # a, b, c...
+# jboss-devstudio-9.0.0.Beta2b-target-platform-central.zip           jboss-devstudio-9.0.0.Beta2b-target-platform.zip          jboss-devstudio-9.0.0.Beta2b-updatesite-core.zip
+# jboss-devstudio-9.0.0.Beta2b-target-platform-earlyaccess.zip       jboss-devstudio-9.0.0.Beta2b-updatesite-central.zip       jboss-devstudio-9.0.0.Beta2b-updatesite-earlyaccess.zip
+version=9.0.0.Beta2
+versionWithRespin=9.0.0.Beta2b # a, b, c...
 tmpdir=/tmp/release_${version}_zips
 for site in core; do
   mkdir -p ${tmpdir}/9.0/development/updates/${site}
@@ -240,8 +240,8 @@ rm -fr $tmpdir
 
 
 # copy installer jar
-version=9.0.0.Beta1
-versionWithRespin=9.0.0.Beta1c # a, b, c...
+version=9.0.0.Beta2
+versionWithRespin=9.0.0.Beta2b # a, b, c...
 tmpdir=/tmp/release_${version}_installer
 for site in builds; do
   mkdir -p ${tmpdir}/9.0/development/${site}/installer/${version}
@@ -263,8 +263,8 @@ To update the content in https://devstudio.redhat.com/9.0/development/updates/ .
 
 [source,bash]
 ----
-version=9.0.0.Beta1
-versionWithRespin=9.0.0.Beta1c # a, b, c...
+version=9.0.0.Beta2
+versionWithRespin=9.0.0.Beta2b # a, b, c...
 
 # adjust these steps to fit your own path location & git workflow
 cd ~/truu
@@ -307,8 +307,8 @@ And update it it as required, so that the links for the latest milestone point t
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru
 pushd jbosstools-download.jboss.org/jbosstools/configuration
-version=9.0.0.Beta1
-versionWithRespin=9.0.0.Beta1c # a, b, c...
+version=9.0.0.Beta2
+versionWithRespin=9.0.0.Beta2b # a, b, c...
 topic=release-jbosstools-${versionWithRespin}-to-production; branch=master; gw1
 
 st ide-config.properties # or use another editor if not Sublime Text (st)
@@ -356,8 +356,8 @@ git clone https://github.com/jbdevstudio/jbdevstudio-website
 git clone https://github.com/jbdevstudio/jbdevstudio-artwork
 git clone https://github.com/jbdevstudio/jbdevstudio-devdoc
 
-jbt_branch=jbosstools-4.3.0.Beta1x
-version=9.0.0.Beta1
+jbt_branch=jbosstools-4.3.0.Beta2x
+version=9.0.0.Beta2
 for d in product ci website artwork devdoc; do
   echo "====================================================================="
   echo "Tagging jbdevstudio-${d} from branch ${jbt_branch} as tag ${version}..."
@@ -376,7 +376,7 @@ done
 
 [source,bash]
 ----
-version=9.0.0.Beta1
+version=9.0.0.Beta2
 cd jbdevstudio-devdoc/release_guide/9.0
 git commit -m "update release guide for ${version}" .
 git push origin HEAD:master
@@ -434,7 +434,7 @@ and +
 
 [source,bash]
 ----
-version=9.0.0.Beta1
+version=9.0.0.Beta2
 echo "
 Subject: 
 

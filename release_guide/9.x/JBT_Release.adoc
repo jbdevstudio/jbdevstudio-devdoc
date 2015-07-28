@@ -63,8 +63,8 @@ On your local machine, using a SFTP client (or the script suggested above), copy
 # can run these 3 steps in parallel
 
 stream=4.3.mars
-version=4.3.0.Beta1
-versionWithRespin=4.3.0.Beta1c # a, b, c...
+version=4.3.0.Beta2
+versionWithRespin=4.3.0.Beta2b # a, b, c...
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 SFDIR=/tmp/development_sf.net_${version}; mkdir -p $SFDIR; pushd $SFDIR
 echo "mkdir ${version}" | sftp ${TOOLS}/mars/staging/builds/sf.net/
@@ -77,8 +77,8 @@ popd
 
 
 stream=4.3.mars
-version=4.3.0.Beta1
-versionWithRespin=4.3.0.Beta1c # a, b, c...
+version=4.3.0.Beta2
+versionWithRespin=4.3.0.Beta2b # a, b, c...
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 SFDIR=/tmp/development_sf.net_${version}; mkdir -p $SFDIR; pushd $SFDIR
 echo "mkdir ${version}" | sftp ${TOOLS}/mars/staging/builds/sf.net/
@@ -91,8 +91,8 @@ popd
 
 
 stream=4.3.mars
-version=4.3.0.Beta1
-versionWithRespin=4.3.0.Beta1c # a, b, c...
+version=4.3.0.Beta2
+versionWithRespin=4.3.0.Beta2b # a, b, c...
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 SFDIR=/tmp/development_sf.net_${version}; mkdir -p $SFDIR; pushd $SFDIR
 echo "mkdir ${version}" | sftp ${TOOLS}/mars/staging/builds/sf.net/
@@ -116,7 +116,7 @@ popd; rm -fr $SFDIR
 === Pull files to sf.net, including release notes
 
 Go to https://issues.jboss.org/secure/ConfigureReport!default.jspa?selectedProjectId=10020&projectOrFilterId=project-10020&projectOrFilterName=Tools%20%28JBoss%20Tools%29&reportKey=org.jboss.labs.jira.plugin.release-notes-report-plugin:releasenotes 
-Then select the target release (4.3.0.Beta1 for example), type of issues = "All", style = "HTML". Copy the URL of the report page below.
+Then select the target release (4.3.0.Beta2 for example), type of issues = "All", style = "HTML". Copy the URL of the report page below.
 
 There are many ways to push files to sf.net (SFTP, SCP, SSH...). Any alternative that puts the files under +JBossTools/jbosstools${version}+ is fine. Here, we'll show a shell-based approach that allows to save a few minutes.
 
@@ -133,7 +133,7 @@ Once granted a shell, create the release notes page and download the zips
 [source,bash]
 ----
 branch=4.3.0.x # if this is a Final build, use 4.3.x instead of 4.3.0.x
-version=4.3.0.Beta1
+version=4.3.0.Beta2
 cd /home/frs/project/jboss/JBossTools/
 mkdir -p jbosstools${branch}
 cd jbosstools${branch}
@@ -179,8 +179,8 @@ Here is a script that performs the copy from /staging/ to /development/:
 
 # Do these 3 steps in parallel to save time
 
-version=4.3.0.Beta1
-versionWithRespin=4.3.0.Beta1c # a, b, c...
+version=4.3.0.Beta2
+versionWithRespin=4.3.0.Beta2b # a, b, c...
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 for site in core; do
   tmpdir=/tmp/jbosstools-static-development-updates-${site}_${versionWithRespin}
@@ -192,8 +192,8 @@ for site in core; do
 done
 
 
-version=4.3.0.Beta1
-versionWithRespin=4.3.0.Beta1c # a, b, c...
+version=4.3.0.Beta2
+versionWithRespin=4.3.0.Beta2b # a, b, c...
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 for site in central earlyaccess; do
   tmpdir=/tmp/jbosstools-static-development-updates-${site}_${versionWithRespin}
@@ -206,8 +206,8 @@ done
 
 
 # unlike above, don't use /static/ paths here because we're going to have to change the content to point to correct paths below
-version=4.3.0.Beta1
-versionWithRespin=4.3.0.Beta1c # a, b, c...
+version=4.3.0.Beta2
+versionWithRespin=4.3.0.Beta2b # a, b, c...
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 for site in discovery.central discovery.earlyaccess; do
   tmpdir=/tmp/jbosstools-static-development-updates-${site}_${versionWithRespin}
@@ -233,7 +233,7 @@ done
 
 
 # verify site are correct:
-version=4.3.0.Beta1
+version=4.3.0.Beta2
 echo "http://download.jboss.org/jbosstools/static/mars/development/updates/core/${version}
 http://download.jboss.org/jbosstools/static/mars/development/updates/coretests/${version}
 http://download.jboss.org/jbosstools/static/mars/development/updates/central/${version}
@@ -261,14 +261,14 @@ cd jbosstools-download.jboss.org/jbosstools/mars/development/updates
 git fetch origin master
 git checkout FETCH_HEAD
 
-versionWithRespin_PREV=4.3.0.Alpha2
-TARGET_PLATFORM_VERSION_MAX_PREV=4.50.0.Alpha2
-TARGET_PLATFORM_CENTRAL_MAX_PREV=4.50.0.Alpha2-SNAPSHOT
+versionWithRespin_PREV=4.3.0.Beta1
+TARGET_PLATFORM_VERSION_MAX_PREV=4.50.0.Beta1
+TARGET_PLATFORM_CENTRAL_MAX_PREV=4.50.0.Beta1-SNAPSHOT
 
-version=4.3.0.Beta1
-versionWithRespin=4.3.0.Beta1c # a, b, c...
-TARGET_PLATFORM_VERSION_MAX=4.50.0.Beta1
-TARGET_PLATFORM_CENTRAL_MAX=4.50.0.Beta1-SNAPSHOT
+version=4.3.0.Beta2
+versionWithRespin=4.3.0.Beta2b # a, b, c...
+TARGET_PLATFORM_VERSION_MAX=4.50.0.Beta2
+TARGET_PLATFORM_CENTRAL_MAX=4.50.0.Beta2-SNAPSHOT
 
 rsync ../../staging/updates/composite*.xml .
 
@@ -336,9 +336,9 @@ Here is an example of a script doing that:
 ----
 cd ~/tru # or where you have jbosstools-download.jboss.org checked out
 
-version=4.3.0.Beta1
-version_PREV=4.3.0.Alpha2
-versionWithRespin=4.3.0.Beta1c # a, b, c...
+version=4.3.0.Beta2
+version_PREV=4.3.0.Beta1
+versionWithRespin=4.3.0.Beta2b # a, b, c...
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 
 pushd jbosstools-download.jboss.org/jbosstools/updates/webtools
@@ -395,8 +395,8 @@ https://github.com/jbosstools/jbosstools-download.jboss.org/commit/d5306ce940814
 
 cd ~/tru # or where you have jbosstools-download.jboss.org checked out
 
-TARGET_PLATFORM_VERSION_MAX_PREV=4.50.0.Alpha2
-TARGET_PLATFORM_VERSION_MAX=4.50.0.Beta1
+TARGET_PLATFORM_VERSION_MAX_PREV=4.50.0.Beta1
+TARGET_PLATFORM_VERSION_MAX=4.50.0.Beta2
 now=`date +%s000`
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 
@@ -448,7 +448,7 @@ There's nothing more to do here. Just review these URLs:
 ----
 
 # verify site are correct:
-version=4.3.0.Beta1
+version=4.3.0.Beta2
 echo "http://download.jboss.org/jbosstools/static/mars/development/updates/central/${version}
 http://download.jboss.org/jbosstools/static/mars/development/updates/earlyaccess/${version}
   and 
@@ -469,8 +469,8 @@ Update it so that the links for the latest milestone point to valid URLs. Commen
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru
 pushd jbosstools-download.jboss.org/jbosstools/configuration
-version=4.3.0.Beta1
-versionWithRespin=4.3.0.Beta1c # a, b, c...
+version=4.3.0.Beta2
+versionWithRespin=4.3.0.Beta2b # a, b, c...
 
 topic=release-jbosstools-${versionWithRespin}-to-production; branch=master; gw1
 
@@ -494,7 +494,7 @@ WARNING: Only for Beta, CR and GA! We do not release Alphas to Eclipse Marketpla
 
 This is usually the case of first Beta version.
 
-Create a new node on Marketplace, use content of +http://download.jboss.org/jbosstools/static/releases/jbosstools-4.3.0.Beta1-updatesite-core/site.properties+
+Create a new node on Marketplace, use content of +http://download.jboss.org/jbosstools/static/releases/jbosstools-4.3.0.Beta2-updatesite-core/site.properties+
 
 === If node already exists
 
@@ -502,7 +502,7 @@ Access it via +https://marketplace.eclipse.org/content/jboss-tools-mars/edit+ an
 
 * Title to match new version
 * Description to match new version & dependencies
-* Update list of features, using content of +http://download.jboss.org/jbosstools/static/releases/jbosstools-4.3.0.Beta1-updatesite-core/site.properties+
+* Update list of features, using content of +http://download.jboss.org/jbosstools/static/releases/jbosstools-4.3.0.Beta2-updatesite-core/site.properties+
 
 
 == Smoke test the release
@@ -536,8 +536,8 @@ git clone https://github.com/jbosstools/jbosstools-versionwatch
 # maven-plugins does not get released/branched the same as other projects, but tag it anyway
 # download.jboss.org tag might not be valid as tweaks to ide-config.properties happen frequently
 
-jbt_branch=jbosstools-4.3.0.Beta1x
-version=4.3.0.Beta1
+jbt_branch=jbosstools-4.3.0.Beta2x
+version=4.3.0.Beta2
 for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins versionwatch; do 
   echo "====================================================================="
   echo "Tagging jbosstools-${d} from branch ${jbt_branch} as tag ${version}..."
@@ -561,9 +561,9 @@ ____
 
 [source,bash]
 ----
-version=4.3.0.Beta1
-branchName=jbosstools-4.3.0.Beta1x
-tagName=jbosstools-4.3.0.Beta1
+version=4.3.0.Beta2
+branchName=jbosstools-4.3.0.Beta2x
+tagName=jbosstools-4.3.0.Beta2
 echo "
 Subject:
 
@@ -622,7 +622,7 @@ ____
 
 [source,bash]
 ----
-version=4.3.0.Beta1
+version=4.3.0.Beta2
 eclipseVersion="Eclipse 4.5.0.R Mars"
 pullrequestURL=https://github.com/jbosstools/jbosstools-website/pull/418
 # NOTE: if releasing on Monday, use Tuesday's date since generally it takes a day for Max to get the blog out.

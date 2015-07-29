@@ -154,14 +154,17 @@ for site in site; do
   if [[ $ID ]]; then
     if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
     echo "Latest build for ${sitename} (${site}): ${ID}"
-    tmpdir=/tmp/jbosstools-staging__${site}_${stream}__${ID}
-    rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream}/${ID}/* ${tmpdir}/
-    # copy build folder
-    echo "mkdir jbosstools-${versionWithRespin}-build-${sitename}" | sftp ${TOOLS}/mars/staging/builds/
-    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${TOOLS}/mars/staging/builds/jbosstools-${versionWithRespin}-build-${sitename}/${ID}/
-    # copy update site
-    echo "mkdir ${sitename}" | sftp ${TOOLS}/mars/staging/updates/
-    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/all/repo/* ${TOOLS}/mars/staging/updates/${sitename}/${versionWithRespin}/
+    tmpdir=/tmp/jbosstools-staging__${site}_${stream}__${ID}; mkdir -p $tmpdir; pushd $tmpdir >/dev/null
+      rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream}/${ID}/* ${tmpdir}/
+      # copy build folder
+      echo "mkdir jbosstools-${versionWithRespin}-build-${sitename}" | sftp ${TOOLS}/mars/staging/builds/
+      rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${TOOLS}/mars/staging/builds/jbosstools-${versionWithRespin}-build-${sitename}/${ID}/
+      # symlink latest build
+      ln -s ${ID} latest; rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/latest ${TOOLS}/mars/staging/builds/jbosstools-${versionWithRespin}-build-${sitename}/
+      # copy update site
+      echo "mkdir ${sitename}" | sftp ${TOOLS}/mars/staging/updates/
+      rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/all/repo/* ${TOOLS}/mars/staging/updates/${sitename}/${versionWithRespin}/
+    popd >/dev/null
     rm -fr $tmpdir
   else
     echo "ERROR: no latest build found for ${site}" | grep ERROR
@@ -180,14 +183,17 @@ for site in coretests-site; do
   if [[ $ID ]]; then
     if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
     echo "Latest build for ${sitename} (${site}): ${ID}"
-    tmpdir=/tmp/jbosstools-staging__${site}_${stream}__${ID}
-    rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream}/${ID}/* ${tmpdir}/
-    # copy build folder
-    echo "mkdir jbosstools-${versionWithRespin}-build-${sitename}" | sftp ${TOOLS}/mars/staging/builds/
-    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${TOOLS}/mars/staging/builds/jbosstools-${versionWithRespin}-build-${sitename}/${ID}/
-    # copy update site
-    echo "mkdir ${sitename}" | sftp ${TOOLS}/mars/staging/updates/
-    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/all/repo/* ${TOOLS}/mars/staging/updates/${sitename}/${versionWithRespin}/
+    tmpdir=/tmp/jbosstools-staging__${site}_${stream}__${ID}; mkdir -p $tmpdir; pushd $tmpdir >/dev/null
+      rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream}/${ID}/* ${tmpdir}/
+      # copy build folder
+      echo "mkdir jbosstools-${versionWithRespin}-build-${sitename}" | sftp ${TOOLS}/mars/staging/builds/
+      rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${TOOLS}/mars/staging/builds/jbosstools-${versionWithRespin}-build-${sitename}/${ID}/
+      # symlink latest build
+      ln -s ${ID} latest; rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/latest ${TOOLS}/mars/staging/builds/jbosstools-${versionWithRespin}-build-${sitename}/
+      # copy update site
+      echo "mkdir ${sitename}" | sftp ${TOOLS}/mars/staging/updates/
+      rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/all/repo/* ${TOOLS}/mars/staging/updates/${sitename}/${versionWithRespin}/
+    popd >/dev/null
     rm -fr $tmpdir
   else
     echo "ERROR: no latest build found for ${site}" | grep ERROR
@@ -206,14 +212,17 @@ for site in central-site earlyaccess-site; do
   if [[ $ID ]]; then
     if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
     echo "Latest build for ${sitename} (${site}): ${ID}"
-    tmpdir=/tmp/jbosstools-staging__${site}_${stream}__${ID}
-    rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream}/${ID}/* ${tmpdir}/
-    # copy build folder
-    echo "mkdir jbosstools-${versionWithRespin}-build-${sitename}" | sftp ${TOOLS}/mars/staging/builds/
-    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${TOOLS}/mars/staging/builds/jbosstools-${versionWithRespin}-build-${sitename}/${ID}/
-    # copy update site
-    echo "mkdir ${sitename}" | sftp ${TOOLS}/mars/staging/updates/
-    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/all/repo/* ${TOOLS}/mars/staging/updates/${sitename}/${versionWithRespin}/
+    tmpdir=/tmp/jbosstools-staging__${site}_${stream}__${ID}; mkdir -p $tmpdir; pushd $tmpdir >/dev/null
+      rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream}/${ID}/* ${tmpdir}/
+      # copy build folder
+      echo "mkdir jbosstools-${versionWithRespin}-build-${sitename}" | sftp ${TOOLS}/mars/staging/builds/
+      rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${TOOLS}/mars/staging/builds/jbosstools-${versionWithRespin}-build-${sitename}/${ID}/
+      # symlink latest build
+      ln -s ${ID} latest; rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/latest ${TOOLS}/mars/staging/builds/jbosstools-${versionWithRespin}-build-${sitename}/
+      # copy update site
+      echo "mkdir ${sitename}" | sftp ${TOOLS}/mars/staging/updates/
+      rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/all/repo/* ${TOOLS}/mars/staging/updates/${sitename}/${versionWithRespin}/
+    popd >/dev/null
     rm -fr $tmpdir
   else
     echo "ERROR: no latest build found for ${site}" | grep ERROR
@@ -232,11 +241,14 @@ for site in browsersim-standalone; do
   if [[ $ID ]]; then
     if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
     echo "Latest build for ${sitename} (${site}): ${ID}"
-    tmpdir=/tmp/jbosstools-staging__${site}_${stream}__${ID}
-    rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/mars/snapshots/builds/jbosstools-${site}_${stream}/${ID}/* ${tmpdir}/
-    # copy build folder
-    echo "mkdir jbosstools-${versionWithRespin}-build-${sitename}" | sftp ${TOOLS}/mars/staging/builds/
-    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${TOOLS}/mars/staging/builds/jbosstools-${versionWithRespin}-build-${sitename}/${ID}/
+    tmpdir=/tmp/jbosstools-staging__${site}_${stream}__${ID}; mkdir -p $tmpdir; pushd $tmpdir >/dev/null
+      rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/mars/snapshots/builds/jbosstools-${site}_${stream}/${ID}/* ${tmpdir}/
+      # copy build folder
+      echo "mkdir jbosstools-${versionWithRespin}-build-${sitename}" | sftp ${TOOLS}/mars/staging/builds/
+      rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${TOOLS}/mars/staging/builds/jbosstools-${versionWithRespin}-build-${sitename}/${ID}/
+      # symlink latest build
+      ln -s ${ID} latest; rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/latest ${TOOLS}/mars/staging/builds/jbosstools-${versionWithRespin}-build-${sitename}/
+    popd >/dev/null
     rm -fr $tmpdir
   else
     echo "ERROR: no latest build found for ${site}" | grep ERROR
@@ -244,8 +256,9 @@ for site in browsersim-standalone; do
 done
 echo "DONE: Browsersim Standalone Zip" | grep "Browsersim Standalone Zip"
 
-# make sure 
-# copy JBT discovery sites to staging/builds/ and staging/updates/
+
+# TODO: make sure you've rebuilt the discovery sites and disabled the job first before doing this step!
+# JBT discovery sites
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 for site in discovery.central discovery.earlyaccess; do
   stream=4.3.mars
@@ -255,21 +268,23 @@ for site in discovery.central discovery.earlyaccess; do
   if [[ $ID ]]; then
     if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
     echo "Latest build for ${sitename} (${site}): ${ID}"
-    tmpdir=/tmp/jbosstools-staging__${site}_${stream}__${ID}
-    rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/mars/snapshots/builds/jbosstools-${site}_${stream}/${ID}/* ${tmpdir}/
-    # copy build folder
-    echo "mkdir jbosstools-${versionWithRespin}-build-${sitename}" | sftp ${TOOLS}/mars/staging/builds/
-    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${TOOLS}/mars/staging/builds/jbosstools-${versionWithRespin}-build-${sitename}/${ID}/
-    # copy update site
-    echo "mkdir ${sitename}" | sftp ${TOOLS}/mars/staging/updates/
-    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/all/repo/* ${TOOLS}/mars/staging/updates/${sitename}/${versionWithRespin}/
+    tmpdir=/tmp/jbosstools-staging__${site}_${stream}__${ID}; mkdir -p $tmpdir; pushd $tmpdir >/dev/null
+      rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/mars/snapshots/builds/jbosstools-${site}_${stream}/${ID}/* ${tmpdir}/
+      # copy build folder
+      echo "mkdir jbosstools-${versionWithRespin}-build-${sitename}" | sftp ${TOOLS}/mars/staging/builds/
+      rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${TOOLS}/mars/staging/builds/jbosstools-${versionWithRespin}-build-${sitename}/${ID}/
+      # symlink latest build
+      ln -s ${ID} latest; rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/latest ${TOOLS}/mars/staging/builds/jbosstools-${versionWithRespin}-build-${sitename}/
+      # copy update site
+      echo "mkdir ${sitename}" | sftp ${TOOLS}/mars/staging/updates/
+      rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/all/repo/* ${TOOLS}/mars/staging/updates/${sitename}/${versionWithRespin}/
+    popd >/dev/null
     rm -fr $tmpdir
   else
     echo "ERROR: no latest build found for ${site}" | grep ERROR
   fi
 done
-echo "DONE: copy JBT discovery sites to staging/builds/ and staging/updates/" | grep "copy JBT discovery sites to staging/builds/ and staging/updates/"
-
+echo "DONE: JBT discovery sites" | grep "JBT discovery sites"
 
 
 #  verify sites are correctly populated:
@@ -416,7 +431,6 @@ git checkout FETCH_HEAD
 # commit the change and push to master
 ci "release JBT ${version} (${versionWithRespin}) to staging: link to latest dev milestone discovery site" ide-config.properties
 git push origin HEAD:master
-
 
 # push updated file to server
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools

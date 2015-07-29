@@ -44,7 +44,7 @@ Then:
 ----
 version=9.0.0.Beta2
 versionWithRespin=9.0.0.Beta2b # a, b, c...
-pushd /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/installer/
+pushd /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/
 for f in $(ls jboss-devstudio-${version}-*); do g=$(echo $f | sed s#-v[[:digit:]]*-[[:digit:]]*-B[[:digit:]]*##); echo "mv $f $g"; mv $f $g; done
 ls -l
 popd
@@ -52,7 +52,7 @@ popd
 
 == Verify install instructions are correct
 
-Look at the .txt and .html files in /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/installer/ 
+Look at the .txt and .html files in /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/ 
 
 Verify that they contain correct install/usage instructions & versions.
 
@@ -66,19 +66,11 @@ https://github.com/jbdevstudio/jbdevstudio-product/commit/3827045dca85e73c5ae339
 Goal is to update the following pages: https://www.jboss.org/products/devstudio/download/ and https://www.jboss.org/products/devstudio/overview/
 
 * Open a JIRA: https://issues.jboss.org/secure/CreateIssue.jspa?pid=12313621&issuetype=3 
-* Past example: https://issues.jboss.org/browse/DEVELOPER-1347 
+* Past example: https://issues.jboss.org/browse/DEVELOPER-1371
 * Attach a pull request for https://github.com/jboss-developer/www.jboss.org/blob/master/products/devstudio/_common/product.yml_
-* Past example: https://github.com/jboss-developer/www.jboss.org/pull/841/files
+* Past example: https://github.com/jboss-developer/www.jboss.org/pull/929
 
 Once you have the JIRA, you can link to it when sending the note to release-engineering@ below.
-
-== Submit PR to update tools.jboss.org
-
-Provide a PR to add the latest JBDS milestones to this listing:
-
-https://github.com/jbosstools/jbosstools-website/blob/master/_config/products.yml_
-
-Example: https://github.com/jbosstools/jbosstools-website/pull/193
 
 == Announce internally for push to CSP staging site
 
@@ -88,13 +80,13 @@ NOTE: As this takes some time and can be easily cancelled, this step can be anti
 
 *To* release-engineering@redhat.com +
 and +
-*Cc* cobrien@redhat.com, ldimaggi@redhat.com, mhusnain@redhat.com, jpallich@redhat.com, nboldt@redhat.com, mistria@redhat.com, manderse@redhat.com, bsutter@redhat.com, pmuir@redhat.com, paul.robinson@redhat.com +
+*Cc* cobrien@redhat.com, ldimaggi@redhat.com, mhusnain@redhat.com, jpallich@redhat.com, nboldt@redhat.com, mistria@redhat.com, alkazako@redhat.com, manderse@redhat.com, bsutter@redhat.com, pmuir@redhat.com, paul.robinson@redhat.com +
 
 [source,bash]
 ----
 version=9.0.0.Beta2
 versionWithRespin=9.0.0.Beta2b # a, b, c...
-JIRA=-1347
+JIRA=-1371
 if [[ ${version} != ${versionWithRespin} ]]; then
   versionFriendlyName="${version} (to be renamed from ${versionWithRespin})"
 else
@@ -111,7 +103,7 @@ JBoss Developer Studio ${versionFriendlyName} is available to push to CSP stagin
 
 Please include the 5 jars/zips listed here:
 
-* http://www.qa.jboss.com/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/installer/
+* http://www.qa.jboss.com/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/
 
 Please includes the pre-generated the HTML and text content in the above folder when creating new CSP pages.
 
@@ -144,12 +136,13 @@ Thanks in advance,
 
 As an answer, you get the links to the GoldenGate files, eg., /content/origin/files/sha256/2c/2c92b68d122db901e3acbb74f06950116f4fe29402c25f4391761f9a93e65bba/jboss-devstudio-9.0.0.Beta2-updatesite-core.zip
 
-Communicate with Paul Robinson, Chris Obrien, etc. to coordinate the release. All the above can happen in parallel / before the updates below.
-
+Communicate with Paul Robinson, Chris O'Brien, etc. to coordinate the release. All the above can happen in parallel / before the updates below.
 
 = Release steps
 
-Once QE has signed off, and bits are staged to CSP, you can proceed w/ the rest of the release on Monday (release day).
+Once QE has signed off, and bits are staged to CSP, you can proceed w/ the rest of the release.
+
+==== TODO HERE
 
 == Copy from /staging/ into /development/
 
@@ -246,7 +239,7 @@ tmpdir=/tmp/release_${version}_installer
 for site in builds; do
   mkdir -p ${tmpdir}/9.0/development/${site}/installer/${version}
   # rename from staging/*/versionWithRespin to development/*/version/
-  rsync -aPrz --rsh=ssh --protocol=28 ${JBDS}/9.0/staging/${site}/devstudio-${versionWithRespin}-build-product/latest/installer/jboss-devstudio-*.jar* ${tmpdir}/9.0/development/${site}/installer/${version}
+  rsync -aPrz --rsh=ssh --protocol=28 ${JBDS}/9.0/staging/${site}/devstudio-${versionWithRespin}-build-product/latest/all/jboss-devstudio-*.jar* ${tmpdir}/9.0/development/${site}/installer/${version}
   # push to remote
   echo "mkdir ${site}" | sftp ${JBDS}/9.0/development/
   echo "mkdir installer" | sftp ${JBDS}/9.0/development/${site}
@@ -325,6 +318,17 @@ gw2; gw3; gw4
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 rsync -Pzrlt --rsh=ssh --protocol=28 ide-config.properties $TOOLS/configuration/ide-config.properties
 ----
+
+== Submit PR to update tools.jboss.org
+
+Provide a PR to add the latest JBDS milestones to this listing:
+
+https://github.com/jbosstools/jbosstools-website/blob/master/_config/products.yml_
+
+Examples: 
+
+* https://github.com/jbosstools/jbosstools-website/pull/418 (JBT / JBDS Beta1)
+* https://github.com/jbosstools/jbosstools-website/pull/449 (JBT Beta2)
 
 
 == Smoke test the release

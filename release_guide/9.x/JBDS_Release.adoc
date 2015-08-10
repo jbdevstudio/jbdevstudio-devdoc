@@ -142,8 +142,6 @@ Communicate with Paul Robinson, Chris O'Brien, etc. to coordinate the release. A
 
 Once QE has signed off, and bits are staged to CSP, you can proceed w/ the rest of the release.
 
-==== TODO HERE
-
 == Copy from /staging/ into /development/
 
 First connect to dev01.mw.lab.eng.bos.redhat.com as +hudson+ user (requires permissions).
@@ -181,9 +179,10 @@ for site in core; do
   rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/9.0/development/updates/${site}/${version} ${JBDS}/9.0/development/updates/${site}/
 done
 rm -fr $tmpdir
+echo "copy JBDS update site" | grep "copy JBDS update site"
 
 
-# copy small sites (< 8M), and update metadata refs in discovery sites
+# copy Central/EA/Discovery sites (< 8M), and update metadata refs in discovery sites
 version=9.0.0.Beta2
 versionWithRespin=9.0.0.Beta2b # a, b, c...
 for site in central earlyaccess discovery.central discovery.earlyaccess; do
@@ -209,6 +208,7 @@ for site in central earlyaccess discovery.central discovery.earlyaccess; do
   rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/9.0/development/updates/${site}/${version} ${JBDS}/9.0/development/updates/${site}/
   rm -fr $tmpdir
 done
+echo "copy Central/EA/Discovery sites" | grep "copy Central/EA/Discovery sites"
 
 
 # copy 6 zips & SHAs
@@ -222,7 +222,7 @@ for site in core; do
   # get zips
   rsync -aPrz --rsh=ssh --protocol=28 ${JBDS}/9.0/staging/updates/${site}/jboss-devstudio-${versionWithRespin}*.zip* ${tmpdir}/9.0/development/updates/${site}/
   echo "mkdir ${site}" | sftp ${JBDS}/9.0/development/updates/
-  # rename from staging/*/versionWithRespin to development/*/version/
+  # rename from staging/*/versionWithRespin/ to development/*/version/
   for zip in ${tmpdir}/9.0/development/updates/${site}/jboss-devstudio-${versionWithRespin}*.zip*; do
     zipNew=${zip/${versionWithRespin}/${version}}; echo $zipNew
     zipNew=${zipNew##*/}; echo $zipNew
@@ -230,6 +230,7 @@ for site in core; do
   done
 done
 rm -fr $tmpdir
+echo "copy zips & SHAs" | grep "copy zips & SHAs"
 
 
 # copy installer jar
@@ -247,6 +248,17 @@ for site in builds; do
   rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/9.0/development/${site}/installer/${version} ${JBDS}/9.0/development/${site}/installer/
 done
 rm -fr $tmpdir
+echo "copy installer jar" | grep "copy installer jar"
+
+
+#  verify sites are correctly populated:
+for site in core central earlyaccess discovery.central discovery.earlyaccess; do
+  if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
+  echo "https://devstudio.redhat.com/9.0/development/updates/${sitename}/${version}/"
+done
+echo "https://devstudio.redhat.com/9.0/development/builds/installer/${version}/"
+echo "https://devstudio.redhat.com/9.0/development/updates/core/ (6 zips, 6 sums, 1 folder w/ ${version})"
+
 
 ----
 
@@ -262,6 +274,8 @@ versionWithRespin=9.0.0.Beta2b # a, b, c...
 # adjust these steps to fit your own path location & git workflow
 cd ~/truu
 pushd jbdevstudio-website/content/9.0/
+git fetch origin master
+git checkout FETCH_HEAD
 
 # merge updates in 9.0/staging/updates/ into 9.0/development/updates/
 rsync -aPrz staging/updates/*.*ml development/updates/
@@ -274,15 +288,30 @@ for c in compositeContent.xml compositeArtifacts.xml index.html; do
   sed -i -e "s#staging#development#" $c
   sed -i -e "s#${versionWithRespin}#${version}#" $c
 done
+git status -s
 egrep "staging|development|${version}|${versionWithRespin}" index.html
+echo "------------"
+egrep "staging|development|${version}|${versionWithRespin}" compositeContent.xml
+
+# update EA site
+pushd earlyaccess >/dev/null
+rm -f composite*.xml
+wget https://devstudio.redhat.com/9.0/development/updates/discovery.earlyaccess/9.0.0.Beta2/compositeContent.xml
+wget https://devstudio.redhat.com/9.0/development/updates/discovery.earlyaccess/9.0.0.Beta2/compositeArtifacts.xml
 echo "------------"
 egrep "staging|development|${version}|${versionWithRespin}" compositeContent.xml
 popd >/dev/null
 
-# commit changes to git, then...
+popd >/dev/null
+
+# commit changes to git
+git add development/updates/
+git commit -m "release JBDS ${version} (${versionWithRespin}) to production" development/updates/
+git push origin HEAD:master
 
 # push changes to server
 rsync -Pzrlt --rsh=ssh --protocol=28 development/updates/*.*ml $JBDS/9.0/development/updates/
+rsync -Pzrlt --rsh=ssh --protocol=28 development/updates/earlyaccess/*.*ml $JBDS/9.0/development/updates/earlyaccess/
 
 # done
 popd >/dev/null
@@ -302,21 +331,32 @@ cd ~/tru
 pushd jbosstools-download.jboss.org/jbosstools/configuration
 version=9.0.0.Beta2
 versionWithRespin=9.0.0.Beta2b # a, b, c...
-topic=release-jbosstools-${versionWithRespin}-to-production; branch=master; gw1
 
-st ide-config.properties # or use another editor if not Sublime Text (st)
+git fetch origin master
+git checkout FETCH_HEAD
 
-# something like this...
-# jboss.discovery.directory.url|devstudio|8=https://devstudio.jboss.com/updates/9.0/devstudio-directory.xml
-# jboss.discovery.site.url|devstudio|8=https://devstudio.jboss.com/updates/9.0/
+# then edit ide-config.properties 
+# vim ide-config.properties 
+# st ide-config.properties 
+
+# verify
+echo "
+https://devstudio.redhat.com/9.0/development/updates/discovery.central/${version}/devstudio-directory.xml
+https://devstudio.redhat.com/9.0/development/updates/
+https://devstudio.redhat.com/9.0/development/updates/compositeContent.xml
+https://devstudio.redhat.com/9.0/development/updates/earlyaccess/
+https://devstudio.redhat.com/9.0/development/updates/earlyaccess/compositeContent.xml
+https://devstudio.redhat.com/9.0/development/updates/discovery.earlyaccess/${version}/devstudio-earlyaccess.properties
+"
 
 # commit the change and push to master
-ci "release JBDS ${version} (${versionWithRespin}) to production: link to latest dev milestone discovery site" ide-config.properties
-gw2; gw3; gw4
+ci "release JBT ${version} (${versionWithRespin}) to public: link to latest dev milestone discovery site" ide-config.properties
+git push origin HEAD:master
 
 # push updated file to server
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 rsync -Pzrlt --rsh=ssh --protocol=28 ide-config.properties $TOOLS/configuration/ide-config.properties
+
 ----
 
 == Submit PR to update tools.jboss.org

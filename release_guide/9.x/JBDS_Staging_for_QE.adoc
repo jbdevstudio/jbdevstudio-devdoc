@@ -241,7 +241,7 @@ for site in central earlyaccess discovery.central discovery.earlyaccess; do
   echo "https://devstudio.redhat.com/9.0/staging/builds/devstudio-${versionWithRespin}-build-${sitename}/ *AND* https://devstudio.redhat.com/9.0/staging/updates/${sitename}/${versionWithRespin}/"
 done
 echo "https://devstudio.redhat.com/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/ *AND* http://www.qa.jboss.com/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/"
-echo "https://devstudio.redhat.com/9.0/staging/builds/ (5 folders w/ ${versionWithRespin}) *AND* https://devstudio.redhat.com/9.0/staging/updates/core/ (12 zips, 12 sums, 1 folder w/ ${versionWithRespin})"
+echo "https://devstudio.redhat.com/9.0/staging/builds/ (5 folders w/ ${versionWithRespin}) *AND* https://devstudio.redhat.com/9.0/staging/updates/core/ (6 zips, 6 sums, 1 folder w/ ${versionWithRespin})"
 
 ----
 

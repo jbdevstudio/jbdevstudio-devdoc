@@ -525,6 +525,16 @@ git checkout FETCH_HEAD
 # vim ide-config.properties 
 # st ide-config.properties 
 
+# verify
+echo "
+http://download.jboss.org/jbosstools/mars/development/updates/discovery.central/${version}/jbosstools-directory.xml
+http://download.jboss.org/jbosstools/mars/development/updates/
+http://download.jboss.org/jbosstools/mars/development/updates/compositeContent.xml
+http://download.jboss.org/jbosstools/mars/development/updates/earlyaccess/
+http://download.jboss.org/jbosstools/mars/development/updates/earlyaccess/compositeContent.xml
+http://download.jboss.org/jbosstools/mars/development/updates/discovery.earlyaccess/${version}/jbosstools-earlyaccess.properties
+"
+
 # commit the change and push to master
 ci "release JBT ${version} (${versionWithRespin}) to public: link to latest dev milestone discovery site" ide-config.properties
 git push origin HEAD:master
@@ -651,6 +661,7 @@ http://download.jboss.org/jbosstools/static/mars/development/updates/core/${vers
 "
 ----
 ____
+
 
 == Release JIRA
 

@@ -682,18 +682,13 @@ Ready for JBT ${version} tag creation
 
 Body:
 
-cd ~/tru # or wherever you have jbosstools-build-ci cloned
-popd jbosstools-build-ci/util
+cd ~/tru # to your clone of jbosstools-build-ci
+pushd jbosstools-build-ci/util >/dev/null
 
-# get Max's PR (eventually this will be merged to jbosstools-4.3.x branch)
-co https://github.com/jbosstools/jbosstools-build-ci/pull/132/
+# get CSV file & tag repos
+curl http://download.jboss.org/jbosstools/static/mars/development/updates/core/${version}/buildinfo.json | python buildinfo2tags.py \
+-n jbosstools-${version} | python tagrepos.py GITHUBUSER GITHUBPWD
 
-# get the CSV file
-curl http://download.jboss.org/jbosstools/static/mars/development/updates/core/${version}/buildinfo.json | python ~/tru/buildci/util/buildinfo2tags.py \
--n jbosstools-${version} | tee /tmp/jbosstools-${version}-tags.csv
-
-# then you can tag the repos
-cat /tmp/jbosstools-${version}-tags.csv | python tagrepos.py GITHUBUSER GITHUBPWD
 ----
 
 

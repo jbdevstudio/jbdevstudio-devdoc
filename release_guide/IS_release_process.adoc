@@ -251,10 +251,10 @@ https://github.com/jbosstools/jbosstools-download.jboss.org/blob/master/jbosstoo
 https://github.com/jbosstools/jbosstools-download.jboss.org/blob/master/jbosstools/targetplatforms/jbtistarget/luna/compositeContents.xml
 ----
 Remember to update the timestamps (+vim :call ReplaceTimestamp()+):
+* Clone https://github.com/jbosstools/jbosstools-download.jboss.org  
+* Edit composite*.xml - update version and also change timestamp.  
 [source,bash]
 ----
-# Clone https://github.com/jbosstools/jbosstools-download.jboss.org  
-# Edit composite*.xml - update version and also change timestamp.  
 cd /home/pleacu/git-clone/jbosstools-download.jboss.org/jbosstools/targetplatforms/jbtistarget/luna
 vi compositeArtifacts.xml (compositeContent.xml)
 <esc> :call ReplaceTimestamp()  
@@ -623,6 +623,14 @@ cd ..
 * edit jbosstools-directory.xml - update jar file names
 * edit jbosstools-earlyaccess.properties -  add/ update any IUs that are early access
 
+The master version of jbosstools-earlyaccess.properties should be edited here, so the discovery job can fetch it: 
+
+http://download.jboss.org/jbosstools/mars/snapshots/updates/earlyaccess.properties/master/jbosstools-earlyaccess.properties
+
+The 4.3.mars version of jbosstools-earlyaccess.properties should be edited here, so the discovery job can fetch it: 
+
+http://download.jboss.org/jbosstools/mars/snapshots/updates/earlyaccess.properties/4.3.mars/jbosstools-earlyaccess.properties
+ 
 [NOTE]
 ----
 Note: If committing a stable discovery jar/ directory XML - repeat the steps into the development directory.  Commit and issue a PR to http://download.jboss.org/jbosstools.  Once the PR has been merged, manually push the updated jar and jbosstools-directory.xml onto the JBoss server.
@@ -779,7 +787,7 @@ Build and verify the website before committing and issuing a PR.
 
 *Update products.yml:*
 
-* Clone jbosstools-website  
+* Clone jbosstools-website  https://github.com/jbosstools/jbosstools-website
 * Edit /home/pleacu/git-clone/jbosstools-website/_config/products.yml  
 * Update supported_devstudio_is_version, devstudio_is, supported_jbt_is_version and jbt_is.  
 
@@ -831,7 +839,7 @@ The production JBDSIS build draws its content from the community JBTIS build.  C
 
 *The JBDSIS target platform is built separately from the JBTIS target platform and is a result of different merge targets.*  The JBDSIS target platform does not merge in the +community.target+ file.  It is created under the common JBTIS target platform build.
 
-In this example the 8.0.3.CR1 target platform (Luna) repository is created.  First update the common and static update release areas.
+In this example the 8.0.3.CR2 target platform (Luna) repository is created.  First update the common and static update release areas.
 
 * Copy the community JBTIS target platform locally and remot-sync it to the devstudio update area.
 
@@ -842,8 +850,8 @@ In this example the 8.0.3.CR1 target platform (Luna) repository is created.  Fir
 cd ~/temp; mkdir -p tp; cd tp
 scp -r tools@filemgmt.jboss.org:/downloads_htdocs/tools/targetplatforms/jbtistarget/4.2.3.Final .
 
-rsync -arzq --protocol=28 4.2.3.Final/jbdsis devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0.0/8.0.3.CR1.jbds-is-target-platform
-rsync -arzq --protocol=28 4.2.3.Final/jbdsis devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/static/updates/8.0.0/8.0.3.CR1.jbds-is-target-platform
+rsync -arzq --protocol=28 4.2.3.Final/jbdsis devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0.0/8.0.3.CR2.jbds-is-target-platform
+rsync -arzq --protocol=28 4.2.3.Final/jbdsis devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/static/updates/8.0.0/8.0.3.CR2.jbds-is-target-platform
 ----
 
 *Mars:*
@@ -851,19 +859,18 @@ rsync -arzq --protocol=28 4.2.3.Final/jbdsis devstudio@filemgmt.jboss.org:/www_h
 [source,bash]
 ----
 cd ~/temp; mkdir -p tp; cd tp
-scp -r tools@filemgmt.jboss.org:/downloads_htdocs/tools/targetplatforms/jbtistarget/4.3.0.Beta1 .
+scp -r tools@filemgmt.jboss.org:/downloads_htdocs/tools/targetplatforms/jbtistarget/4.3.0.Beta1e .
 
-rsync -arzq --protocol=28 4.3.0.Beta1/jbdsis devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/targetplatforms/jbdsistarget/9.0.0.Beta1.jbds-is-target-platform
-
+rsync -arzq --protocol=28 4.3.0.Alpha1/jbdsis devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/targetplatforms/jbdsistarget/9.0.0.Alpha1.jbds-is-target-platform
 ----
 
 URL:
 
-https://devstudio.redhat.com/targetplatforms/jbdsistarget/9.0.0.Beta1a.jbds-is-target-platform/jbdsis/REPO/
-https://devstudio.redhat.com/targetplatforms/jbdsistarget/9.0.0.Beta1a.jbds-is-target-platform/jbdsis/earlyaccess/REPO/
+https://devstudio.redhat.com/targetplatforms/jbdsistarget/9.0.0.Alpha1.jbds-is-target-platform/jbdsis/REPO/
+https://devstudio.redhat.com/targetplatforms/jbdsistarget/9.0.0.Alpha1.jbds-is-target-platform/jbdsis/earlyaccess/REPO/
 
-https://devstudio.redhat.com/updates/8.0.0/8.0.3.CR1.jbds-is-target-platform/jbdsis/REPO
-https://devstudio.redhat.com/updates/8.0.0/8.0.3.CR1.jbds-is-target-platform/jbdsis/earlyaccess/REPO
+https://devstudio.redhat.com/updates/8.0.0/8.0.3.CR2.jbds-is-target-platform/jbdsis/REPO
+https://devstudio.redhat.com/updates/8.0.0/8.0.3.CR2.jbds-is-target-platform/jbdsis/earlyaccess/REPO
 
 Next update the QE test staging area:
 
@@ -872,19 +879,19 @@ Next update the QE test staging area:
 ssh dev01.mw.lab.eng.bos.redhat.com  
 sudo su - hudson  
 cd /qa/services/http/binaries/RHDS/targetplatforms/jbdsistarget/  
-scp -r tools@filemgmt.jboss.org:/downloads_htdocs/tools/targetplatforms/jbtistarget/4.2.3.Final .  
+scp -r tools@filemgmt.jboss.org:/downloads_htdocs/tools/targetplatforms/jbtistarget/4.2.3.Final .   # 4.3.0.Alpha1
 
 # Edit composites - change jbtis to jbdsis; Inspect  
-mv 4.2.3.Final 8.0.3.CR1
+mv 4.2.3.Final 8.0.3.GA   # 9.0.0.Alpha1
 ----
 
 Verify:
 
-http://www.qa.jboss.com/binaries/RHDS/targetplatforms/jbdsistarget/8.0.3.CR1/
-https://devstudio.redhat.com/updates/8.0.0/8.0.3.CR1.jbds-is-target-platform/jbdsis/REPO
-https://devstudio.redhat.com/updates/8.0.0/8.0.3.CR1.jbds-is-target-platform/jbdsis/earlyaccess/REPO
-https://devstudio.redhat.com/static/updates/8.0.0/8.0.3.CR1.jbds-is-target-platform/jbdsis/REPO
-https://devstudio.redhat.com/static/updates/8.0.0/8.0.3.CR1.jbds-is-target-platform/jbdsis/earlyaccess/REPO
+http://www.qa.jboss.com/binaries/RHDS/targetplatforms/jbdsistarget/8.0.3.CR2/
+https://devstudio.redhat.com/updates/8.0.0/8.0.3.CR2.jbds-is-target-platform/jbdsis/REPO
+https://devstudio.redhat.com/updates/8.0.0/8.0.3.CR2.jbds-is-target-platform/jbdsis/earlyaccess/REPO
+https://devstudio.redhat.com/static/updates/8.0.0/8.0.3.CR2.jbds-is-target-platform/jbdsis/REPO
+https://devstudio.redhat.com/static/updates/8.0.0/8.0.3.CR2.jbds-is-target-platform/jbdsis/earlyaccess/REPO
 
 *** This completes the JBDSIS TP build/ release process.
 
@@ -907,9 +914,6 @@ This section describes the process of building and releasing the actual JBDSIS a
 	generation
 	Create the Mylyn directory XML.
 
-    site
-    JBDSIS P2 update categories.  Composite content drawn from JBTIS.  Used for discovery XML generation.
-
     site-ga
     JBDSIS P2 release (GA) update categories.  Composite content drawn from JBTIS.
 
@@ -921,66 +925,73 @@ Git ref: https://github.com/jbosstools/jbosstools-integration-stack/tree/master/
  
 ==== Jenkins JBDSIS Aggregate Discovery Build:
 
-As an example, lets build JBDSIS 8.0.0.CR2 for Luna using the specific Jenkins job:
+As an example, lets build JBDSIS using the specific Jenkins job:
 
 https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBDSIS-aggregate-disc
 
 Note the community JBTIS aggregate composite site from which this build draws its content.  As with the JBTIS build, the build type is selectable - make sure you select the correct parameter there as it affects the site index.html and the discovery site.
 
-Upon successful completion of this build, the JBDSIS-aggregate-disc-luna-ga build will be invoked to build the release (.Final) components.  After that the JBDSIS-aggregate-disc-luna-ea build will be invoked to build the early access update site.
+Upon successful completion of this build, the JBDSIS-aggregate-disc build will be invoked to build the release (.Final) components.
 
 * Tag a label onto the GIT sources associated with any build committed to a milestone or release.  It is a required parameter to the configuration.  (i.e. JBDSIS-8.0.0.CR2)
 * Label the Jenkins build and set 'keep forever".
 
 ==== Publish the Production Integration Stack Components
 
-There exists a separate Jenkins job to move the build artifacts out of the JBoss tools staging area into a JBoss tools update area.  In this example the JBDSIS 8.0.3.CR1 development release is published.
+There exists a separate Jenkins job to move the build artifacts out of the JBoss tools staging area into a JBoss tools update area.
 
 Match the build type to the aggregate build type from the previous section.  Match the target folder to the aggregate build version string.
 
 Verify:
 
-http://www.qa.jboss.com/binaries/RHDS/updates/development/kepler/integration-stack/aggregate/8.0.3.CR1/
+http://www.qa.jboss.com/binaries/RHDS/updates/development/kepler/integration-stack/aggregate/8.0.3.CR2/
 http://www.qa.jboss.com/binaries/RHDS/updates/development/luna/integration-stack/aggregate/8.0.0.CR2/
+http://www.qa.jboss.com/binaries/RHDS/mars/development/updates/integration-stack/9.0.0.Alpha1/
  
 ==== Publish and Push the JBDSIS Aggregate p2 Update Site
 
-In this example we'll use the development 8.0.3.CR1 build.    Update the production aggregate Eclipse p2 repository as well as the offline .zip file.  If this is an earlyaccess jar - update the earlyaccess (devstudio/earlyaccess) composites.
+Update the production aggregate Eclipse p2 repository as well as the offline .zip file.  If this is an earlyaccess jar - update the earlyaccess (devstudio/earlyaccess) composites.
+
+*Luna:*
 
 [source,bash]
 ----
 cd ~/temp; mkdir -p jbds-update; cd jbds-update
 
 # Copy the p2 update site to the devstudio update areas:  
-rsync -aPrzq --protocol=28  pleacu@dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/updates/development/luna/integration-stack/aggregate/8.0.3.CR1 .
+rsync -aPrzq --protocol=28  pleacu@dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/updates/development/luna/integration-stack/aggregate/8.0.3.CR2 .
 
-rsync -arzq --protocol=28 8.0.3.CR1/ devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0.0/8.0.3.CR1.jbds-is
-rsync -arzq --protocol=28 8.0.3.CR1/ devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/static/updates/8.0.0/8.0.3.CR1.jbds-is
+rsync -arzq --protocol=28 8.0.3.CR2/ devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0.0/8.0.3.CR2.jbds-is
+rsync -arzq --protocol=28 8.0.3.CR2/ devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/static/updates/8.0.0/8.0.3.CR2.jbds-is
      
 # Copy the p2 update site zip to the devstudio update areas:  
-rsync --rsh=ssh pleacu@dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/updates/development/luna/integration-stack/aggregate/devstudio-integration-stack-aggregate-8.0.3.CR1.zip devstudio-integration-stack-aggregate-8.0.3.CR1.zip
-rsync --rsh=ssh pleacu@dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/updates/development/luna/integration-stack/aggregate/devstudio-integration-stack-aggregate-8.0.3.CR1-earlyaccess.zip devstudio-integration-stack-aggregate-8.0.3.CR1-earlyaccess.zip
+rsync --rsh=ssh pleacu@dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/updates/development/luna/integration-stack/aggregate/devstudio-integration-stack-aggregate-8.0.3.CR2.zip devstudio-integration-stack-aggregate-8.0.3.CR2.zip
+rsync --rsh=ssh pleacu@dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/updates/development/luna/integration-stack/aggregate/devstudio-integration-stack-aggregate-8.0.3.CR2-earlyaccess.zip devstudio-integration-stack-aggregate-8.0.3.CR2-earlyaccess.zip
 
-rsync -arzq --protocol=28 devstudio-integration-stack-aggregate-8.0.3.CR1.zip devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0.0/jbdevstudio-integration-stack-updatesite-8.0.3.CR1.zip
-rsync -arzq --protocol=28 devstudio-integration-stack-aggregate-8.0.3.CR1.zip devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/static/updates/8.0.0/jbdevstudio-integration-stack-updatesite-8.0.3.CR1.zip
+rsync -arzq --protocol=28 devstudio-integration-stack-aggregate-8.0.3.CR2.zip devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0.0/jbdevstudio-integration-stack-updatesite-8.0.3.CR2.zip
+rsync -arzq --protocol=28 devstudio-integration-stack-aggregate-8.0.3.CR2.zip devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/static/updates/8.0.0/jbdevstudio-integration-stack-updatesite-8.0.3.CR2.zip
 
-rsync -arzq --protocol=28 devstudio-integration-stack-aggregate-8.0.3.CR1-earlyaccess.zip devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0.0/jbdevstudio-integration-stack-updatesite-8.0.3.CR1-earlyaccess.zip
-rsync -arzq --protocol=28 devstudio-integration-stack-aggregate-8.0.3.CR1-earlyaccess.zip devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/static/updates/8.0.0/jbdevstudio-integration-stack-updatesite-8.0.3.CR1-earlyaccess.zip
+rsync -arzq --protocol=28 devstudio-integration-stack-aggregate-8.0.3.CR2-earlyaccess.zip devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0.0/jbdevstudio-integration-stack-updatesite-8.0.3.CR2-earlyaccess.zip
+rsync -arzq --protocol=28 devstudio-integration-stack-aggregate-8.0.3.CR2-earlyaccess.zip devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/static/updates/8.0.0/jbdevstudio-integration-stack-updatesite-8.0.3.CR2-earlyaccess.zip
 
 # Copy the p2 update site MD5 to the devstudio update areas:  
-rsync --rsh=ssh pleacu@dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/updates/development/luna/integration-stack/aggregate/devstudio-integration-stack-aggregate-8.0.3.CR1.zip.MD5 devstudio-integration-stack-aggregate-8.0.3.CR1.zip.MD5
-rsync --rsh=ssh pleacu@dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/updates/development/luna/integration-stack/aggregate/devstudio-integration-stack-aggregate-8.0.3.CR1-earlyaccess.zip.MD5 devstudio-integration-stack-aggregate-8.0.3.CR1-earlyaccess.zip.MD5
+rsync --rsh=ssh pleacu@dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/updates/development/luna/integration-stack/aggregate/devstudio-integration-stack-aggregate-8.0.3.CR2.zip.MD5 devstudio-integration-stack-aggregate-8.0.3.CR2.zip.MD5
+rsync --rsh=ssh pleacu@dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/updates/development/luna/integration-stack/aggregate/devstudio-integration-stack-aggregate-8.0.3.CR2-earlyaccess.zip.MD5 devstudio-integration-stack-aggregate-8.0.3.CR2-earlyaccess.zip.MD5
 
-rsync -arzq --protocol=28 devstudio-integration-stack-aggregate-8.0.3.CR1.zip.MD5 devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0.0/jbdevstudio-integration-stack-updatesite-8.0.3.CR1.zip.MD5
-rsync -arzq --protocol=28 devstudio-integration-stack-aggregate-8.0.3.CR1.zip.MD5 devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/static/updates/8.0.0/jbdevstudio-integration-stack-updatesite-8.0.3.CR1.zip.MD5
+rsync -arzq --protocol=28 devstudio-integration-stack-aggregate-8.0.3.CR2.zip.MD5 devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0.0/jbdevstudio-integration-stack-updatesite-8.0.3.CR2.zip.MD5
+rsync -arzq --protocol=28 devstudio-integration-stack-aggregate-8.0.3.CR2.zip.MD5 devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/static/updates/8.0.0/jbdevstudio-integration-stack-updatesite-8.0.3.CR2.zip.MD5
 
-rsync -arzq --protocol=28 devstudio-integration-stack-aggregate-8.0.3.CR1-earlyaccess.zip.MD5 devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0.0/jbdevstudio-integration-stack-updatesite-8.0.3.CR1-earlyaccess.zip.MD5
-rsync -arzq --protocol=28 devstudio-integration-stack-aggregate-8.0.3.CR1-earlyaccess.zip.MD5 devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/static/updates/8.0.0/jbdevstudio-integration-stack-updatesite-8.0.3.CR1-earlyaccess.zip.MD5
+rsync -arzq --protocol=28 devstudio-integration-stack-aggregate-8.0.3.CR2-earlyaccess.zip.MD5 devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0.0/jbdevstudio-integration-stack-updatesite-8.0.3.CR2-earlyaccess.zip.MD5
+rsync -arzq --protocol=28 devstudio-integration-stack-aggregate-8.0.3.CR2-earlyaccess.zip.MD5 devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/static/updates/8.0.0/jbdevstudio-integration-stack-updatesite-8.0.3.CR2-earlyaccess.zip.MD5
 ----
+
+*Mars:*
+
+*Select the RELEASE check box in the JBDSIS-aggregate-publish Jenkins job*
 
 Note that a stable build will be retrieved from a corresponding stable path.  If you update stable make sure to update development as well.
 
-Clone jbdevstudio-website and update the composites in both the integration-stack directory and integration-stack/aggregate to reflect the new version and then update the timestamps.
+Clone +jbdevstudio-website+ and update the composites in both the integration-stack directory and integration-stack/aggregate to reflect the new version and then update the timestamps.
 
 Git ref: https://github.com/jbdevstudio/jbdevstudio-website
 
@@ -1120,9 +1131,9 @@ Update the QE test staging area:
 ----
 ssh dev01.mw.lab.eng.bos.redhat.com  
 sudo su - hudson  
-cp -r /qa/services/http/binaries/RHDS/updates/development/kepler/integration-stack/aggregate/8.0.3.CR1 /qa/services/http/binaries/RHDS/builds/staging/jbdsis-8.0.2-updatesite/ 
+cp -r /qa/services/http/binaries/RHDS/updates/development/kepler/integration-stack/aggregate/8.0.3.CR2 /qa/services/http/binaries/RHDS/builds/staging/jbdsis-8.0.2-updatesite/ 
 - or - 
-cp -r /qa/services/http/binaries/RHDS/updates/development/luna/integration-stack/aggregate/8.0.3.CR1 /qa/services/http/binaries/RHDS/builds/staging/jbdsis-8.0.0.CR1-updatesite/
+cp -r /qa/services/http/binaries/RHDS/updates/development/luna/integration-stack/aggregate/8.0.3.CR2 /qa/services/http/binaries/RHDS/builds/staging/jbdsis-8.0.0.CR1-updatesite/
 ----
 
 ==== Publish and Push the JBDSIS JBoss Central Discovery Jar
@@ -1132,8 +1143,8 @@ The JBoss Central discovery jar is actually committed to the discovery download 
 [source,bash]
 ----
 mkdir -p ~/temp/disc;  cd ~/temp/disc
-wget http://www.qa.jboss.com/binaries/RHDS/discovery/integration/integration-stack/8.0.3.CR1/com.jboss.jbds.central.discovery.integration-stack_8.0.1.GA-v20150408-1203-B104.jar
-wget http://www.qa.jboss.com/binaries/RHDS/discovery/integration/integration-stack/8.0.3.CR1/com.jboss.jbds.central.discovery.integration-stack.earlyaccess_8.0.1.GA-v20150408-1203-B104.jar 
+wget http://www.qa.jboss.com/binaries/RHDS/discovery/integration/integration-stack/8.0.3.CR2/com.jboss.jbds.central.discovery.integration-stack_8.0.1.GA-v20150408-1203-B104.jar
+wget http://www.qa.jboss.com/binaries/RHDS/discovery/integration/integration-stack/8.0.3.CR2/com.jboss.jbds.central.discovery.integration-stack.earlyaccess_8.0.1.GA-v20150408-1203-B104.jar 
 
 # clone jbdevstudio-website
 
@@ -1142,17 +1153,27 @@ cp ~/temp/disc/com.jboss.jbds.central.discovery.integration-stack_8.0.1.GA-v2015
 cp ~/temp/disc/com.jboss.jbds.central.discovery.integration-stack.earlyaccess_8.0.1.GA-v20150408-1203-B104.jar .
 
 cd ..
-# edit devstudio-directory.xml: update com.jboss.jbds.central.discovery.integration-stack.earlyaccess_8.0.3.CR1-v20141001-1500-B67.jar
-# edit devstudio-earlyaccess.properties: add any IUs that are early access
+----
+* edit devstudio-directory.xml: update jar file names
+* edit devstudio-earlyaccess.properties: add any IUs that are early access
 
+[source,bash]
+----
 cd /home/pleacu/git-clone/jbdevstudio-website/content/updates/8.0-staging/discovery
 cp ~/temp/disc/com.jboss.jbds.central.discovery.integration-stack_8.0.1.GA-v20150408-1203-B104.jar .
 cp ~/temp/disc/com.jboss.jbds.central.discovery.integration-stack.earlyaccess_8.0.1.GA-v20150408-1203-B104.jar .
 
 cd ..
-# edit devstudio-directory.xml, devstudio-earlyaccess.properties
-
 ----
+* edit devstudio-directory.xml, devstudio-earlyaccess.properties
+
+The master version of devstudio-earlyaccess.properties should be edited here, so the discovery job can fetch it: 
+
+https://devstudio.redhat.com/9.0/snapshots/updates/earlyaccess.properties/master/devstudio-earlyaccess.properties
+
+The 4.3.mars version of devstudio-earlyaccess.properties should be edited here, so the discovery job can fetch it: 
+
+https://devstudio.redhat.com/9.0/snapshots/updates/earlyaccess.properties/4.3.mars/devstudio-earlyaccess.properties
 
 [NOTE]
 ----
@@ -1163,14 +1184,14 @@ Commit and issue a PR to https://github.com/jbdevstudio/jbdevstudio-website.  On
 ----
 # Copy the JBDSIS central jar and metadata files into position  
  cd ~/temp/disc  
- wget http://www.qa.jboss.com/binaries/RHDS/discovery/integration/integration-stack/8.0.3.CR1/com.jboss.jbds.central.discovery.integration-stack.earlyaccess_8.0.3.CR1-v20141023-1623-B69.jar  
+ wget http://www.qa.jboss.com/binaries/RHDS/discovery/integration/integration-stack/8.0.3.CR2/com.jboss.jbds.central.discovery.integration-stack.earlyaccess_8.0.3.CR2-v20141023-1623-B69.jar  
 
  sftp devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0-development/discovery  
  - or -
  sftp devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0-staging/discovery  
 
- put com.jboss.jbds.central.discovery.integration-stack_8.0.3.CR1-v20140409-1834-B7.jar
- put com.jboss.jbds.central.discovery.integration-stack.earlyaccess_8.0.3.CR1-v20150522-0954-B10.jar
+ put com.jboss.jbds.central.discovery.integration-stack_8.0.3.CR2-v20140409-1834-B7.jar
+ put com.jboss.jbds.central.discovery.integration-stack.earlyaccess_8.0.3.CR2-v20150522-0954-B10.jar
  bye
 
  cd /home/pleacu/git-clone/jbdevstudio-website/content/updates/8.0-development/  (or 8.0-staging)
@@ -1194,8 +1215,8 @@ cp ~/temp/disc/com* .
 
 # Push the discovery jars
 sftp devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0/discovery 
-   sftp> put com.jboss.jbds.central.discovery.integration-stack_8.0.3.CR1-v20150408-1203-B104.jar
-   sftp> put com.jboss.jbds.central.discovery.integration-stack.earlyaccess_8.0.3.CR1-v20150408-1203-B104.jar
+   sftp> put com.jboss.jbds.central.discovery.integration-stack_8.0.3.CR2-v20150408-1203-B104.jar
+   sftp> put com.jboss.jbds.central.discovery.integration-stack.earlyaccess_8.0.3.CR2-v20150408-1203-B104.jar
    sftp> bye
 
 cd ..
@@ -1282,11 +1303,11 @@ Your git status should appear something like this:
 # Untracked files:
 #   (use "git add <file>..." to include in what will be committed)
 #
-#	updates/8.0-development/discovery/com.jboss.jbds.central.discovery.integration-stack.earlyaccess_8.0.3.CR1-v20150220-1139-B91.jar
+#	updates/8.0-development/discovery/com.jboss.jbds.central.discovery.integration-stack.earlyaccess_8.0.3.CR2-v20150220-1139-B91.jar
 #	updates/8.0-development/integration-stack/earlyaccess/
-#	updates/8.0-staging/discovery/com.jboss.jbds.central.discovery.integration-stack.earlyaccess_8.0.3.CR1-v20150220-1139-B91.jar
+#	updates/8.0-staging/discovery/com.jboss.jbds.central.discovery.integration-stack.earlyaccess_8.0.3.CR2-v20150220-1139-B91.jar
 #	updates/8.0-staging/integration-stack/earlyaccess/
-#	updates/8.0/discovery/com.jboss.jbds.central.discovery.integration-stack.earlyaccess_8.0.3.CR1-v20150220-1139-B91.jar
+#	updates/8.0/discovery/com.jboss.jbds.central.discovery.integration-stack.earlyaccess_8.0.3.CR2-v20150220-1139-B91.jar
 #	updates/8.0/integration-stack/earlyaccess/
 ----
 
@@ -1305,11 +1326,11 @@ Start jbdevstudio or eclipse-with-jbds, then:
 
 [source,bash]
 ----
-./jbdevstudio -vmargs -Djboss.discovery.directory.url=http://www.qa.jboss.com/binaries/RHDS/discovery/integration/integration-stack/8.0.3.CR1/devstudio-integration-stack-directory.xml  
-      -Djboss.discovery.site.url=http://www.qa.jboss.com/binaries/RHDS/discovery/integration/integration-stack/8.0.3.CR1
+./jbdevstudio -vmargs -Djboss.discovery.directory.url=http://www.qa.jboss.com/binaries/RHDS/discovery/integration/integration-stack/8.0.3.CR2/devstudio-integration-stack-directory.xml  
+      -Djboss.discovery.site.url=http://www.qa.jboss.com/binaries/RHDS/discovery/integration/integration-stack/8.0.3.CR2
 
-./jbdevstudio -vmargs -Djboss.discovery.directory.url=http://www.qa.jboss.com/binaries/RHDS/discovery/integration/integration-stack/8.0.3.CR1/devstudio-integration-stack-directory.xml  
-      -Djboss.discovery.site.url=http://www.qa.jboss.com/binaries/RHDS/discovery/integration/integration-stack/8.0.3.CR1
+./jbdevstudio -vmargs -Djboss.discovery.directory.url=http://www.qa.jboss.com/binaries/RHDS/discovery/integration/integration-stack/8.0.3.CR2/devstudio-integration-stack-directory.xml  
+      -Djboss.discovery.site.url=http://www.qa.jboss.com/binaries/RHDS/discovery/integration/integration-stack/8.0.3.CR2
 
 ----
 
@@ -1336,7 +1357,7 @@ Install JBDS into ~/offline, then:
 [source,bash]
 ----
 ~/bin/installFromTarget.sh -ECLIPSE ~/offline/studio/ -INSTALL_PLAN  
-'jar:file:///home/pleacu/install/jbdevstudio-integration-stack-updatesite-8.0.3.CR1.zip!/,jar:file:///home/pleacu/install/jboss-devstudio-8.1.0.GA-updatesite-core.zip!/,jar:file:///home/pleacu/install/jbdevstudiotarget-4.32.0.Final.zip!/'  
+'jar:file:///home/pleacu/install/jbdevstudio-integration-stack-updatesite-8.0.3.CR2.zip!/,jar:file:///home/pleacu/install/jboss-devstudio-8.1.0.GA-updatesite-core.zip!/,jar:file:///home/pleacu/install/jbdevstudiotarget-4.32.0.Final.zip!/'  
 ----
 
 ==== Update the Red Hat Customer Support Portal
@@ -1360,5 +1381,34 @@ https://marketplace.eclipse.org/content/red-hat-jboss-developer-studio-integrati
 If it's a new page it must be submitted for inclusion the the Eclipse website master.  If it's an existing page you may edit it.
 
 Start a plain Eclipse session (no JBT or JBDS) and search for an included keyword (i.e. Fuse).  It will install both the IS and required core features.
+
+*Update get-started.adoc:*
+
+* Clone www.jboss.org  https://github.com/jboss-developer/www.jboss.org
+* Edit /home/pleacu/git-clone/www.jboss.org/products/devstudio/get-started.adoc
+
+*Test www.jboss.org site:*
+
+[source,bash]
+----
+# In a bash shell...
+bash --login
+rvm use 1.9.3
+rvm gemset create www.jboss.org
+cd ~/git-clone/www.jboss.org/products/devstudio
+rake setup
+gem install bundler
+bundle install
+rake clean preview
+
+# In a web browser...
+http://localhost:4242/products/devstudio
+----
+
+See ???? to push the PR.
+
+Verify:
+
+http://www.jboss.org/products/devstudio/get-started
 
 [big]*This completes the JBDSIS aggregate/ discovery build/ release process.*

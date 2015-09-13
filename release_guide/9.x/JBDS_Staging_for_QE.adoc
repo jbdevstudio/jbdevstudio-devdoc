@@ -282,6 +282,7 @@ rsync discovery.central/${versionWithRespin}/composite*.xml ./
 
 # update index.html 
 sed -i "s#${versionWithRespin_PREV}#${versionWithRespin}#" index.html
+cat index.html | egrep "${versionWithRespin_PREV}|${versionWithRespin}"
 
 # push changes to server
 rsync -aPrz --rsh=ssh --protocol=28 discovery.central/${versionWithRespin}/composite*xml ${JBDS}/9.0/staging/updates/discovery.central/${versionWithRespin}/
@@ -289,14 +290,12 @@ rsync -aPrz --rsh=ssh --protocol=28 discovery.earlyaccess/${versionWithRespin}/c
 rsync -aPrz --rsh=ssh --protocol=28 ./composite*xml ./index.html ${JBDS}/9.0/staging/updates/
 
 # verify changes
-echo "Check 4 URLs:
--
-https://devstudio.redhat.com/9.0/staging/updates/discovery.central/${versionWithRespin}/compositeContent.xml
-https://devstudio.redhat.com/9.0/staging/updates/discovery.earlyaccess/${versionWithRespin}/compositeContent.xml
-https://devstudio.redhat.com/9.0/staging/updates/compositeContent.xml
+echo "Check 4 URLs:"
+firefox \
+https://devstudio.redhat.com/9.0/staging/updates/discovery.central/${versionWithRespin}/compositeContent.xml \
+https://devstudio.redhat.com/9.0/staging/updates/discovery.earlyaccess/${versionWithRespin}/compositeContent.xml \
+https://devstudio.redhat.com/9.0/staging/updates/compositeContent.xml \
 https://devstudio.redhat.com/9.0/staging/updates/
--
-"
 
 rm -fr discovery.central/${versionWithRespin}/composite*.xml discovery.earlyaccess/${versionWithRespin}/composite*.xml
 
@@ -309,6 +308,12 @@ popd
 
 ----
 
+=== Merge in Integration Stack content
+
+TODO https://issues.jboss.org/browse/JBIDE-20664: write a new mechanism for 4.3.0.CR1 to pull in integration stack jars, using URLs declared in http://download.jboss.org/jbosstools/configuration/ide-config.properties
+jboss.discovery.site.integration-stack.url|jbosstools|4.3.0.CR1=http://download.jboss.org/jbosstools/mars/staging/updates/integration-stack/discovery/4.3.0.Alpha1/
+jboss.discovery.site.integration-stack.url|devstudio|9.0.0.CR1=https://devstudio.redhat.com/9.0/staging/updates/integration-stack/discovery/9.0.0.Alpha1/
+
 == Release the latest staging site to ide-config.properties
 
 See details in JBT_Staging_For_QE.adoc
@@ -319,11 +324,24 @@ See details in JBT_Staging_For_QE.adoc
 Before notifying team of staged release, must check for obvious problems.
 
 1. Get a recent Eclipse (compatible with the target version of JBT)
-2. Install BYOE category from https://devstudio.redhat.com/9.0/staging/updates/ ; restart
-3. Open Central Software/Updates tab, enable Early-Access select and install all connectors; restart
+2. Install BYOE category from https://devstudio.redhat.com/9.0/staging/updates/
+3. Restart when prompted. Open Central Software/Updates tab, enable Early-Access select and install all connectors; restart
 4. Check log, start an example project, check log again
 
-1. Download JBDS installer from https://devstudio.redhat.com/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/jboss-devstudio-${versionWithRespin}*-installer-standalone.jar* and install
+
+[source,bash]
+----
+versionWithRespin=9.0.0.CR1 # a, b, c...
+cd /tmp
+wget https://devstudio.redhat.com/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/
+installerJar=$(cat index.html | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
+echo "Installer jar: ${installerJar}"
+rm -f index.html
+wget https://devstudio.redhat.com/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/${installerJar}
+
+----
+
+1. Install JBDS from `java -jar /tmp/jboss-devstudio-*-installer-standalone.jar`
 2. Open Central Software/Updates tab, enable Early-Access select and install all connectors; restart
 3. Check log, start an example project, check log again
 

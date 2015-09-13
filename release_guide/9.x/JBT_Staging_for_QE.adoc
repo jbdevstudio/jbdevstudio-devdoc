@@ -402,8 +402,8 @@ popd
 Before notifying team of staged release, must check for obvious problems.
 
 1. Get a recent Eclipse (compatible with the target version of JBT)
-2. Install Abridged category from http://download.jboss.org/jbosstools/mars/staging/updates/ ; restart
-3. Open Central Software/Updates tab, enable Early-Access select and install all connectors; restart
+2. Install Abridged category from http://download.jboss.org/jbosstools/mars/staging/updates/
+3. Restart when prompted. Open Central Software/Updates tab, enable Early-Access select and install all connectors; restart
 4. Check log, start an example project, check log again
 
 

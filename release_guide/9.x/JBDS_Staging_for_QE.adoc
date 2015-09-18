@@ -18,7 +18,7 @@ Check c.j.d.central.core's currentversion.properties for the correct value of de
 # @since JBT 4.3.0 / JBDS 9.0.0 - JBIDE-18820, JBIDE-18806 
 
 version=9.0.0.CR1
-versionWithRespin=9.0.0.CR1 # a, b, c...
+versionWithRespin=9.0.0.CR1a # a, b, c...
 
 if [[ ${version:0:1} == "4" ]]; then # JBT
   pluginName=foundation.core
@@ -64,8 +64,8 @@ Whenever you're starting a new shell, you should set those variables:
 [sources,bash]
 ----
 version=9.0.0.CR1
-versionWithRespin=9.0.0.CR1 # a, b, c...
-TARGET_PLATFORM_VERSION_MAX=4.50.0.CR1-SNAPSHOT
+versionWithRespin=9.0.0.CR1a # a, b, c...
+TARGET_PLATFORM_VERSION_MAX=4.51.0.Final
 CENTRAL_TARGET_VERSION=4.50.0.CR1-SNAPSHOT
 now=$(date +%s000)
 isGA=false
@@ -99,8 +99,8 @@ WARNING: Don't use symlinks are they are too risky to use. Those operations can 
 # can run these 6 steps in parallel
 
 # copy JBDS target platform zips
-versionWithRespin=9.0.0.CR1 # a, b, c...
-TARGET_PLATFORM_VERSION_MAX=4.50.0.CR1-SNAPSHOT
+versionWithRespin=9.0.0.CR1a # a, b, c...
+TARGET_PLATFORM_VERSION_MAX=4.51.0.Final
 CENTRAL_TARGET_VERSION=4.50.0.CR1-SNAPSHOT
 for targetname in jbdevstudio jbtcentral jbtearlyaccess; do
   if [[ ${targetname} == "jbdevstudio" ]]; then
@@ -117,8 +117,8 @@ done
 echo "DONE: copy JBDS target platform zips" | grep "copy JBDS target platform zips"
 
 
-# copy JBT Central/EA update sites & zips
-versionWithRespin=9.0.0.CR1 # a, b, c...
+# copy JBDS Central/EA update sites & zips
+versionWithRespin=9.0.0.CR1a # a, b, c...
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 JBT_stream=4.3.mars
 for site in central-site earlyaccess-site; do
@@ -145,11 +145,11 @@ for site in central-site earlyaccess-site; do
     echo "ERROR: no latest build found for ${site}" | grep ERROR
   fi
 done
-echo "DONE: copy JBT Central/EA update sites & zips" | grep "copy JBT Central/EA update sites & zips"
+echo "DONE: copy JBDS Central/EA update sites & zips" | grep "copy JBDS Central/EA update sites & zips"
 
 
 # copy JBDS installers: snapshots/builds/ to staging/builds/ [INTERNAL - both installers]
-versionWithRespin=9.0.0.CR1 # a, b, c...
+versionWithRespin=9.0.0.CR1a # a, b, c...
 JBDS_stream=9.0.mars
 ID=""
 ID=$(cd /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${JBDS_stream} && ls 20* | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%:*}
@@ -174,7 +174,7 @@ echo "DONE: copy JBDS installers: snapshots/builds/ to staging/builds/ [INTERNAL
 
 
 # copy JBDS installers: snapshots/builds/ to staging/builds/ [EXTERNAL - Standalone installer only]
-versionWithRespin=9.0.0.CR1 # a, b, c...
+versionWithRespin=9.0.0.CR1a # a, b, c...
 JBDS_stream=9.0.mars
 ID=""
 ID=$(echo "ls 20*" | sftp ${JBDS}/9.0/snapshots/builds/devstudio.product_${JBDS_stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
@@ -196,7 +196,7 @@ echo "DONE: copy JBDS installers: snapshots/builds/ to staging/builds/ [EXTERNAL
 
 
 # copy JBDS update: snapshots/builds/*/repo/* to staging/updates/core/${versionWithRespin}; also copy updatesite-core.zip
-versionWithRespin=9.0.0.CR1 # a, b, c...
+versionWithRespin=9.0.0.CR1a # a, b, c...
 JBDS_stream=9.0.mars
 ID=""
 ID=$(cd /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${JBDS_stream} && ls 20* | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%:*}
@@ -211,7 +211,7 @@ echo "DONE: copy JBDS update: snapshots/builds/*/repo/* to staging/updates/core/
 
 
 # copy JBDS discovery sites to staging/builds/ and staging/updates/
-versionWithRespin=9.0.0.CR1 # a, b, c...
+versionWithRespin=9.0.0.CR1a # a, b, c...
 JBT_stream=4.3.mars
 for site in discovery.central discovery.earlyaccess; do
   ID=""
@@ -235,13 +235,23 @@ done
 echo "DONE: copy JBDS discovery sites to staging/builds/ and staging/updates/" | grep "copy JBDS discovery sites to staging/builds/ and staging/updates/"
 
 
-#  verify sites are correctly populated:
+#  verify sites are correctly populated (run locally not on dev01):
+versionWithRespin=9.0.0.CR1a # a, b, c...
+tmpfile=/tmp/jbosstools-staging__verify.txt
 for site in central earlyaccess discovery.central discovery.earlyaccess; do
   if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
-  echo "https://devstudio.redhat.com/9.0/staging/builds/devstudio-${versionWithRespin}-build-${sitename}/ *AND* https://devstudio.redhat.com/9.0/staging/updates/${sitename}/${versionWithRespin}/"
+  echo "https://devstudio.redhat.com/9.0/staging/builds/devstudio-${versionWithRespin}-build-${sitename}/ " >> $tmpfile
+  echo "https://devstudio.redhat.com/9.0/staging/updates/${sitename}/${versionWithRespin}/ " >> $tmpfile
 done
-echo "https://devstudio.redhat.com/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/ *AND* http://www.qa.jboss.com/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/"
-echo "https://devstudio.redhat.com/9.0/staging/builds/ (5 folders w/ ${versionWithRespin}) *AND* https://devstudio.redhat.com/9.0/staging/updates/core/ (6 zips, 6 sums, 1 folder w/ ${versionWithRespin})"
+echo "https://devstudio.redhat.com/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/ " >> $tmpfile
+echo "http://www.qa.jboss.com/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/ " >> $tmpfile
+echo "https://devstudio.redhat.com/9.0/staging/builds/#_____(5_folders_w/_${versionWithRespin}) " >> $tmpfile
+echo "https://devstudio.redhat.com/9.0/staging/updates/core/#_____(6_zips,_6_sums,_1_folder_w/_${versionWithRespin}) " >> $tmpfile
+echo "" >> $tmpfile
+cat $tmpfile
+firefox `cat $tmpfile`
+popd >/dev/null
+rm -fr $tmpfile
 
 ----
 
@@ -253,11 +263,12 @@ This should point to the latest staging bits. Just copy what's in discovery.cent
 ----
 
 version=9.0.0.CR1
-versionWithRespin_PREV=9.0.0.Beta2b # a, b, c...
-versionWithRespin=9.0.0.CR1 # a, b, c...
-TARGET_PLATFORM_VERSION_MAX=4.50.0.CR1-SNAPSHOT
+versionWithRespin_PREV=9.0.0.CR1 # a, b, c...
+versionWithRespin=9.0.0.CR1a # a, b, c...
+TARGET_PLATFORM_VERSION_MAX=4.51.0.Final
 CENTRAL_TARGET_VERSION=4.50.0.CR1-SNAPSHOT
 
+cd ~/truu
 pushd jbdevstudio-website/content/9.0/staging/updates
 
 git fetch origin master
@@ -331,7 +342,7 @@ Before notifying team of staged release, must check for obvious problems.
 
 [source,bash]
 ----
-versionWithRespin=9.0.0.CR1 # a, b, c...
+versionWithRespin=9.0.0.CR1a # a, b, c...
 cd /tmp
 wget https://devstudio.redhat.com/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/
 installerJar=$(cat index.html | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
@@ -355,8 +366,8 @@ ____
 ----
 version_JBT=4.3.0.CR1
 version=9.0.0.CR1
-versionWithRespin=9.0.0.CR1 # a, b, c...
-respin="respin-"
+versionWithRespin=9.0.0.CR1a # a, b, c...
+respin="respin-a"
 echo "
 Subject: 
 

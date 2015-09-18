@@ -21,7 +21,7 @@ Check o.j.t.foundation.core's currentversion.properties for the correct value of
 # @Since JBT 4.2.1 / JBDS 8.0.1 - JBIDE-18820, JBIDE-18806
 
 version=4.3.0.CR1
-versionWithRespin=4.3.0.CR1 # a, b, c...
+versionWithRespin=4.3.0.CR1a # a, b, c...
 
 if [[ ${version:0:1} == "4" ]]; then # JBT
   pluginName=foundation.core
@@ -116,8 +116,8 @@ Should a respin be needed, they can be re-enabled as needed.
 [[update-discovery-urls]]
 Update the *stable branch* discovery job ( https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/job/jbosstools-discovery_4.3.mars/configure ) to use the correct source URLs and versions +
 
-VERSION = CR1 (not SNAPSHOT!) # a, b, c...
-TARGET_PLATFORM_VERSION_MAXIMUM = 4.50.0.CR1-SNAPSHOT
+VERSION = CR1a (not SNAPSHOT!) # a, b, c...
+TARGET_PLATFORM_VERSION_MAX = 4.51.0.Final
 JBTCENTRALTARGET_VERSION = 4.50.0.CR1-SNAPSHOT
 
 Then respin the job and verify that sites were correctly populated:
@@ -158,7 +158,7 @@ Here is a script that performs the copy (& rename) from /snapshots/ to /staging/
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 for site in site; do
   stream=4.3.mars
-  versionWithRespin=4.3.0.CR1 # a, b, c...
+  versionWithRespin=4.3.0.CR1a # a, b, c...
   ID=""
   ID=$(echo "ls 20*" | sftp ${TOOLS}/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
@@ -187,7 +187,7 @@ echo "DONE: JBT aggregate site" | grep "JBT aggregate site"
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 for site in coretests-site; do
   stream=4.3.mars
-  versionWithRespin=4.3.0.CR1 # a, b, c...
+  versionWithRespin=4.3.0.CR1a # a, b, c...
   ID=""
   ID=$(echo "ls 20*" | sftp ${TOOLS}/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
@@ -216,7 +216,7 @@ echo "DONE: JBT tests site" | grep "JBT tests site"
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 for site in central-site earlyaccess-site; do
   stream=4.3.mars
-  versionWithRespin=4.3.0.CR1 # a, b, c...
+  versionWithRespin=4.3.0.CR1a # a, b, c...
   ID=""
   ID=$(echo "ls 20*" | sftp ${TOOLS}/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
@@ -245,7 +245,7 @@ echo "DONE: Central and EA sites" | grep "Central and EA sites"
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 for site in browsersim-standalone; do
   stream=4.3.mars
-  versionWithRespin=4.3.0.CR1 # a, b, c...
+  versionWithRespin=4.3.0.CR1a # a, b, c...
   ID=""
   ID=$(echo "ls 20*" | sftp ${TOOLS}/mars/snapshots/builds/jbosstools-${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
@@ -272,7 +272,7 @@ echo "DONE: Browsersim Standalone Zip" | grep "Browsersim Standalone Zip"
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 for site in discovery.central discovery.earlyaccess; do
   stream=4.3.mars
-  versionWithRespin=4.3.0.CR1 # a, b, c...
+  versionWithRespin=4.3.0.CR1a # a, b, c...
   ID=""
   ID=$(echo "ls 20*" | sftp ${TOOLS}/mars/snapshots/builds/jbosstools-${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
@@ -297,16 +297,22 @@ done
 echo "DONE: JBT discovery sites" | grep "JBT discovery sites"
 
 
-#  verify sites are correctly populated:
+#  verify sites are correctly populated (run locally not on dev01):
+versionWithRespin=4.3.0.CR1a # a, b, c...
+tmpfile=/tmp/jbosstools-staging__verify.txt
 for site in site coretests-site central-site earlyaccess-site discovery.central discovery.earlyaccess; do
   if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
-  echo "http://download.jboss.org/jbosstools/mars/staging/builds/jbosstools-${versionWithRespin}-build-${sitename}/ *AND* http://download.jboss.org/jbosstools/mars/staging/updates/${sitename}/${versionWithRespin}/"
+  echo "http://download.jboss.org/jbosstools/mars/staging/builds/jbosstools-${versionWithRespin}-build-${sitename}/ " >> $tmpfile
+  echo "http://download.jboss.org/jbosstools/mars/staging/updates/${sitename}/${versionWithRespin}/ " >> $tmpfile
 done
 for site in browsersim-standalone; do
   if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
-  echo "http://download.jboss.org/jbosstools/mars/staging/builds/jbosstools-${versionWithRespin}-build-${sitename}/"
+  echo "http://download.jboss.org/jbosstools/mars/staging/builds/jbosstools-${versionWithRespin}-build-${sitename}/ " >> $tmpfile
 done
-
+echo "" >> $tmpfile
+cat $tmpfile
+firefox `cat $tmpfile`
+rm -fr $tmpfile
 
 ----
 
@@ -322,14 +328,15 @@ This site needs to contain:
 
 [source,bash]
 ----
-versionWithRespin_PREV=4.3.0.Beta2b # a, b, c...
-TARGET_PLATFORM_VERSION_MAX_PREV=4.50.0.Beta2
-TARGET_PLATFORM_CENTRAL_MAX_PREV=4.50.0.Beta2-SNAPSHOT
+versionWithRespin_PREV=4.3.0.CR1 # a, b, c...
+TARGET_PLATFORM_VERSION_MAX_PREV=4.50.0.CR1-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX_PREV=4.50.0.CR1-SNAPSHOT
 
-versionWithRespin=4.3.0.CR1 # a, b, c...
-TARGET_PLATFORM_VERSION_MAX=4.50.0.CR1-SNAPSHOT
+versionWithRespin=4.3.0.CR1a # a, b, c...
+TARGET_PLATFORM_VERSION_MAX=4.51.0.Final
 TARGET_PLATFORM_CENTRAL_MAX=4.50.0.CR1-SNAPSHOT
 
+cd ~/tru
 pushd jbosstools-download.jboss.org/jbosstools/mars/staging/updates
 git fetch origin master
 git checkout FETCH_HEAD
@@ -377,7 +384,7 @@ Update it so that the links for the latest milestone point to valid URLs. Commen
 cd ~/tru
 pushd jbosstools-download.jboss.org/jbosstools/configuration
 version=4.3.0.CR1
-versionWithRespin=4.3.0.CR1 # a, b, c...
+versionWithRespin=4.3.0.CR1a # a, b, c...
 
 git fetch origin master
 git checkout FETCH_HEAD
@@ -414,10 +421,10 @@ ____
 
 [source,bash]
 ----
-versionWithRespin=4.3.0.CR1 # a, b, c...
-respin="respin-"
-#TARGET_PLATFORM_VERSION_MIN=4.50.0.CR1
-TARGET_PLATFORM_VERSION_MAX=4.50.0.CR1-SNAPSHOT
+versionWithRespin=4.3.0.CR1a # a, b, c...
+respin="respin-a"
+TARGET_PLATFORM_VERSION_MIN=4.50.0.Final
+TARGET_PLATFORM_VERSION_MAX=4.51.0.Final
 TARGET_PLATFORM_CENTRAL_MAX=4.50.0.CR1-SNAPSHOT
 jbdsFixVersion=9.0.0.CR1 # no respin suffix here
 jbtFixVersion=4.3.0.CR1 # no respin suffix here

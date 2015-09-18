@@ -175,7 +175,7 @@ echo "DONE: JBT tests site" | grep "JBT tests site"
 version=4.3.0.Beta2
 versionWithRespin=4.3.0.Beta2b # a, b, c...
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
-for site in central earlyaccess coretests; do
+for site in central earlyaccess; do
   tmpdir=/tmp/jbosstools-static-development-updates-${site}_${versionWithRespin}
   rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/mars/staging/updates/${site}/${versionWithRespin}/* ${tmpdir}/
   # copy update site

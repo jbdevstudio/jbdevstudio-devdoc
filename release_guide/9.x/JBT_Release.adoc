@@ -535,12 +535,21 @@ rm -f /tmp/${versionWithRespin_PREV}.properties /tmp/${version}.properties
 
 == Smoke test the release
 
-Before notifying team of staged release, must check for obvious problems.
+Before notifying team of release, must check for obvious problems. Any failure there should be fixed with highest priority. In general, it could be wrong URLs in a composite site.
+
+=== Validate update site install 
 
 1. Get a recent Eclipse (compatible with the target version of JBT)
 2. Install Abridged category from http://download.jboss.org/jbosstools/mars/development/updates/ ; restart
 3. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
 4. Check log, start an example project, check log again
+
+=== Validate Marketplace install
+
+1. Get a compatible Eclipse
+2. Install from Marketplace
+3. Install everything from Central + Earlyaccess
+4. Test a project example
 
 
 == Git tags

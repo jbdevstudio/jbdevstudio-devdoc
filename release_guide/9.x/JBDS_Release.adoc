@@ -439,22 +439,6 @@ cat /tmp/yml.txt; rm -f /tmp/yml.txt
 Commit changes and submit PR.
 
 
-== Smoke test the release
-
-Before notifying team of staged release, must check for obvious problems.
-
-1. Get a recent Eclipse (compatible with the target version of JBT)
-2. Install BYOE category from https://devstudio.redhat.com/9.0/development/updates/ ; restart
-3. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
-4. Check log, start an example project, check log again
-
-1. Download JBDS installer from https://devstudio.redhat.com/9.0/development/builds/installer/ and install
-2. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
-3. Check log, start an example project, check log again
-
-If this fails, it is most likely due to a bug or a failure in a step above. If possible, fix it before notifying team below.
-
-
 == Tag Git
 
 Once cloned to disk, this script will create the tags if run from the location with your git clones. If tags exist, no new tag will be created.
@@ -505,7 +489,7 @@ Create a new node on Marketplace, listing the single "BYOE" feature, com.jboss.d
 
 === If node already exists
 
-Access it via +http://marketplace.eclipse.org/content/red-hat-jboss-developer-studio-mars/edit+ and update the following things:
+Access it via +http://marketplace.eclipse.org/content/red-hat-jboss-developer-studio/edit+ and update the following things:
 
 * Title to match new version
 * Description to match new version & dependencies
@@ -523,14 +507,30 @@ firefox https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
   https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
 ----
 
-== Minimal validation of the installation
+== Smoke test the release
+
+Before notifying team of release, must check for obvious problems. Any failure there should be fixed with highest priority. In general, it could be wrong URLs in a composite site.
+
+=== Validate update site install (BYOE)
+
+1. Get a recent Eclipse (compatible with the target version of JBT)
+2. Install BYOE category from https://devstudio.redhat.com/9.0/development/updates/ ; restart
+3. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
+4. Check log, start an example project, check log again
+
+=== Validate installer install
+
+1. Download JBDS installer from https://devstudio.redhat.com/9.0/development/builds/installer/ and install
+2. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
+3. Check log, start an example project, check log again
+
+=== Validate Marketplace install
 
 1. Get a compatible Eclipse
 2. Install from Marketplace
 3. Install everything from Central + Earlyaccess
 4. Test a project example
 
-Any failure there should be fixed with highest priority. In general, it could be wrong URLs in a composite site.
 
 == Notify the team (send 2 or more emails)
 

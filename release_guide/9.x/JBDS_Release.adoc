@@ -27,7 +27,7 @@ firefox https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
 == Rename artifacts to remove timestamp and buildID
 
 To comply with Goldengate URL rules, we need to rename artifacts before they go to the CSP. For example
-`jboss-devstudio-9.0.0.Beta2-v20141020-1042-B317-installer-standalone.jar` must be renamed to `jboss-devstudio-9.0.0.Beta2-installer-standalone.jar`.
+`jboss-devstudio-9.0.0.CR1-v20141020-1042-B317-installer-standalone.jar` must be renamed to `jboss-devstudio-9.0.0.CR1-installer-standalone.jar`.
 
 Connect to dev01.mw.lab.eng.bos.redhat.com as +hudson+ user (requires permissions).
 
@@ -42,10 +42,11 @@ Then:
 
 [source,bash]
 ----
-version=9.0.0.Beta2
-versionWithRespin=9.0.0.Beta2b # a, b, c...
+version=9.0.0.CR1
+versionWithRespin=9.0.0.CR1a # a, b, c...
 pushd /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/
 for f in $(ls jboss-devstudio-${version}-*); do g=$(echo $f | sed s#-v[[:digit:]]*-[[:digit:]]*-B[[:digit:]]*##); echo "mv $f $g"; mv $f $g; done
+touch *
 ls -l
 popd
 ----
@@ -59,14 +60,14 @@ Verify that they contain correct install/usage instructions & versions.
 If anything is wrong, fix it by hand, then also commit your changes to the templates. 
 
 https://github.com/jbdevstudio/jbdevstudio-product/commit/3827045dca85e73c5ae339cc13f514591e3c1835
-
+https://github.com/jbdevstudio/jbdevstudio-product/commit/e6c2954207d1db7451f7adfd2d89c7ceccd6adbe
 
 == Submit JIRA and PR to update https://www.jboss.org/products/devstudio/
 
 Goal is to update the following pages: https://www.jboss.org/products/devstudio/download/ and https://www.jboss.org/products/devstudio/overview/
 
 * Open a JIRA: https://issues.jboss.org/secure/CreateIssue.jspa?pid=12313621&issuetype=3 
-* Past example: https://issues.jboss.org/browse/DEVELOPER-1371
+* Past example: https://issues.jboss.org/browse/DEVELOPER-1403, https://issues.jboss.org/browse/DEVELOPER-1371
 * Attach a pull request for https://github.com/jboss-developer/www.jboss.org/blob/master/products/devstudio/_common/product.yml_
 * Past example: https://github.com/jboss-developer/www.jboss.org/pull/929
 
@@ -80,13 +81,13 @@ NOTE: As this takes some time and can be easily cancelled, this step can be anti
 
 *To* release-engineering@redhat.com +
 and +
-*Cc* cobrien@redhat.com, ldimaggi@redhat.com, mhusnain@redhat.com, jpallich@redhat.com, nboldt@redhat.com, mistria@redhat.com, alkazako@redhat.com, manderse@redhat.com, bsutter@redhat.com, pmuir@redhat.com, paul.robinson@redhat.com +
+*Cc* cobrien@redhat.com, ldimaggi@redhat.com, mhusnain@redhat.com, jpallich@redhat.com, nboldt@redhat.com, mistria@redhat.com, alkazako@redhat.com, manderse@redhat.com, bsutter@redhat.com, pmuir@redhat.com, paul.robinson@redhat.com, dcoughli@redhat.com +
 
 [source,bash]
 ----
-version=9.0.0.Beta2
-versionWithRespin=9.0.0.Beta2b # a, b, c...
-JIRA=-1371
+version=9.0.0.CR1
+versionWithRespin=9.0.0.CR1a # a, b, c...
+JIRA=-1403
 if [[ ${version} != ${versionWithRespin} ]]; then
   versionFriendlyName="${version} (to be renamed from ${versionWithRespin})"
 else
@@ -124,7 +125,7 @@ When pushed, please reply so that QE can review the CSP pages & files for push t
 
 Note that in addition to the new CSP page, eg., [1] or [2], the CSP landing page [3] should also be updated to point to the latest release.
 
-[1] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=9.0.0.Beta2
+[1] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=9.0.0.CR1
 [2] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=9.0.0
 [3] https://access.redhat.com/downloads/
 
@@ -134,9 +135,9 @@ Thanks in advance,
 
 ----
 
-As an answer, you get the links to the GoldenGate files, eg., /content/origin/files/sha256/2c/2c92b68d122db901e3acbb74f06950116f4fe29402c25f4391761f9a93e65bba/jboss-devstudio-9.0.0.Beta2-updatesite-core.zip
+As an answer, you get the links to the GoldenGate files, eg., /content/origin/files/sha256/2c/2c92b68d122db901e3acbb74f06950116f4fe29402c25f4391761f9a93e65bba/jboss-devstudio-9.0.0.CR1-updatesite-core.zip
 
-Communicate with Paul Robinson, Chris O'Brien, etc. to coordinate the release. All the above can happen in parallel / before the updates below.
+Communicate with Paul Robinson / Daniel Coughlin, Chris O'Brien, etc. to coordinate the release. All the above can happen in parallel / before the updates below.
 
 = Release steps
 
@@ -166,8 +167,8 @@ Then copy the latest JBDS artifacts:
 
 
 # copy JBDS update site (> 800M)
-version=9.0.0.Beta2
-versionWithRespin=9.0.0.Beta2b # a, b, c...
+version=9.0.0.CR1
+versionWithRespin=9.0.0.CR1a # a, b, c...
 tmpdir=/tmp/release_${version}_update_site
 for site in core; do
   mkdir -p ${tmpdir}/9.0/development/updates/${site}/${version}
@@ -183,8 +184,8 @@ echo "copy JBDS update site" | grep "copy JBDS update site"
 
 
 # copy Central/EA/Discovery sites (< 8M), and update metadata refs in discovery sites
-version=9.0.0.Beta2
-versionWithRespin=9.0.0.Beta2b # a, b, c...
+version=9.0.0.CR1
+versionWithRespin=9.0.0.CR1a # a, b, c...
 for site in central earlyaccess discovery.central discovery.earlyaccess; do
   tmpdir=/tmp/release__${site}__${version}
   mkdir -p ${tmpdir}/9.0/development/updates/${site}/${version}
@@ -212,10 +213,10 @@ echo "copy Central/EA/Discovery sites" | grep "copy Central/EA/Discovery sites"
 
 
 # copy 6 zips & SHAs
-# jboss-devstudio-9.0.0.Beta2b-target-platform-central.zip           jboss-devstudio-9.0.0.Beta2b-target-platform.zip          jboss-devstudio-9.0.0.Beta2b-updatesite-core.zip
-# jboss-devstudio-9.0.0.Beta2b-target-platform-earlyaccess.zip       jboss-devstudio-9.0.0.Beta2b-updatesite-central.zip       jboss-devstudio-9.0.0.Beta2b-updatesite-earlyaccess.zip
-version=9.0.0.Beta2
-versionWithRespin=9.0.0.Beta2b # a, b, c...
+# jboss-devstudio-9.0.0.CR1a-target-platform-central.zip           jboss-devstudio-9.0.0.CR1a-target-platform.zip          jboss-devstudio-9.0.0.CR1a-updatesite-core.zip
+# jboss-devstudio-9.0.0.CR1a-target-platform-earlyaccess.zip       jboss-devstudio-9.0.0.CR1a-updatesite-central.zip       jboss-devstudio-9.0.0.CR1a-updatesite-earlyaccess.zip
+version=9.0.0.CR1
+versionWithRespin=9.0.0.CR1a # a, b, c...
 tmpdir=/tmp/release_${version}_zips
 for site in core; do
   mkdir -p ${tmpdir}/9.0/development/updates/${site}
@@ -234,8 +235,8 @@ echo "copy zips & SHAs" | grep "copy zips & SHAs"
 
 
 # copy installer jar
-version=9.0.0.Beta2
-versionWithRespin=9.0.0.Beta2b # a, b, c...
+version=9.0.0.CR1
+versionWithRespin=9.0.0.CR1a # a, b, c...
 tmpdir=/tmp/release_${version}_installer
 for site in builds; do
   mkdir -p ${tmpdir}/9.0/development/${site}/installer/${version}
@@ -259,6 +260,25 @@ done
 echo "https://devstudio.redhat.com/9.0/development/builds/installer/${version}/"
 echo "https://devstudio.redhat.com/9.0/development/updates/core/ (6 zips, 6 sums, 1 folder w/ ${version})"
 
+#  verify sites are correctly populated (run locally not on dev01):
+version=9.0.0.CR1
+tmpfile=/tmp/devstudio-staging__verify.txt
+for site in site central-site earlyaccess-site; do
+  if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
+  echo "https://devstudio.redhat.com/9.0/development/updates/${sitename}/${version}/ " >> $tmpfile
+done
+for site in discovery.central discovery.earlyaccess; do
+  if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
+  echo "https://devstudio.redhat.com/9.0/development/updates/${sitename}/${version}/ " >> $tmpfile
+done
+# zip & installers
+echo "https://devstudio.redhat.com/9.0/development/updates/core/#_____(6_zips_+_SHAs,_and_${version}_folder) " >> $tmpfile
+echo "https://devstudio.redhat.com/9.0/development/builds/installer/${version}/ " >> $tmpfile
+echo "" >> $tmpfile
+cat $tmpfile
+firefox `cat $tmpfile`
+rm -fr $tmpfile
+
 
 ----
 
@@ -268,8 +288,8 @@ To update the content in https://devstudio.redhat.com/9.0/development/updates/ .
 
 [source,bash]
 ----
-version=9.0.0.Beta2
-versionWithRespin=9.0.0.Beta2b # a, b, c...
+version=9.0.0.CR1
+versionWithRespin=9.0.0.CR1a # a, b, c...
 
 # adjust these steps to fit your own path location & git workflow
 cd ~/truu
@@ -296,13 +316,15 @@ egrep "staging|development|${version}|${versionWithRespin}" compositeContent.xml
 # update EA site
 pushd earlyaccess >/dev/null
 rm -f composite*.xml
-wget https://devstudio.redhat.com/9.0/development/updates/discovery.earlyaccess/9.0.0.Beta2/compositeContent.xml
-wget https://devstudio.redhat.com/9.0/development/updates/discovery.earlyaccess/9.0.0.Beta2/compositeArtifacts.xml
+wget https://devstudio.redhat.com/9.0/development/updates/discovery.earlyaccess/9.0.0.CR1/compositeContent.xml
+wget https://devstudio.redhat.com/9.0/development/updates/discovery.earlyaccess/9.0.0.CR1/compositeArtifacts.xml
 echo "------------"
 egrep "staging|development|${version}|${versionWithRespin}" compositeContent.xml
 popd >/dev/null
 
 popd >/dev/null
+
+## HERE
 
 # commit changes to git
 git add development/updates/
@@ -315,6 +337,13 @@ rsync -Pzrlt --rsh=ssh --protocol=28 development/updates/earlyaccess/*.*ml $JBDS
 
 # done
 popd >/dev/null
+
+# review changes
+firefox \
+https://devstudio.redhat.com/9.0/development/updates/ \
+https://devstudio.redhat.com/9.0/development/updates/earlyaccess/ \
+https://devstudio.redhat.com/9.0/development/updates/compositeContent.xml \
+https://devstudio.redhat.com/9.0/development/updates/earlyaccess/compositeContent.xml 
 
 ----
 
@@ -329,33 +358,33 @@ And update it it as required, so that the links for the latest milestone point t
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru
 pushd jbosstools-download.jboss.org/jbosstools/configuration
-version=9.0.0.Beta2
-versionWithRespin=9.0.0.Beta2b # a, b, c...
+version=9.0.0.CR1
+versionWithRespin=9.0.0.CR1a # a, b, c...
 
 git fetch origin master
 git checkout FETCH_HEAD
 
 # then edit ide-config.properties 
 # vim ide-config.properties 
-# st ide-config.properties 
+st ide-config.properties 
 
 # verify
-echo "
-https://devstudio.redhat.com/9.0/development/updates/discovery.central/${version}/devstudio-directory.xml
-https://devstudio.redhat.com/9.0/development/updates/
-https://devstudio.redhat.com/9.0/development/updates/compositeContent.xml
-https://devstudio.redhat.com/9.0/development/updates/earlyaccess/
-https://devstudio.redhat.com/9.0/development/updates/earlyaccess/compositeContent.xml
+firefox \
+https://devstudio.redhat.com/9.0/development/updates/discovery.central/${version}/devstudio-directory.xml \
+https://devstudio.redhat.com/9.0/development/updates/ \
+https://devstudio.redhat.com/9.0/development/updates/compositeContent.xml \
+https://devstudio.redhat.com/9.0/development/updates/earlyaccess/ \
+https://devstudio.redhat.com/9.0/development/updates/earlyaccess/compositeContent.xml \
 https://devstudio.redhat.com/9.0/development/updates/discovery.earlyaccess/${version}/devstudio-earlyaccess.properties
-"
 
 # commit the change and push to master
-ci "release JBT ${version} (${versionWithRespin}) to public: link to latest dev milestone discovery site" ide-config.properties
+ci "release JBDS ${version} (${versionWithRespin}) to public: link to latest dev milestone discovery site" ide-config.properties
 git push origin HEAD:master
 
 # push updated file to server
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 rsync -Pzrlt --rsh=ssh --protocol=28 ide-config.properties $TOOLS/configuration/ide-config.properties
+popd
 
 ----
 
@@ -369,6 +398,45 @@ Examples:
 
 * https://github.com/jbosstools/jbosstools-website/pull/418 (JBT / JBDS Beta1)
 * https://github.com/jbosstools/jbosstools-website/pull/449 (JBT Beta2)
+* https://github.com/jbosstools/jbosstools-website/pull/489 (JBDS CR1)
+
+==== SHA256 values 
+
+To get the SHA256 values for easy pasting into the product.yml file, first connect to dev01.mw.lab.eng.bos.redhat.com as +hudson+ user (requires permissions).
+
+[source,bash]
+----
+me@local$ ssh dev01.mw.lab.eng.bos.redhat.com
+me@dev01$ sudo su - hudson
+hudson@dev01$ ...
+----
+
+Then run this:
+
+[source,bash]
+----
+version=9.0.0.CR1
+versionWithRespin=9.0.0.CR1a # a, b, c...
+
+cd ~/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/
+for f in *.jar *.zip; do 
+  size=$(du -h $f); size=${size%*M*};
+  sha=$(cat ${f}.sha256); sh=${sha:0:2};  
+  echo "            url: http://www.redhat.com/j/elqNow/elqRedir.htm?ref=http://www.jboss.org/download-manager/content/origin/files/sha256/${sh}/${sha}/${f}" >> /tmp/yml.txt
+  echo "            file_size: ${size}MB" >> /tmp/yml.txt
+done
+cd /tmp
+f=jboss-devstudio-${version}-target-platform.zip
+size=$(wget https://devstudio.redhat.com/9.0/development/updates/core/ --no-check-certificate -q -O - | egrep jboss-devstudio-${version}-target-platform.zip | egrep -v sha256 | sed "s#.\+>\([0-9]\+M\)</td.\+#\1#")
+# sha=$(wget https://devstudio.redhat.com/9.0/development/updates/core/${f}.sha256 --no-check-certificate -q -O -); sh=${sha:0:2}
+echo "            url: https://devstudio.redhat.com/9.0/development/updates/core/${f}" >> /tmp/yml.txt
+echo "            file_size: ${size}B" >> /tmp/yml.txt
+done
+cat /tmp/yml.txt; rm -f /tmp/yml.txt
+
+----
+
+Commit changes and submit PR.
 
 
 == Smoke test the release
@@ -376,12 +444,12 @@ Examples:
 Before notifying team of staged release, must check for obvious problems.
 
 1. Get a recent Eclipse (compatible with the target version of JBT)
-2. Install BYOE category from http://devstudio.redhat.com/9.0/development/updates/ ; restart
-3. Open Central Software/Updates tab, enable Early-Access select and install all connectors; restart
+2. Install BYOE category from https://devstudio.redhat.com/9.0/development/updates/ ; restart
+3. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
 4. Check log, start an example project, check log again
 
 1. Download JBDS installer from https://devstudio.redhat.com/9.0/development/builds/installer/ and install
-2. Open Central Software/Updates tab, enable Early-Access select and install all connectors; restart
+2. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
 3. Check log, start an example project, check log again
 
 If this fails, it is most likely due to a bug or a failure in a step above. If possible, fix it before notifying team below.
@@ -400,8 +468,8 @@ git clone https://github.com/jbdevstudio/jbdevstudio-website
 git clone https://github.com/jbdevstudio/jbdevstudio-artwork
 git clone https://github.com/jbdevstudio/jbdevstudio-devdoc
 
-jbt_branch=jbosstools-4.3.0.Beta2x
-version=9.0.0.Beta2
+jbt_branch=jbosstools-4.3.x
+version=9.0.0.CR1
 for d in product ci website artwork devdoc; do
   echo "====================================================================="
   echo "Tagging jbdevstudio-${d} from branch ${jbt_branch} as tag ${version}..."
@@ -420,8 +488,8 @@ done
 
 [source,bash]
 ----
-version=9.0.0.Beta2
-cd jbdevstudio-devdoc/release_guide/9.0
+version=9.0.0.CR1
+cd jbdevstudio-devdoc/release_guide/9.x
 git commit -m "update release guide for ${version}" .
 git push origin HEAD:master
 ----
@@ -478,7 +546,7 @@ and +
 
 [source,bash]
 ----
-version=9.0.0.Beta2
+version=9.0.0.CR1
 echo "
 Subject: 
 

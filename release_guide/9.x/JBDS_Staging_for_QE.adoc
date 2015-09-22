@@ -336,7 +336,7 @@ Before notifying team of staged release, must check for obvious problems.
 
 1. Get a recent Eclipse (compatible with the target version of JBT)
 2. Install BYOE category from https://devstudio.redhat.com/9.0/staging/updates/
-3. Restart when prompted. Open Central Software/Updates tab, enable Early-Access select and install all connectors; restart
+3. Restart when prompted. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
 4. Check log, start an example project, check log again
 
 
@@ -353,7 +353,7 @@ wget https://devstudio.redhat.com/9.0/staging/builds/devstudio-${versionWithResp
 ----
 
 1. Install JBDS from `java -jar /tmp/jboss-devstudio-*-installer-standalone.jar`
-2. Open Central Software/Updates tab, enable Early-Access select and install all connectors; restart
+2. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
 3. Check log, start an example project, check log again
 
 If this fails, it is most likely due to a bug or a failure in a step above. If possible, fix it before notifying team below.

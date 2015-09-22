@@ -156,8 +156,8 @@ git clone https://github.com/jbosstools/jbosstools-versionwatch
 # maven-plugins does not get released/branched the same as other projects, but tag it anyway
 # download.jboss.org tag might not be valid as tweaks to ide-config.properties happen frequently
 
-jbt_branch=jbosstools-4.3.0.Beta2x
-version=4.3.0.Beta2
+jbt_branch=jbosstools-4.3.x
+version=4.3.0.CR1
 for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins versionwatch; do 
   echo "====================================================================="
   echo "Tagging jbosstools-${d} from branch ${jbt_branch} as tag ${version}..."
@@ -183,8 +183,8 @@ git clone https://github.com/jbdevstudio/jbdevstudio-website
 git clone https://github.com/jbdevstudio/jbdevstudio-artwork
 git clone https://github.com/jbdevstudio/jbdevstudio-devdoc
 
-jbt_branch=jbosstools-4.3.0.Beta2x
-version=9.0.0.Beta2
+jbt_branch=jbosstools-4.3.x
+version=9.0.0.CR1
 for d in product ci website artwork devdoc; do
   echo "====================================================================="
   echo "Tagging jbdevstudio-${d} from branch ${jbt_branch} as tag ${version}..."

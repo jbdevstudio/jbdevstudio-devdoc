@@ -1,0 +1,24 @@
+=== Merge in Integration Stack content
+
+For JBT and JBDS, we need a way to include the downstream IS jars in the upstream JBT/JBDS Discovery sites.
+
+As of 4.3.0.CR1 / 9.0.0.CR1, the latest plugins to pull can be found from these URLs (subject to change):
+
+  https://devstudio.redhat.com/9.0/staging/updates/integration-stack/discovery/9.0.0.Alpha2/devstudio-directory.xml
+  http://download.jboss.org/jbosstools/mars/snapshots/builds/integration-stack/discovery/4.3.0.Alpha2/jbosstools-directory.xml
+
+Here is a script that performs the merge for the JBT and JBDS /staging/ sites.
+
+[source,bash]
+----
+
+wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.3.x/publish/mergeISdiscovery.sh
+chmod +x mergeISdiscovery.sh 
+./mergeISdiscovery.sh -v 4.3.0.CR1 -vr 4.3.0.CR1a -is http://download.jboss.org/jbosstools/mars/snapshots/builds/integration-stack/discovery/4.3.0.Alpha2/
+./mergeISdiscovery.sh -v 9.0.0.CR1 -vr 9.0.0.CR1a -is https://devstudio.redhat.com/9.0/staging/updates/integration-stack/discovery/9.0.0.Alpha2/ -JBDS
+
+----
+
+TODO https://issues.jboss.org/browse/JBIDE-20664 could we pull the URLs directly from those declared in http://download.jboss.org/jbosstools/configuration/ide-config.properties ?
+jboss.discovery.site.integration-stack.url|jbosstools|4.3.0.CR1=http://download.jboss.org/jbosstools/mars/staging/updates/integration-stack/discovery/4.3.0.Alpha1/
+jboss.discovery.site.integration-stack.url|devstudio|9.0.0.CR1=https://devstudio.redhat.com/9.0/staging/updates/integration-stack/discovery/9.0.0.Alpha1/

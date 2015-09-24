@@ -366,10 +366,7 @@ popd
 
 === Merge in Integration Stack content
 
-TODO https://issues.jboss.org/browse/JBIDE-20664: write a new mechanism for 4.3.0.CR1 to pull in integration stack jars, using URLs declared in http://download.jboss.org/jbosstools/configuration/ide-config.properties
-jboss.discovery.site.integration-stack.url|jbosstools|4.3.0.CR1=http://download.jboss.org/jbosstools/mars/staging/updates/integration-stack/discovery/4.3.0.Alpha1/
-jboss.discovery.site.integration-stack.url|devstudio|9.0.0.CR1=https://devstudio.redhat.com/9.0/staging/updates/integration-stack/discovery/9.0.0.Alpha1/
-
+See details in Merge_IS_Discovery.adoc
 
 == Release the latest staging site to ide-config.properties
 

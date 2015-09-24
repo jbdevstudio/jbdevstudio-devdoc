@@ -19,6 +19,32 @@ chmod +x mergeISdiscovery.sh
 
 ----
 
+Once in staging, you can test the content as seen from Eclipse by installing JBT or JBDS into Eclipse, then restarting Eclipse with these flags:
+
+[source,bash]
+----
+
+# JBoss Tools
+url=http://download.jboss.org/jbosstools/mars/staging/updates/discovery.central/4.3.0.CR1a/
+./eclipse -vmargs -Djboss.discovery.directory.url=${url}jbosstools-directory.xml -Djboss.discovery.site.integration-stack.url=${url}
+
+# JBDS
+url=https://devstudio.redhat.com/9.0/staging/updates/discovery.earlyaccess/9.0.0.CR1a/
+./eclipse -vmargs -Djboss.discovery.directory.url=${url}devstudio-directory.xml -Djboss.discovery.site.integration-stack.url=${url}
+
+----
+
+Note that the jboss.discovery.site.integration-stack.url is only needed if there's no value defined in http://download.jboss.org/jbosstools/configuration/ide-config.properties . 
+
+Without a defined value, you will see an error like this in the Eclipse log:
+
+```
+!MESSAGE org.jboss.tools.central.discovery.integration_stack_4.3.0.Alpha2_v20150922_1058_B430.jar_4644660859188953740.jar: Must specify connectorDescriptor/@siteUrl
+!STACK 1
+org.eclipse.mylyn.internal.discovery.core.model.ValidationException: Must specify connectorDescriptor/@siteUrl
+```
+
 TODO https://issues.jboss.org/browse/JBIDE-20664 could we pull the URLs directly from those declared in http://download.jboss.org/jbosstools/configuration/ide-config.properties ?
 jboss.discovery.site.integration-stack.url|jbosstools|4.3.0.CR1=http://download.jboss.org/jbosstools/mars/staging/updates/integration-stack/discovery/4.3.0.Alpha1/
 jboss.discovery.site.integration-stack.url|devstudio|9.0.0.CR1=https://devstudio.redhat.com/9.0/staging/updates/integration-stack/discovery/9.0.0.Alpha1/
+

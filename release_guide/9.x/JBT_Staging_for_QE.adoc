@@ -428,7 +428,7 @@ Before notifying team of staged release, must check for obvious problems.
 == Notify the team
 
 ____
-*To* jbosstools-dev@lists.jboss.org +
+*To* jbosstools-dev@lists.jboss.org, jboss-jbds-qe@redhat.com +
 
 [source,bash]
 ----

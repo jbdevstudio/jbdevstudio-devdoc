@@ -365,7 +365,7 @@ If this fails, it is most likely due to a bug or a failure in a step above. If p
 
 == Notify the team (send 1 email)
 ____
-*To* jboss-devstudio-list@redhat.com +
+*To* jboss-devstudio-list@redhat.com, jboss-jbds-qe@redhat.com +
 
 [source,bash]
 ----

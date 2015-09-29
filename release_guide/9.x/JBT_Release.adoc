@@ -181,7 +181,7 @@ for site in discovery.central discovery.earlyaccess; do
   if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
   echo "http://download.jboss.org/jbosstools/mars/development/updates/${sitename}/${version}/ " >> $tmpfile
 done
-# browserzim standalone zip, src zip, update site zip
+# browsersim standalone zip, src zip, update site zip
 echo "http://download.jboss.org/jbosstools/static/mars/development/updates/core/#_____(3_zips_+_SHAs,_and_${version}_folder) " >> $tmpfile
 echo "" >> $tmpfile
 cat $tmpfile
@@ -248,7 +248,31 @@ pushd core
     sed -i -e "s#Development Milestone Update Site#Stable Release Update Site#" index.html
     sed -i -e "s#<b>Development Milestone</b>#<b>Stable Release</b>#" index.html
   fi
-  echo "google-chrome file://`pwd`/$f/updates/core/index.html" &
+  firefox file://`pwd`/index.html &
+  cat index.html | egrep "Latest Build|SNAPSHOT|Stable|Milestone|${version}|${versionWithRespin}"
+popd
+
+pushd coretests
+  # fix coretests/composite*.xml
+  now=`date +%s000`
+  for c in compositeContent.xml compositeArtifacts.xml; do 
+    sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#" $c
+    sed -i -e "s#mars/staging/updates/#static/mars/development/updates/#" $c
+    sed -i -e "s#${versionWithRespin_PREV}#${versionWithRespin}#" $c
+    sed -i -e "s#${versionWithRespin}#${version}#" $c
+    sed -i -e "s#JBoss Tools - static/mars/development/updates/#JBoss Tools ${version} Development Milestone Update Site#" $c
+  done
+  cat $c | egrep "${version}|${versionWithRespin}|timestamp"
+
+  # fix coretests/index.html
+  rm -f index.html; wget http://download.jboss.org/jbosstools/static/mars/development/updates/coretests/${version}/index.html
+  sed -i -e "s#href=\"#href=\"http://download.jboss.org/jbosstools/static/mars/development/updates/coretests/#g" -e "s#href=\"http://download.jboss.org/jbosstools/static/mars/development/updates/coretests/http#href=\"http#g" -e "s#http://download.jboss.org/jbosstools/static/mars/development/updates/coretests/web/site.css#http://download.jboss.org/jbosstools/updates/web/site.css#" index.html
+  sed -i -e "s#\-SNAPSHOT (\(.\+\))#.\1#" index.html
+  if [[ $isFinal == "true" ]]; then
+    sed -i -e "s#Development Milestone Update Site#Stable Release Update Site#" index.html
+    sed -i -e "s#<b>Development Milestone</b>#<b>Stable Release</b>#" index.html
+  fi
+  firefox file://`pwd`/index.html &
   cat index.html | egrep "Latest Build|SNAPSHOT|Stable|Milestone|${version}|${versionWithRespin}"
 popd
 
@@ -269,14 +293,15 @@ cat $c | egrep "${version}|${versionWithRespin}|${TARGET_PLATFORM_VERSION_MAX}|$
 popd
 
 # commit the change and push to master
-git add composite*.xml core/composite*.xml core/index.html discovery.earlyaccess/composite*.xml
-git commit -m "release JBT ${versionWithRespin} to public" composite*.xml core/composite*.xml core/index.html discovery.earlyaccess/composite*.xml
+git add composite*.xml core/composite*.xml core/index.html coretests/composite*.xml coretests/index.html discovery.earlyaccess/composite*.xml
+git commit -m "release JBT ${versionWithRespin} to public" composite*.xml core/composite*.xml core/index.html coretests/composite*.xml coretests/index.html discovery.earlyaccess/composite*.xml
 git push origin HEAD:master
 
 # push updated file to server
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 scp composite*.xml ${TOOLS}/mars/development/updates/
 scp core/composite*.xml core/index.html ${TOOLS}/mars/development/updates/core/
+scp coretests/composite*.xml coretests/index.html ${TOOLS}/mars/development/updates/coretests/
 scp discovery.earlyaccess/composite*.xml ${TOOLS}/mars/development/updates/discovery.earlyaccess/
 
 popd
@@ -285,6 +310,7 @@ popd
 firefox \
 http://download.jboss.org/jbosstools/mars/development/updates/ \
 http://download.jboss.org/jbosstools/mars/development/updates/core/ \
+http://download.jboss.org/jbosstools/mars/development/updates/coretests/ \
 http://download.jboss.org/jbosstools/mars/development/updates/discovery.earlyaccess/ \
 http://download.jboss.org/jbosstools/mars/development/updates/earlyaccess/ \
 http://download.jboss.org/jbosstools/mars/development/updates/compositeContent.xml \

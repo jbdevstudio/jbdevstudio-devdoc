@@ -158,14 +158,14 @@ Here is a script that performs the copy (& rename) from /snapshots/ to /staging/
 
 [source,bash]
 ----
-TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
-stream=4.3.mars
-ersionWithRespin=4.3.0.CR2 # a, b, c...
 
 # Do these 5 steps in parallel to save time
 
 # JBT aggregate site
+TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 for site in site; do
+  stream=4.3.mars
+  versionWithRespin=4.3.0.CR2 # a, b, c...
   ID=""
   ID=$(echo "ls 20*" | sftp ${TOOLS}/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
@@ -192,7 +192,9 @@ echo "DONE: JBT aggregate site" | grep "JBT aggregate site"
 
 # JBT tests site
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
-for site in coretests-site; do.
+for site in coretests-site; do
+  stream=4.3.mars
+  versionWithRespin=4.3.0.CR2 # a, b, c...
   ID=""
   ID=$(echo "ls 20*" | sftp ${TOOLS}/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
@@ -220,6 +222,8 @@ echo "DONE: JBT tests site" | grep "JBT tests site"
 # Central and EA sites
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 for site in central-site earlyaccess-site; do
+  stream=4.3.mars
+  versionWithRespin=4.3.0.CR2 # a, b, c...
   ID=""
   ID=$(echo "ls 20*" | sftp ${TOOLS}/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
@@ -247,6 +251,8 @@ echo "DONE: Central and EA sites" | grep "Central and EA sites"
 # Browsersim Standalone Zip
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 for site in browsersim-standalone; do
+  stream=4.3.mars
+  versionWithRespin=4.3.0.CR2 # a, b, c...
   ID=""
   ID=$(echo "ls 20*" | sftp ${TOOLS}/mars/snapshots/builds/jbosstools-${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
@@ -272,6 +278,8 @@ echo "DONE: Browsersim Standalone Zip" | grep "Browsersim Standalone Zip"
 # JBT discovery sites
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 for site in discovery.central discovery.earlyaccess; do
+  stream=4.3.mars
+  versionWithRespin=4.3.0.CR2 # a, b, c...
   ID=""
   ID=$(echo "ls 20*" | sftp ${TOOLS}/mars/snapshots/builds/jbosstools-${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then

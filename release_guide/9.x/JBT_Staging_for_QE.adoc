@@ -21,7 +21,7 @@ Check o.j.t.foundation.core's currentversion.properties for the correct value of
 # @Since JBT 4.2.1 / JBDS 8.0.1 - JBIDE-18820, JBIDE-18806
 
 version=4.3.0.CR2
-versionWithRespin=4.3.0.CR2 # a, b, c...
+versionWithRespin=4.3.0.CR2b # a, b, c...
 
 if [[ ${version:0:1} == "4" ]]; then # JBT
   pluginName=foundation.core
@@ -118,7 +118,7 @@ Update the *stable branch* discovery job ( https://jenkins.mw.lab.eng.bos.redhat
 
 VERSION=CR2 # a, b, c... (not SNAPSHOT!) 
 TARGET_PLATFORM_VERSION_MAX=4.51.0.Final
-JBTCENTRALTARGET_VERSION=4.50.0.Final-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.50.0.Final-SNAPSHOT
 
 Then respin the job and verify that sites were correctly populated:
 
@@ -165,7 +165,7 @@ Here is a script that performs the copy (& rename) from /snapshots/ to /staging/
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 for site in site; do
   stream=4.3.mars
-  versionWithRespin=4.3.0.CR2 # a, b, c...
+  versionWithRespin=4.3.0.CR2b # a, b, c...
   ID=""
   ID=$(echo "ls 20*" | sftp ${TOOLS}/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
@@ -194,7 +194,7 @@ echo "DONE: JBT aggregate site" | grep "JBT aggregate site"
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 for site in coretests-site; do
   stream=4.3.mars
-  versionWithRespin=4.3.0.CR2 # a, b, c...
+  versionWithRespin=4.3.0.CR2b # a, b, c...
   ID=""
   ID=$(echo "ls 20*" | sftp ${TOOLS}/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
@@ -223,7 +223,7 @@ echo "DONE: JBT tests site" | grep "JBT tests site"
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 for site in central-site earlyaccess-site; do
   stream=4.3.mars
-  versionWithRespin=4.3.0.CR2 # a, b, c...
+  versionWithRespin=4.3.0.CR2b # a, b, c...
   ID=""
   ID=$(echo "ls 20*" | sftp ${TOOLS}/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
@@ -252,7 +252,7 @@ echo "DONE: Central and EA sites" | grep "Central and EA sites"
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 for site in browsersim-standalone; do
   stream=4.3.mars
-  versionWithRespin=4.3.0.CR2 # a, b, c...
+  versionWithRespin=4.3.0.CR2b # a, b, c...
   ID=""
   ID=$(echo "ls 20*" | sftp ${TOOLS}/mars/snapshots/builds/jbosstools-${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
@@ -279,7 +279,7 @@ echo "DONE: Browsersim Standalone Zip" | grep "Browsersim Standalone Zip"
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 for site in discovery.central discovery.earlyaccess; do
   stream=4.3.mars
-  versionWithRespin=4.3.0.CR2 # a, b, c...
+  versionWithRespin=4.3.0.CR2b # a, b, c...
   ID=""
   ID=$(echo "ls 20*" | sftp ${TOOLS}/mars/snapshots/builds/jbosstools-${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
@@ -312,7 +312,7 @@ Note that Akamai caching might result in the appearance of missing files (apache
 [source,bash]
 ----
 
-versionWithRespin=4.3.0.CR2 # a, b, c...
+versionWithRespin=4.3.0.CR2b # a, b, c...
 tmpfile=/tmp/jbosstools-staging__verify.txt
 for site in site coretests-site central-site earlyaccess-site discovery.central discovery.earlyaccess; do
   if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
@@ -342,11 +342,11 @@ This site needs to contain:
 
 [source,bash]
 ----
-versionWithRespin_PREV=4.3.0.CR1a # a, b, c...
+versionWithRespin_PREV=4.3.0.CR2a # a, b, c...
 TARGET_PLATFORM_VERSION_MAX_PREV=4.51.0.Final
-TARGET_PLATFORM_CENTRAL_MAX_PREV=4.50.0.CR1-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX_PREV=4.50.0.Final-SNAPSHOT
 
-versionWithRespin=4.3.0.CR2 # a, b, c...
+versionWithRespin=4.3.0.CR2b # a, b, c...
 TARGET_PLATFORM_VERSION_MAX=4.51.0.Final
 TARGET_PLATFORM_CENTRAL_MAX=4.50.0.Final-SNAPSHOT
 
@@ -395,7 +395,7 @@ Update it so that the links for the latest milestone point to valid URLs. Commen
 cd ~/tru
 pushd jbosstools-download.jboss.org/jbosstools/configuration
 version=4.3.0.CR2
-versionWithRespin=4.3.0.CR2 # a, b, c...
+versionWithRespin=4.3.0.CR2b # a, b, c...
 
 git fetch origin master
 git checkout FETCH_HEAD
@@ -432,9 +432,9 @@ ____
 
 [source,bash]
 ----
-versionWithRespin=4.3.0.CR2 # a, b, c...
-respin="respin-"
-TARGET_PLATFORM_VERSION_MIN=4.50.0.Final-SNAPSHOT
+versionWithRespin=4.3.0.CR2b # a, b, c...
+respin="respin-b"
+TARGET_PLATFORM_VERSION_MIN=4.50.0.Final
 TARGET_PLATFORM_VERSION_MAX=4.51.0.Final
 TARGET_PLATFORM_CENTRAL_MAX=4.50.0.Final-SNAPSHOT
 jbdsFixVersion=9.0.0.CR2 # no respin suffix here
@@ -462,7 +462,8 @@ Additional update sites:
 * http://download.jboss.org/jbosstools/mars/staging/updates/core/${versionWithRespin}/
 * http://download.jboss.org/jbosstools/mars/staging/updates/coretests/${versionWithRespin}/
 
-Target platform: 
+Target platforms: 
+* http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MIN} 
 * http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MAX} 
 
 Discovery sites:

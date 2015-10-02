@@ -442,9 +442,6 @@ As always, these are not FINAL bits, but preliminary results for QE & community 
 
 Update site: http://download.jboss.org/jbosstools/mars/staging/updates/
 
-Target platform: 
-* http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MAX} 
-
 New + noteworthy (subject to change): 
 * https://github.com/jbosstools/jbosstools-website/tree/master/documentation/whatsnew
 * http://tools.jboss.org/documentation/whatsnew/
@@ -456,6 +453,9 @@ Schedule: https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.p
 Additional update sites:
 * http://download.jboss.org/jbosstools/mars/staging/updates/core/${versionWithRespin}/
 * http://download.jboss.org/jbosstools/mars/staging/updates/coretests/${versionWithRespin}/
+
+Target platform: 
+* http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MAX} 
 
 Discovery sites:
 * http://download.jboss.org/jbosstools/mars/staging/updates/discovery.central/${versionWithRespin}/

@@ -348,7 +348,7 @@ TARGET_PLATFORM_CENTRAL_MAX_PREV=4.50.0.CR1-SNAPSHOT
 
 versionWithRespin=4.3.0.CR2 # a, b, c...
 TARGET_PLATFORM_VERSION_MAX=4.51.0.Final
-TARGET_PLATFORM_CENTRAL_MAX=4.51.0.Final
+TARGET_PLATFORM_CENTRAL_MAX=4.50.0.Final-SNAPSHOT
 
 cd ~/tru
 pushd jbosstools-download.jboss.org/jbosstools/mars/staging/updates

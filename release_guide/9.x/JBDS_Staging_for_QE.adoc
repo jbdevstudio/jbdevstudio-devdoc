@@ -17,7 +17,7 @@ Check c.j.d.central.core's currentversion.properties for the correct value of de
 ----
 # @since JBT 4.3.0 / JBDS 9.0.0 - JBIDE-18820, JBIDE-18806 
 
-version=9.0.0.CR2
+version=9.0.0.CR2 # or .GA
 versionWithRespin=9.0.0.CR2b # a, b, c...
 
 if [[ ${version:0:1} == "4" ]]; then # JBT
@@ -365,14 +365,14 @@ If this fails, it is most likely due to a bug or a failure in a step above. If p
 
 == Notify the team (send 1 email)
 ____
-*To* jboss-devstudio-list@redhat.com, jboss-jbds-qe@redhat.com +
+*To* jboss-devstudio-list@redhat.com +
 
 [source,bash]
 ----
 version_JBT=4.3.0.CR2
 version=9.0.0.CR2
 versionWithRespin=9.0.0.CR2b # a, b, c...
-respin="respin-"
+respin="respin-b"
 echo "
 Subject: 
 

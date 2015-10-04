@@ -14,8 +14,8 @@ Here is a script that performs the merge for the JBT and JBDS /staging/ sites.
 
 pushd /tmp
   wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.3.x/publish/mergeISdiscovery.sh && chmod +x mergeISdiscovery.sh 
-  ./mergeISdiscovery.sh -v 4.3.0.CR2 -vr 4.3.0.CR2 -is http://download.jboss.org/jbosstools/mars/snapshots/builds/integration-stack/discovery/4.3.0.Alpha2/
-  ./mergeISdiscovery.sh -v 9.0.0.CR2 -vr 9.0.0.CR2 -is https://devstudio.redhat.com/9.0/staging/updates/integration-stack/discovery/9.0.0.Alpha2/ -JBDS
+  ./mergeISdiscovery.sh -version 4.3.0.CR2 -versionWithRespin 4.3.0.CR2b -is http://download.jboss.org/jbosstools/mars/snapshots/builds/integration-stack/discovery/4.3.0.Alpha2/
+  ./mergeISdiscovery.sh -version 9.0.0.CR2 -versionWithRespin 9.0.0.CR2b -is https://devstudio.redhat.com/9.0/staging/updates/integration-stack/discovery/9.0.0.Alpha2/ -JBDS
   rm -f /tmp/mergeISdiscovery.sh
 popd
 
@@ -27,11 +27,11 @@ Once in staging, you can test the content as seen from Eclipse by installing JBT
 ----
 
 # JBoss Tools
-url=http://download.jboss.org/jbosstools/mars/staging/updates/discovery.central/4.3.0.CR1a/
+url=http://download.jboss.org/jbosstools/mars/staging/updates/discovery.central/4.3.0.CR2b/
 ./eclipse -vmargs -Djboss.discovery.directory.url=${url}jbosstools-directory.xml -Djboss.discovery.site.integration-stack.url=${url}
 
 # JBDS
-url=https://devstudio.redhat.com/9.0/staging/updates/discovery.earlyaccess/9.0.0.CR1a/
+url=https://devstudio.redhat.com/9.0/staging/updates/discovery.earlyaccess/9.0.0.CR2b/
 ./eclipse -vmargs -Djboss.discovery.directory.url=${url}devstudio-directory.xml -Djboss.discovery.site.integration-stack.url=${url}
 
 ----

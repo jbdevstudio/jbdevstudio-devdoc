@@ -20,7 +20,7 @@ Check o.j.t.foundation.core's currentversion.properties for the correct value of
 ----
 # @Since JBT 4.2.1 / JBDS 8.0.1 - JBIDE-18820, JBIDE-18806
 
-version=4.3.0.CR2
+version=4.3.0.CR2 # or .Final
 versionWithRespin=4.3.0.CR2b # a, b, c...
 
 if [[ ${version:0:1} == "4" ]]; then # JBT
@@ -116,7 +116,7 @@ Should a respin be needed, they can be re-enabled as needed.
 [[update-discovery-urls]]
 Update the *stable branch* discovery job ( https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/job/jbosstools-discovery_4.3.mars/configure ) to use the correct source URLs and versions +
 
-VERSION=CR2 # a, b, c... (not SNAPSHOT!) 
+VERSION=CR2b # a, b, c... (not SNAPSHOT!) 
 TARGET_PLATFORM_VERSION_MAX=4.51.0.Final
 TARGET_PLATFORM_CENTRAL_MAX=4.50.0.Final-SNAPSHOT
 
@@ -428,7 +428,7 @@ Before notifying team of staged release, must check for obvious problems.
 == Notify the team
 
 ____
-*To* jbosstools-dev@lists.jboss.org, jboss-jbds-qe@redhat.com +
+*To* jbosstools-dev@lists.jboss.org +
 
 [source,bash]
 ----

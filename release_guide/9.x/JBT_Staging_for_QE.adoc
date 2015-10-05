@@ -12,6 +12,31 @@ If you do not need it urgently, you can push files there simply by pushing a cha
 A Jenkins job can then be triggered to sync changes to download.jboss.org: https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-download.jboss.org-rsync-from-svn/
 ====
 
+== Input and prelimimary settings
+
+Set the following variables to the right values
+
+[sources,bash]
+----
+jbtVersionStream=4.3.0
+buildName=CR2 # Alpha1, Alpha2, Beta1, Beta2, CR1, CR2...
+respin=b # (void), a, b, c...
+jobStream=4.3.mars
+----
+
+Then deduce the following values
+[sources,bash]
+----
+jbtVersion=${jbtVersionStream}.${buildName}
+jbtVersionWithRespin=${version}${respin}
+----
+
+The following other static variables will be used
+[sources,bash]
+----
+TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
+----
+
 == Verify correct version set in org.jboss.tools.foundation.core
 
 Check o.j.t.foundation.core's currentversion.properties for the correct value of default.version
@@ -19,18 +44,14 @@ Check o.j.t.foundation.core's currentversion.properties for the correct value of
 [sources,bash]
 ----
 # @Since JBT 4.2.1 / JBDS 8.0.1 - JBIDE-18820, JBIDE-18806
-
-version=4.3.0.CR2 # or .Final
-versionWithRespin=4.3.0.CR2b # a, b, c...
-
 if [[ ${version:0:1} == "4" ]]; then # JBT
   pluginName=foundation.core
-  updatesiteURL=http://download.jboss.org/jbosstools/mars/staging/updates/core/${versionWithRespin}/plugins/
+  updatesiteURL=http://download.jboss.org/jbosstools/mars/staging/updates/core/${jbtVersionWithRespin}/plugins/
   updatesiteURL=http://download.jboss.org/jbosstools/mars/snapshots/updates/core/4.3.mars/plugins/
   #updatesiteURL=http://download.jboss.org/jbosstools/mars/snapshots/updates/core/master/plugins/
 else
   pluginName=core.central
-  updatesiteURL=https://devstudio.redhat.com/9.0/staging/updates/core/${versionWithRespin}/plugins/
+  updatesiteURL=https://devstudio.redhat.com/9.0/staging/updates/core/${jbtVersionWithRespin}/plugins/
   updatesiteURL=https://devstudio.redhat.com/9.0/snapshots/updates/core/4.3.mars/plugins/
   #updatesiteURL=https://devstudio.redhat.com/9.0/snapshots/updates/core/master/plugins/
 fi
@@ -158,150 +179,137 @@ Here is a script that performs the copy (& rename) from /snapshots/ to /staging/
 
 [source,bash]
 ----
-
-# Do these 5 steps in parallel to save time
-
 # JBT aggregate site
-TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 for site in site; do
-  stream=4.3.mars
-  versionWithRespin=4.3.0.CR2b # a, b, c...
   ID=""
-  ID=$(echo "ls 20*" | sftp ${TOOLS}/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
+  ID=$(echo "ls 20*" | sftp ${TOOLS}/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${jobStream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
     if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
     echo "Latest build for ${sitename} (${site}): ${ID}"
-    tmpdir=/tmp/jbosstools-staging__${site}_${stream}__${ID}; mkdir -p $tmpdir; pushd $tmpdir >/dev/null
-      rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream}/${ID}/* ${tmpdir}/
-      # copy build folder
-      echo "mkdir jbosstools-${versionWithRespin}-build-${sitename}" | sftp ${TOOLS}/mars/staging/builds/
-      rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${TOOLS}/mars/staging/builds/jbosstools-${versionWithRespin}-build-${sitename}/${ID}/
-      # symlink latest build
-      ln -s ${ID} latest; rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/latest ${TOOLS}/mars/staging/builds/jbosstools-${versionWithRespin}-build-${sitename}/
-      # copy update site
-      echo "mkdir ${sitename}" | sftp ${TOOLS}/mars/staging/updates/
-      rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/all/repo/* ${TOOLS}/mars/staging/updates/${sitename}/${versionWithRespin}/
-    popd >/dev/null
-    rm -fr $tmpdir
+    tmpdir=/tmp/jbosstools-staging__${site}_${jobStream}__${ID}
+    mkdir -p $tmpdir
+    pushd $tmpdir >/dev/null
+    rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${jobStream}/${ID}/* ${tmpdir}/ &&
+    # copy build folder
+    echo "mkdir jbosstools-${jbtVersionWithRespin}-build-${sitename}" | sftp ${TOOLS}/mars/staging/builds/ &&
+    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${TOOLS}/mars/staging/builds/jbosstools-${jbtVersionWithRespin}-build-${sitename}/${ID}/ &&
+    # symlink latest build
+    ln -s ${ID} latest; rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/latest ${TOOLS}/mars/staging/builds/jbosstools-${jbtVersionWithRespin}-build-${sitename}/ &&
+    # copy update site
+    echo "mkdir ${sitename}" | sftp ${TOOLS}/mars/staging/updates/ && 
+    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/all/repo/* ${TOOLS}/mars/staging/updates/${sitename}/${jbtVersionWithRespin}/ &&
+    popd >/dev/null &&
+    rm -fr $tmpdir &
   else
     echo "ERROR: no latest build found for ${site}" | grep ERROR
   fi
 done
-echo "DONE: JBT aggregate site" | grep "JBT aggregate site"
-
 
 # JBT tests site
-TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 for site in coretests-site; do
-  stream=4.3.mars
-  versionWithRespin=4.3.0.CR2b # a, b, c...
   ID=""
-  ID=$(echo "ls 20*" | sftp ${TOOLS}/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
+  ID=$(echo "ls 20*" | sftp ${TOOLS}/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${jobStream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
     if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
     echo "Latest build for ${sitename} (${site}): ${ID}"
-    tmpdir=/tmp/jbosstools-staging__${site}_${stream}__${ID}; mkdir -p $tmpdir; pushd $tmpdir >/dev/null
-      rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream}/${ID}/* ${tmpdir}/
-      # copy build folder
-      echo "mkdir jbosstools-${versionWithRespin}-build-${sitename}" | sftp ${TOOLS}/mars/staging/builds/
-      rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${TOOLS}/mars/staging/builds/jbosstools-${versionWithRespin}-build-${sitename}/${ID}/
-      # symlink latest build
-      ln -s ${ID} latest; rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/latest ${TOOLS}/mars/staging/builds/jbosstools-${versionWithRespin}-build-${sitename}/
-      # copy update site
-      echo "mkdir ${sitename}" | sftp ${TOOLS}/mars/staging/updates/
-      rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/all/repo/* ${TOOLS}/mars/staging/updates/${sitename}/${versionWithRespin}/
-    popd >/dev/null
-    rm -fr $tmpdir
+    tmpdir=/tmp/jbosstools-staging__${site}_${jobStream}__${ID}
+    mkdir -p $tmpdir
+    pushd $tmpdir >/dev/null
+    rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${jobStream}/${ID}/* ${tmpdir}/ &&
+    # copy build folder
+    echo "mkdir jbosstools-${jbtVersionWithRespin}-build-${sitename}" | sftp ${TOOLS}/mars/staging/builds/ &&
+    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${TOOLS}/mars/staging/builds/jbosstools-${jbtVersionWithRespin}-build-${sitename}/${ID}/ &&
+    # symlink latest build
+    ln -s ${ID} latest; rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/latest ${TOOLS}/mars/staging/builds/jbosstools-${jbtVersionWithRespin}-build-${sitename}/ &&
+    # copy update site
+    echo "mkdir ${sitename}" | sftp ${TOOLS}/mars/staging/updates/ &&
+    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/all/repo/* ${TOOLS}/mars/staging/updates/${sitename}/${jbtVersionWithRespin}/ &&
+    popd >/dev/null &&
+    rm -fr $tmpdir &
   else
     echo "ERROR: no latest build found for ${site}" | grep ERROR
   fi
 done
-echo "DONE: JBT tests site" | grep "JBT tests site"
-
 
 # Central and EA sites
-TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 for site in central-site earlyaccess-site; do
-  stream=4.3.mars
-  versionWithRespin=4.3.0.CR2b # a, b, c...
   ID=""
-  ID=$(echo "ls 20*" | sftp ${TOOLS}/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
+  ID=$(echo "ls 20*" | sftp ${TOOLS}/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${jobStream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
     if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
     echo "Latest build for ${sitename} (${site}): ${ID}"
-    tmpdir=/tmp/jbosstools-staging__${site}_${stream}__${ID}; mkdir -p $tmpdir; pushd $tmpdir >/dev/null
-      rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${stream}/${ID}/* ${tmpdir}/
-      # copy build folder
-      echo "mkdir jbosstools-${versionWithRespin}-build-${sitename}" | sftp ${TOOLS}/mars/staging/builds/
-      rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${TOOLS}/mars/staging/builds/jbosstools-${versionWithRespin}-build-${sitename}/${ID}/
-      # symlink latest build
-      ln -s ${ID} latest; rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/latest ${TOOLS}/mars/staging/builds/jbosstools-${versionWithRespin}-build-${sitename}/
-      # copy update site
-      echo "mkdir ${sitename}" | sftp ${TOOLS}/mars/staging/updates/
-      rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/all/repo/* ${TOOLS}/mars/staging/updates/${sitename}/${versionWithRespin}/
-    popd >/dev/null
-    rm -fr $tmpdir
+    tmpdir=/tmp/jbosstools-staging__${site}_${jobStream}__${ID}
+    mkdir -p $tmpdir
+    pushd $tmpdir >/dev/null
+    rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${jobStream}/${ID}/* ${tmpdir}/ &&
+    # copy build folder
+    echo "mkdir jbosstools-${jbtVersionWithRespin}-build-${sitename}" | sftp ${TOOLS}/mars/staging/builds/ &&
+    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${TOOLS}/mars/staging/builds/jbosstools-${jbtVersionWithRespin}-build-${sitename}/${ID}/ &&
+    # symlink latest build
+    ln -s ${ID} latest; rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/latest ${TOOLS}/mars/staging/builds/jbosstools-${jbtVersionWithRespin}-build-${sitename}/ &&
+    # copy update site
+    echo "mkdir ${sitename}" | sftp ${TOOLS}/mars/staging/updates/ &&
+    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/all/repo/* ${TOOLS}/mars/staging/updates/${sitename}/${jbtVersionWithRespin}/ &&
+    popd >/dev/null &&
+    rm -fr $tmpdir &
   else
     echo "ERROR: no latest build found for ${site}" | grep ERROR
   fi
 done
-echo "DONE: Central and EA sites" | grep "Central and EA sites"
 
 
 # Browsersim Standalone Zip
-TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 for site in browsersim-standalone; do
-  stream=4.3.mars
-  versionWithRespin=4.3.0.CR2b # a, b, c...
   ID=""
-  ID=$(echo "ls 20*" | sftp ${TOOLS}/mars/snapshots/builds/jbosstools-${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
+  ID=$(echo "ls 20*" | sftp ${TOOLS}/mars/snapshots/builds/jbosstools-${site}_${jobStream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
     if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
     echo "Latest build for ${sitename} (${site}): ${ID}"
-    tmpdir=/tmp/jbosstools-staging__${site}_${stream}__${ID}; mkdir -p $tmpdir; pushd $tmpdir >/dev/null
-      rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/mars/snapshots/builds/jbosstools-${site}_${stream}/${ID}/* ${tmpdir}/
-      # copy build folder
-      echo "mkdir jbosstools-${versionWithRespin}-build-${sitename}" | sftp ${TOOLS}/mars/staging/builds/
-      rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${TOOLS}/mars/staging/builds/jbosstools-${versionWithRespin}-build-${sitename}/${ID}/
-      # symlink latest build
-      ln -s ${ID} latest; rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/latest ${TOOLS}/mars/staging/builds/jbosstools-${versionWithRespin}-build-${sitename}/
-    popd >/dev/null
-    rm -fr $tmpdir
+    tmpdir=/tmp/jbosstools-staging__${site}_${jobStream}__${ID}
+    mkdir -p $tmpdir
+    pushd $tmpdir >/dev/null
+    rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/mars/snapshots/builds/jbosstools-${site}_${jobStream}/${ID}/* ${tmpdir}/ &&
+    # copy build folder
+    echo "mkdir jbosstools-${jbtVersionWithRespin}-build-${sitename}" | sftp ${TOOLS}/mars/staging/builds/ &&
+    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${TOOLS}/mars/staging/builds/jbosstools-${jbtVersionWithRespin}-build-${sitename}/${ID}/ &&
+    # symlink latest build
+    ln -s ${ID} latest; rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/latest ${TOOLS}/mars/staging/builds/jbosstools-${jbtVersionWithRespin}-build-${sitename}/ &&
+    popd >/dev/null &&
+    rm -fr $tmpdir &
   else
     echo "ERROR: no latest build found for ${site}" | grep ERROR
   fi
 done
-echo "DONE: Browsersim Standalone Zip" | grep "Browsersim Standalone Zip"
-
 
 # TODO: make sure you've rebuilt the discovery sites and disabled the job first before doing this step!
 # JBT discovery sites
-TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 for site in discovery.central discovery.earlyaccess; do
-  stream=4.3.mars
-  versionWithRespin=4.3.0.CR2b # a, b, c...
   ID=""
-  ID=$(echo "ls 20*" | sftp ${TOOLS}/mars/snapshots/builds/jbosstools-${site}_${stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
+  ID=$(echo "ls 20*" | sftp ${TOOLS}/mars/snapshots/builds/jbosstools-${site}_${jobStream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
   if [[ $ID ]]; then
     if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
     echo "Latest build for ${sitename} (${site}): ${ID}"
-    tmpdir=/tmp/jbosstools-staging__${site}_${stream}__${ID}; mkdir -p $tmpdir; pushd $tmpdir >/dev/null
-      rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/mars/snapshots/builds/jbosstools-${site}_${stream}/${ID}/* ${tmpdir}/
-      # copy build folder
-      echo "mkdir jbosstools-${versionWithRespin}-build-${sitename}" | sftp ${TOOLS}/mars/staging/builds/
-      rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${TOOLS}/mars/staging/builds/jbosstools-${versionWithRespin}-build-${sitename}/${ID}/
-      # symlink latest build
-      ln -s ${ID} latest; rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/latest ${TOOLS}/mars/staging/builds/jbosstools-${versionWithRespin}-build-${sitename}/
-      # copy update site
-      echo "mkdir ${sitename}" | sftp ${TOOLS}/mars/staging/updates/
-      rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/all/repo/* ${TOOLS}/mars/staging/updates/${sitename}/${versionWithRespin}/
-    popd >/dev/null
-    rm -fr $tmpdir
+    tmpdir=/tmp/jbosstools-staging__${site}_${jobStream}__${ID}
+    mkdir -p $tmpdir
+    pushd $tmpdir >/dev/null
+    rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/mars/snapshots/builds/jbosstools-${site}_${jobStream}/${ID}/* ${tmpdir}/ &&
+    # copy build folder
+    echo "mkdir jbosstools-${jbtVersionWithRespin}-build-${sitename}" | sftp ${TOOLS}/mars/staging/builds/ &&
+    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${TOOLS}/mars/staging/builds/jbosstools-${jbtVersionWithRespin}-build-${sitename}/${ID}/ &&
+    # symlink latest build
+    ln -s ${ID} latest; rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/latest ${TOOLS}/mars/staging/builds/jbosstools-${jbtVersionWithRespin}-build-${sitename}/ &&
+    # copy update site
+    echo "mkdir ${sitename}" | sftp ${TOOLS}/mars/staging/updates/ &&
+    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/all/repo/* ${TOOLS}/mars/staging/updates/${sitename}/${jbtVersionWithRespin}/ &&
+    popd >/dev/null &&
+    rm -fr $tmpdir &
   else
     echo "ERROR: no latest build found for ${site}" | grep ERROR
   fi
 done
-echo "DONE: JBT discovery sites" | grep "JBT discovery sites"
+
+# join
+wait
 
 ----
 
@@ -311,17 +319,15 @@ Note that Akamai caching might result in the appearance of missing files (apache
 
 [source,bash]
 ----
-
-versionWithRespin=4.3.0.CR2b # a, b, c...
 tmpfile=/tmp/jbosstools-staging__verify.txt
 for site in site coretests-site central-site earlyaccess-site discovery.central discovery.earlyaccess; do
   if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
-  echo "http://download.jboss.org/jbosstools/mars/staging/builds/jbosstools-${versionWithRespin}-build-${sitename}/ " >> $tmpfile
-  echo "http://download.jboss.org/jbosstools/mars/staging/updates/${sitename}/${versionWithRespin}/ " >> $tmpfile
+  echo "http://download.jboss.org/jbosstools/mars/staging/builds/jbosstools-${jbtVersionWithRespin}-build-${sitename}/ " >> $tmpfile
+  echo "http://download.jboss.org/jbosstools/mars/staging/updates/${sitename}/${jbtVersionWithRespin}/ " >> $tmpfile
 done
 for site in browsersim-standalone; do
   if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
-  echo "http://download.jboss.org/jbosstools/mars/staging/builds/jbosstools-${versionWithRespin}-build-${sitename}/ " >> $tmpfile
+  echo "http://download.jboss.org/jbosstools/mars/staging/builds/jbosstools-${jbtVersionWithRespin}-build-${sitename}/ " >> $tmpfile
 done
 echo "" >> $tmpfile
 cat $tmpfile
@@ -342,11 +348,10 @@ This site needs to contain:
 
 [source,bash]
 ----
-versionWithRespin_PREV=4.3.0.CR2a # a, b, c...
+jbtVersionWithRespin_PREV=4.3.0.CR2a # a, b, c...
 TARGET_PLATFORM_VERSION_MAX_PREV=4.51.0.Final
 TARGET_PLATFORM_CENTRAL_MAX_PREV=4.50.0.Final-SNAPSHOT
 
-versionWithRespin=4.3.0.CR2b # a, b, c...
 TARGET_PLATFORM_VERSION_MAX=4.51.0.Final
 TARGET_PLATFORM_CENTRAL_MAX=4.50.0.Final-SNAPSHOT
 
@@ -360,15 +365,15 @@ now=`date +%s000`
 for c in compositeContent.xml compositeArtifacts.xml; do 
   sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#" $c
   sed -i -e "s#/static/releases/#/mars/staging/updates/#" $c
-  sed -i -e "s#${versionWithRespin_PREV}#${versionWithRespin}#" $c
+  sed -i -e "s#${jbtVersionWithRespin_PREV}#${jbtVersionWithRespin}#" $c
   sed -i -e "s#${TARGET_PLATFORM_CENTRAL_MAX_PREV}#${TARGET_PLATFORM_CENTRAL_MAX}#" $c
   sed -i -e "s#${TARGET_PLATFORM_VERSION_MAX_PREV}#${TARGET_PLATFORM_VERSION_MAX}#" $c
 done
-cat $c | egrep "${versionWithRespin}|${TARGET_PLATFORM_VERSION_MAX}|${TARGET_PLATFORM_CENTRAL_MAX}|timestamp"
+cat $c | egrep "${jbtVersionWithRespin}|${TARGET_PLATFORM_VERSION_MAX}|${TARGET_PLATFORM_CENTRAL_MAX}|timestamp"
 
 # commit the change and push to master
 git add composite*.xml
-git commit -m "release JBT ${versionWithRespin} to QE" composite*.xml
+git commit -m "release JBT ${jbtVersionWithRespin} to QE" composite*.xml
 git push origin HEAD:master
 
 # push updated file to server
@@ -394,8 +399,6 @@ Update it so that the links for the latest milestone point to valid URLs. Commen
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru
 pushd jbosstools-download.jboss.org/jbosstools/configuration
-version=4.3.0.CR2
-versionWithRespin=4.3.0.CR2b # a, b, c...
 
 git fetch origin master
 git checkout FETCH_HEAD
@@ -405,7 +408,7 @@ git checkout FETCH_HEAD
 # st ide-config.properties 
 
 # commit the change and push to master
-ci "release JBT ${version} (${versionWithRespin}) to staging: link to latest dev milestone discovery site" ide-config.properties
+ci "release JBT ${jbtVersion} (${jbtVersionWithRespin}) to staging: link to latest dev milestone discovery site" ide-config.properties
 git push origin HEAD:master
 
 # push updated file to server
@@ -432,17 +435,14 @@ ____
 
 [source,bash]
 ----
-versionWithRespin=4.3.0.CR2b # a, b, c...
-respin="respin-b"
 TARGET_PLATFORM_VERSION_MIN=4.50.0.Final
 TARGET_PLATFORM_VERSION_MAX=4.51.0.Final
 TARGET_PLATFORM_CENTRAL_MAX=4.50.0.Final-SNAPSHOT
 jbdsFixVersion=9.0.0.CR2 # no respin suffix here
-jbtFixVersion=4.3.0.CR2 # no respin suffix here
 echo "
 Subject: 
 
-JBoss Tools Core ${versionWithRespin} bits available for QE testing
+JBoss Tools Core ${jbtVersionWithRespin} bits available for QE testing
 
 Body:
 
@@ -459,35 +459,35 @@ Schedule: https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.p
 --
 
 Additional update sites:
-* http://download.jboss.org/jbosstools/mars/staging/updates/core/${versionWithRespin}/
-* http://download.jboss.org/jbosstools/mars/staging/updates/coretests/${versionWithRespin}/
+* http://download.jboss.org/jbosstools/mars/staging/updates/core/${jbtVersionWithRespin}/
+* http://download.jboss.org/jbosstools/mars/staging/updates/coretests/${jbtVersionWithRespin}/
 
 Target platforms: 
 * http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MIN} 
 * http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MAX} 
 
 Discovery sites:
-* http://download.jboss.org/jbosstools/mars/staging/updates/discovery.central/${versionWithRespin}/
-* http://download.jboss.org/jbosstools/mars/staging/updates/discovery.earlyaccess/${versionWithRespin}/
+* http://download.jboss.org/jbosstools/mars/staging/updates/discovery.central/${jbtVersionWithRespin}/
+* http://download.jboss.org/jbosstools/mars/staging/updates/discovery.earlyaccess/${jbtVersionWithRespin}/
 
 Build folders (for build logs & update site zips):
 * http://download.jboss.org/jbosstools/mars/staging/builds/
 
 "
-if [[ $respin != "respin-" ]]; then
+if [[ $respin != "" ]]; then
 echo " 
 
 --
 
-Changes prompting this $respin are:
+Changes prompting this respin-$respon are:
 
-https://issues.jboss.org/issues/?jql=labels%20in%20%28%22${respin}%22%29%20and%20%28%28project%20in%20%28%22JBDS%22%29%20and%20fixversion%20in%20%28%22${jbdsFixVersion}%22%29%29%20or%20%28project%20in%20%28%22JBIDE%22%2C%22TOOLSDOC%22%29%20and%20fixversion%20in%20%28%22${jbtFixVersion}%22%29%29%29
+https://issues.jboss.org/issues/?jql=labels%20in%20%28%22respin-${respin}%22%29%20and%20%28%28project%20in%20%28%22JBDS%22%29%20and%20fixversion%20in%20%28%22${jbdsFixVersion}%22%29%29%20or%20%28project%20in%20%28%22JBIDE%22%2C%22TOOLSDOC%22%29%20and%20fixversion%20in%20%28%22${jbtVersion}%22%29%29%29
 
-To compare the upcoming version of Central (${versionWithRespin}) against an older version, add lines similar to these your eclipse.ini file after the -vmargs line for the appropriate version & URLs:
- -Djboss.discovery.directory.url=http://download.jboss.org/jbosstools/mars/staging/updates/discovery.central/${versionWithRespin}/jbosstools-directory.xml
+To compare the upcoming version of Central (${jbtVersionWithRespin}) against an older version, add lines similar to these your eclipse.ini file after the -vmargs line for the appropriate version & URLs:
+ -Djboss.discovery.directory.url=http://download.jboss.org/jbosstools/mars/staging/updates/discovery.central/${jbtVersionWithRespin}/jbosstools-directory.xml
  -Djboss.discovery.site.url=http://download.jboss.org/jbosstools/mars/staging/updates/
- -Djboss.discovery.earlyaccess.site.url=http://download.jboss.org/jbosstools/mars/staging/updates/discovery.earlyaccess/${versionWithRespin}/
- -Djboss.discovery.earlyaccess.list.url=http://download.jboss.org/jbosstools/mars/staging/updates/discovery.earlyaccess/${versionWithRespin}/jbosstools-earlyaccess.properties
+ -Djboss.discovery.earlyaccess.site.url=http://download.jboss.org/jbosstools/mars/staging/updates/discovery.earlyaccess/${jbtVersionWithRespin}/
+ -Djboss.discovery.earlyaccess.list.url=http://download.jboss.org/jbosstools/mars/staging/updates/discovery.earlyaccess/${jbtVersionWithRespin}/jbosstools-earlyaccess.properties
 "
 fi
 

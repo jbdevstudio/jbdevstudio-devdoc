@@ -582,7 +582,10 @@ and +
 
 [source,bash]
 ----
+version_JBT=4.3.0.Final
 version=9.0.0.GA
+qual=development # development or stable
+
 echo "
 Subject: 
 
@@ -594,9 +597,13 @@ JBoss Developer Studio ${version} is available!
 
 Download page: https://www.jboss.org/products/devstudio/overview/
 
-Update site: https://devstudio.redhat.com/9.0/development/updates/ 
+Update site: https://devstudio.redhat.com/9.0/${qual}/updates/
 
 Eclipse Marketplace: https://marketplace.eclipse.org/content/red-hat-jboss-developer-studio-mars
+
+Blog Announcement: http://tools.jboss.org/blog/
+
+New + Noteworthy: http://tools.jboss.org/documentation/whatsnew/jbosstools/${version_JBT}.html
 
 --
 

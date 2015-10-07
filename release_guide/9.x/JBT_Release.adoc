@@ -668,7 +668,7 @@ To diff if any new features have been added/removed:
 
 [source,bash]
 ----
-versionWithRespin_PREV=4.3.0.CR2b
+versionWithRespin_PREV=4.3.0.CR1
 version=4.3.0.Final
 
 cd /tmp
@@ -711,6 +711,7 @@ Once cloned to disk, this script will create the tags if run from the location w
 
 [source,bash]
 ----
+
 # if not already cloned, the do this:
 git clone https://github.com/jbosstools/jbosstools-build
 git clone https://github.com/jbosstools/jbosstools-build-ci
@@ -738,6 +739,7 @@ for d in build build-ci build-sites devdoc discovery download.jboss.org maven-pl
   echo "====================================================================="
   echo ""
 done
+
 ----
 
 === Announce requirement of tag creation
@@ -811,14 +813,16 @@ Launch the config pages for JBIDE and JBDS and using the gear icons, release the
 
 [source,bash]
 ----
+
 firefox https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
   https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
+
 ----
 
 
 == Update jbosstools-website
 
-Provide a PR to add the latest JBT milestones to this listing: https://github.com/jbosstools/jbosstools-website/blob/master/_config/products.yml
+Provide a PR to add the latest JBT milestones to this listing: https://github.com/jbosstools/jbosstools-website/blob/master/_config/products.yml_
 
 Example:
 
@@ -829,6 +833,7 @@ Example:
 * https://github.com/jbosstools/jbosstools-website/pull/418 (JBT / JBDS Beta1)
 * https://github.com/jbosstools/jbosstools-website/pull/449 (JBT Beta2)
 * https://github.com/jbosstools/jbosstools-website/pull/488 (JBT CR2)
+* https://github.com/jbosstools/jbosstools-website/pull/513 (JBDS GA)
 
 == Notify Alexey & Max 
 
@@ -843,11 +848,14 @@ ____
 
 [source,bash]
 ----
+
 version=4.3.0.Final
-eclipseVersion="Eclipse 4.5.0.R Mars"
-pullrequestURL=https://github.com/jbosstools/jbosstools-website/pull/488
+eclipseVersion="Eclipse 4.5.1 Mars.1"
+pullrequestURL=https://github.com/jbosstools/jbosstools-website/pull/513
+
 # NOTE: if releasing on Monday, use Tuesday's date since generally it takes a day for Max to get the blog out.
-blogURL=/blog/cr1-for-mars.html
+blogURL=/blog/ga-for-mars.html
+
 echo "
 Subject: 
 

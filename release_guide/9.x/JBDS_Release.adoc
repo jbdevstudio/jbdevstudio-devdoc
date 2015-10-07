@@ -461,6 +461,7 @@ Once cloned to disk, this script will create the tags if run from the location w
 
 [source,bash]
 ----
+
 # if not already cloned, the do this:
 git clone https://github.com/jbdevstudio/jbdevstudio-product
 git clone https://github.com/jbdevstudio/jbdevstudio-ci
@@ -482,16 +483,19 @@ for d in product ci website artwork devdoc; do
   echo "====================================================================="
   echo ""
 done
+
 ----
 
 == Commit updates to release guide (including this document):
 
 [source,bash]
 ----
+
 version=9.0.0.GA
 cd jbdevstudio-devdoc/release_guide/9.x
 git commit -m "update release guide for ${version}" .
 git push origin HEAD:master
+
 ----
 
 
@@ -519,8 +523,10 @@ Launch the config pages for JBIDE and JBDS and using the gear icons, release the
 
 [source,bash]
 ----
+
 firefox https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
   https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
+
 ----
 
 == Smoke test the release

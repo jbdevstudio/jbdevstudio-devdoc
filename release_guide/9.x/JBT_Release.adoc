@@ -893,7 +893,7 @@ Eclipse Marketplace: https://marketplace.eclipse.org/content/jboss-tools
 
 Update Site: http://download.jboss.org/jbosstools/mars/development/updates/
 
-Zips: http://download.jboss.org/jbosstools/static/mars/development/updates/core/
+Zips: http://tools.jboss.org/downloads/jbosstools/mars/${version}.html#zips
 
 Installation instructions: http://tools.jboss.org/downloads/installation.html
 

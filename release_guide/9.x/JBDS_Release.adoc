@@ -536,15 +536,29 @@ Before notifying team of release, must check for obvious problems. Any failure t
 === Validate update site install (BYOE)
 
 1. Get a recent Eclipse (compatible with the target version of JBT)
-2. Install BYOE category from https://devstudio.redhat.com/9.0/development/updates/ ; restart
-3. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
+2. Install BYOE category from https://devstudio.redhat.com/9.0/development/updates/ and/or https://devstudio.redhat.com/9.0/stable/updates/
+3. Restart. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
 4. Check log, start an example project, check log again
 
 === Validate installer install
 
-1. Download JBDS installer from https://devstudio.redhat.com/9.0/development/builds/installer/ and install
-2. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
-3. Check log, start an example project, check log again
+1. Download JBDS installer from https://devstudio.redhat.com/9.0/development/builds/installer/ or https://devstudio.redhat.com/9.0/stable/builds/installer/
+2. Install via UI or headlessly with `java -jar jboss-devstudio-*.jar -console -options /dev/null`
+3. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
+4. Check log, start an example project, check log again
+
+[source,bash]
+----
+
+version=9.0.0.GA
+cd /tmp
+wget https://devstudio.redhat.com/9.0/stable/builds/installer/${version}/
+installerJar=$(cat index.html | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
+echo "Installer jar: ${installerJar}"
+rm -f index.html
+wget https://devstudio.redhat.com/9.0/stable/builds/installer/${version}/${installerJar}
+
+----
 
 === Validate Marketplace install
 

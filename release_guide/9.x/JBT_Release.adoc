@@ -691,8 +691,8 @@ Before notifying team of release, must check for obvious problems. Any failure t
 === Validate update site install 
 
 1. Get a recent Eclipse (compatible with the target version of JBT)
-2. Install Abridged category from http://download.jboss.org/jbosstools/mars/development/updates/ ; restart
-3. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
+2. Install Abridged category from http://download.jboss.org/jbosstools/mars/development/updates/ and/or http://download.jboss.org/jbosstools/mars/stable/updates/
+3. Restart. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
 4. Check log, start an example project, check log again
 
 === Validate Marketplace install

@@ -27,7 +27,7 @@ firefox https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
 == Rename artifacts to remove timestamp and buildID
 
 To comply with Goldengate URL rules, we need to rename artifacts before they go to the CSP. For example
-`jboss-devstudio-9.0.0.CR1-v20141020-1042-B317-installer-standalone.jar` must be renamed to `jboss-devstudio-9.0.0.CR1-installer-standalone.jar`.
+`jboss-devstudio-9.0.0.GA-v20151002-2235-B124-installer-eap.jar` must be renamed to `jboss-devstudio-9.0.0.GA-installer-eap.jar`.
 
 Connect to dev01.mw.lab.eng.bos.redhat.com as +hudson+ user (requires permissions).
 
@@ -42,8 +42,8 @@ Then:
 
 [source,bash]
 ----
-version=9.0.0.CR1
-versionWithRespin=9.0.0.CR1a # a, b, c...
+version=9.0.0.GA
+versionWithRespin=9.0.0.CR2b # a, b, c...
 pushd /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/
 for f in $(ls jboss-devstudio-${version}-*); do g=$(echo $f | sed s#-v[[:digit:]]*-[[:digit:]]*-B[[:digit:]]*##); echo "mv $f $g"; mv $f $g; done
 touch *
@@ -67,9 +67,9 @@ https://github.com/jbdevstudio/jbdevstudio-product/commit/e6c2954207d1db7451f7ad
 Goal is to update the following pages: https://www.jboss.org/products/devstudio/download/ and https://www.jboss.org/products/devstudio/overview/
 
 * Open a JIRA: https://issues.jboss.org/secure/CreateIssue.jspa?pid=12313621&issuetype=3 
-* Past example: https://issues.jboss.org/browse/DEVELOPER-1403, https://issues.jboss.org/browse/DEVELOPER-1371
+* Past example: https://issues.jboss.org/browse/DEVELOPER-1410, https://issues.jboss.org/browse/DEVELOPER-1403, https://issues.jboss.org/browse/DEVELOPER-1371
 * Attach a pull request for https://github.com/jboss-developer/www.jboss.org/blob/master/products/devstudio/_common/product.yml_
-* Past example: https://github.com/jboss-developer/www.jboss.org/pull/929
+* Past example: https://github.com/jboss-developer/www.jboss.org/pull/970, https://github.com/jboss-developer/www.jboss.org/pull/929
 
 Once you have the JIRA, you can link to it when sending the note to release-engineering@ below.
 
@@ -85,9 +85,10 @@ and +
 
 [source,bash]
 ----
-version=9.0.0.CR1
-versionWithRespin=9.0.0.CR1a # a, b, c...
-JIRA=-1403
+version=9.0.0.GA
+versionWithRespin=9.0.0.CR2b # a, b, c...
+JIRA=-1410
+
 if [[ ${version} != ${versionWithRespin} ]]; then
   versionFriendlyName="${version} (to be renamed from ${versionWithRespin})"
 else
@@ -125,7 +126,7 @@ When pushed, please reply so that QE can review the CSP pages & files for push t
 
 Note that in addition to the new CSP page, eg., [1] or [2], the CSP landing page [3] should also be updated to point to the latest release.
 
-[1] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=9.0.0.CR1
+[1] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=${version}
 [2] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=9.0.0
 [3] https://access.redhat.com/downloads/
 
@@ -135,7 +136,7 @@ Thanks in advance,
 
 ----
 
-As an answer, you get the links to the GoldenGate files, eg., /content/origin/files/sha256/2c/2c92b68d122db901e3acbb74f06950116f4fe29402c25f4391761f9a93e65bba/jboss-devstudio-9.0.0.CR1-updatesite-core.zip
+As an answer, you get the links to the GoldenGate files, eg., /content/origin/files/sha256/2c/2c92b68d122db901e3acbb74f06950116f4fe29402c25f4391761f9a93e65bba/jboss-devstudio-9.0.0.GA-updatesite-core.zip
 
 Communicate with Paul Robinson / Daniel Coughlin, Chris O'Brien, etc. to coordinate the release. All the above can happen in parallel / before the updates below.
 
@@ -163,71 +164,82 @@ Then copy the latest JBDS artifacts:
 
 [source,bash]
 ----
+#TODO: https://issues.jboss.org/browse/JBIDE-20904 script this and run as Jenkins job
+
 # can run these 4 steps in parallel to save time
 
 
 # copy JBDS update site (> 800M)
-version=9.0.0.CR1
-versionWithRespin=9.0.0.CR1a # a, b, c...
+version=9.0.0.GA
+versionWithRespin=9.0.0.CR2b # a, b, c...
 tmpdir=/tmp/release_${version}_update_site
+if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi
 for site in core; do
   mkdir -p ${tmpdir}/9.0/development/updates/${site}/${version}
   # rename from staging/*/versionWithRespin to development/*/version/
   rsync -aPrz --rsh=ssh --protocol=28 ${JBDS}/9.0/staging/updates/${site}/${versionWithRespin}/* ${tmpdir}/9.0/development/updates/${site}/${version}/
   # push to remote
-  echo "mkdir ${site} | sftp ${JBDS}/9.0/development/updates/"
-  echo "mkdir ${version} | sftp ${JBDS}/9.0/development/updates/${site}"
-  rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/9.0/development/updates/${site}/${version} ${JBDS}/9.0/development/updates/${site}/
+  for qual in $quals; do
+    echo "mkdir ${site} | sftp ${JBDS}/9.0/${qual}/updates/"
+    echo "mkdir ${version} | sftp ${JBDS}/9.0/${qual}/updates/${site}"
+    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/9.0/development/updates/${site}/${version} ${JBDS}/9.0/${qual}/updates/${site}/
+  done
 done
 rm -fr $tmpdir
 echo "copy JBDS update site" | grep "copy JBDS update site"
 
 
 # copy Central/EA/Discovery sites (< 8M), and update metadata refs in discovery sites
-version=9.0.0.CR1
-versionWithRespin=9.0.0.CR1a # a, b, c...
+version=9.0.0.GA
+versionWithRespin=9.0.0.CR2b # a, b, c...
+if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi
 for site in central earlyaccess discovery.central discovery.earlyaccess; do
   tmpdir=/tmp/release__${site}__${version}
   mkdir -p ${tmpdir}/9.0/development/updates/${site}/${version}
   # rename from staging/*/versionWithRespin to development/*/version/
   rsync -arzq --rsh=ssh --protocol=28 ${JBDS}/9.0/staging/updates/${site}/${versionWithRespin}/* ${tmpdir}/9.0/development/updates/${site}/${version}/
-  # sed .xml files to point at /development/ instead of /staging/, and ${version} instead of $versionWithRespin}
-  if [[ ${site/discovery/} != ${site} ]]; then 
-    pushd ${tmpdir}/9.0/development/updates/${site}/${version}/ >/dev/null
-    now=`date +%s000`
-    for c in compositeContent.xml compositeArtifacts.xml; do 
-      sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#" $c
-      sed -i -e "s#staging#development#" $c
-      sed -i -e "s#${versionWithRespin}#${version}#" $c
-    done
-    cat compositeContent.xml | egrep "staging|development|${version}|${versionWithRespin}"
-    popd >/dev/null
-  fi
-  # push to remote
-  echo "mkdir ${site}" | sftp ${JBDS}/9.0/development/updates/
-  echo "mkdir ${version}" | sftp ${JBDS}/9.0/development/updates/${site}
-  rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/9.0/development/updates/${site}/${version} ${JBDS}/9.0/development/updates/${site}/
+  for qual in $quals; do
+    # sed .xml files to point at /${qual}/ instead of /staging/, and ${version} instead of $versionWithRespin}
+    if [[ ${site/discovery/} != ${site} ]]; then 
+      pushd ${tmpdir}/9.0/development/updates/${site}/${version}/ >/dev/null
+      now=`date +%s000`
+      for c in compositeContent.xml compositeArtifacts.xml; do 
+        sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#" $c
+        sed -i -e "s#staging#${qual}#" $c
+        sed -i -e "s#${versionWithRespin}#${version}#" $c
+      done
+      cat compositeContent.xml | egrep "staging|${qual}|${version}|${versionWithRespin}"
+      popd >/dev/null
+    fi
+    # push to remote
+    echo "mkdir ${site}" | sftp ${JBDS}/9.0/${qual}/updates/
+    echo "mkdir ${version}" | sftp ${JBDS}/9.0/${qual}/updates/${site}
+    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/9.0/development/updates/${site}/${version} ${JBDS}/9.0/${qual}/updates/${site}/
+  done
   rm -fr $tmpdir
 done
 echo "copy Central/EA/Discovery sites" | grep "copy Central/EA/Discovery sites"
 
 
 # copy 6 zips & SHAs
-# jboss-devstudio-9.0.0.CR1a-target-platform-central.zip           jboss-devstudio-9.0.0.CR1a-target-platform.zip          jboss-devstudio-9.0.0.CR1a-updatesite-core.zip
-# jboss-devstudio-9.0.0.CR1a-target-platform-earlyaccess.zip       jboss-devstudio-9.0.0.CR1a-updatesite-central.zip       jboss-devstudio-9.0.0.CR1a-updatesite-earlyaccess.zip
-version=9.0.0.CR1
-versionWithRespin=9.0.0.CR1a # a, b, c...
+# jboss-devstudio-9.0.0.CR2b-target-platform-central.zip           jboss-devstudio-9.0.0.CR2b-target-platform.zip          jboss-devstudio-9.0.0.CR2b-updatesite-core.zip
+# jboss-devstudio-9.0.0.CR2b-target-platform-earlyaccess.zip       jboss-devstudio-9.0.0.CR2b-updatesite-central.zip       jboss-devstudio-9.0.0.CR2b-updatesite-earlyaccess.zip
+version=9.0.0.GA
+versionWithRespin=9.0.0.CR2b # a, b, c...
 tmpdir=/tmp/release_${version}_zips
+if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi
 for site in core; do
   mkdir -p ${tmpdir}/9.0/development/updates/${site}
   # get zips
   rsync -aPrz --rsh=ssh --protocol=28 ${JBDS}/9.0/staging/updates/${site}/jboss-devstudio-${versionWithRespin}*.zip* ${tmpdir}/9.0/development/updates/${site}/
-  echo "mkdir ${site}" | sftp ${JBDS}/9.0/development/updates/
-  # rename from staging/*/versionWithRespin/ to development/*/version/
-  for zip in ${tmpdir}/9.0/development/updates/${site}/jboss-devstudio-${versionWithRespin}*.zip*; do
-    zipNew=${zip/${versionWithRespin}/${version}}; echo $zipNew
-    zipNew=${zipNew##*/}; echo $zipNew
-    rsync -aPrz --rsh=ssh --protocol=28 ${zip} ${JBDS}/9.0/development/updates/${site}/${zipNew}
+  for qual in $quals; do
+    echo "mkdir ${site}" | sftp ${JBDS}/9.0/${qual}/updates/
+    # rename from staging/*/versionWithRespin/ to ${qual}/*/version/
+    for zip in ${tmpdir}/9.0/development/updates/${site}/jboss-devstudio-${versionWithRespin}*.zip*; do
+      zipNew=${zip/${versionWithRespin}/${version}}; echo $zipNew
+      zipNew=${zipNew##*/}; echo $zipNew
+      rsync -aPrz --rsh=ssh --protocol=28 ${zip} ${JBDS}/9.0/${qual}/updates/${site}/${zipNew}
+    done
   done
 done
 rm -fr $tmpdir
@@ -235,45 +247,47 @@ echo "copy zips & SHAs" | grep "copy zips & SHAs"
 
 
 # copy installer jar
-version=9.0.0.CR1
-versionWithRespin=9.0.0.CR1a # a, b, c...
+version=9.0.0.GA
+versionWithRespin=9.0.0.CR2b # a, b, c...
 tmpdir=/tmp/release_${version}_installer
+if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi
 for site in builds; do
   mkdir -p ${tmpdir}/9.0/development/${site}/installer/${version}
   # rename from staging/*/versionWithRespin to development/*/version/
   rsync -aPrz --rsh=ssh --protocol=28 ${JBDS}/9.0/staging/${site}/devstudio-${versionWithRespin}-build-product/latest/all/jboss-devstudio-*.jar* ${tmpdir}/9.0/development/${site}/installer/${version}
   # push to remote
-  echo "mkdir ${site}" | sftp ${JBDS}/9.0/development/
-  echo "mkdir installer" | sftp ${JBDS}/9.0/development/${site}
-  echo "mkdir ${version}" | sftp ${JBDS}/9.0/development/${site}/installer
-  rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/9.0/development/${site}/installer/${version} ${JBDS}/9.0/development/${site}/installer/
+  for qual in $quals; do
+    echo "mkdir ${site}" | sftp ${JBDS}/9.0/${qual}/
+    echo "mkdir installer" | sftp ${JBDS}/9.0/${qual}/${site}
+    echo "mkdir ${version}" | sftp ${JBDS}/9.0/${qual}/${site}/installer
+    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/9.0/development/${site}/installer/${version} ${JBDS}/9.0/${qual}/${site}/installer/
+  done
 done
 rm -fr $tmpdir
 echo "copy installer jar" | grep "copy installer jar"
 
 
-#  verify sites are correctly populated:
-for site in core central earlyaccess discovery.central discovery.earlyaccess; do
-  if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
-  echo "https://devstudio.redhat.com/9.0/development/updates/${sitename}/${version}/"
-done
-echo "https://devstudio.redhat.com/9.0/development/builds/installer/${version}/"
-echo "https://devstudio.redhat.com/9.0/development/updates/core/ (6 zips, 6 sums, 1 folder w/ ${version})"
-
-#  verify sites are correctly populated (run locally not on dev01):
-version=9.0.0.CR1
+#  verify sites are correctly populated (run locally, not on dev01):
+version=9.0.0.GA
 tmpfile=/tmp/devstudio-staging__verify.txt
+if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi
 for site in site central-site earlyaccess-site; do
   if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
-  echo "https://devstudio.redhat.com/9.0/development/updates/${sitename}/${version}/ " >> $tmpfile
+  for qual in $quals; do
+    echo "https://devstudio.redhat.com/9.0/${qual}/updates/${sitename}/${version}/ " >> $tmpfile
+  done
 done
 for site in discovery.central discovery.earlyaccess; do
   if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
-  echo "https://devstudio.redhat.com/9.0/development/updates/${sitename}/${version}/ " >> $tmpfile
+  for qual in $quals; do
+    echo "https://devstudio.redhat.com/9.0/${qual}/updates/${sitename}/${version}/ " >> $tmpfile
+  done
 done
 # zip & installers
-echo "https://devstudio.redhat.com/9.0/development/updates/core/#_____(6_zips_+_SHAs,_and_${version}_folder) " >> $tmpfile
-echo "https://devstudio.redhat.com/9.0/development/builds/installer/${version}/ " >> $tmpfile
+for qual in $quals; do
+  echo "https://devstudio.redhat.com/9.0/${qual}/updates/core/#_____(6_zips_+_SHAs,_and_${version}_folder) " >> $tmpfile
+  echo "https://devstudio.redhat.com/9.0/${qual}/builds/installer/${version}/ " >> $tmpfile
+done
 echo "" >> $tmpfile
 cat $tmpfile
 firefox `cat $tmpfile`
@@ -288,8 +302,8 @@ To update the content in https://devstudio.redhat.com/9.0/development/updates/ .
 
 [source,bash]
 ----
-version=9.0.0.CR1
-versionWithRespin=9.0.0.CR1a # a, b, c...
+version=9.0.0.GA
+versionWithRespin=9.0.0.CR2b # a, b, c...
 
 # adjust these steps to fit your own path location & git workflow
 cd ~/truu
@@ -316,15 +330,13 @@ egrep "staging|development|${version}|${versionWithRespin}" compositeContent.xml
 # update EA site
 pushd earlyaccess >/dev/null
 rm -f composite*.xml
-wget https://devstudio.redhat.com/9.0/development/updates/discovery.earlyaccess/9.0.0.CR1/compositeContent.xml
-wget https://devstudio.redhat.com/9.0/development/updates/discovery.earlyaccess/9.0.0.CR1/compositeArtifacts.xml
+wget https://devstudio.redhat.com/9.0/development/updates/discovery.earlyaccess/${version}/compositeContent.xml
+wget https://devstudio.redhat.com/9.0/development/updates/discovery.earlyaccess/${version}/compositeArtifacts.xml
 echo "------------"
 egrep "staging|development|${version}|${versionWithRespin}" compositeContent.xml
 popd >/dev/null
 
 popd >/dev/null
-
-## HERE
 
 # commit changes to git
 git add development/updates/
@@ -347,6 +359,9 @@ https://devstudio.redhat.com/9.0/development/updates/earlyaccess/compositeConten
 
 ----
 
+NOTE: If this is a GA release, merge these changes into 9.0/stable/ too.
+
+
 == Release the latest milestone to ide-config.properties
 
 Check out this file: http://download.jboss.org/jbosstools/configuration/ide-config.properties from _http://github.com/jbosstools/jbosstools-download.jboss.org_ repository.
@@ -358,8 +373,8 @@ And update it it as required, so that the links for the latest milestone point t
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru
 pushd jbosstools-download.jboss.org/jbosstools/configuration
-version=9.0.0.CR1
-versionWithRespin=9.0.0.CR1a # a, b, c...
+version=9.0.0.GA
+versionWithRespin=9.0.0.CR2b # a, b, c...
 
 git fetch origin master
 git checkout FETCH_HEAD
@@ -398,7 +413,8 @@ Examples:
 
 * https://github.com/jbosstools/jbosstools-website/pull/418 (JBT / JBDS Beta1)
 * https://github.com/jbosstools/jbosstools-website/pull/449 (JBT Beta2)
-* https://github.com/jbosstools/jbosstools-website/pull/489 (JBDS CR1)
+* https://github.com/jbosstools/jbosstools-website/pull/489 (JBDS CR2)
+* https://github.com/jbosstools/jbosstools-website/pull/513 (JBDS GA)
 
 ==== SHA256 values 
 
@@ -415,8 +431,8 @@ Then run this:
 
 [source,bash]
 ----
-version=9.0.0.CR1
-versionWithRespin=9.0.0.CR1a # a, b, c...
+version=9.0.0.GA
+versionWithRespin=9.0.0.CR2b # a, b, c...
 
 cd ~/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/
 for f in *.jar *.zip; do 
@@ -453,7 +469,7 @@ git clone https://github.com/jbdevstudio/jbdevstudio-artwork
 git clone https://github.com/jbdevstudio/jbdevstudio-devdoc
 
 jbt_branch=jbosstools-4.3.x
-version=9.0.0.CR1
+version=9.0.0.GA
 for d in product ci website artwork devdoc; do
   echo "====================================================================="
   echo "Tagging jbdevstudio-${d} from branch ${jbt_branch} as tag ${version}..."
@@ -472,7 +488,7 @@ done
 
 [source,bash]
 ----
-version=9.0.0.CR1
+version=9.0.0.GA
 cd jbdevstudio-devdoc/release_guide/9.x
 git commit -m "update release guide for ${version}" .
 git push origin HEAD:master
@@ -546,7 +562,7 @@ and +
 
 [source,bash]
 ----
-version=9.0.0.CR1
+version=9.0.0.GA
 echo "
 Subject: 
 

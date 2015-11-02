@@ -6,13 +6,18 @@
 
 This document describes the task of updating, building and publishing the community and production versions of the *JBoss Tools Integration Stack*.
 
-The _Integration Stack_ (IS) is an aggregation of Eclipse features and plugins comprised of JBoss tooling in support of Data Virtualization, BRMS/BPMS, Fuse Tooling, SOA Tooling and legacy SOA 5.x development.  It is formed by multiple Maven projects which produce released and early access Eclipse p2 update sites, released and early access offline zip files, a discovery update mechanism augmenting JBoss Central and an aggregation of associated component target dependencies and JBoss Core tooling target dependencies.  The target dependencies take the form of generated +.target files+ (tycho mojo) and target update repositories.
+The _Integration Stack_ (IS) is an aggregation of Eclipse features and plugins comprised of JBoss Tooling. These tools are in support of Data Virtualization, BRMS/BPMS, Fuse Tooling and legacy SOA 5.x development. 
+In terms of build artifacts, the _Integration Stack_ is:
+
+* an aggregation of several projects which produce released (or Early Access) update site & zip, 
+* a discovery site which exposes that content from within JBoss Central, and 
+* some target platform dependencies, also available as an update site & zip. The target platforms are also available as +.target files+, published to JBoss Nexus.
 
 Click https://mojo.redhat.com/docs/DOC-946223 for a quick overview/ presentation of the Integration Stack.
 
 [NOTE]
 ----
-Note:  Many steps in this release process require privileged access to JBoss servers, Developer Studio servers and JBoss nexus.
+Note:  Many steps in this release process require privileged access to JBoss servers, Developer Studio servers and the JBoss Nexus servers.
 ----
 
 == Update Process
@@ -49,20 +54,25 @@ Note: Github source branch master should be used for JBTIS 4.3.x (Mars) builds.
 
 The build/ publish process is a sequential set of tasks that must be executed in order.  The order is as follows:
 
-* JBTIS target platform       https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBTIS-target-platform/
-* JBTIS aggregate/ discovery  https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBTIS-aggregate-disc/
-* JBTIS Publish               https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBTIS-aggregate-publish/
+* JBTIS target platform       http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBTIS-target-platform/
+* JBTIS aggregate/ discovery  http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBTIS-aggregate-discovery/ (or -disc)
+* JBTIS Publish               http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBTIS-aggregate-publish/
 * JBDSIS target platform
-* JBDSIS aggregate discovery  https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBDSIS-aggregate-disc/
-* JBDSIS Publish              https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBDSIS-aggregate-publish/
+* JBDSIS aggregate discovery  http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBDSIS-aggregate-discovery/ (or -disc)
+* JBDSIS Publish              http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBDSIS-aggregate-publish/
 
-Other fun facts:
+Note:
 
-* Not all tasks must be executed for a release.  For example, if there's no change to the target platform the aggregate build may use the existing one.
-* It's possible to release JBTIS independently however JBDSIS must release from an existing JBTIS.
-* The integration stack component's POMs may or may not pick up the latest JBTIS TP.  We recommend that they do but it is not required.
+* For previous years' jobs, job name will have a suffix such as -4.1.x or -4.2.x. 
+* For 4.2.x and earlier, the discovery job name contains suffix of *disc*, not *discovery*, eg., JBTIS-aggregate-disc-4.2.x.
 
-There exists Jenkins build jobs for each Eclipse-based revision of JBDS (Kepler, Luna, etc).  Examples will be referenced explicitly in the build procedure instructions.
+* If the target platform has not changed since the previous build, aggregation can use the most recent target platform without needing to rebuild it.
+
+* JBTIS can be released while JBDSIS is still kept internal; however, every JBDSIS release should have a matching concurrent JBTIS release). This is the same rule in JBT and JBDS releases.
+
+* It is strongly recommended that ALL integration stack components' POMs build with the latest JBTIS TP. This should be enforced as a requirement for participation in the JBTIS/JBDSIS aggregate to ensure all components use the same compatible dependencies and don't introduce incompatible install-time or run-time requirements.
+
+There exists Jenkins build jobs for each Eclipse-based revision of JBDS (Kepler, Luna, Mars, Neon, etc).  Examples will be referenced explicitly in the build procedure instructions.
 
 === Community JBTIS Build
 [.lead]
@@ -225,7 +235,7 @@ Note:  A non-API-change dependant update (micro-release update) may be done with
 
 ==== Jenkins JBTIS Target Platform Build:
 
-As an example, lets build JBTIS target platform 4.3.0.Final for Mars using the specific Jenkins job:
+As an example, let's build JBTIS target platform 4.3.0.Final for Mars using the specific Jenkins job:
 
 https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBTIS-target-platform/
 
@@ -370,7 +380,7 @@ Git ref: https://github.com/jbosstools/jbosstools-fuse-extras/tree/master/jboss-
 
 As an example, lets build SAP 7.3.0.Beta4 for Luna using the Jenkins job:
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-fuse-sap-tooling-7.3.x/
+http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-fuse-sap-tooling-7.3.x/
 
 The build parameters are self-explanatory.  Use care in deciding which Fuse tooling URL to use as there are class dependencies.
 
@@ -379,7 +389,7 @@ fuse-tooling-url: http://download.jboss.org/jbosstools/updates/development/luna/
 
 Upon successful completion, this build will invoke the SAP tooling publish Jenkins job:
 
-Git ref: https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-fuse-sap-tooling-publish-7.3.x/
+Git ref: http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-fuse-sap-tooling-publish-7.3.x/
 
 For a development build, our example yields the following:
 
@@ -400,57 +410,26 @@ Note: We do *NOT* want an aggregate composite - only the most recent update site
 ----
 mkdir -p ~/temp/release;  cd ~/temp/release  
   
-rsync -arzq --protocol=28 tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/development/updates/integration-stack/extras/jboss-fuse-sap-tool-suite/compositeArtifacts.xml .
-rsync -arzq --protocol=28 tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/development/updates/integration-stack/extras/jboss-fuse-sap-tool-suite/compositeContent.xml .
-rsync -arzq --protocol=28 tools@filemgmt.jboss.org:/downloads_htdocs/tools/mars/development/updates/integration-stack/extras/jboss-fuse-sap-tool-suite/8.0.0.Alpha1 .
+rsync -arzq --protocol=28 tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/development/luna/integration-stack/jboss-fuse-sap-tool-suite/compositeArtifacts.xml .
+rsync -arzq --protocol=28 tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/development/luna/integration-stack/jboss-fuse-sap-tool-suite/compositeContent.xml .
+rsync -arzq --protocol=28 tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/development/luna/integration-stack/jboss-fuse-sap-tool-suite/7.3.0.Beta2a .
 
-rsync -arzq --protocol=28 compositeArtifacts.xml devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/9.0/development/updates/integration-stack/extras/jboss-fuse-sap-tool-suite/
-rsync -arzq --protocol=28 compositeContent.xml devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/9.0/development/updates/integration-stack/extras/jboss-fuse-sap-tool-suite/
-rsync -arzq --protocol=28 8.0.0.Alpha1 devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/9.0/development/updates/integration-stack/extras/jboss-fuse-sap-tool-suite/
+rsync -arzq --protocol=28 compositeArtifacts.xml devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0/integration-stack/jboss-fuse-sap-tool-suite/
+rsync -arzq --protocol=28 compositeContent.xml devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0/integration-stack/jboss-fuse-sap-tool-suite/
+rsync -arzq --protocol=28 7.3.0.Beta2a devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0/integration-stack/jboss-fuse-sap-tool-suite/
 ----
-Verify:
+Verify
 
-* http://download.jboss.org/jbosstools/mars/development/updates/integration-stack/extras
-* http://download.jboss.org/jbosstools/mars/development/updates/integration-stack/extras/jboss-fuse-sap-tool-suite
-* http://download.jboss.org/jbosstools/mars/development/updates/integration-stack/extras/jboss-fuse-sap-tool-suite/8.0.0.Alpha1/
-
-* https://devstudio.redhat.com/9.0/development/updates/integration-stack/extras
-* https://devstudio.redhat.com/9.0/development/updates/integration-stack/extras/jboss-fuse-sap-tool-suite
-* https://devstudio.redhat.com/9.0/development/updates/integration-stack/extras/jboss-fuse-sap-tool-suite/8.0.0.Alpha1/
-
-*Luna:*
-[source,bash]
-----
-mkdir -p ~/temp/release;  cd ~/temp/release  
-  
-rsync -arzq --protocol=28 tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/development/luna/integration-stack/extras/jboss-fuse-sap-tool-suite/compositeArtifacts.xml .
-rsync -arzq --protocol=28 tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/development/luna/integration-stack/extras/jboss-fuse-sap-tool-suite/compositeContent.xml .
-rsync -arzq --protocol=28 tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/development/luna/integration-stack/extras/jboss-fuse-sap-tool-suite/7.3.0.Beta2a .
-
-rsync -arzq --protocol=28 compositeArtifacts.xml devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0/integration-stack/extras/jboss-fuse-sap-tool-suite/
-rsync -arzq --protocol=28 compositeContent.xml devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0/integration-stack/extras/jboss-fuse-sap-tool-suite/
-rsync -arzq --protocol=28 7.3.0.Beta2a devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0/integration-stack/extras/jboss-fuse-sap-tool-suite/
-----
-Verify:
-
-* http://download.jboss.org/jbosstools/updates/development/luna/integration-stack/extras
-* http://download.jboss.org/jbosstools/updates/development/luna/integration-stack/extras/jboss-fuse-sap-tool-suite
-* http://download.jboss.org/jbosstools/updates/development/luna/integration-stack/extras/jboss-fuse-sap-tool-suite/7.3.0.Beta2a/
-
-* https://devstudio.redhat.com/updates/8.0/integration-stack/extras
-* https://devstudio.redhat.com/updates/8.0/integration-stack/extras/jboss-fuse-sap-tool-suite
-* https://devstudio.redhat.com/updates/8.0/integration-stack/extras/jboss-fuse-sap-tool-suite/7.3.0.Beta2a/
-
-<<<
+http://download.jboss.org/jbosstools/updates/development/luna/integration-stack/jboss-fuse-sap-tool-suite/7.3.0.Beta2a/
+https://devstudio.redhat.com/updates/8.0/integration-stack/jboss-fuse-sap-tool-suite/7.3.0.Beta2a/
 
 === JBTIS Aggregate/ Discovery Build/ Release Process
-[.lead]
-This section describes the process of building and releasing the JBTIS aggregate p2 update site and the JBoss Central update site.  The project architecture is as follows:
+This section describes the process of building and releasing the JBTIS aggregate update site and the JBoss Central discovery site.  The project architecture is as follows:
 
 [source,bash]
 ----
  jbosstools
- JBTIS - Community side.  Mylyn discovery and Eclipse p2 update site generation.
+ JBTIS - Community side. Mylyn discovery and update site generation.
 
      discovery
      JBTIS JBoss Tools Central Integration Stack discovery update generation.
@@ -481,55 +460,29 @@ Git ref: https://github.com/jbosstools/jbosstools-integration-stack/tree/master/
 ==== Jenkins JBTIS Aggregate Discovery Build
 [.lead]
 
-As an example, lets build JBTIS using the Jenkins job:
+As an example, let's build JBTIS 4.3.0.Alpha2 for Mars using the Jenkins job:
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBTIS-aggregate-disc/
+http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBTIS-aggregate-discovery/
 
 The build type is selectable.  Use "integration" for builds that are better than continuous integration/ nightly but not quite milestone, "development" for milestones (i.e. beta and CR builds) and "stable" for final release builds.  Also note the upstream jbosstools site references.  The default options will get you the following:
 
-*INTEGRATION/ SNAPSHOTS -*
 
-* http://download.jboss.org/jbosstools/mars/integration/updates/integration-stack/<version>
-* http://download.jboss.org/jbosstools/mars/integration/updates/integration-stack/<version>
-* http://download.jboss.org/jbosstools/mars/integration/updates/integration-stack/discovery/<version>
 
-* http://download.jboss.org/jbosstools/mars/snapshots/updates/integration-stack/master/
-* http://download.jboss.org/jbosstools/mars/snapshots/updates/integration-stack/master/earlyaccess/
-* http://download.jboss.org/jbosstools/mars/snapshots/updates/integration-stack/discovery/master/
+To see what's happening with a given build, or why it's stuck, you can look at URLs such as these:
 
-Select the 'Staging' check box and get even more...
-
-*STAGING (if enabled) -*
-
-* http://download.jboss.org/jbosstools/mars/staging/updates/integration-stack/<version>
-* http://download.jboss.org/jbosstools/mars/staging/updates/integration-stack/<version>
-* http://download.jboss.org/jbosstools/mars/staging/updates/integration-stack/discovery/<version>
-
-*BUILDS (Mirror - if staging enabled) -*
-
-* http://download.jboss.org/jbosstools/mars/staging/builds/integration-stack/<version>
-* http://download.jboss.org/jbosstools/mars/staging/builds/integration-stack/<version>
-* http://download.jboss.org/jbosstools/mars/staging/builds/integration-stack/discovery/<version>
-
-These staging components are what's needed for a QE handoff.
-
-Fun Facts:
-
-I started this build 6 hours ago - what's going on?
-
-Lets see with the Jenkins stats view:  https://jenkins.mw.lab.eng.bos.redhat.com/hudson/
+http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBTIS-aggregate-discovery/
 
 * Tag a label onto the GIT sources associated with any build committed to a milestone or release.  It is a required parameter to the configuration.  (i.e. JBTIS-4.1.6.Final)
 
 * Label the Jenkins build and set 'keep forever".
 
-==== Publish the Community Integration Stack Components
+==== Publish the JBoss Tools (Community) Integration Stack Components
 
 There exists a separate Jenkins job to move the build artifacts out of the JBoss tools staging area into a JBoss tools update area.  For use when creating released sites: development/ stable.
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBTIS-aggregate-publish/	       # mars +
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBTIS-aggregate-publish-4.2.x/    # luna +
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBTIS-aggregate-publish-4.1.x/    # kepler +
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBTIS-aggregate-publish/	       # mars
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBTIS-aggregate-publish-4.2.x/    # luna
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBTIS-aggregate-publish-4.1.x/    # kepler
 
 Verify - note that the offline zip files and MD5s are also created (e.g.):
 
@@ -541,9 +494,9 @@ http://download.jboss.org/jbosstools/mars/development/updates/integration-stack/
 *Luna:*
 
 http://download.jboss.org/jbosstools/updates/development/luna/integration-stack/aggregate/jbosstools-integration-stack-aggregate-4.2.3.CR2.zip (MD5) +
-http://download.jboss.org/jbosstools/updates/development/mars/integration-stack/aggregate/jbosstools-integration-stack-aggregate-4.2.3.CR2-earlyaccess.zip (MD5) +
+http://download.jboss.org/jbosstools/updates/development/luna/integration-stack/aggregate/jbosstools-integration-stack-aggregate-4.2.3.CR2-earlyaccess.zip (MD5) +
 
-==== Publish and Push the JBTIS Aggregate p2 Update Site
+==== Publish and Push the JBTIS Aggregate Update Site
 
 Clone jbosstools-download.jboss.org and update the composites in both the integration-stack directory to reflect the new version and then update the timestamps.  Remember to update both the released composites as well as the early access composites.
 
@@ -857,7 +810,7 @@ rsync -arzq --protocol=28 jbosstools-integration-stack-sources-ea-4.2.0.Final.zi
 rsync -arzq --protocol=28 jbosstools-integration-stack-sources-ea-4.2.0.Final.zip.MD5 tools@filemgmt.jboss.org:/downloads_htdocs/tools/updates/stable/luna/integration-stack/aggregate 
 ----
 
-==== Test Eclipse p2 Update
+==== Test Eclipse Update
 
 Install JBossTools from Eclipse Marketplace (i.e. JBossTools 4.2.3.Final).
 
@@ -955,7 +908,7 @@ http://tools.jboss.org/blog/
 
 == Production JBDSIS Build
 
-The production JBDSIS build draws its content from the community JBTIS build.  Consequently, the content of the production build is always less than or equal to the community build.  JBDSIS does not have its own composite files for p2 update site artifacts.
+The production JBDSIS build draws its content from the community JBTIS build.  Consequently, the content of the production build is always less than or equal to the community build.  JBDSIS does not have its own composite files for update site artifacts.
 
 === JBDSIS Target Platform
 [.lead]
@@ -1007,7 +960,7 @@ https://devstudio.redhat.com/targetplatforms/jbdsistarget/9.0.0.Beta1.jbds-is-ta
 
 === JBDSIS Aggregate/ Discovery Build/ Release Process
 [.lead]
-This section describes the process of building and releasing the actual JBDSIS aggregate p2 update site and the JBoss Central update site.  The project architecture is as follows:
+This section describes the process of building and releasing the actual JBDSIS aggregate update site and the JBoss Central discovery site.  The project architecture is as follows:
  
 [source,bash]
 ----
@@ -1044,11 +997,11 @@ Git ref: https://github.com/jbosstools/jbosstools-integration-stack/tree/master/
 
 As an example, lets build JBDSIS using the specific Jenkins job:
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBDSIS-aggregate-disc
+http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBDSIS-aggregate-discovery
 
 Note the community JBTIS aggregate composite site from which this build draws its content.  As with the JBTIS build, the build type is selectable - make sure you select the correct parameter as it affects the discovery site and site index.html.
 
-Upon successful completion of this build, invoke the JBDSIS-aggregate-publish job to release the components.
+Upon successful completion of this build, the JBDSIS-aggregate-discovery build will be invoked to build the release (.Final) components.
 
 *Mars:*
 
@@ -1076,9 +1029,11 @@ There exists a separate Jenkins job to move the build artifacts out of the JBoss
 
 Verify:
 
-https://devstudio.redhat.com/9.0/staging/updates/integration-stack/...
+https://devstudio.redhat.com/9.0/staging/updates/integration-stack/
+http://www.qa.jboss.com/binaries/RHDS/updates/development/luna/integration-stack/aggregate/8.0.0.CR2/
+http://www.qa.jboss.com/binaries/RHDS/updates/development/kepler/integration-stack/aggregate/8.0.3.CR2/
  
-==== Publish and Push the JBDSIS Aggregate p2 Update Site
+==== Publish and Push the JBDSIS Aggregate Update Site
 
 Update the production aggregate Eclipse p2 repository as well as the offline .zip file.  If this is an earlyaccess jar - update the earlyaccess (devstudio/earlyaccess) composites.
 
@@ -1096,13 +1051,13 @@ Clone +jbdevstudio-website+ and update the composites in both the integration-st
 ----
 cd ~/temp; mkdir -p jbds-update; cd jbds-update
 
-# Copy the p2 update site to the devstudio update areas:  
+# Copy the update site to the devstudio update areas:  
 rsync -aPrzq --protocol=28  pleacu@dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/updates/development/luna/integration-stack/aggregate/8.0.3.CR2 .
 
 rsync -arzq --protocol=28 8.0.3.CR2/ devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0.0/8.0.3.CR2.jbds-is
 rsync -arzq --protocol=28 8.0.3.CR2/ devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/static/updates/8.0.0/8.0.3.CR2.jbds-is
      
-# Copy the p2 update site zip to the devstudio update areas:  
+# Copy the update site zip to the devstudio update areas:  
 rsync --rsh=ssh pleacu@dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/updates/development/luna/integration-stack/aggregate/devstudio-integration-stack-aggregate-8.0.3.CR2.zip devstudio-integration-stack-aggregate-8.0.3.CR2.zip
 rsync --rsh=ssh pleacu@dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/updates/development/luna/integration-stack/aggregate/devstudio-integration-stack-aggregate-8.0.3.CR2-earlyaccess.zip devstudio-integration-stack-aggregate-8.0.3.CR2-earlyaccess.zip
 
@@ -1112,7 +1067,7 @@ rsync -arzq --protocol=28 devstudio-integration-stack-aggregate-8.0.3.CR2.zip de
 rsync -arzq --protocol=28 devstudio-integration-stack-aggregate-8.0.3.CR2-earlyaccess.zip devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/updates/8.0.0/jbdevstudio-integration-stack-updatesite-8.0.3.CR2-earlyaccess.zip
 rsync -arzq --protocol=28 devstudio-integration-stack-aggregate-8.0.3.CR2-earlyaccess.zip devstudio@filemgmt.jboss.org:/www_htdocs/devstudio/static/updates/8.0.0/jbdevstudio-integration-stack-updatesite-8.0.3.CR2-earlyaccess.zip
 
-# Copy the p2 update site MD5 to the devstudio update areas:  
+# Copy the update site MD5 to the devstudio update areas:  
 rsync --rsh=ssh pleacu@dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/updates/development/luna/integration-stack/aggregate/devstudio-integration-stack-aggregate-8.0.3.CR2.zip.MD5 devstudio-integration-stack-aggregate-8.0.3.CR2.zip.MD5
 rsync --rsh=ssh pleacu@dev01.mw.lab.eng.bos.redhat.com:/qa/services/http/binaries/RHDS/updates/development/luna/integration-stack/aggregate/devstudio-integration-stack-aggregate-8.0.3.CR2-earlyaccess.zip.MD5 devstudio-integration-stack-aggregate-8.0.3.CR2-earlyaccess.zip.MD5
 
@@ -1512,7 +1467,7 @@ Your git status (Luna) should appear something like this:
 #	updates/8.0/discovery/com.jboss.jbds.central.discovery.integration-stack_8.0.3.GA-v20150825-1155-B20.jar
 ----
 
-==== Test Eclipse p2 Update
+==== Test Install from Update Site
 
 [source,bash]
 ----
@@ -1521,9 +1476,12 @@ Start jbdevstudio or eclipse-with-jbds, then:
     Add...  
     - use this for 'Location:'  
     https://devstudio.redhat.com/updates/7.0-development/integration-stack/  
+
+# TODO: document what steps to perform, other than simply starting JBDS and looking at the above URL
+
 ----
 
-==== Test JBDSIS JBoss Central Discovery Update
+==== Test JBDSIS JBoss Central Discovery Site
 
 *Luna:*
 
@@ -1532,8 +1490,7 @@ Start jbdevstudio or eclipse-with-jbds, then:
 ./jbdevstudio -vmargs -Djboss.discovery.directory.url=http://www.qa.jboss.com/binaries/RHDS/discovery/integration/integration-stack/8.0.3.CR2/devstudio-integration-stack-directory.xml  
       -Djboss.discovery.site.url=http://www.qa.jboss.com/binaries/RHDS/discovery/integration/integration-stack/8.0.3.CR2
 
-./jbdevstudio -vmargs -Djboss.discovery.directory.url=http://www.qa.jboss.com/binaries/RHDS/discovery/integration/integration-stack/8.0.3.CR2/devstudio-integration-stack-directory.xml  
-      -Djboss.discovery.site.url=http://www.qa.jboss.com/binaries/RHDS/discovery/integration/integration-stack/8.0.3.CR2
+# TODO: document what steps to perform, other than simply starting JBDS and looking at Central. Install everything? Install all Early Access stuff?
 
 ----
 

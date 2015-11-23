@@ -65,7 +65,7 @@ Note:
 
 * For previous years' jobs, job name will have a suffix such as -4.1.x or -4.2.x. 
 * For 4.2.x and earlier, the discovery job name contains suffix of *disc*, not *discovery*, eg., JBTIS-aggregate-disc-4.2.x.
-* For a detailed description of the Integration Stack release process pre-Mars, see: link:https://github.com/jbdevstudio/jbdevstudio-devdoc/blob/master/release_guide/8.x/IS_release_process.adoc[IS Release Process Luna]
+* For a detailed description of the Integration Stack release process pre-Mars, see: link:https://github.com/jbdevstudio/jbdevstudio-devdoc/blob/master/release_guide/8.x/IS_release_process_luna.adoc[IS Release Process Luna]
 * If the target platform has not changed since the previous build, aggregation can use the most recent target platform without needing to rebuild it.
 
 * JBTIS can be released while JBDSIS is still kept internal; however, every JBDSIS release should have a matching concurrent JBTIS release). This is the same rule in JBT and JBDS releases.

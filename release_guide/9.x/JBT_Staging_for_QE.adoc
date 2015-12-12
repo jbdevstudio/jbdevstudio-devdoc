@@ -433,7 +433,7 @@ ____
 [source,bash]
 ----
 versionWithRespin=4.3.1.Beta1 # a, b, c...
-respin="respin-b"
+respin="respin-"
 TARGET_PLATFORM_VERSION_MIN=4.50.2.Beta1-SNAPSHOT
 TARGET_PLATFORM_VERSION_MAX=4.51.2.Beta1-SNAPSHOT
 TARGET_PLATFORM_CENTRAL_MAX=4.51.0.Beta1-SNAPSHOT

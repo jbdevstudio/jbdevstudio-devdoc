@@ -375,7 +375,7 @@ ____
 version_JBT=4.3.1.Beta1
 version=9.1.0.Beta1
 versionWithRespin=9.1.0.Beta1 # a, b, c...
-respin="respin-b"
+respin="respin-"
 echo "
 Subject: 
 

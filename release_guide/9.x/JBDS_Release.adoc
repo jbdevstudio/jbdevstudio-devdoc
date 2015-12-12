@@ -107,7 +107,7 @@ Please include the 5 jars/zips listed here:
 
 * http://www.qa.jboss.com/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/
 
-Please includes the pre-generated the HTML and text content in the above folder when creating new CSP pages.
+Please include the pre-generated the HTML and text content in the above folder when creating new CSP pages.
 
 We will also need GoldenGate links for the 5 artifacts above, as they need to be linked from these pages:
 

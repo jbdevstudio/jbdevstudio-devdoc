@@ -3,6 +3,7 @@
 This document describe how to provide a valid JBoss Tools build to QE so they can test us.
 
 TODO: use consistent instructions for fetching sources from git & pushing changes
+TODO: add step that automatically keeps all staged builds in Jenkins, using /lastBuild/toggleLogKeep
 
 [NOTE]
 ====

@@ -18,7 +18,7 @@ Check c.j.d.central.core's currentversion.properties for the correct value of de
 # @since JBT 4.3.0 / JBDS 9.0.0 - JBIDE-18820, JBIDE-18806 
 
 version=9.1.0.Beta1 # or .GA
-versionWithRespin=9.1.0.Beta1 # a, b, c...
+versionWithRespin=9.1.0.Beta1a # a, b, c...
 
 if [[ ${version:0:1} == "4" ]]; then # JBT
   pluginName=foundation.core
@@ -64,7 +64,7 @@ Whenever you're starting a new shell, you should set those variables:
 [sources,bash]
 ----
 version=9.1.0.Beta1
-versionWithRespin=9.1.0.Beta1 # a, b, c...
+versionWithRespin=9.1.0.Beta1a # a, b, c...
 TARGET_PLATFORM_VERSION_MAX=4.51.2.Beta1-SNAPSHOT
 TARGET_PLATFORM_CENTRAL_MAX=4.51.0.Beta1-SNAPSHOT
 now=$(date +%s000)
@@ -99,7 +99,7 @@ WARNING: Don't use symlinks are they are too risky to use. Those operations can 
 # can run these 6 steps in parallel
 
 # copy JBDS target platform zips
-versionWithRespin=9.1.0.Beta1 # a, b, c...
+versionWithRespin=9.1.0.Beta1a # a, b, c...
 TARGET_PLATFORM_VERSION_MAX=4.51.2.Beta1-SNAPSHOT
 TARGET_PLATFORM_CENTRAL_MAX=4.51.0.Beta1-SNAPSHOT
 for targetname in jbdevstudio jbtcentral jbtearlyaccess; do
@@ -118,7 +118,7 @@ echo "DONE: copy JBDS target platform zips" | grep "copy JBDS target platform zi
 
 
 # copy JBDS Central/EA update sites & zips
-versionWithRespin=9.1.0.Beta1 # a, b, c...
+versionWithRespin=9.1.0.Beta1a # a, b, c...
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 JBT_stream=4.3.mars
 for site in central-site earlyaccess-site; do
@@ -149,7 +149,7 @@ echo "DONE: copy JBDS Central/EA update sites & zips" | grep "copy JBDS Central/
 
 
 # copy JBDS installers: snapshots/builds/ to staging/builds/ [INTERNAL - both installers]
-versionWithRespin=9.1.0.Beta1 # a, b, c...
+versionWithRespin=9.1.0.Beta1a # a, b, c...
 JBDS_stream=9.0.mars
 ID=""
 ID=$(cd /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${JBDS_stream} && ls 20* | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%:*}
@@ -174,7 +174,7 @@ echo "DONE: copy JBDS installers: snapshots/builds/ to staging/builds/ [INTERNAL
 
 
 # copy JBDS installers: snapshots/builds/ to staging/builds/ [EXTERNAL - Standalone installer only]
-versionWithRespin=9.1.0.Beta1 # a, b, c...
+versionWithRespin=9.1.0.Beta1a # a, b, c...
 JBDS_stream=9.0.mars
 ID=""
 ID=$(echo "ls 20*" | sftp ${JBDS}/9.0/snapshots/builds/devstudio.product_${JBDS_stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
@@ -196,7 +196,7 @@ echo "DONE: copy JBDS installers: snapshots/builds/ to staging/builds/ [EXTERNAL
 
 
 # copy JBDS update: snapshots/builds/*/repo/* to staging/updates/core/${versionWithRespin}; also copy updatesite-core.zip
-versionWithRespin=9.1.0.Beta1 # a, b, c...
+versionWithRespin=9.1.0.Beta1a # a, b, c...
 JBDS_stream=9.0.mars
 ID=""
 ID=$(cd /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${JBDS_stream} && ls 20* | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%:*}
@@ -214,7 +214,7 @@ echo "DONE: copy JBDS update: snapshots/builds/*/repo/* to staging/updates/core/
 
 # TODO: make sure you've rebuilt the discovery sites and disabled the job first before doing this step!
 # copy JBDS discovery sites to staging/builds/ and staging/updates/
-versionWithRespin=9.1.0.Beta1 # a, b, c...
+versionWithRespin=9.1.0.Beta1a # a, b, c...
 JBT_stream=4.3.mars
 for site in discovery.central discovery.earlyaccess; do
   ID=""
@@ -246,7 +246,7 @@ Note that Akamai caching might result in the appearance of missing files (apache
 [source,bash]
 ----
 
-versionWithRespin=9.1.0.Beta1 # a, b, c...
+versionWithRespin=9.1.0.Beta1a # a, b, c...
 tmpfile=/tmp/jbosstools-staging__verify.txt
 for site in central earlyaccess discovery.central discovery.earlyaccess; do
   if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
@@ -273,8 +273,8 @@ This should point to the latest staging bits. Just copy what's in discovery.cent
 ----
 
 version=9.1.0.Beta1
-versionWithRespin_PREV=9.0.0.CR2b # a, b, c...
-versionWithRespin=9.1.0.Beta1 # a, b, c...
+versionWithRespin_PREV=9.1.0.Beta1 # a, b, c...
+versionWithRespin=9.1.0.Beta1a # a, b, c...
 TARGET_PLATFORM_VERSION_MAX=4.51.2.Beta1-SNAPSHOT
 TARGET_PLATFORM_CENTRAL_MAX=4.51.0.Beta1-SNAPSHOT
 
@@ -350,19 +350,21 @@ Before notifying team of staged release, must check for obvious problems.
 
 [source,bash]
 ----
-versionWithRespin=9.1.0.Beta1 # a, b, c...
-cd /tmp
+versionWithRespin=9.1.0.Beta1a # a, b, c...
+cd ~/tmp
 wget https://devstudio.redhat.com/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/
-installerJar=$(cat index.html | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
+installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 echo "Installer jar: ${installerJar}"
 rm -f index.html
 wget https://devstudio.redhat.com/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/${installerJar}
 
+java -jar ~/tmp/${installerJar}
+
 ----
 
-1. Install JBDS from `java -jar /tmp/jboss-devstudio-*-installer-standalone.jar`
-2. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
-3. Check log, start an example project, check log again
+0. After downloading and installing JBDS from the step above...
+1. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
+2. Check log, start an example project, check log again
 
 If this fails, it is most likely due to a bug or a failure in a step above. If possible, fix it before notifying team below.
 
@@ -374,8 +376,8 @@ ____
 ----
 version_JBT=4.3.1.Beta1
 version=9.1.0.Beta1
-versionWithRespin=9.1.0.Beta1 # a, b, c...
-respin="respin-"
+versionWithRespin=9.1.0.Beta1a # a, b, c...
+respin="respin-a"
 echo "
 Subject: 
 
@@ -405,7 +407,9 @@ echo "
 
 --
 
-Changes prompting this $respin are: https://issues.jboss.org/issues/?jql=labels%20in%20%28%22${respin}%22%29%20and%20%28%28project%20in%20%28%22JBDS%22%29%20and%20fixversion%20in%20%28%22${version}%22%29%29%20or%20%28project%20in%20%28%22JBIDE%22%2C%22TOOLSDOC%22%29%20and%20fixversion%20in%20%28%22${version_JBT}%22%29%29%29
+Changes prompting this $respin are: 
+
+https://issues.jboss.org/issues/?jql=labels%20in%20%28%22${respin}%22%29%20and%20%28%28project%20in%20%28%22JBDS%22%29%20and%20fixversion%20in%20%28%22${version}%22%29%29%20or%20%28project%20in%20%28%22JBIDE%22%2C%22TOOLSDOC%22%29%20and%20fixversion%20in%20%28%22${version_JBT}%22%29%29%29
 
 To compare the upcoming version of Central (${versionWithRespin}) against an older version, add lines similar to these your eclipse.ini file after the -vmargs line for the appropriate version & URLs:
  -Djboss.discovery.directory.url=https://devstudio.redhat.com/9.0/staging/updates/discovery.central/${versionWithRespin}/devstudio-directory.xml

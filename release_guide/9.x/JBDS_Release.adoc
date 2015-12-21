@@ -27,7 +27,7 @@ firefox https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
 == Rename artifacts to remove timestamp and buildID
 
 To comply with Goldengate URL rules, we need to rename artifacts before they go to the CSP. For example
-`jboss-devstudio-9.0.0.GA-v20151002-2235-B124-installer-eap.jar` must be renamed to `jboss-devstudio-9.0.0.GA-installer-eap.jar`.
+`jboss-devstudio-9.1.0.Beta1-v20151002-2235-B124-installer-eap.jar` must be renamed to `jboss-devstudio-9.1.0.Beta1-installer-eap.jar`.
 
 Connect to dev01.mw.lab.eng.bos.redhat.com as +hudson+ user (requires permissions).
 
@@ -42,11 +42,13 @@ Then:
 
 [source,bash]
 ----
-version=9.0.0.GA
-versionWithRespin=9.0.0.CR2b # a, b, c...
+version=9.1.0.Beta1
+versionWithRespin=9.1.0.Beta1a # a, b, c...
 pushd /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/
-for f in $(ls jboss-devstudio-${version}-*); do g=$(echo $f | sed s#-v[[:digit:]]*-[[:digit:]]*-B[[:digit:]]*##); echo "mv $f $g"; mv $f $g; done
+for f in $(ls *latest*); do echo "rm $f"; rm -f $f; done
+for f in $(ls jboss-devstudio-${version}-* | grep -v latest); do g=$(echo $f | sed s#-v[[:digit:]]*-[[:digit:]]*-B[[:digit:]]*##); echo "mv $f $g"; mv $f $g; done
 touch *
+chmod +x *.jar
 ls -l
 popd
 ----
@@ -85,9 +87,9 @@ and +
 
 [source,bash]
 ----
-version=9.0.0.GA
-versionWithRespin=9.0.0.CR2b # a, b, c...
-JIRA=-1410
+version=9.1.0.Beta1
+versionWithRespin=9.1.0.Beta1a # a, b, c...
+JIRA=-1453
 
 if [[ ${version} != ${versionWithRespin} ]]; then
   versionFriendlyName="${version} (to be renamed from ${versionWithRespin})"
@@ -127,7 +129,7 @@ When pushed, please reply so that QE can review the CSP pages & files for push t
 Note that in addition to the new CSP page, eg., [1] or [2], the CSP landing page [3] should also be updated to point to the latest release.
 
 [1] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=${version}
-[2] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=9.0.0
+[2] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=9.1.0
 [3] https://access.redhat.com/downloads/
 
 Thanks in advance,
@@ -136,7 +138,7 @@ Thanks in advance,
 
 ----
 
-As an answer, you get the links to the GoldenGate files, eg., /content/origin/files/sha256/2c/2c92b68d122db901e3acbb74f06950116f4fe29402c25f4391761f9a93e65bba/jboss-devstudio-9.0.0.GA-updatesite-core.zip
+As an answer, you get the links to the GoldenGate files, eg., /content/origin/files/sha256/2c/2c92b68d122db901e3acbb74f06950116f4fe29402c25f4391761f9a93e65bba/jboss-devstudio-9.1.0.Beta1-updatesite-core.zip
 
 Communicate with Paul Robinson / Daniel Coughlin, Chris O'Brien, etc. to coordinate the release. All the above can happen in parallel / before the updates below.
 
@@ -170,10 +172,10 @@ Then copy the latest JBDS artifacts:
 
 
 # copy JBDS update site (> 800M)
-version=9.0.0.GA
-versionWithRespin=9.0.0.CR2b # a, b, c...
+version=9.1.0.Beta1
+versionWithRespin=9.1.0.Beta1a # a, b, c...
 tmpdir=/tmp/release_${version}_update_site
-if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi
+quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi
 for site in core; do
   mkdir -p ${tmpdir}/9.0/development/updates/${site}/${version}
   # rename from staging/*/versionWithRespin to development/*/version/
@@ -190,9 +192,9 @@ echo "copy JBDS update site" | grep "copy JBDS update site"
 
 
 # copy Central/EA/Discovery sites (< 8M), and update metadata refs in discovery sites
-version=9.0.0.GA
-versionWithRespin=9.0.0.CR2b # a, b, c...
-if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi
+version=9.1.0.Beta1
+versionWithRespin=9.1.0.Beta1a # a, b, c...
+quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi
 for site in central earlyaccess discovery.central discovery.earlyaccess; do
   tmpdir=/tmp/release__${site}__${version}
   mkdir -p ${tmpdir}/9.0/development/updates/${site}/${version}
@@ -224,10 +226,10 @@ echo "copy Central/EA/Discovery sites" | grep "copy Central/EA/Discovery sites"
 # copy 6 zips & SHAs
 # jboss-devstudio-9.0.0.CR2b-target-platform-central.zip           jboss-devstudio-9.0.0.CR2b-target-platform.zip          jboss-devstudio-9.0.0.CR2b-updatesite-core.zip
 # jboss-devstudio-9.0.0.CR2b-target-platform-earlyaccess.zip       jboss-devstudio-9.0.0.CR2b-updatesite-central.zip       jboss-devstudio-9.0.0.CR2b-updatesite-earlyaccess.zip
-version=9.0.0.GA
-versionWithRespin=9.0.0.CR2b # a, b, c...
+version=9.1.0.Beta1
+versionWithRespin=9.1.0.Beta1a # a, b, c...
 tmpdir=/tmp/release_${version}_zips
-if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi
+quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi
 for site in core; do
   mkdir -p ${tmpdir}/9.0/development/updates/${site}
   # get zips
@@ -247,10 +249,10 @@ echo "copy zips & SHAs" | grep "copy zips & SHAs"
 
 
 # copy installer jar
-version=9.0.0.GA
-versionWithRespin=9.0.0.CR2b # a, b, c...
+version=9.1.0.Beta1
+versionWithRespin=9.1.0.Beta1a # a, b, c...
 tmpdir=/tmp/release_${version}_installer
-if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi
+quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi
 for site in builds; do
   mkdir -p ${tmpdir}/9.0/development/${site}/installer/${version}
   # rename from staging/*/versionWithRespin to development/*/version/
@@ -268,9 +270,9 @@ echo "copy installer jar" | grep "copy installer jar"
 
 
 #  verify sites are correctly populated (run locally, not on dev01):
-version=9.0.0.GA
+version=9.1.0.Beta1
 tmpfile=/tmp/devstudio-staging__verify.txt
-if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi
+quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi
 for site in site central-site earlyaccess-site; do
   if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
   for qual in $quals; do
@@ -289,9 +291,7 @@ for qual in $quals; do
   echo "https://devstudio.redhat.com/9.0/${qual}/builds/installer/${version}/ " >> $tmpfile
 done
 echo "" >> $tmpfile
-cat $tmpfile
-firefox `cat $tmpfile`
-rm -fr $tmpfile
+cat $tmpfile && firefox `cat $tmpfile` && rm -fr $tmpfile
 
 
 ----
@@ -302,8 +302,8 @@ To update the content in https://devstudio.redhat.com/9.0/development/updates/ .
 
 [source,bash]
 ----
-version=9.0.0.GA
-versionWithRespin=9.0.0.CR2b # a, b, c...
+version=9.1.0.Beta1
+versionWithRespin=9.1.0.Beta1a # a, b, c...
 
 # adjust these steps to fit your own path location & git workflow
 cd ~/truu
@@ -373,8 +373,8 @@ And update it it as required, so that the links for the latest milestone point t
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru
 pushd jbosstools-download.jboss.org/jbosstools/configuration
-version=9.0.0.GA
-versionWithRespin=9.0.0.CR2b # a, b, c...
+version=9.1.0.Beta1
+versionWithRespin=9.1.0.Beta1a # a, b, c...
 
 git fetch origin master
 git checkout FETCH_HEAD
@@ -431,8 +431,8 @@ Then run this:
 
 [source,bash]
 ----
-version=9.0.0.GA
-versionWithRespin=9.0.0.CR2b # a, b, c...
+version=9.1.0.Beta1
+versionWithRespin=9.1.0.Beta1a # a, b, c...
 
 cd ~/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/
 for f in *.jar *.zip; do 
@@ -470,7 +470,7 @@ git clone https://github.com/jbdevstudio/jbdevstudio-artwork
 git clone https://github.com/jbdevstudio/jbdevstudio-devdoc
 
 jbt_branch=jbosstools-4.3.x
-version=9.0.0.GA
+version=9.1.0.Beta1
 for d in product ci website artwork devdoc; do
   echo "====================================================================="
   echo "Tagging jbdevstudio-${d} from branch ${jbt_branch} as tag ${version}..."
@@ -491,7 +491,7 @@ done
 [source,bash]
 ----
 
-version=9.0.0.GA
+version=9.1.0.Beta1
 cd jbdevstudio-devdoc/release_guide/9.x
 git commit -m "update release guide for ${version}" .
 git push origin HEAD:master
@@ -502,6 +502,7 @@ git push origin HEAD:master
 == Update Marketplace entry
 
 WARNING: Only applies to Beta and better versions.
+NOTE: for 9.1.*, we will skip this step until GA (no Betas)!
 
 === If node doesn't exist yet
 
@@ -550,7 +551,7 @@ Before notifying team of release, must check for obvious problems. Any failure t
 [source,bash]
 ----
 
-version=9.0.0.GA
+version=9.1.0.Beta1
 cd /tmp
 wget https://devstudio.redhat.com/9.0/stable/builds/installer/${version}/
 installerJar=$(cat index.html | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
@@ -583,7 +584,7 @@ and +
 [source,bash]
 ----
 version_JBT=4.3.0.Final
-version=9.0.0.GA
+version=9.1.0.Beta1
 qual=development # development or stable
 
 echo "

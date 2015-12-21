@@ -815,16 +815,16 @@ DO NOT send email notification until the above update to the website is done, an
 
 ____
 *To:* alkazako@redhat.com +
+*Cc:* max.andersen@redhat.com, fbricon@redhat.com +
 
 [source,bash]
 ----
 
 version=4.3.1.Beta1
 eclipseVersion="Eclipse 4.5.1 Mars.1"
-pullrequestURL=https://github.com/jbosstools/jbosstools-website/pull/513
+pullrequestURL=https://github.com/jbosstools/jbosstools-website/pull/540
 
-# NOTE: if releasing on Monday, use Tuesday's date since generally it takes a day for Max to get the blog out.
-blogURL=/blog/ga-for-mars.html
+blogURL=/blog/beta1-for-mars2.html
 
 echo "
 Subject: 

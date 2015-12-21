@@ -552,12 +552,13 @@ Before notifying team of release, must check for obvious problems. Any failure t
 ----
 
 version=9.1.0.Beta1
+qual="development"; if [[ ${version##*GA} == "" ]]; then qual="stable"; fi
 cd /tmp
-wget https://devstudio.redhat.com/9.0/stable/builds/installer/${version}/
+wget https://devstudio.redhat.com/9.0/${qual}/builds/installer/${version}/
 installerJar=$(cat index.html | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 echo "Installer jar: ${installerJar}"
 rm -f index.html
-wget https://devstudio.redhat.com/9.0/stable/builds/installer/${version}/${installerJar}
+wget https://devstudio.redhat.com/9.0/${qual}/builds/installer/${version}/${installerJar}
 
 ----
 
@@ -569,26 +570,45 @@ wget https://devstudio.redhat.com/9.0/stable/builds/installer/${version}/${insta
 4. Test a project example
 
 
-== Notify the team (send 2 or more emails)
+== Notify the team lead
 
 ____
 
-*To* jbosstools-dev@lists.jboss.org +
-and +
-*To* jboss-devstudio-list@redhat.com +
-and +
-*To* jboss-announce@redhat.com (optional for major milestones, recommended for GA releases) +
-and +
-*To* gss-support-readiness@redhat.com, dgeoffro@redhat.com, mmusaji@redhat.com (for all GA releases (major, minor, maintenance) ONLY)
+*To:* alkazako@redhat.com +
+*Cc:* max.andersen@redhat.com, fbricon@redhat.com +
 
 [source,bash]
 ----
-version_JBT=4.3.0.Final
+version_JBT=4.3.1.Beta1
 version=9.1.0.Beta1
 qual=development # development or stable
+pullrequestURL=https://github.com/jbosstools/jbosstools-website/pull/540
+blogURL=/blog/beta1-for-mars2.html
 
 echo "
 Subject: 
+
+Ready for JBoss Developer Studio ${version} blog & announcement
+
+Body:
+
+Here's a PR for adding ${version} JBoss Tools download page:
+
+${pullrequestURL}
+
+Suggested blog filename: ${blogURL}
+
+Below is a sample email you could send to these 4 sets of recipients when the blog is live. 
+Do not cross-post to both internal and external lists! Better to send 4 separate (identical) emails.
+
+To: jbosstools-dev@lists.jboss.org 
+To: jboss-devstudio-list@redhat.com 
+To: jboss-announce@redhat.com (optional for major milestones, recommended for GA releases) 
+To: gss-support-readiness@redhat.com, dgeoffro@redhat.com, mmusaji@redhat.com (for all GA releases (major, minor, maintenance) ONLY)
+
+--
+
+Subject:
 
 JBoss Developer Studio ${version} is available
 

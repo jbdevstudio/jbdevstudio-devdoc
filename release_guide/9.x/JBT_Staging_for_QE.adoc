@@ -442,6 +442,23 @@ Before notifying team of staged release, must check for obvious problems.
 4. Check log, start an example project, check log again
 
 
+== Enable jobs
+
+TODO: JBIDE-21407 verify this process is fleshed out for Beta2 staging/release
+
+NOTE: You will need to re-enable the jobs once the bits are staged, so that CI builds can continue.
+
+If the next build WILL be a respin, you need to simply:
+
+* re-enable jobs that were disabled above
+
+If the next build will NOT be a respin, you will also need to ALSO make these changes to jobs, and upversion/release artifacts such as releng scripts or target platforms if you haven't done so already:
+
+* set correct github branch, eg., switch from 4.3.1.Beta2x to 4.3.x
+* upversion dependencies, eg., releng scripts move from version Beta2 to CR1 (if that's been released)
+* upversion target platforms / Central version (if those have been released)
+
+
 == Notify the team
 
 ____
@@ -510,3 +527,4 @@ fi
 
 ----
 ____
+

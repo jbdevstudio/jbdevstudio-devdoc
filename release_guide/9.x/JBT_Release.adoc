@@ -805,6 +805,23 @@ Example:
 * https://github.com/jbosstools/jbosstools-website/pull/488 (JBT CR2)
 * https://github.com/jbosstools/jbosstools-website/pull/513 (JBDS GA)
 
+
+== Enable jobs
+
+TODO: JBIDE-21407 verify this process is fleshed out for Beta2 staging/release
+
+NOTE: This should have been done after staging, but just in case it was not, here's a reminder.
+
+As you have just released something, the next build will be a CI snapshot for the following milestone.
+
+Thus, you need to:
+
+* re-enable jobs that were disabled during staging
+* set correct github branch, eg., switch from 4.3.1.Beta2x to 4.3.x
+* upversion dependencies, eg., releng scripts move from version Beta2 to CR1 (if that's been released)
+* upversion target platforms / Central version (if those have been released)
+
+
 == Notify Alexey & Max 
 
 Notifify Alexy & Max that the website is ready to be updated & blog ready to be posted. 

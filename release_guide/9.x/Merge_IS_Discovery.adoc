@@ -6,7 +6,7 @@ HOWEVER, the IS jar still needs to copied over into the discovery site, and the 
 
 For JBT and JBDS, we need a way to include the downstream IS jars in the upstream JBT/JBDS Discovery sites.
 
-As of 4.3.1.Beta1 / 9.1.0.Beta1, the latest plugins to pull can be found from these URLs (subject to change):
+As of 4.3.1.Beta2 / 9.1.0.Beta2, the latest plugins to pull can be found from these URLs (subject to change):
 
   http://download.jboss.org/jbosstools/mars/staging/updates/integration-stack/discovery/4.3.0.Alpha2/jbosstools-directory.xml
   https://devstudio.redhat.com/9.0/staging/updates/integration-stack/discovery/9.0.0.Alpha2/devstudio-directory.xml
@@ -18,8 +18,8 @@ Here is a script that performs the merge for the JBT and JBDS /staging/ sites.
 
 pushd /tmp
   wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.3.x/publish/mergeISdiscovery.sh && chmod +x mergeISdiscovery.sh 
-  ./mergeISdiscovery.sh -version 4.3.1.Beta1 -versionWithRespin 4.3.1.Beta1a -is http://download.jboss.org/jbosstools/mars/staging/updates/integration-stack/discovery/4.3.0.Alpha2/
-  ./mergeISdiscovery.sh -version 9.1.0.Beta1 -versionWithRespin 9.1.0.Beta1a -is https://devstudio.redhat.com/9.0/staging/updates/integration-stack/discovery/9.0.0.Alpha2/ -JBDS
+  ./mergeISdiscovery.sh -version 4.3.1.Beta2 -versionWithRespin 4.3.1.Beta2 -is http://download.jboss.org/jbosstools/mars/staging/updates/integration-stack/discovery/4.3.0.Alpha2/
+  ./mergeISdiscovery.sh -version 9.1.0.Beta2 -versionWithRespin 9.1.0.Beta2 -is https://devstudio.redhat.com/9.0/staging/updates/integration-stack/discovery/9.0.0.Alpha2/ -JBDS
   rm -f /tmp/mergeISdiscovery.sh
 popd
 
@@ -31,11 +31,11 @@ Once in staging, you can test the content as seen from Eclipse by installing JBT
 ----
 
 # JBoss Tools
-url=http://download.jboss.org/jbosstools/mars/staging/updates/discovery.central/4.3.1.Beta1/
+url=http://download.jboss.org/jbosstools/mars/staging/updates/discovery.central/4.3.1.Beta2/
 ./eclipse -vmargs -Djboss.discovery.directory.url=${url}jbosstools-directory.xml -Djboss.discovery.site.integration-stack.url=${url}
 
 # JBDS
-url=https://devstudio.redhat.com/9.0/staging/updates/discovery.earlyaccess/9.0.1.Beta1/
+url=https://devstudio.redhat.com/9.0/staging/updates/discovery.earlyaccess/9.1.0.Beta2/
 ./eclipse -vmargs -Djboss.discovery.directory.url=${url}devstudio-directory.xml -Djboss.discovery.site.integration-stack.url=${url}
 
 ----
@@ -51,6 +51,6 @@ org.eclipse.mylyn.internal.discovery.core.model.ValidationException: Must specif
 ```
 
 TODO https://issues.jboss.org/browse/JBIDE-20664 could we pull the URLs directly from those declared in http://download.jboss.org/jbosstools/configuration/ide-config.properties ?
-jboss.discovery.site.integration-stack.url|jbosstools|4.3.0.CR1=http://download.jboss.org/jbosstools/mars/staging/updates/integration-stack/discovery/4.3.0.Alpha1/
-jboss.discovery.site.integration-stack.url|devstudio|9.0.0.CR1=https://devstudio.redhat.com/9.0/staging/updates/integration-stack/discovery/9.0.0.Alpha1/
+jboss.discovery.site.integration-stack.url|jbosstools|4.3.1.CR1=http://download.jboss.org/jbosstools/mars/staging/updates/integration-stack/discovery/4.3.0.Alpha1/
+jboss.discovery.site.integration-stack.url|devstudio|9.1.0.CR1=https://devstudio.redhat.com/9.0/staging/updates/integration-stack/discovery/9.0.0.Alpha1/
 

@@ -141,6 +141,7 @@ for site in central-site earlyaccess-site; do
     suffix=-updatesite-${sitename}
     rsync -aPrz --rsh=ssh --protocol=28 ${y} ${JBDS}/9.0/staging/updates/core/jboss-devstudio-${versionWithRespin}${suffix}.zip
     rsync -aPrz --rsh=ssh --protocol=28 ${y}.sha256 ${JBDS}/9.0/staging/updates/core/jboss-devstudio-${versionWithRespin}${suffix}.zip.sha256
+    du -sh $tmpdir
     rm -fr $tmpdir
   else
     echo "ERROR: no latest build found for ${site}" | grep ERROR
@@ -158,8 +159,8 @@ if [[ $ID ]]; then
   echo "Latest build for installers: ${ID}"
   tmpdir=/tmp/jboss-devstudio-${versionWithRespin}-build-product_INTERNAL__${ID}
   # copy build folder
-  mkdir -p /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/${ID}/
-  rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${JBDS_stream}/${ID}/* /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/${ID}/
+  mkdir -p /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/${ID}/ --exclude="repo"
+  rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${JBDS_stream}/${ID}/* /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/${ID}/ --exclude="repo"
   # create latest symlinks
   mkdir -p ${tmpdir}; pushd $tmpdir >/dev/null; ln -s ${ID} latest
     rm -f /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${JBDS_stream}/latest 
@@ -167,6 +168,7 @@ if [[ $ID ]]; then
     rm -f /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest
     rsync --protocol=28 -l latest /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/
   popd >/dev/null
+  du -sh $tmpdir
   rm -fr $tmpdir
 else
   echo "ERROR: no latest build found for installers" | grep ERROR
@@ -183,13 +185,13 @@ if [[ $ID ]]; then
   echo "Latest build for installer: ${ID}"
   # copy build folder
   tmpdir=/tmp/jboss-devstudio-${versionWithRespin}-build-product_EXTERNAL__${ID}
-  rsync -aPrz --rsh=ssh --protocol=28 ${JBDS}/9.0/snapshots/builds/devstudio.product_${JBDS_stream}/${ID}/* ${tmpdir}/ --exclude="repo"; du -sch ${tmpdir}
+  rsync -aPrz --rsh=ssh --protocol=28 ${JBDS}/9.0/snapshots/builds/devstudio.product_${JBDS_stream}/${ID}/* ${tmpdir}/ --exclude="repo"
   # copy standalone installer
   echo "mkdir devstudio-${versionWithRespin}-build-product" | sftp ${JBDS}/9.0/staging/builds/
   rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${JBDS}/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/${ID}/ --exclude="repo"
   # create latest symlink
   mkdir -p ${tmpdir}; pushd $tmpdir >/dev/null; ln -s ${ID} latest; rsync --protocol=28 -l latest ${JBDS}/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/; rm -f latest; popd >/dev/null
-  du -sch $tmpdir
+  du -sh $tmpdir
   rm -fr $tmpdir
 else
   echo "ERROR: no latest build found for installer" | grep ERROR
@@ -232,6 +234,7 @@ for site in discovery.central discovery.earlyaccess; do
     # copy update site
     echo "mkdir ${sitename}" | sftp ${JBDS}/9.0/staging/updates/
     rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/all/repo/* ${JBDS}/9.0/staging/updates/${sitename}/${versionWithRespin}/
+    du -sh $tmpdir
     rm -fr $tmpdir
   else
     echo "ERROR: no latest build found for ${site}" | grep ERROR

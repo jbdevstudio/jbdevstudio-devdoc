@@ -186,6 +186,7 @@ for site in site; do
       echo "mkdir ${sitename}" | sftp ${TOOLS}/mars/staging/updates/
       rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/all/repo/* ${TOOLS}/mars/staging/updates/${sitename}/${versionWithRespin}/
     popd >/dev/null
+    du -sh $tmpdir
     rm -fr $tmpdir
   else
     echo "ERROR: no latest build found for ${site}" | grep ERROR
@@ -215,6 +216,7 @@ for site in coretests-site; do
       echo "mkdir ${sitename}" | sftp ${TOOLS}/mars/staging/updates/
       rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/all/repo/* ${TOOLS}/mars/staging/updates/${sitename}/${versionWithRespin}/
     popd >/dev/null
+    du -sh $tmpdir
     rm -fr $tmpdir
   else
     echo "ERROR: no latest build found for ${site}" | grep ERROR
@@ -244,6 +246,7 @@ for site in central-site earlyaccess-site; do
       echo "mkdir ${sitename}" | sftp ${TOOLS}/mars/staging/updates/
       rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/all/repo/* ${TOOLS}/mars/staging/updates/${sitename}/${versionWithRespin}/
     popd >/dev/null
+    du -sh $tmpdir
     rm -fr $tmpdir
   else
     echo "ERROR: no latest build found for ${site}" | grep ERROR
@@ -270,6 +273,7 @@ for site in browsersim-standalone; do
       # symlink latest build
       ln -s ${ID} latest; rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/latest ${TOOLS}/mars/staging/builds/jbosstools-${versionWithRespin}-build-${sitename}/
     popd >/dev/null
+    du -sh $tmpdir
     rm -fr $tmpdir
   else
     echo "ERROR: no latest build found for ${site}" | grep ERROR
@@ -300,6 +304,7 @@ for site in discovery.central discovery.earlyaccess; do
       echo "mkdir ${sitename}" | sftp ${TOOLS}/mars/staging/updates/
       rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/all/repo/* ${TOOLS}/mars/staging/updates/${sitename}/${versionWithRespin}/
     popd >/dev/null
+    du -sh $tmpdir
     rm -fr $tmpdir
   else
     echo "ERROR: no latest build found for ${site}" | grep ERROR

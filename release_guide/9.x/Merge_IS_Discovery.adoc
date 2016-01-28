@@ -18,8 +18,8 @@ Here is a script that performs the merge for the JBT and JBDS /staging/ sites.
 
 pushd /tmp
   wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.3.x/publish/mergeISdiscovery.sh && chmod +x mergeISdiscovery.sh 
-  ./mergeISdiscovery.sh -version 4.3.1.Beta2 -versionWithRespin 4.3.1.Beta2 -is http://download.jboss.org/jbosstools/mars/staging/updates/integration-stack/discovery/4.3.0.Alpha2/
-  ./mergeISdiscovery.sh -version 9.1.0.Beta2 -versionWithRespin 9.1.0.Beta2 -is https://devstudio.redhat.com/9.0/staging/updates/integration-stack/discovery/9.0.0.Alpha2/ -JBDS
+  ./mergeISdiscovery.sh -version 4.3.1.Beta2 -versionWithRespin 4.3.1.Beta2a -is http://download.jboss.org/jbosstools/mars/staging/updates/integration-stack/discovery/4.3.0.Alpha2/
+  ./mergeISdiscovery.sh -version 9.1.0.Beta2 -versionWithRespin 9.1.0.Beta2a -is https://devstudio.redhat.com/9.0/staging/updates/integration-stack/discovery/9.0.0.Alpha2/ -JBDS
   rm -f /tmp/mergeISdiscovery.sh
 popd
 

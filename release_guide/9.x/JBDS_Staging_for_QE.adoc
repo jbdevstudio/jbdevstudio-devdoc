@@ -421,7 +421,7 @@ New + Noteworthy (subject to change):
 * https://github.com/jbosstools/jbosstools-website/tree/master/documentation/whatsnew
 * http://tools.jboss.org/documentation/whatsnew/
 
-Schedule / Upcoming Releases: https://issues.jboss.org/browse/JBIDE#selectedTab=com.atlassian.jira.plugin.system.project%3Aversions-panel
+Schedule / Upcoming Releases: https://issues.jboss.org/projects/JBDS?selectedItem=com.atlassian.jira.jira-projects-plugin:release-page
 
 "
 if [[ $respin != "respin-" ]]; then

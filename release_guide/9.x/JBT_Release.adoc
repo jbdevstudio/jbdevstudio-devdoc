@@ -2,15 +2,15 @@
 
 This document describe how to publish a valid JBoss Tools build to production after being verified by QE.
 
-With distractions (email, IRC), this process took ~90 mins for the Beta release. 
+With distractions (email, IRC), this process took 90 mins for the Beta release.
 
 WARNING: this requires write access to http://sourceforge.net/projects/jboss/files/JBossTools/
 
 == Verify that all JIRAs assigned to the current milestone are resolved
 
-Launch the config pages for JBIDE and JBDS and using the gear icons, release the milestone version in JIRA. 
+Launch the config pages for JBIDE and JBDS and using the gear icons, release the milestone version in JIRA.
 
-Note: If there are unresolved issues with a fixversion set to the current milestone, make sure those issues will not be lost / forgotten. 
+Note: If there are unresolved issues with a fixversion set to the current milestone, make sure those issues will not be lost / forgotten.
 
 Send an email to jbosstools-dev@ and jboss-devstudio-list@  reminding people to close out their JIRAs or move them to the next milestone fixversion.
 
@@ -79,8 +79,8 @@ See section "Copy from development to stable & create symlinks from /stable/ int
 # Do these 5 steps in parallel to save time
 
 # JBT aggregate site
-version=4.3.1.Beta1
-versionWithRespin=4.3.1.Beta1a # a, b, c...
+version=4.3.1.Beta2
+versionWithRespin=4.3.1.Beta2a # a, b, c...
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 quals="development"; if [[ ${version##*Final} == "" ]]; then quals="development stable"; fi
 for site in core; do
@@ -97,8 +97,8 @@ echo "DONE: JBT aggregate site" | grep "JBT aggregate site"
 
 
 # JBT tests site
-version=4.3.1.Beta1
-versionWithRespin=4.3.1.Beta1a # a, b, c...
+version=4.3.1.Beta2
+versionWithRespin=4.3.1.Beta2a # a, b, c...
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 quals="development"; if [[ ${version##*Final} == "" ]]; then quals="development stable"; fi
 for site in coretests; do
@@ -115,8 +115,8 @@ echo "DONE: JBT tests site" | grep "JBT tests site"
 
 
 # Central and EA sites
-version=4.3.1.Beta1
-versionWithRespin=4.3.1.Beta1a # a, b, c...
+version=4.3.1.Beta2
+versionWithRespin=4.3.1.Beta2a # a, b, c...
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 quals="development"; if [[ ${version##*Final} == "" ]]; then quals="development stable"; fi
 for site in central earlyaccess; do
@@ -134,8 +134,8 @@ echo "DONE: Central and EA sites" | grep "Central and EA sites"
 
 # JBT discovery sites
 # unlike above, don't use /static/ paths here because we're going to have to change the content to point to correct paths below
-version=4.3.1.Beta1
-versionWithRespin=4.3.1.Beta1a # a, b, c...
+version=4.3.1.Beta2
+versionWithRespin=4.3.1.Beta2a # a, b, c...
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 quals="development"; if [[ ${version##*Final} == "" ]]; then quals="development stable"; fi
 for site in discovery.central discovery.earlyaccess; do
@@ -143,10 +143,10 @@ for site in discovery.central discovery.earlyaccess; do
   for qual in $quals; do
     rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/mars/staging/updates/${site}/${versionWithRespin}/* ${tmpdir}/
     # sed .xml files to point at /development/ instead of /staging/, and ${version} instead of $versionWithRespin}
-    if [[ ${site/discovery/} != ${site} ]]; then 
+    if [[ ${site/discovery/} != ${site} ]]; then
       pushd ${tmpdir}/ >/dev/null
       now=`date +%s000`
-      for c in compositeContent.xml compositeArtifacts.xml; do 
+      for c in compositeContent.xml compositeArtifacts.xml; do
         sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#" $c
         sed -i -e "s#jbosstools/mars#jbosstools/static/mars#" $c
         sed -i -e "s#staging#${qual}#" $c
@@ -165,8 +165,8 @@ echo "DONE: JBT discovery sites" | grep "JBT discovery sites"
 
 
 # JBT zips into http://download.jboss.org/jbosstools/static/mars/development/updates/core/
-version=4.3.1.Beta1
-versionWithRespin=4.3.1.Beta1a # a, b, c...
+version=4.3.1.Beta2
+versionWithRespin=4.3.1.Beta2a # a, b, c...
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 quals="development"; if [[ ${version##*Final} == "" ]]; then quals="development stable"; fi
 for site in core; do
@@ -189,7 +189,7 @@ echo "DONE: JBT zips" | grep "JBT zips"
 
 
 #  verify sites are correctly populated (run locally, not on dev01):
-version=4.3.1.Beta1
+version=4.3.1.Beta2
 tmpfile=/tmp/jbosstools-staging__verify.txt
 quals="development"; if [[ ${version##*Final} == "" ]]; then quals="development stable"; fi
 for site in site coretests-site central-site earlyaccess-site; do
@@ -218,7 +218,7 @@ rm -fr $tmpfile
 
 === Update composite site metadata for update
 
-Update files __http://download.jboss.org/jbosstools/mars/development/updates/composite*.xml__ , with SFTP/SCP via command-line or your 
+Update files __http://download.jboss.org/jbosstools/mars/development/updates/composite*.xml__ , with SFTP/SCP via command-line or your
 favourite SFTP GUI client (such as Eclipse RSE).
 
 This site needs to contain:
@@ -236,14 +236,18 @@ pushd jbosstools-download.jboss.org/jbosstools/mars/development/updates
 git fetch origin master
 git checkout FETCH_HEAD
 
+
+# TODO replace this with a simply copy of content from /staging/ to /development/ like we do for JBDS.
+# TODO remove need for _PREV variables
+
 versionWithRespin_PREV=4.3.0.Final
 TARGET_PLATFORM_VERSION_MAX_PREV=4.51.0.Final
 TARGET_PLATFORM_CENTRAL_MAX_PREV=4.50.0.Final-SNAPSHOT
 
-version=4.3.1.Beta1
-versionWithRespin=4.3.1.Beta1a # a, b, c...
-TARGET_PLATFORM_VERSION_MAX=4.51.2.Beta1-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.51.0.Beta1-SNAPSHOT
+version=4.3.1.Beta2
+versionWithRespin=4.3.1.Beta2a # a, b, c...
+TARGET_PLATFORM_VERSION_MAX=4.51.2.Beta2-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.51.0.Beta2-SNAPSHOT
 
 rsync ../../staging/updates/composite*.xml .
 
@@ -251,7 +255,7 @@ rsync ../../staging/updates/composite*.xml .
 # TODO for .Final, use /static/ paths for target platforms, too!
 
 now=`date +%s000`
-for c in compositeContent.xml compositeArtifacts.xml; do 
+for c in compositeContent.xml compositeArtifacts.xml; do
   sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#" $c
   sed -i -e "s#mars/staging/updates/#static/mars/development/updates/#" $c
   sed -i -e "s#${TARGET_PLATFORM_CENTRAL_MAX_PREV}#${TARGET_PLATFORM_CENTRAL_MAX}#" $c
@@ -282,7 +286,7 @@ popd
 pushd coretests
   # fix coretests/composite*.xml
   now=`date +%s000`
-  for c in compositeContent.xml compositeArtifacts.xml; do 
+  for c in compositeContent.xml compositeArtifacts.xml; do
     sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#" $c
     sed -i -e "s#mars/staging/updates/#static/mars/development/updates/#" $c
     sed -i -e "s#${versionWithRespin_PREV}#${versionWithRespin}#" $c
@@ -306,7 +310,7 @@ popd
 # fix EA site
 now=`date +%s000`
 pushd earlyaccess
-for c in compositeContent.xml compositeArtifacts.xml; do 
+for c in compositeContent.xml compositeArtifacts.xml; do
   sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#" $c
   sed -i -e "s#mars/staging/updates/#static/mars/development/updates/#" $c
   sed -i -e "s#${TARGET_PLATFORM_CENTRAL_MAX_PREV}#${TARGET_PLATFORM_CENTRAL_MAX}#" $c
@@ -376,7 +380,7 @@ Webtools site is expected to be found in +http://download.jboss.org/tools/update
 1. Rename +/updates/webtools/mars+ to +/updates/webtools/mars_${version_PREV}+, with ${version_PREV} being the name of last release before this one
 2. Symlink from +/updates/webtools/mars+ to http://download.jboss.org/jbosstools/static/mars/development/updates/core/${version}/
 
-Here is an example of a script doing that. 
+Here is an example of a script doing that.
 
 NOTE: if this is a /stable/ .Final release, update the script accordingly.
 NOTE: if you're releasing a /development/ milestone after there's an existing /stable/ one, SKIP THIS STEP until the /development/ release is ALSO a stable (eg., 4.3.1.Final, not 4.3.1.Beta)
@@ -385,9 +389,9 @@ NOTE: if you're releasing a /development/ milestone after there's an existing /s
 ----
 cd ~/tru # or where you have jbosstools-download.jboss.org checked out
 
-version=4.3.1.Beta1
+version=4.3.1.Beta2
 version_PREV=4.3.0.Final
-versionWithRespin=4.3.1.Beta1a # a, b, c...
+versionWithRespin=4.3.1.Beta2a # a, b, c...
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 
 pushd jbosstools-download.jboss.org/jbosstools/updates/webtools
@@ -423,11 +427,11 @@ If this is the first milestone release (ie if you had to create the 'updates/web
 
 If this new release includes a new Target Platform, you need to release the latest target platform. If not, there's nothing to do here.
 
-=== Final/GA releases 
+=== Final/GA releases
 
 For Final or GA releases, the target platform folders should be moved to /static/ and composited back.
 
-Thus for example, 
+Thus for example,
 
 http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/4.*.*.Final/
 http://download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/4.*.*.Final/
@@ -447,7 +451,7 @@ https://github.com/jbosstools/jbosstools-download.jboss.org/commit/d5306ce940814
 cd ~/tru # or where you have jbosstools-download.jboss.org checked out
 
 TARGET_PLATFORM_VERSION_MAX_PREV=4.50.0.Final
-TARGET_PLATFORM_VERSION_MAX=4.51.2.Beta1-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.51.2.Beta2-SNAPSHOT
 now=`date +%s000`
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 
@@ -516,12 +520,12 @@ There's nothing more to do here (it was done above). Just review these URLs:
 ----
 
 # verify site are correct:
-version=4.3.1.Beta1
+version=4.3.1.Beta2
 firefox \
 http://download.jboss.org/jbosstools/static/mars/development/updates/central/${version} \
 http://download.jboss.org/jbosstools/static/mars/development/updates/earlyaccess/${version} \
 http://download.jboss.org/jbosstools/mars/development/updates/discovery.earlyaccess/${version} \
-http://download.jboss.org/jbosstools/mars/development/updates/discovery.central/${version} 
+http://download.jboss.org/jbosstools/mars/development/updates/discovery.central/${version}
 
 ----
 
@@ -529,7 +533,7 @@ If this is a .Final release:
 
 [source,bash]
 ----
-version=4.3.1.Beta1
+version=4.3.1.Beta2
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 cd ~/tru
 for d in central earlyaccess; do
@@ -545,12 +549,12 @@ for d in central earlyaccess; do
 done
 
 # verify site are correct:
-version=4.3.1.Beta1
+version=4.3.1.Beta2
 firefox \
 http://download.jboss.org/jbosstools/static/mars/stable/updates/central/${version} \
 http://download.jboss.org/jbosstools/static/mars/stable/updates/earlyaccess/${version} \
 http://download.jboss.org/jbosstools/mars/stable/updates/discovery.earlyaccess/${version} \
-http://download.jboss.org/jbosstools/mars/stable/updates/discovery.central/${version} 
+http://download.jboss.org/jbosstools/mars/stable/updates/discovery.central/${version}
 
 ----
 
@@ -569,7 +573,7 @@ Then, ensure that the destination dirs exist. Move the contents of /development/
 # TODO verify this works for 4.3.1.Final
 
 TOOLSmnt=/media/TOOLS-ssh
-version=4.3.1.Beta1
+version=4.3.1.Beta2
 mkdir -p ${TOOLSmnt}/static/mars/{development,stable}/updates/{central,core,coretests,earlyaccess}
 for d in central core coretests earlyaccess; do
   if [[ ! -d ${TOOLSmnt}/static/mars/stable/updates/${d}/${version} ]]; then mv ${TOOLSmnt}/static/mars/{development,stable}/updates/${d}/${version}; fi
@@ -579,8 +583,8 @@ for d in central core coretests earlyaccess; do
 done
 
 # verify discovery content is where it should be:
-for d in ${TOOLSmnt}/mars/{development,stable}/updates/{discovery.,}{central,earlyaccess}; do 
-  echo $d; 
+for d in ${TOOLSmnt}/mars/{development,stable}/updates/{discovery.,}{central,earlyaccess}; do
+  echo $d;
   if [[ -L "${d}" ]]; then #symlinks
     ls -la ${d}/.. | egrep "$(basename ${d})" | grep -- "->"
   else # normal dirs
@@ -590,8 +594,8 @@ for d in ${TOOLSmnt}/mars/{development,stable}/updates/{discovery.,}{central,ear
 done
 
 # verify discovery content is where it should be:
-for d in ${TOOLSmnt}/static/mars/{development,stable}/updates/{central,earlyaccess}; do 
-  echo $d; 
+for d in ${TOOLSmnt}/static/mars/{development,stable}/updates/{central,earlyaccess}; do
+  echo $d;
   if [[ -L "${d}" ]]; then #symlinks
     ls -la ${d}/.. | egrep "$(basename ${d})" | grep -- "->"
   else # normal dirs
@@ -619,8 +623,8 @@ Update it so that the links for the latest milestone point to valid URLs. Commen
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru
 pushd jbosstools-download.jboss.org/jbosstools/configuration
-version=4.3.1.Beta1
-versionWithRespin=4.3.1.Beta1a # a, b, c...
+version=4.3.1.Beta2
+versionWithRespin=4.3.1.Beta2a # a, b, c...
 
 git fetch origin master
 git checkout FETCH_HEAD
@@ -634,9 +638,9 @@ http://download.jboss.org/jbosstools/mars/development/updates/earlyaccess/ \
 http://download.jboss.org/jbosstools/mars/development/updates/earlyaccess/compositeContent.xml \
 http://download.jboss.org/jbosstools/mars/development/updates/discovery.earlyaccess/${version}/jbosstools-earlyaccess.properties \
 
-# then edit ide-config.properties 
-# vim ide-config.properties 
-st ide-config.properties 
+# then edit ide-config.properties
+# vim ide-config.properties
+st ide-config.properties
 
 # commit the change and push to master
 ci "release JBT ${version} (${versionWithRespin}) to public: link to latest dev milestone discovery site" ide-config.properties
@@ -658,7 +662,7 @@ NOTE: for 4.3.1.*, we will skip this step until Final (no Betas)!
 
 This is usually the case of first Beta version.
 
-Create a new node on Marketplace, use content of http://download.jboss.org/jbosstools/static/mars/stable/updates/core/4.3.1.Beta1/site.properties
+Create a new node on Marketplace, use content of http://download.jboss.org/jbosstools/static/mars/stable/updates/core/4.3.1.Beta2/site.properties
 
 === If node already exists
 
@@ -666,14 +670,14 @@ Access it via +https://marketplace.eclipse.org/content/jboss-tools/edit+ and upd
 
 * Title to match new version
 * Description to match new version & dependencies
-* Update list of features, using content of http://download.jboss.org/jbosstools/static/mars/stable/updates/core/4.3.1.Beta1/site.properties
+* Update list of features, using content of http://download.jboss.org/jbosstools/static/mars/stable/updates/core/4.3.1.Beta2/site.properties
 
 To diff if any new features have been added/removed:
 
 [source,bash]
 ----
 versionWithRespin_PREV=4.3.0.Final
-version=4.3.1.Beta1
+version=4.3.1.Beta2
 
 cd /tmp
 wget -O ${versionWithRespin_PREV}.properties http://download.jboss.org/jbosstools/static/mars/development/updates/core/${versionWithRespin_PREV}/site.properties
@@ -692,7 +696,7 @@ rm -f /tmp/${versionWithRespin_PREV}.properties /tmp/${version}.properties
 
 Before notifying team of release, must check for obvious problems. Any failure there should be fixed with highest priority. In general, it could be wrong URLs in a composite site.
 
-=== Validate update site install 
+=== Validate update site install
 
 1. Get a recent Eclipse (compatible with the target version of JBT)
 2. Install Abridged category from http://download.jboss.org/jbosstools/mars/development/updates/ and/or http://download.jboss.org/jbosstools/mars/stable/updates/
@@ -730,8 +734,8 @@ git clone https://github.com/jbosstools/jbosstools-versionwatch
 # download.jboss.org tag might not be valid as tweaks to ide-config.properties happen frequently
 
 jbt_branch=jbosstools-4.3.x
-version=4.3.1.Beta1
-for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins versionwatch; do 
+version=4.3.1.Beta2
+for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins versionwatch; do
   echo "====================================================================="
   echo "Tagging jbosstools-${d} from branch ${jbt_branch} as tag ${version}..."
   pushd jbosstools-${d}
@@ -739,7 +743,7 @@ for d in build build-ci build-sites devdoc discovery download.jboss.org maven-pl
   git tag jbosstools-${version} FETCH_HEAD
   git push origin jbosstools-${version}
   echo ">>> https://github.com/jbosstools/jbosstools-${d}/tree/jbosstools-${version}"
-  popd >/dev/null 
+  popd >/dev/null
   echo "====================================================================="
   echo ""
 done
@@ -756,7 +760,7 @@ NEW WAY: bulk-tagging via script. This process is under development. See JBIDE-2
 
 [source,bash]
 ----
-version=4.3.1.Beta1
+version=4.3.1.Beta2
 echo "
 Subject:
 
@@ -779,7 +783,7 @@ curl http://download.jboss.org/jbosstools/static/mars/development/updates/core/$
 
 If there are no unresolved issues, release the milestone version in JIRA.
 
-Launch the config pages for JBIDE and JBDS and using the gear icons, release the milestone version in JIRA. 
+Launch the config pages for JBIDE and JBDS and using the gear icons, release the milestone version in JIRA.
 
 [source,bash]
 ----
@@ -800,7 +804,7 @@ Example:
 * https://github.com/jbosstools/jbosstools-website/pull/211 (only JBT part of the change)
 * https://github.com/jbosstools/jbosstools-website/pull/343 (ony JBT)
 * https://github.com/jbosstools/jbosstools-website/pull/388 (only JBT)
-* https://github.com/jbosstools/jbosstools-website/pull/418 (JBT / JBDS Beta1)
+* https://github.com/jbosstools/jbosstools-website/pull/418 (JBT / JBDS Beta2)
 * https://github.com/jbosstools/jbosstools-website/pull/449 (JBT Beta2)
 * https://github.com/jbosstools/jbosstools-website/pull/488 (JBT CR2)
 * https://github.com/jbosstools/jbosstools-website/pull/513 (JBDS GA)
@@ -822,9 +826,9 @@ Thus, you need to:
 * upversion target platforms / Central version (if those have been released)
 
 
-== Notify Alexey & Max 
+== Notify Alexey & Max
 
-Notifify Alexy & Max that the website is ready to be updated & blog ready to be posted. 
+Notifify Alexy & Max that the website is ready to be updated & blog ready to be posted.
 
 If co-releasing JBT and JBDS, make sure that JBDS is released too!
 
@@ -837,14 +841,14 @@ ____
 [source,bash]
 ----
 
-version=4.3.1.Beta1
+version=4.3.1.Beta2
 eclipseVersion="Eclipse 4.5.1 Mars.1"
 pullrequestURL=https://github.com/jbosstools/jbosstools-website/pull/540
 
 blogURL=/blog/beta1-for-mars2.html
 
 echo "
-Subject: 
+Subject:
 
 Ready for JBT ${version} blog & announcement
 
@@ -866,7 +870,7 @@ Below is a sample email you could send to the jbosstools-dev mailing list when t
 
 --
 
-Subject: 
+Subject:
 
 JBoss Tools ${version} is now available
 

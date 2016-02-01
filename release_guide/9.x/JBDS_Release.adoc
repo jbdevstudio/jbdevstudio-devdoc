@@ -175,7 +175,7 @@ Then copy the latest JBDS artifacts:
 # copy JBDS update site (> 800M)
 version=9.1.0.Beta2
 versionWithRespin=9.1.0.Beta2a # a, b, c...
-tmpdir=/tmp/release_${version}_update_site
+tmpdir=~/tmp/release_${version}_update_site
 quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi
 for site in core; do
   mkdir -p ${tmpdir}/9.0/development/updates/${site}/${version}
@@ -197,7 +197,7 @@ version=9.1.0.Beta2
 versionWithRespin=9.1.0.Beta2a # a, b, c...
 quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi
 for site in central earlyaccess discovery.central discovery.earlyaccess; do
-  tmpdir=/tmp/release__${site}__${version}
+  tmpdir=~/tmp/release__${site}__${version}
   mkdir -p ${tmpdir}/9.0/development/updates/${site}/${version}
   # rename from staging/*/versionWithRespin to development/*/version/
   rsync -arzq --rsh=ssh --protocol=28 ${JBDS}/9.0/staging/updates/${site}/${versionWithRespin}/* ${tmpdir}/9.0/development/updates/${site}/${version}/
@@ -229,7 +229,7 @@ echo "copy Central/EA/Discovery sites" | grep "copy Central/EA/Discovery sites"
 # jboss-devstudio-9.0.0.CR2b-target-platform-earlyaccess.zip       jboss-devstudio-9.0.0.CR2b-updatesite-central.zip       jboss-devstudio-9.0.0.CR2b-updatesite-earlyaccess.zip
 version=9.1.0.Beta2
 versionWithRespin=9.1.0.Beta2a # a, b, c...
-tmpdir=/tmp/release_${version}_zips
+tmpdir=~/tmp/release_${version}_zips
 quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi
 for site in core; do
   mkdir -p ${tmpdir}/9.0/development/updates/${site}
@@ -252,7 +252,7 @@ echo "copy zips & SHAs" | grep "copy zips & SHAs"
 # copy installer jar
 version=9.1.0.Beta2
 versionWithRespin=9.1.0.Beta2a # a, b, c...
-tmpdir=/tmp/release_${version}_installer
+tmpdir=~/tmp/release_${version}_installer
 quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi
 for site in builds; do
   mkdir -p ${tmpdir}/9.0/development/${site}/installer/${version}
@@ -335,8 +335,6 @@ wget https://devstudio.redhat.com/9.0/development/updates/discovery.earlyaccess/
 wget https://devstudio.redhat.com/9.0/development/updates/discovery.earlyaccess/${version}/compositeArtifacts.xml
 echo "------------"
 egrep "staging|development|${version}|${versionWithRespin}" compositeContent.xml
-popd >/dev/null
-
 popd >/dev/null
 
 # commit changes to git
@@ -439,7 +437,7 @@ cd ~/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest
 for f in *.jar *.zip; do
   size=$(du -h $f); size=${size%*M*};
   sha=$(cat ${f}.sha256); sh=${sha:0:2};
-  echo "            url: http://www.redhat.com/j/elqNow/elqRedir.htm?ref=http://www.jboss.org/download-manager/content/origin/files/sha256/${sh}/${sha}/${f}" >> /tmp/yml.txt
+  echo "            url: http://www.jboss.org/download-manager/content/origin/files/sha256/${sh}/${sha}/${f}" >> /tmp/yml.txt
   echo "            file_size: ${size}MB" >> /tmp/yml.txt
 done
 cd /tmp
@@ -598,8 +596,8 @@ ____
 version_JBT=4.3.1.Beta2
 version=9.1.0.Beta2
 qual=development # development or stable
-pullrequestURL=https://github.com/jbosstools/jbosstools-website/pull/540
-blogURL=/blog/beta1-for-mars2.html
+pullrequestURL=https://github.com/jbosstools/jbosstools-website/pull/54099
+blogURL=/blog/beta2-for-mars2.html
 
 echo "
 Subject:

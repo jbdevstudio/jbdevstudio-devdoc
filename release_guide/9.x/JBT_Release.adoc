@@ -4,8 +4,6 @@ This document describe how to publish a valid JBoss Tools build to production af
 
 With distractions (email, IRC), this process took 90 mins for the Beta release.
 
-WARNING: this requires write access to http://sourceforge.net/projects/jboss/files/JBossTools/
-
 == Verify that all JIRAs assigned to the current milestone are resolved
 
 Launch the config pages for JBIDE and JBDS and using the gear icons, release the milestone version in JIRA.
@@ -37,7 +35,6 @@ Here are some generalities site promotion/release process. It's not an exhaustiv
 ... Go To 1
 .. If QE approves, release is accepted and promoted
 ... JIRA is checked to ensure all JIRAs for this milestone are resolved
-... Zips get published on sourceforge
 ... Site moves from 'updates/staging' with respin label to 'static/releases' without respin label
 ... Links to 'updates/mars' are replaced to link to new version
 ... JBoss Tools website is updated
@@ -84,7 +81,7 @@ versionWithRespin=4.3.1.Beta2a # a, b, c...
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 quals="development"; if [[ ${version##*Final} == "" ]]; then quals="development stable"; fi
 for site in core; do
-  tmpdir=/tmp/jbosstools-static-development-updates-${site}_${versionWithRespin}
+  tmpdir=~/tmp/jbosstools-static-development-updates-${site}_${versionWithRespin}
   rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/mars/staging/updates/${site}/${versionWithRespin}/* ${tmpdir}/
   # copy update site
   for qual in $quals; do
@@ -102,7 +99,7 @@ versionWithRespin=4.3.1.Beta2a # a, b, c...
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 quals="development"; if [[ ${version##*Final} == "" ]]; then quals="development stable"; fi
 for site in coretests; do
-  tmpdir=/tmp/jbosstools-static-development-updates-${site}_${versionWithRespin}
+  tmpdir=~/tmp/jbosstools-static-development-updates-${site}_${versionWithRespin}
   rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/mars/staging/updates/${site}/${versionWithRespin}/* ${tmpdir}/
   # copy update site
   for qual in $quals; do
@@ -120,7 +117,7 @@ versionWithRespin=4.3.1.Beta2a # a, b, c...
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 quals="development"; if [[ ${version##*Final} == "" ]]; then quals="development stable"; fi
 for site in central earlyaccess; do
-  tmpdir=/tmp/jbosstools-static-development-updates-${site}_${versionWithRespin}
+  tmpdir=~/tmp/jbosstools-static-development-updates-${site}_${versionWithRespin}
   rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/mars/staging/updates/${site}/${versionWithRespin}/* ${tmpdir}/
   # copy update site
   for qual in $quals; do
@@ -139,7 +136,7 @@ versionWithRespin=4.3.1.Beta2a # a, b, c...
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 quals="development"; if [[ ${version##*Final} == "" ]]; then quals="development stable"; fi
 for site in discovery.central discovery.earlyaccess; do
-  tmpdir=/tmp/jbosstools-static-development-updates-${site}_${versionWithRespin}
+  tmpdir=~/tmp/jbosstools-static-development-updates-${site}_${versionWithRespin}
   for qual in $quals; do
     rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/mars/staging/updates/${site}/${versionWithRespin}/* ${tmpdir}/
     # sed .xml files to point at /development/ instead of /staging/, and ${version} instead of $versionWithRespin}
@@ -170,7 +167,7 @@ versionWithRespin=4.3.1.Beta2a # a, b, c...
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 quals="development"; if [[ ${version##*Final} == "" ]]; then quals="development stable"; fi
 for site in core; do
-  tmpdir=/tmp/jbosstools-static-development-updates-${site}_${versionWithRespin}_zips; mkdir -p ${tmpdir}
+  tmpdir=~/tmp/jbosstools-static-development-updates-${site}_${versionWithRespin}_zips; mkdir -p ${tmpdir}
   # get updatesite-core.zip
   # TODO: the build should just create the correct zip name here, instead of "repository.zip"
   rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/mars/staging/builds/jbosstools-${versionWithRespin}-build-core/latest/all/repository.zip ${tmpdir}/jbosstools-${version}-updatesite-core.zip
@@ -236,91 +233,44 @@ pushd jbosstools-download.jboss.org/jbosstools/mars/development/updates
 git fetch origin master
 git checkout FETCH_HEAD
 
-
-# TODO replace this with a simply copy of content from /staging/ to /development/ like we do for JBDS.
-# TODO remove need for _PREV variables
-
-versionWithRespin_PREV=4.3.0.Final
-TARGET_PLATFORM_VERSION_MAX_PREV=4.51.0.Final
-TARGET_PLATFORM_CENTRAL_MAX_PREV=4.50.0.Final-SNAPSHOT
-
 version=4.3.1.Beta2
 versionWithRespin=4.3.1.Beta2a # a, b, c...
-TARGET_PLATFORM_VERSION_MAX=4.51.2.Beta2-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.51.0.Beta2-SNAPSHOT
 
-rsync ../../staging/updates/composite*.xml .
+echo "
+- integration-stack/*
+- webtools/*
+- */OLD/
+- */reddeer/*
+- */4.3.0*
++ core/${versionWithRespin}/
+- core/*
++ coretests/${versionWithRespin}/
+- coretests/*
++ central/${versionWithRespin}/
+- central/*
++ earlyaccess/${versionWithRespin}/
+- earlyaccess/*
++ discovery.central/${versionWithRespin}/
+- discovery.central/*
++ discovery.earlyaccess/${versionWithRespin}/
+- discovery.earlyaccess/*
+- site.css
+- *.gz
+- *.jar
+- *.zip
+" > /tmp/filter
+scpr $TOOLS/mars/staging/updates/* ./ --include-from=/tmp/filter
+rm -f /tmp/filter
 
-# replace static/releases with mars/development/updates, then replace all the versions & fix the update site name
-# TODO for .Final, use /static/ paths for target platforms, too!
-
-now=`date +%s000`
-for c in compositeContent.xml compositeArtifacts.xml; do
-  sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#" $c
-  sed -i -e "s#mars/staging/updates/#static/mars/development/updates/#" $c
-  sed -i -e "s#${TARGET_PLATFORM_CENTRAL_MAX_PREV}#${TARGET_PLATFORM_CENTRAL_MAX}#" $c
-  sed -i -e "s#${TARGET_PLATFORM_VERSION_MAX_PREV}#${TARGET_PLATFORM_VERSION_MAX}#" $c
-  sed -i -e "s#${versionWithRespin_PREV}#${versionWithRespin}#" $c
-  sed -i -e "s#${versionWithRespin}#${version}#" $c
-  # TODO for Beta2 make sure this next step works!
-  sed -i -e "s#static/mars/development/updates/integration-stack'/#mars/development/updates/integration-stack/'" $c
-  sed -i -e "s#JBoss Tools - static/mars/development/updates/#JBoss Tools ${version} Development Milestone Update Site#" $c
-done
-cat $c | egrep "${version}|${versionWithRespin}|${TARGET_PLATFORM_VERSION_MAX}|${TARGET_PLATFORM_CENTRAL_MAX}|timestamp"
-
-rsync ./composite*.xml core/
-
-# fix core/index.html
-pushd core
-  rm -f index.html; wget http://download.jboss.org/jbosstools/static/mars/development/updates/core/${version}/index.html
-  sed -i -e "s#href=\"#href=\"http://download.jboss.org/jbosstools/static/mars/development/updates/core/#g" -e "s#href=\"http://download.jboss.org/jbosstools/static/mars/development/updates/core/http#href=\"http#g" -e "s#http://download.jboss.org/jbosstools/static/mars/development/updates/core/web/site.css#http://download.jboss.org/jbosstools/updates/web/site.css#" index.html
-  sed -i -e "s#\-SNAPSHOT (\(.\+\))#.\1#" index.html
-  if [[ $isFinal == "true" ]]; then
-    sed -i -e "s#Development Milestone Update Site#Stable Release Update Site#" index.html
-    sed -i -e "s#<b>Development Milestone</b>#<b>Stable Release</b>#" index.html
-  fi
-  firefox file://`pwd`/index.html &
-  cat index.html | egrep "Latest Build|SNAPSHOT|Stable|Milestone|${version}|${versionWithRespin}"
-popd
-
-pushd coretests
-  # fix coretests/composite*.xml
-  now=`date +%s000`
-  for c in compositeContent.xml compositeArtifacts.xml; do
-    sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#" $c
-    sed -i -e "s#mars/staging/updates/#static/mars/development/updates/#" $c
-    sed -i -e "s#${versionWithRespin_PREV}#${versionWithRespin}#" $c
-    sed -i -e "s#${versionWithRespin}#${version}#" $c
-    sed -i -e "s#JBoss Tools - static/mars/development/updates/#JBoss Tools ${version} Development Milestone Update Site#" $c
+if [[ ${versionWithRespin} != ${version} ]]; then
+  # rename the staging folders to their final names (Beta2a -> Beta2)
+  for d in core coretests central earlyaccess discovery.central discovery.earlyaccess; do
+    mv ${d}/${versionWithRespin} ${d}/${version}
   done
-  cat $c | egrep "${version}|${versionWithRespin}|timestamp"
-
-  # fix coretests/index.html
-  rm -f index.html; wget http://download.jboss.org/jbosstools/static/mars/development/updates/coretests/${version}/index.html
-  sed -i -e "s#href=\"#href=\"http://download.jboss.org/jbosstools/static/mars/development/updates/coretests/#g" -e "s#href=\"http://download.jboss.org/jbosstools/static/mars/development/updates/coretests/http#href=\"http#g" -e "s#http://download.jboss.org/jbosstools/static/mars/development/updates/coretests/web/site.css#http://download.jboss.org/jbosstools/updates/web/site.css#" index.html
-  sed -i -e "s#\-SNAPSHOT (\(.\+\))#.\1#" index.html
-  if [[ $isFinal == "true" ]]; then
-    sed -i -e "s#Development Milestone Update Site#Stable Release Update Site#" index.html
-    sed -i -e "s#<b>Development Milestone</b>#<b>Stable Release</b>#" index.html
-  fi
-  firefox file://`pwd`/index.html &
-  cat index.html | egrep "Latest Build|SNAPSHOT|Stable|Milestone|${version}|${versionWithRespin}"
-popd
-
-# fix EA site
-now=`date +%s000`
-pushd earlyaccess
-for c in compositeContent.xml compositeArtifacts.xml; do
-  sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#" $c
-  sed -i -e "s#mars/staging/updates/#static/mars/development/updates/#" $c
-  sed -i -e "s#${TARGET_PLATFORM_CENTRAL_MAX_PREV}#${TARGET_PLATFORM_CENTRAL_MAX}#" $c
-  sed -i -e "s#${TARGET_PLATFORM_VERSION_MAX_PREV}#${TARGET_PLATFORM_VERSION_MAX}#" $c
-  sed -i -e "s#${versionWithRespin_PREV}#${versionWithRespin}#" $c
-  sed -i -e "s#${versionWithRespin}#${version}#" $c
-  sed -i -e "s#JBoss Tools - static/mars/development/updates/#JBoss Tools ${version} Development Milestone Update Site#" $c
+fi
+for d in core coretests central earlyaccess discovery.central discovery.earlyaccess; do
+  ga -f ${d}/${version}/*
 done
-cat $c | egrep "${version}|${versionWithRespin}|${TARGET_PLATFORM_VERSION_MAX}|${TARGET_PLATFORM_CENTRAL_MAX}|timestamp"
-popd
 
 # commit the change and push to master
 git add composite*.xml core/composite*.xml core/index.html coretests/composite*.xml coretests/index.html discovery.earlyaccess/composite*.xml
@@ -450,8 +400,8 @@ https://github.com/jbosstools/jbosstools-download.jboss.org/commit/d5306ce940814
 
 cd ~/tru # or where you have jbosstools-download.jboss.org checked out
 
-TARGET_PLATFORM_VERSION_MAX_PREV=4.50.0.Final
-TARGET_PLATFORM_VERSION_MAX=4.51.2.Beta2-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX_PREV=4.51.2.Beta1-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.52.0.Beta2-SNAPSHOT
 now=`date +%s000`
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 
@@ -842,10 +792,10 @@ ____
 ----
 
 version=4.3.1.Beta2
-eclipseVersion="Eclipse 4.5.1 Mars.1"
-pullrequestURL=https://github.com/jbosstools/jbosstools-website/pull/540
+eclipseVersion="Eclipse 4.5.2 Mars.2"
+pullrequestURL=https://github.com/jbosstools/jbosstools-website/pull/5499
 
-blogURL=/blog/beta1-for-mars2.html
+blogURL=/blog/beta2-for-mars2.html
 
 echo "
 Subject:

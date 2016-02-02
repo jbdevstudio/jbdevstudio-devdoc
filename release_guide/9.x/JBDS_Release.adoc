@@ -552,12 +552,14 @@ Before notifying team of release, must check for obvious problems. Any failure t
 
 version=9.1.0.Beta2
 qual="development"; if [[ ${version##*GA} == "" ]]; then qual="stable"; fi
-cd /tmp
+cd ~/tmp
 wget https://devstudio.redhat.com/9.0/${qual}/builds/installer/${version}/
-installerJar=$(cat index.html | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
+installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 echo "Installer jar: ${installerJar}"
 rm -f index.html
 wget https://devstudio.redhat.com/9.0/${qual}/builds/installer/${version}/${installerJar}
+
+java -jar ~/tmp/${installerJar}
 
 ----
 
@@ -569,8 +571,6 @@ wget https://devstudio.redhat.com/9.0/${qual}/builds/installer/${version}/${inst
 4. Test a project example
 
 == Enable jobs
-
-TODO: JBIDE-21407 verify this process is fleshed out for Beta2 staging/release
 
 NOTE: This should have been done after staging, but just in case it was not, here's a reminder.
 
@@ -596,7 +596,7 @@ ____
 version_JBT=4.3.1.Beta2
 version=9.1.0.Beta2
 qual=development # development or stable
-pullrequestURL=https://github.com/jbosstools/jbosstools-website/pull/54099
+pullrequestURL=https://github.com/jbosstools/jbosstools-website/pull/546
 blogURL=/blog/beta2-for-mars2.html
 
 echo "

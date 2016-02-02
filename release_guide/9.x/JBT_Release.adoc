@@ -243,46 +243,67 @@ echo "
 - */reddeer/*
 - */4.3.0*
 + core/${versionWithRespin}/
++ core/composite*.xml
 - core/*
 + coretests/${versionWithRespin}/
++ coretests/composite*.xml
 - coretests/*
 + central/${versionWithRespin}/
++ central/composite*.xml
 - central/*
 + earlyaccess/${versionWithRespin}/
++ earlyaccess/composite*.xml
 - earlyaccess/*
 + discovery.central/${versionWithRespin}/
++ discovery.central/composite*.xml
 - discovery.central/*
 + discovery.earlyaccess/${versionWithRespin}/
++ discovery.earlyaccess/composite*.xml
 - discovery.earlyaccess/*
 - site.css
 - *.gz
 - *.jar
 - *.zip
 " > /tmp/filter
-scpr $TOOLS/mars/staging/updates/* ./ --include-from=/tmp/filter
+scpr ../../staging/updates/* ./ --include-from=/tmp/filter
 rm -f /tmp/filter
 
 if [[ ${versionWithRespin} != ${version} ]]; then
   # rename the staging folders to their final names (Beta2a -> Beta2)
   for d in core coretests central earlyaccess discovery.central discovery.earlyaccess; do
+    rm -fr ${d}/${version}
     mv ${d}/${versionWithRespin} ${d}/${version}
   done
 fi
+
+# replace static/releases with mars/staging/updates, then replace all the versions
+now=`date +%s000`
+for c in compositeContent.xml compositeArtifacts.xml */compositeContent.xml */compositeArtifacts.xml */${version}/compositeContent.xml */${version}/compositeArtifacts.xml; do
+  if [[ $c == ${c/integration-stack/} ]]; then
+    echo "$c ..."
+    sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#" $c
+    sed -i -e "s#jbosstools/mars/staging/updates/#jbosstools/static/mars/development/updates/#" $c
+    sed -i -e "s#${versionWithRespin}#${version}#" $c
+  fi
+done
+
 for d in core coretests central earlyaccess discovery.central discovery.earlyaccess; do
-  ga -f ${d}/${version}/*
+  ga -f ${d}/${version}/* ${d}/*.*ml
 done
 
 # commit the change and push to master
-git add composite*.xml core/composite*.xml core/index.html coretests/composite*.xml coretests/index.html discovery.earlyaccess/composite*.xml
-git commit -m "release JBT ${versionWithRespin} to public" composite*.xml core/composite*.xml core/index.html coretests/composite*.xml coretests/index.html discovery.earlyaccess/composite*.xml
+git commit -m "release JBT ${versionWithRespin} to public" .
 git push origin HEAD:master
 
 # push updated files to server
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
-scp composite*.xml ${TOOLS}/mars/development/updates/
-scp core/composite*.xml core/index.html ${TOOLS}/mars/development/updates/core/
-scp coretests/composite*.xml coretests/index.html ${TOOLS}/mars/development/updates/coretests/
-scp discovery.earlyaccess/composite*.xml ${TOOLS}/mars/development/updates/discovery.earlyaccess/
+scpr *.*ml ${TOOLS}/mars/development/updates/
+for d in core coretests discovery.central discovery.earlyaccess; do
+  scpr ${d}/*.*ml ${TOOLS}/mars/development/updates/${d}/
+done
+for d in discovery.central discovery.earlyaccess; do
+  scpr ${d}/${version}/* ${TOOLS}/mars/development/updates/${d}/${version}/
+done
 
 popd
 
@@ -327,8 +348,7 @@ http://download.jboss.org/jbosstools/mars/stable/updates/earlyaccess/compositeCo
 Webtools site is expected to be found in +http://download.jboss.org/tools/updates/webtools/mars+. So, with a sftp client, on filemgmt.jboss.org
 
 
-1. Rename +/updates/webtools/mars+ to +/updates/webtools/mars_${version_PREV}+, with ${version_PREV} being the name of last release before this one
-2. Symlink from +/updates/webtools/mars+ to http://download.jboss.org/jbosstools/static/mars/development/updates/core/${version}/
+1. Symlink from +/updates/webtools/mars+ to http://download.jboss.org/jbosstools/static/mars/development/updates/core/${version}/
 
 Here is an example of a script doing that.
 
@@ -339,30 +359,25 @@ NOTE: if you're releasing a /development/ milestone after there's an existing /s
 ----
 cd ~/tru # or where you have jbosstools-download.jboss.org checked out
 
-version=4.3.1.Beta2
-version_PREV=4.3.0.Final
-versionWithRespin=4.3.1.Beta2a # a, b, c...
+# don't update this until 4.3.1.Final
+version=4.3.0.Final
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 
 pushd jbosstools-download.jboss.org/jbosstools/updates/webtools
   git fetch origin master
   git checkout FETCH_HEAD
 
-  # create new symlink
-  mv mars mars_${version_PREV}
-  ln -s ../../static/mars/development/updates/core/${version} mars
-  # move the old symlink out of the way
-  echo "rename webtools/mars webtools/mars_${version_PREV}" | sftp ${TOOLS}/updates/ #formatting_glitch_
+  rm -f mars && ln -s ../../static/mars/development/updates/core/${version} mars
   # push new symlink to server
   rsync -Pzrlt --rsh=ssh --protocol=28 mars $TOOLS/updates/webtools/
   # commit change to github
   git add mars
-  git commit -m "update symlink to point at latest ../../static/mars/development/updates/webtools/${version} (${versionWithRespin}) release folder" mars
+  git commit -m "update symlink to point at latest ../../static/mars/development/updates/webtools/${version} release folder" mars
   git push origin HEAD:master
 popd
 
 # verify site contents are shown
-firefox http://download.jboss.org/jbosstools/updates/webtools/ http://download.jboss.org/jbosstools/updates/webtools/mars
+firefox http://download.jboss.org/jbosstools/updates/webtools/mars http://download.jboss.org/jbosstools/updates/webtools/
 
 ----
 
@@ -702,11 +717,9 @@ done
 
 === Request bulk tag creation
 
-@since 4.3
+@since 4.3: bulk-tagging via script.
 
-NEW WAY: bulk-tagging via script. This process is under development. See JBIDE-20152.
-
-*To:* max.andersen@redhat.com, fbricon@redhat.com, alkazako@redhat.com +
+*To:* alkazako@redhat.com +
 
 [source,bash]
 ----
@@ -762,8 +775,6 @@ Example:
 
 == Enable jobs
 
-TODO: JBIDE-21407 verify this process is fleshed out for Beta2 staging/release
-
 NOTE: This should have been done after staging, but just in case it was not, here's a reminder.
 
 As you have just released something, the next build will be a CI snapshot for the following milestone.
@@ -793,7 +804,7 @@ ____
 
 version=4.3.1.Beta2
 eclipseVersion="Eclipse 4.5.2 Mars.2"
-pullrequestURL=https://github.com/jbosstools/jbosstools-website/pull/5499
+pullrequestURL=https://github.com/jbosstools/jbosstools-website/pull/546
 
 blogURL=/blog/beta2-for-mars2.html
 

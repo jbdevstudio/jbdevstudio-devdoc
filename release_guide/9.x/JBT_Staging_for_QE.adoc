@@ -9,7 +9,7 @@ TODO: add step that automatically keeps all staged builds in Jenkins, using /las
 ====
 Note that +sftp://tools@filemgmt.jboss.org/downloads_htdocs/tools/+ maps to +http://download.jboss.org/jbosstools/+ +
 
-If you do not need it urgently, you can push files there simply by pushing a change into the following location: https://github.com/jbosstools/jbosstools-download.jboss.org/tree/master/jbosstools . 
+If you do not need it urgently, you can push files there simply by pushing a change into the following location: https://github.com/jbosstools/jbosstools-download.jboss.org/tree/master/jbosstools .
 A Jenkins job can then be triggered to sync changes to download.jboss.org: https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-download.jboss.org-rsync-from-svn/
 ====
 
@@ -119,7 +119,7 @@ Should a respin be needed, they can be re-enabled as needed.
 [[update-discovery-urls]]
 Update the *stable branch* discovery job ( https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/job/jbosstools-discovery_4.3.mars/configure ) to use the correct source URLs and versions +
 
-VERSION=Beta2a # a, b, c... (not SNAPSHOT!) 
+VERSION=Beta2a # a, b, c... (not SNAPSHOT!)
 TARGET_PLATFORM_VERSION_MAX=4.52.0.Beta2-SNAPSHOT
 TARGET_PLATFORM_CENTRAL_MAX=4.52.0.Beta2-SNAPSHOT
 
@@ -147,7 +147,7 @@ When done, disable the job.
 
 Nightly builds are continuously built in http://download.jboss.org/jbosstools/mars/snapshots/builds/. Aggregate sites are also copied into http://download.jboss.org/jbosstools/mars/snapshots/updates/.
 
-Staging builds are the ones prepped for QE, which are then moved to /development/ if approved.
+Staging builds are the ones prepped for QE, which are then moved to /staging/ if approved.
 
 First connect to dev01.mw.lab.eng.bos.redhat.com as +hudson+ user (requires permissions).
 
@@ -341,7 +341,12 @@ rm -fr $tmpfile
 
 === Update http://download.jboss.org/jbosstools/mars/staging/updates/
 
-Update files __http://download.jboss.org/jbosstools/mars/staging/updates/composite*.xml__ , with SFTP/SCP via command-line or your 
+# TODO this needs a big revamp because we're now going to have the exact files in /staging/ that will be copied to /development/ ... give or take some simple sed string replacements
+#/staging/#/development/# (update sites)
+#/mars/#/static/mars/# (target platforms)
+# etc.
+
+Update files __http://download.jboss.org/jbosstools/mars/staging/updates/composite*.xml__ , with SFTP/SCP via command-line or your
 favourite SFTP GUI client (such as Eclipse RSE).
 
 This site needs to contain:
@@ -366,7 +371,7 @@ git checkout FETCH_HEAD
 
 # replace static/releases with mars/staging/updates, then replace all the versions
 now=`date +%s000`
-for c in compositeContent.xml compositeArtifacts.xml; do 
+for c in compositeContent.xml compositeArtifacts.xml; do
   sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#" $c
   sed -i -e "s#/static/releases/#/mars/staging/updates/#" $c
   sed -i -e "s#${versionWithRespin_PREV}#${versionWithRespin}#" $c
@@ -419,9 +424,9 @@ jbdsFixVersionWithRespin=9.1.0.Beta2a # a, b, c...
 git fetch origin master
 git checkout FETCH_HEAD
 
-# then edit ide-config.properties 
-# vim ide-config.properties 
-# st ide-config.properties 
+# then edit ide-config.properties
+# vim ide-config.properties
+# st ide-config.properties
 
 # commit the change and push to master
 ci "release JBT ${version} (${versionWithRespin}) to staging: link to latest dev milestone discovery site" ide-config.properties
@@ -480,17 +485,17 @@ TARGET_PLATFORM_CENTRAL_MAX=4.52.0.Beta2-SNAPSHOT
 jbdsFixVersion=9.1.0.Beta2 # no respin suffix here
 jbtFixVersion=4.3.1.Beta2 # no respin suffix here
 echo "
-Subject: 
+Subject:
 
 JBoss Tools Core ${versionWithRespin} bits available for QE testing
 
 Body:
 
-As always, these are not FINAL bits, but preliminary results for QE & community testing. Not for use by customers or end users. 
+As always, these are not FINAL bits, but preliminary results for QE & community testing. Not for use by customers or end users.
 
 Update site: http://download.jboss.org/jbosstools/mars/staging/updates/
 
-New + noteworthy (subject to change): 
+New + noteworthy (subject to change):
 * https://github.com/jbosstools/jbosstools-website/tree/master/documentation/whatsnew
 * http://tools.jboss.org/documentation/whatsnew/
 
@@ -502,9 +507,9 @@ Additional update sites:
 * http://download.jboss.org/jbosstools/mars/staging/updates/core/${versionWithRespin}/
 * http://download.jboss.org/jbosstools/mars/staging/updates/coretests/${versionWithRespin}/
 
-Target platforms: 
-* http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MIN} 
-* http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MAX} 
+Target platforms:
+* http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MIN}
+* http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MAX}
 
 Discovery sites:
 * http://download.jboss.org/jbosstools/mars/staging/updates/discovery.central/${versionWithRespin}/
@@ -515,7 +520,7 @@ Build folders (for build logs & update site zips):
 
 "
 if [[ $respin != "respin-" ]]; then
-echo " 
+echo "
 
 --
 

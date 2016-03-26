@@ -16,10 +16,10 @@ Check c.j.d.central.core's currentversion.properties for the correct value of de
 
 [sources,bash]
 ----
-# @since JBT 4.3.0 / JBDS 9.0.0 - JBIDE-18820, JBIDE-18806 
+# @since JBT 4.3.0 / JBDS 9.0.0 - JBIDE-18820, JBIDE-18806
 
-version=9.1.0.Beta2 # or .GA
-versionWithRespin=9.1.0.Beta2a # a, b, c...
+version=9.1.0.CR1 # or .GA
+versionWithRespin=9.1.0.CR1 # a, b, c...
 
 if [[ ${version:0:1} == "4" ]]; then # JBT
   pluginName=foundation.core
@@ -64,10 +64,10 @@ Whenever you're starting a new shell, you should set those variables:
 
 [sources,bash]
 ----
-version=9.1.0.Beta2
-versionWithRespin=9.1.0.Beta2a # a, b, c...
-TARGET_PLATFORM_VERSION_MAX=4.52.0.Beta2-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.52.0.Beta2-SNAPSHOT
+version=9.1.0.CR1
+versionWithRespin=9.1.0.CR1 # a, b, c...
+TARGET_PLATFORM_VERSION_MAX=4.52.0.CR1-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.52.0.CR1-SNAPSHOT
 now=$(date +%s000)
 isGA=false
 JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
@@ -100,9 +100,9 @@ WARNING: Don't use symlinks are they are too risky to use. Those operations can 
 # can run these 6 steps in parallel
 
 # 1. copy JBDS target platform zips
-versionWithRespin=9.1.0.Beta2a # a, b, c...
-TARGET_PLATFORM_VERSION_MAX=4.52.0.Beta2-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.52.0.Beta2-SNAPSHOT
+versionWithRespin=9.1.0.CR1 # a, b, c...
+TARGET_PLATFORM_VERSION_MAX=4.52.0.CR1-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.52.0.CR1-SNAPSHOT
 for targetname in jbdevstudio jbtcentral jbtearlyaccess; do
   if [[ ${targetname} == "jbdevstudio" ]]; then
     TARGET_PLATFORM_VERSION=${TARGET_PLATFORM_VERSION_MAX}
@@ -119,7 +119,7 @@ echo "DONE: copy JBDS target platform zips" | grep "copy JBDS target platform zi
 
 
 # 2. copy JBDS Central/EA update sites & zips
-versionWithRespin=9.1.0.Beta2a # a, b, c...
+versionWithRespin=9.1.0.CR1 # a, b, c...
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 JBT_stream=4.3.mars
 for site in central-site earlyaccess-site; do
@@ -151,7 +151,7 @@ echo "DONE: copy JBDS Central/EA update sites & zips" | grep "copy JBDS Central/
 
 
 # 3. copy JBDS installers: snapshots/builds/ to staging/builds/ [INTERNAL - both installers]
-versionWithRespin=9.1.0.Beta2a # a, b, c...
+versionWithRespin=9.1.0.CR1 # a, b, c...
 JBDS_stream=9.0.mars
 ID=""
 ID=$(cd /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${JBDS_stream} && ls 20* | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%:*}
@@ -159,11 +159,11 @@ if [[ $ID ]]; then
   echo "Latest build for installers: ${ID}"
   tmpdir=/tmp/jboss-devstudio-${versionWithRespin}-build-product_INTERNAL__${ID}
   # copy build folder
-  mkdir -p /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/${ID}/ --exclude="repo"
+  mkdir -p /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/${ID}/
   rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${JBDS_stream}/${ID}/* /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/${ID}/ --exclude="repo"
   # create latest symlinks
   mkdir -p ${tmpdir}; pushd $tmpdir >/dev/null; ln -s ${ID} latest
-    rm -f /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${JBDS_stream}/latest 
+    rm -f /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${JBDS_stream}/latest
     rsync --protocol=28 -l latest /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${JBDS_stream}/
     rm -f /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest
     rsync --protocol=28 -l latest /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/
@@ -177,7 +177,7 @@ echo "DONE: copy JBDS installers: snapshots/builds/ to staging/builds/ [INTERNAL
 
 
 # 4. copy JBDS installers: snapshots/builds/ to staging/builds/ [EXTERNAL - Standalone installer only]
-versionWithRespin=9.1.0.Beta2a # a, b, c...
+versionWithRespin=9.1.0.CR1 # a, b, c...
 JBDS_stream=9.0.mars
 ID=""
 ID=$(echo "ls 20*" | sftp ${JBDS}/9.0/snapshots/builds/devstudio.product_${JBDS_stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
@@ -200,7 +200,7 @@ echo "DONE: copy JBDS installers: snapshots/builds/ to staging/builds/ [EXTERNAL
 
 
 # 5. copy JBDS update: snapshots/builds/*/repo/* to staging/updates/core/${versionWithRespin}; also copy updatesite-core.zip
-versionWithRespin=9.1.0.Beta2a # a, b, c...
+versionWithRespin=9.1.0.CR1 # a, b, c...
 JBDS_stream=9.0.mars
 ID=""
 ID=$(cd /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${JBDS_stream} && ls 20* | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%:*}
@@ -218,7 +218,7 @@ echo "DONE: copy JBDS update: snapshots/builds/*/repo/* to staging/updates/core/
 
 # TODO: make sure you've rebuilt the discovery sites and disabled the job first before doing this step!
 # 6. copy JBDS discovery sites to staging/builds/ and staging/updates/
-versionWithRespin=9.1.0.Beta2a # a, b, c...
+versionWithRespin=9.1.0.CR1 # a, b, c...
 JBT_stream=4.3.mars
 for site in discovery.central discovery.earlyaccess; do
   ID=""
@@ -244,14 +244,14 @@ echo "DONE: copy JBDS discovery sites to staging/builds/ and staging/updates/" |
 
 ----
 
-Verify sites are correctly populated (run locally, not on dev01). 
+Verify sites are correctly populated (run locally, not on dev01).
 
 Note that Akamai caching might result in the appearance of missing files (apache directories may look incomplete) but if you ping specific files, they should be there.
 
 [source,bash]
 ----
 
-versionWithRespin=9.1.0.Beta2a # a, b, c...
+versionWithRespin=9.1.0.CR1 # a, b, c...
 tmpfile=/tmp/jbosstools-staging__verify.txt
 for site in central earlyaccess discovery.central discovery.earlyaccess; do
   if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
@@ -270,6 +270,33 @@ rm -fr $tmpfile
 
 ----
 
+=== Cleanup OLD builds
+
+First, use sshfs to mount filemgmt file paths.
+
+[source,bash]
+----
+
+JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
+sshfs $JBDS /media/JBDS-ssh
+
+----
+
+Then move old builds into an OLD/ folder to they're less visible and ready for deletion later.
+
+[source,bash]
+----
+version_PREV=9.1.0.Beta2 # a, b, c...
+for d in updates/core updates/central updates/earlyaccess updates/discovery.central updates/discovery.earlyaccess builds; do
+  if [[ -d /media/JBDS-ssh/9.0/staging/${d}/ ]]; then
+    echo "${d}/*${version_PREV}* ..."
+    mkdir -p /media/JBDS-ssh/9.0/staging/${d}/OLD/
+    mv /media/JBDS-ssh/9.0/staging/${d}/*${version_PREV}* /media/JBDS-ssh/9.0/staging/${d}/OLD/
+  fi
+done
+
+----
+
 === Update https://devstudio.jboss.com/9.0/staging/updates/
 
 This should point to the latest staging bits. Just copy what's in discovery.central/composite*.xml into this folder.
@@ -277,11 +304,11 @@ This should point to the latest staging bits. Just copy what's in discovery.cent
 [source,bash]
 ----
 
-version=9.1.0.Beta2
-versionWithRespin_PREV=9.1.0.Beta2 # a, b, c...
-versionWithRespin=9.1.0.Beta2a # a, b, c...
-TARGET_PLATFORM_VERSION_MAX=4.52.0.Beta2-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.52.0.Beta2-SNAPSHOT
+version=9.1.0.CR1
+versionWithRespin_PREV=9.1.0.Beta2a # a, b, c...
+versionWithRespin=9.1.0.CR1 # a, b, c...
+TARGET_PLATFORM_VERSION_MAX=4.52.0.CR1-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.52.0.CR1-SNAPSHOT
 
 cd ~/truu
 pushd jbdevstudio-website/content/9.0/staging/updates
@@ -294,7 +321,7 @@ for d in discovery.central discovery.earlyaccess; do
   rsync -aPrz --rsh=ssh --protocol=28 ${JBDS}/9.0/staging/updates/${d}/${versionWithRespin}/composite*xml ./
   # replace dl.jb.o and 4.3-> ds.rh.c and 9.0
   now=`date +%s000`
-  for c in compositeContent.xml compositeArtifacts.xml; do 
+  for c in compositeContent.xml compositeArtifacts.xml; do
     sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#" $c
     # TODO: are these next 3 sed steps still needed?
       sed -i -e "s#http://download.jboss.org/jbosstools/mars/#https://devstudio.redhat.com/9.0/#" $c
@@ -306,7 +333,7 @@ for d in discovery.central discovery.earlyaccess; do
 done
 rsync discovery.central/${versionWithRespin}/composite*.xml ./
 
-# update index.html 
+# update index.html
 sed -i "s#${versionWithRespin_PREV}#${versionWithRespin}#" index.html
 cat index.html | egrep "${versionWithRespin_PREV}|${versionWithRespin}"
 
@@ -354,7 +381,7 @@ Before notifying team of staged release, must check for obvious problems.
 
 [source,bash]
 ----
-versionWithRespin=9.1.0.Beta2a # a, b, c...
+versionWithRespin=9.1.0.CR1 # a, b, c...
 cd ~/tmp
 wget https://devstudio.redhat.com/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/
 installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
@@ -375,7 +402,7 @@ If this fails, it is most likely due to a bug or a failure in a step above. If p
 
 == Enable jobs
 
-TODO: JBIDE-21407 verify this process is fleshed out for Beta2 staging/release
+TODO: JBIDE-21407 verify this process is fleshed out for CR1 staging/release
 
 NOTE: You will need to re-enable the jobs once the bits are staged, so that CI builds can continue.
 
@@ -385,8 +412,8 @@ If the next build WILL be a respin, you need to simply:
 
 If the next build will NOT be a respin, you will also need to ALSO make these changes to jobs, and upversion/release artifacts such as releng scripts or target platforms if you haven't done so already:
 
-* set correct github branch, eg., switch from 4.3.1.Beta2x to 4.3.x
-* upversion dependencies, eg., releng scripts move from version Beta2 to CR1 (if that's been released)
+* set correct github branch, eg., switch from 4.3.1.CR1x to 4.3.x
+* upversion dependencies, eg., releng scripts move from version CR1 to CR1 (if that's been released)
 * upversion target platforms / Central version (if those have been released)
 
 
@@ -396,12 +423,12 @@ ____
 
 [source,bash]
 ----
-version_JBT=4.3.1.Beta2
-version=9.1.0.Beta2
-versionWithRespin=9.1.0.Beta2a # a, b, c...
+version_JBT=4.3.1.CR1
+version=9.1.0.CR1
+versionWithRespin=9.1.0.CR1 # a, b, c...
 respin="respin-a"
 echo "
-Subject: 
+Subject:
 
 JBDS ${versionWithRespin} Core bits available for QE testing
 
@@ -409,7 +436,7 @@ Body:
 
 As always, these are not FINAL bits, but preliminary results for QE testing. Not for redistribution to customers. Update sites are public; installers require VPN access.
 
-Universal Installers: 
+Universal Installers:
 * http://www.qa.jboss.com/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/ (EAP bundles; VPN required)
 * https://devstudio.redhat.com/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/ (Standalone + other zips)
 
@@ -425,11 +452,11 @@ Schedule / Upcoming Releases: https://issues.jboss.org/projects/JBDS?selectedIte
 
 "
 if [[ $respin != "respin-" ]]; then
-echo " 
+echo "
 
 --
 
-Changes prompting this $respin are: 
+Changes prompting this $respin are:
 
 https://issues.jboss.org/issues/?jql=labels%20in%20%28%22${respin}%22%29%20and%20%28%28project%20in%20%28%22JBDS%22%29%20and%20fixversion%20in%20%28%22${version}%22%29%29%20or%20%28project%20in%20%28%22JBIDE%22%2C%22TOOLSDOC%22%29%20and%20fixversion%20in%20%28%22${version_JBT}%22%29%29%29
 

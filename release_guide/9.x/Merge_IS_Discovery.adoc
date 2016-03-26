@@ -1,25 +1,27 @@
-The JBT/JBDS composite sites now include a composite pointer to the JBTIS/JBDSIS composite sites, so no changes are required there. 
+The JBT/JBDS composite sites now include a composite pointer to the JBTIS/JBDSIS composite sites, so no changes are required there.
 
-HOWEVER, the IS jar still needs to copied over into the discovery site, and the XML file needs to be updated. Hence, this script. 
+HOWEVER, the IS jar still needs to copied over into the discovery site, and the XML file needs to be updated. Hence, this script.
 
 === Merge in Integration Stack content
 
 For JBT and JBDS, we need a way to include the downstream IS jars in the upstream JBT/JBDS Discovery sites.
 
-As of 4.3.1.Beta2 / 9.1.0.Beta2, the latest plugins to pull can be found from these URLs (subject to change):
+As of 4.3.1.CR1 / 9.1.0.CR1, the latest plugins to pull can be found from these URLs (subject to change):
 
-  http://download.jboss.org/jbosstools/mars/staging/updates/integration-stack/discovery/4.3.0.Alpha2/jbosstools-directory.xml
-  https://devstudio.redhat.com/9.0/staging/updates/integration-stack/discovery/9.0.0.Alpha2/devstudio-directory.xml
+  http://download.jboss.org/jbosstools/mars/staging/updates/integration-stack/discovery/4.3.0.Beta1/jbosstools-directory.xml
+  https://devstudio.redhat.com/9.0/staging/updates/integration-stack/discovery/9.0.0.Beta1/devstudio-directory.xml
 
 Here is a script that performs the merge for the JBT and JBDS /staging/ sites.
 
 [source,bash]
 ----
 
+# If all IS content is currently Early Access (EA), make sure you use the /discovery/{version}/earlyaccess/ URLs which include BOTH GA and EA plugins.
+# If all IS content is released (GA), you can use the /discovery/{version}/ URLs here.
 pushd /tmp
-  wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.3.x/publish/mergeISdiscovery.sh && chmod +x mergeISdiscovery.sh 
-  ./mergeISdiscovery.sh -version 4.3.1.Beta2 -versionWithRespin 4.3.1.Beta2a -is http://download.jboss.org/jbosstools/mars/staging/updates/integration-stack/discovery/4.3.0.Alpha2/
-  ./mergeISdiscovery.sh -version 9.1.0.Beta2 -versionWithRespin 9.1.0.Beta2a -is https://devstudio.redhat.com/9.0/staging/updates/integration-stack/discovery/9.0.0.Alpha2/ -JBDS
+  wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.3.x/publish/mergeISdiscovery.sh && chmod +x mergeISdiscovery.sh
+  ./mergeISdiscovery.sh -version 4.3.1.CR1 -versionWithRespin 4.3.1.CR1 -is http://download.jboss.org/jbosstools/mars/staging/updates/integration-stack/discovery/4.3.0.Beta1/earlyaccess/
+  ./mergeISdiscovery.sh -version 9.1.0.CR1 -versionWithRespin 9.1.0.CR1 -is https://devstudio.redhat.com/9.0/staging/updates/integration-stack/discovery/9.0.0.Beta1/earlyaccess/ -JBDS
   rm -f /tmp/mergeISdiscovery.sh
 popd
 
@@ -31,26 +33,26 @@ Once in staging, you can test the content as seen from Eclipse by installing JBT
 ----
 
 # JBoss Tools
-url=http://download.jboss.org/jbosstools/mars/staging/updates/discovery.central/4.3.1.Beta2/
+url=http://download.jboss.org/jbosstools/mars/staging/updates/discovery.central/4.3.1.CR1/
 ./eclipse -vmargs -Djboss.discovery.directory.url=${url}jbosstools-directory.xml -Djboss.discovery.site.integration-stack.url=${url}
 
 # JBDS
-url=https://devstudio.redhat.com/9.0/staging/updates/discovery.earlyaccess/9.1.0.Beta2/
+url=https://devstudio.redhat.com/9.0/staging/updates/discovery.earlyaccess/9.1.0.CR1/
 ./eclipse -vmargs -Djboss.discovery.directory.url=${url}devstudio-directory.xml -Djboss.discovery.site.integration-stack.url=${url}
 
 ----
 
-Note that the jboss.discovery.site.integration-stack.url is only needed if there's no value defined in http://download.jboss.org/jbosstools/configuration/ide-config.properties . 
+Note that the jboss.discovery.site.integration-stack.url is only needed if there's no value defined in http://download.jboss.org/jbosstools/configuration/ide-config.properties .
 
 Without a defined value, you will see an error like this in the Eclipse log:
 
 ```
-!MESSAGE org.jboss.tools.central.discovery.integration_stack_4.3.0.Alpha2_v20150922_1058_B430.jar_4644660859188953740.jar: Must specify connectorDescriptor/@siteUrl
+!MESSAGE org.jboss.tools.central.discovery.integration_stack_4.3.0.Beta1_v20150922_1058_B430.jar_4644660859188953740.jar: Must specify connectorDescriptor/@siteUrl
 !STACK 1
 org.eclipse.mylyn.internal.discovery.core.model.ValidationException: Must specify connectorDescriptor/@siteUrl
 ```
 
 TODO https://issues.jboss.org/browse/JBIDE-20664 could we pull the URLs directly from those declared in http://download.jboss.org/jbosstools/configuration/ide-config.properties ?
-jboss.discovery.site.integration-stack.url|jbosstools|4.3.1.CR1=http://download.jboss.org/jbosstools/mars/staging/updates/integration-stack/discovery/4.3.0.Alpha1/
-jboss.discovery.site.integration-stack.url|devstudio|9.1.0.CR1=https://devstudio.redhat.com/9.0/staging/updates/integration-stack/discovery/9.0.0.Alpha1/
+jboss.discovery.site.integration-stack.url|jbosstools|4.3.1.CR1=http://download.jboss.org/jbosstools/mars/staging/updates/integration-stack/discovery/4.3.0.Beta1/
+jboss.discovery.site.integration-stack.url|devstudio|9.1.0.CR1=https://devstudio.redhat.com/9.0/staging/updates/integration-stack/discovery/9.0.0.Beta1/
 

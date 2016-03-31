@@ -407,22 +407,26 @@ for c in compositeContent.xml compositeArtifacts.xml; do
   sed -i -e "s#${TARGET_PLATFORM_VERSION_MAX_PREV}#${TARGET_PLATFORM_VERSION_MAX}#" $c
 done
 cat $c | egrep "${versionWithRespin}|${TARGET_PLATFORM_VERSION_MAX}|${TARGET_PLATFORM_CENTRAL_MAX}|timestamp"
-git add composite*.xml
+scpr composite*.xml core/
+git add composite*.xml core/composite*.xml
 
 # push updated file to server
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 scp composite*.xml ${TOOLS}/mars/staging/updates/
+scp core/composite*.xml ${TOOLS}/mars/staging/updates/core/
 
 # verify changes
-echo "Check 4 URLs:"
+echo "Check 6 URLs:"
 firefox \
 http://download.jboss.org/jbosstools/mars/staging/updates/discovery.central/${versionWithRespin}/compositeContent.xml \
 http://download.jboss.org/jbosstools/mars/staging/updates/discovery.earlyaccess/${versionWithRespin}/compositeContent.xml \
 http://download.jboss.org/jbosstools/mars/staging/updates/compositeContent.xml \
+http://download.jboss.org/jbosstools/mars/staging/updates/core/compositeContent.xml \
+http://download.jboss.org/jbosstools/mars/staging/updates/core/ \
 http://download.jboss.org/jbosstools/mars/staging/updates/
 
 # commit the change and push to master
-git commit -m "release JBT ${versionWithRespin} to QE" composite*.xml
+git commit -m "release JBT ${versionWithRespin} to QE" composite*.xml core/composite*.xml
 git push origin HEAD:master
 popd
 

@@ -405,6 +405,15 @@ If this fails, it is most likely due to a bug or a failure in a step above. If p
 See details in JBT_Staging_For_QE.adoc
 
 
+== Kick downstream Dev Platform Installer
+
+Now that JBDS installer is staged, you can submit a PR against the dev platform installer and have that built.
+
+See: https://github.com/redhat-developer-tooling/developer-platform-install/blob/master/requirements.json#L24
+
+Build: http://machydra.brq.redhat.com:8080/job/developer-platform-installer-build-aggregate
+
+
 == Notify the team (send 1 email)
 ____
 *To* jboss-devstudio-list@redhat.com +
@@ -460,3 +469,4 @@ fi
 
 ----
 ____
+

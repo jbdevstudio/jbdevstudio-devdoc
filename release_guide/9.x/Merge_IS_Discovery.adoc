@@ -20,8 +20,8 @@ Here is a script that performs the merge for the JBT and JBDS /staging/ sites.
 # If all IS content is released (GA), you can use the /discovery/{version}/ URLs here.
 pushd /tmp
   wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.3.x/publish/mergeISdiscovery.sh && chmod +x mergeISdiscovery.sh
-  ./mergeISdiscovery.sh -version 4.3.1.CR1 -versionWithRespin 4.3.1.CR1 -is http://download.jboss.org/jbosstools/mars/staging/updates/integration-stack/discovery/4.3.0.Beta1/earlyaccess/
-  ./mergeISdiscovery.sh -version 9.1.0.CR1 -versionWithRespin 9.1.0.CR1 -is https://devstudio.redhat.com/9.0/staging/updates/integration-stack/discovery/9.0.0.Beta1/earlyaccess/ -JBDS
+  ./mergeISdiscovery.sh -version 4.3.1.CR1 -versionWithRespin 4.3.1.CR1a -is http://download.jboss.org/jbosstools/mars/staging/updates/integration-stack/discovery/4.3.0.Beta1/earlyaccess/
+  ./mergeISdiscovery.sh -version 9.1.0.CR1 -versionWithRespin 9.1.0.CR1a -is https://devstudio.redhat.com/9.0/staging/updates/integration-stack/discovery/9.0.0.Beta1/earlyaccess/ -JBDS
   rm -f /tmp/mergeISdiscovery.sh
 popd
 
@@ -33,11 +33,11 @@ Once in staging, you can test the content as seen from Eclipse by installing JBT
 ----
 
 # JBoss Tools
-url=http://download.jboss.org/jbosstools/mars/staging/updates/discovery.central/4.3.1.CR1/
+url=http://download.jboss.org/jbosstools/mars/staging/updates/discovery.central/4.3.1.CR1a/
 ./eclipse -vmargs -Djboss.discovery.directory.url=${url}jbosstools-directory.xml -Djboss.discovery.site.integration-stack.url=${url}
 
 # JBDS
-url=https://devstudio.redhat.com/9.0/staging/updates/discovery.earlyaccess/9.1.0.CR1/
+url=https://devstudio.redhat.com/9.0/staging/updates/discovery.earlyaccess/9.1.0.CR1a/
 ./eclipse -vmargs -Djboss.discovery.directory.url=${url}devstudio-directory.xml -Djboss.discovery.site.integration-stack.url=${url}
 
 ----

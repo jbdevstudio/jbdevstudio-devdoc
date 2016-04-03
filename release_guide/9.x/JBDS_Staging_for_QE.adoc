@@ -19,7 +19,7 @@ Check c.j.d.central.core's currentversion.properties for the correct value of de
 # @since JBT 4.3.0 / JBDS 9.0.0 - JBIDE-18820, JBIDE-18806
 
 version=9.1.0.CR1 # or .GA
-versionWithRespin=9.1.0.CR1 # a, b, c...
+versionWithRespin=9.1.0.CR1a # a, b, c...
 
 if [[ ${version:0:1} == "4" ]]; then # JBT
   pluginName=foundation.core
@@ -65,9 +65,9 @@ Whenever you're starting a new shell, you should set those variables:
 [sources,bash]
 ----
 version=9.1.0.CR1
-versionWithRespin=9.1.0.CR1 # a, b, c...
-TARGET_PLATFORM_VERSION_MAX=4.52.0.CR1-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.52.0.CR1-SNAPSHOT
+versionWithRespin=9.1.0.CR1a # a, b, c...
+TARGET_PLATFORM_VERSION_MAX=4.52.0.Final-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.52.0.Final-SNAPSHOT
 now=$(date +%s000)
 isGA=false
 JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
@@ -100,9 +100,9 @@ WARNING: Don't use symlinks are they are too risky to use. Those operations can 
 # can run these 6 steps in parallel
 
 # 1. copy JBDS target platform zips
-versionWithRespin=9.1.0.CR1 # a, b, c...
-TARGET_PLATFORM_VERSION_MAX=4.52.0.CR1-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.52.0.CR1-SNAPSHOT
+versionWithRespin=9.1.0.CR1a # a, b, c...
+TARGET_PLATFORM_VERSION_MAX=4.52.0.Final-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.52.0.Final-SNAPSHOT
 for targetname in jbdevstudio jbtcentral jbtearlyaccess; do
   if [[ ${targetname} == "jbdevstudio" ]]; then
     TARGET_PLATFORM_VERSION=${TARGET_PLATFORM_VERSION_MAX}
@@ -119,7 +119,7 @@ echo "DONE: copy JBDS target platform zips" | grep "copy JBDS target platform zi
 
 
 # 2. copy JBDS Central/EA update sites & zips
-versionWithRespin=9.1.0.CR1 # a, b, c...
+versionWithRespin=9.1.0.CR1a # a, b, c...
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 JBT_stream=4.3.mars
 for site in central-site earlyaccess-site; do
@@ -151,7 +151,7 @@ echo "DONE: copy JBDS Central/EA update sites & zips" | grep "copy JBDS Central/
 
 
 # 3. copy JBDS installers: snapshots/builds/ to staging/builds/ [INTERNAL - both installers]
-versionWithRespin=9.1.0.CR1 # a, b, c...
+versionWithRespin=9.1.0.CR1a # a, b, c...
 JBDS_stream=9.0.mars
 ID=""
 ID=$(cd /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${JBDS_stream} && ls 20* | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%:*}
@@ -177,7 +177,7 @@ echo "DONE: copy JBDS installers: snapshots/builds/ to staging/builds/ [INTERNAL
 
 
 # 4. copy JBDS installers: snapshots/builds/ to staging/builds/ [EXTERNAL - Standalone installer only]
-versionWithRespin=9.1.0.CR1 # a, b, c...
+versionWithRespin=9.1.0.CR1a # a, b, c...
 JBDS_stream=9.0.mars
 ID=""
 ID=$(echo "ls 20*" | sftp ${JBDS}/9.0/snapshots/builds/devstudio.product_${JBDS_stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
@@ -200,7 +200,7 @@ echo "DONE: copy JBDS installers: snapshots/builds/ to staging/builds/ [EXTERNAL
 
 
 # 5. copy JBDS update: snapshots/builds/*/repo/* to staging/updates/core/${versionWithRespin}; also copy updatesite-core.zip
-versionWithRespin=9.1.0.CR1 # a, b, c...
+versionWithRespin=9.1.0.CR1a # a, b, c...
 JBDS_stream=9.0.mars
 ID=""
 ID=$(cd /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${JBDS_stream} && ls 20* | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%:*}
@@ -218,7 +218,7 @@ echo "DONE: copy JBDS update: snapshots/builds/*/repo/* to staging/updates/core/
 
 # TODO: make sure you've rebuilt the discovery sites and disabled the job first before doing this step!
 # 6. copy JBDS discovery sites to staging/builds/ and staging/updates/
-versionWithRespin=9.1.0.CR1 # a, b, c...
+versionWithRespin=9.1.0.CR1a # a, b, c...
 JBT_stream=4.3.mars
 for site in discovery.central discovery.earlyaccess; do
   ID=""
@@ -251,7 +251,7 @@ Note that Akamai caching might result in the appearance of missing files (apache
 [source,bash]
 ----
 
-versionWithRespin=9.1.0.CR1 # a, b, c...
+versionWithRespin=9.1.0.CR1a # a, b, c...
 tmpfile=/tmp/jbosstools-staging__verify.txt
 for site in central earlyaccess discovery.central discovery.earlyaccess; do
   if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
@@ -268,9 +268,23 @@ firefox `cat $tmpfile`
 popd >/dev/null
 rm -fr $tmpfile
 
+# once the staging build folder exists, start fetching the JBDS installer (we'll need it later to do a smoke test)
+
+cd ~/tmp
+wget https://devstudio.redhat.com/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/
+installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
+echo "Installer jar: ${installerJar}"
+rm -f index.html
+wget https://devstudio.redhat.com/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/${installerJar}
+
 ----
 
+You'll use this downloaded installer later, but since it takes a while to download, it's more efficient to start it now.
+
+
 === Cleanup OLD builds
+
+Optional step.
 
 First, use sshfs to mount filemgmt file paths.
 
@@ -305,10 +319,10 @@ This should point to the latest staging bits. Just copy what's in discovery.cent
 ----
 
 version=9.1.0.CR1
-versionWithRespin_PREV=9.1.0.Beta2a # a, b, c...
-versionWithRespin=9.1.0.CR1 # a, b, c...
-TARGET_PLATFORM_VERSION_MAX=4.52.0.CR1-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.52.0.CR1-SNAPSHOT
+versionWithRespin_PREV=9.1.0.CR1 # a, b, c...
+versionWithRespin=9.1.0.CR1a # a, b, c...
+TARGET_PLATFORM_VERSION_MAX=4.52.0.Final-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.52.0.Final-SNAPSHOT
 
 cd ~/truu
 pushd jbdevstudio-website/content/9.0/staging/updates
@@ -381,13 +395,15 @@ Before notifying team of staged release, must check for obvious problems.
 
 [source,bash]
 ----
-versionWithRespin=9.1.0.CR1 # a, b, c...
+versionWithRespin=9.1.0.CR1a # a, b, c...
 cd ~/tmp
 wget https://devstudio.redhat.com/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/
 installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 echo "Installer jar: ${installerJar}"
 rm -f index.html
-wget https://devstudio.redhat.com/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/${installerJar}
+
+# should have already downloaded this above
+if [[ ! -f ${installerJar} ]]; then wget https://devstudio.redhat.com/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/${installerJar}; fi
 
 java -jar ~/tmp/${installerJar}
 
@@ -422,7 +438,7 @@ ____
 ----
 version_JBT=4.3.1.CR1
 version=9.1.0.CR1
-versionWithRespin=9.1.0.CR1 # a, b, c...
+versionWithRespin=9.1.0.CR1a # a, b, c...
 respin="respin-a"
 echo "
 Subject:

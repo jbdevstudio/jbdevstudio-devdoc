@@ -432,7 +432,7 @@ Build: http://machydra.brq.redhat.com:8080/job/developer-platform-installer-buil
 
 == Notify the team (send 1 email)
 ____
-*To* jboss-devstudio-list@redhat.com +
+*To* devtools-program@redhat.com +
 
 [source,bash]
 ----

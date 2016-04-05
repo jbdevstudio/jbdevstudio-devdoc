@@ -616,7 +616,7 @@ Below is a sample email you could send to these 4 sets of recipients when the bl
 Do not cross-post to both internal and external lists! Better to send 4 separate (identical) emails.
 
 To: jbosstools-dev@lists.jboss.org
-To: jboss-devstudio-list@redhat.com
+To: devtools-program@redhat.com
 To: jboss-announce@redhat.com (optional for major milestones, recommended for GA releases)
 To: gss-support-readiness@redhat.com, dgeoffro@redhat.com, mmusaji@redhat.com (for all GA releases (major, minor, maintenance) ONLY)
 

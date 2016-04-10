@@ -12,51 +12,11 @@ See details in JBT_Staging_For_QE.adoc
 
 == Verify correct version set in com.jboss.devstudio.central.core
 
-Check c.j.d.central.core's currentversion.properties for the correct value of default.version
-
-[sources,bash]
-----
-# @since JBT 4.3.0 / JBDS 9.0.0 - JBIDE-18820, JBIDE-18806
-
-version=9.1.0.CR1 # or .GA
-versionWithRespin=9.1.0.CR1a # a, b, c...
-
-if [[ ${version:0:1} == "4" ]]; then # JBT
-  pluginName=foundation.core
-  updatesiteURL=http://download.jboss.org/jbosstools/mars/staging/updates/core/${versionWithRespin}/plugins/
-  updatesiteURL=http://download.jboss.org/jbosstools/mars/snapshots/updates/core/4.3.mars/plugins/
-  #updatesiteURL=http://download.jboss.org/jbosstools/mars/snapshots/updates/core/master/plugins/
-else
-  pluginName=core.central
-  updatesiteURL=https://devstudio.redhat.com/9.0/staging/updates/core/${versionWithRespin}/plugins/
-  updatesiteURL=https://devstudio.redhat.com/9.0/snapshots/updates/core/4.3.mars/plugins/
-  #updatesiteURL=https://devstudio.redhat.com/9.0/snapshots/updates/core/master/plugins/
-fi
-pushd /tmp; wget -q -nc $updatesiteURL
-thejars=`cat index.html | egrep -v "source|pack.gz" | egrep ${pluginName} | sed -e "s#.\+href=\"\([^\"]\+\)\">.\+#\1#" | sort`
-echo "Found: $thejars" | egrep ${pluginName}
-thejar=`cat index.html | egrep -v "source|pack.gz" | egrep ${pluginName} | sed -e "s#.\+href=\"\([^\"]\+\)\">.\+#\1#" | sort | tail -1; rm -f index.html`
-echo ${updatesiteURL}/${thejar} | egrep ${pluginName}
-wget -q -nc ${updatesiteURL}/${thejar}
-theversion=`unzip -p ${thejar} */currentversion.properties | grep version= | sed -e "s/version=//" | tail -1`; theversion=${theversion/-SNAPSHOT/} # remove -SNAPSHOT suffix from version
-rm -f ${thejar}
-popd
-echo "In ${pluginName}, want ${version}, got $theversion" | egrep "${pluginName}|${version}"
-
-----
-
-If value found above for `$theversion` != current release version, then you need to rebuild foundation or JBDS w/ a new value inserted.
-
+See details in JBT_Staging_For_QE.adoc
 
 == Disable jobs
 
-All stable branch jobs from the https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/[9.0.mars view] should be disabled, EXCEPT the integration tests job (not published as part of the release and continues to be updated during staging):
-
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/job/jbosstools-integration-tests.aggregate_4.3.mars/
-
-Quick way to do so is with https://github.com/jbdevstudio/jbdevstudio-ci/blob/master/bin/toggleJenkinsJobs.py[toggleJenkinsJobs.py]. See https://github.com/jbdevstudio/jbdevstudio-ci/blob/master/bin/toggleJenkinsJobs.py.examples.txt[usage examples].
-
-Should a respin be needed, they can be re-enabled at that time.
+See details in JBT_Staging_For_QE.adoc
 
 == Variables to use
 
@@ -65,8 +25,8 @@ Whenever you're starting a new shell, you should set those variables:
 [sources,bash]
 ----
 version=9.1.0.CR1
-versionWithRespin=9.1.0.CR1a # a, b, c...
-TARGET_PLATFORM_VERSION_MAX=4.52.0.Final-SNAPSHOT
+versionWithRespin=9.1.0.CR1b # a, b, c...
+TARGET_PLATFORM_VERSION_MAX=4.52.0.Final
 TARGET_PLATFORM_CENTRAL_MAX=4.52.0.Final-SNAPSHOT
 now=$(date +%s000)
 isGA=false
@@ -99,9 +59,9 @@ WARNING: Don't use symlinks are they are too risky to use. Those operations can 
 ----
 # can run these 6 steps in parallel
 
-# 1. copy JBDS target platform zips
-versionWithRespin=9.1.0.CR1a # a, b, c...
-TARGET_PLATFORM_VERSION_MAX=4.52.0.Final-SNAPSHOT
+# 1. copy JBDS target platform zips from INTERNAL (www.qa) to EXTERNAL (devstudio.redhat.com)
+versionWithRespin=9.1.0.CR1b # a, b, c...
+TARGET_PLATFORM_VERSION_MAX=4.52.0.Final
 TARGET_PLATFORM_CENTRAL_MAX=4.52.0.Final-SNAPSHOT
 for targetname in jbdevstudio jbtcentral jbtearlyaccess; do
   if [[ ${targetname} == "jbdevstudio" ]]; then
@@ -118,129 +78,60 @@ done
 echo "DONE: copy JBDS target platform zips" | grep "copy JBDS target platform zips"
 
 
-# 2. copy JBDS Central/EA update sites & zips
-versionWithRespin=9.1.0.CR1a # a, b, c...
-TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
-JBT_stream=4.3.mars
+# 2. central/earlyaccess & discovery
+cd /tmp
+if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
+wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.3.x/publish/stage.sh --no-check-certificate
+chmod +x stage.sh
+stream=4.3.mars
+versionWithRespin=9.1.0.CR1b # a, b, c...
 for site in central-site earlyaccess-site; do
-  ID=""
-  ID=$(echo "ls 20*" | sftp ${TOOLS}/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${JBT_stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
-  if [[ $ID ]]; then
-    if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
-    echo "Latest build for ${sitename} (${site}): ${ID}"
-    tmpdir=/tmp/devstudio-staging__${site}_${JBT_stream}__${ID}
-    rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/mars/snapshots/builds/jbosstools-build-sites.aggregate.${site}_${JBT_stream}/${ID}/* ${tmpdir}/
-    # copy build folder
-    echo "mkdir devstudio-${versionWithRespin}-build-${sitename}" | sftp ${JBDS}/9.0/staging/builds/
-    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${JBDS}/9.0/staging/builds/devstudio-${versionWithRespin}-build-${sitename}/${ID}/
-    # copy update site
-    echo "mkdir ${sitename}" | sftp ${JBDS}/9.0/staging/updates/
-    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/all/repo/* ${JBDS}/9.0/staging/updates/${sitename}/${versionWithRespin}/
-    # copy update site zip
-    y=${tmpdir}/all/repository.zip
-    suffix=-updatesite-${sitename}
-    rsync -aPrz --rsh=ssh --protocol=28 ${y} ${JBDS}/9.0/staging/updates/core/jboss-devstudio-${versionWithRespin}${suffix}.zip
-    rsync -aPrz --rsh=ssh --protocol=28 ${y}.sha256 ${JBDS}/9.0/staging/updates/core/jboss-devstudio-${versionWithRespin}${suffix}.zip.sha256
-    du -sh $tmpdir
-    rm -fr $tmpdir
-  else
-    echo "ERROR: no latest build found for ${site}" | grep ERROR
-  fi
+  ./stage.sh -sites $site -dd 9.0 -stream ${stream} -vr ${versionWithRespin} -JOB_NAME jbosstools-build-sites.aggregate.\${site}_\${stream} \
+    -DESTINATION ${JBDS} -DEST_URL https://devstudio.redhat.com &
 done
-echo "DONE: copy JBDS Central/EA update sites & zips" | grep "copy JBDS Central/EA update sites & zips"
+wait && echo $#
 
 
 # 3. copy JBDS installers: snapshots/builds/ to staging/builds/ [INTERNAL - both installers]
-versionWithRespin=9.1.0.CR1a # a, b, c...
-JBDS_stream=9.0.mars
-ID=""
-ID=$(cd /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${JBDS_stream} && ls 20* | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%:*}
-if [[ $ID ]]; then
-  echo "Latest build for installers: ${ID}"
-  tmpdir=/tmp/jboss-devstudio-${versionWithRespin}-build-product_INTERNAL__${ID}
-  # copy build folder
-  mkdir -p /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/${ID}/
-  rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${JBDS_stream}/${ID}/* /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/${ID}/ --exclude="repo"
-  # create latest symlinks
-  mkdir -p ${tmpdir}; pushd $tmpdir >/dev/null; ln -s ${ID} latest
-    rm -f /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${JBDS_stream}/latest
-    rsync --protocol=28 -l latest /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${JBDS_stream}/
-    rm -f /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest
-    rsync --protocol=28 -l latest /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/
-  popd >/dev/null
-  du -sh $tmpdir
-  rm -fr $tmpdir
-else
-  echo "ERROR: no latest build found for installers" | grep ERROR
-fi
-echo "DONE: copy JBDS installers: snapshots/builds/ to staging/builds/ [INTERNAL - both installers]" | egrep "copy JBDS installers|INTERNAL"
+#    copy JBDS update: snapshots/builds/*/repo/* to staging/updates/core/${versionWithRespin}; also copy updatesite-core.zip
+cd /tmp
+if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
+wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.3.x/publish/stage.sh --no-check-certificate
+chmod +x stage.sh
+stream=9.0.mars
+versionWithRespin=9.1.0.CR1b # a, b, c...
+for site in product; do
+  ./stage.sh -sites $site -dd 9.0 -stream ${stream} -vr ${versionWithRespin} -JOB_NAME devstudio.\${site}_\${stream} \
+    -DESTINATION /qa/services/http/binaries/RHDS -DEST_URL http://www.qa.jboss.com/binaries/RHDS &
+done
 
 
 # 4. copy JBDS installers: snapshots/builds/ to staging/builds/ [EXTERNAL - Standalone installer only]
-versionWithRespin=9.1.0.CR1a # a, b, c...
-JBDS_stream=9.0.mars
-ID=""
-ID=$(echo "ls 20*" | sftp ${JBDS}/9.0/snapshots/builds/devstudio.product_${JBDS_stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
-if [[ $ID ]]; then
-  echo "Latest build for installer: ${ID}"
-  # copy build folder
-  tmpdir=/tmp/jboss-devstudio-${versionWithRespin}-build-product_EXTERNAL__${ID}
-  rsync -aPrz --rsh=ssh --protocol=28 ${JBDS}/9.0/snapshots/builds/devstudio.product_${JBDS_stream}/${ID}/* ${tmpdir}/ --exclude="repo"
-  # copy standalone installer
-  echo "mkdir devstudio-${versionWithRespin}-build-product" | sftp ${JBDS}/9.0/staging/builds/
-  rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${JBDS}/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/${ID}/ --exclude="repo"
-  # create latest symlink
-  mkdir -p ${tmpdir}; pushd $tmpdir >/dev/null; ln -s ${ID} latest; rsync --protocol=28 -l latest ${JBDS}/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/; rm -f latest; popd >/dev/null
-  du -sh $tmpdir
-  rm -fr $tmpdir
-else
-  echo "ERROR: no latest build found for installer" | grep ERROR
-fi
-echo "DONE: copy JBDS installers: snapshots/builds/ to staging/builds/ [EXTERNAL - Standalone installer only]" | egrep "copy JBDS installers|EXTERNAL"
-
-
 # 5. copy JBDS update: snapshots/builds/*/repo/* to staging/updates/core/${versionWithRespin}; also copy updatesite-core.zip
-versionWithRespin=9.1.0.CR1a # a, b, c...
-JBDS_stream=9.0.mars
-ID=""
-ID=$(cd /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${JBDS_stream} && ls 20* | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%:*}
-sitename="core"
-# copy update site
-echo "mkdir ${sitename}" | sftp ${JBDS}/9.0/staging/updates/
-rsync -aPrz --rsh=ssh --protocol=28 /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${JBDS_stream}/${ID}/all/repo/* ${JBDS}/9.0/staging/updates/${sitename}/${versionWithRespin}/
-
-# don't copy the "latest" symlink, just the actual file
-y=$(find /qa/services/http/binaries/RHDS/9.0/snapshots/builds/devstudio.product_${JBDS_stream}/${ID}/all/ -name "jboss-devstudio-*-updatesite-core.zip" -a -not -name "*latest*")
-rsync -aPrz --rsh=ssh --protocol=28 ${y} ${JBDS}/9.0/staging/updates/${sitename}/jboss-devstudio-${versionWithRespin}-updatesite-core.zip
-rsync -aPrz --rsh=ssh --protocol=28 ${y}.sha256 ${JBDS}/9.0/staging/updates/${sitename}/jboss-devstudio-${versionWithRespin}-updatesite-core.zip.sha256
-echo "DONE: copy JBDS update: snapshots/builds/*/repo/* to staging/updates/core/${versionWithRespin}; also copy updatesite-core.zip" | grep "copy JBDS update"
+cd /tmp
+if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
+wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.3.x/publish/stage.sh --no-check-certificate
+chmod +x stage.sh
+stream=9.0.mars
+versionWithRespin=9.1.0.CR1b # a, b, c...
+for site in product; do
+  ./stage.sh -sites $site -dd 9.0 -stream ${stream} -vr ${versionWithRespin} -JOB_NAME devstudio.\${site}_\${stream} \
+    -DESTINATION ${JBDS} -DEST_URL https://devstudio.redhat.com &
+done
 
 
 # TODO: make sure you've rebuilt the discovery sites and disabled the job first before doing this step!
 # 6. copy JBDS discovery sites to staging/builds/ and staging/updates/
-versionWithRespin=9.1.0.CR1a # a, b, c...
-JBT_stream=4.3.mars
+cd /tmp
+if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
+wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.3.x/publish/stage.sh --no-check-certificate
+chmod +x stage.sh
+stream=4.3.mars
+versionWithRespin=9.1.0.CR1b # a, b, c...
 for site in discovery.central discovery.earlyaccess; do
-  ID=""
-  ID=$(echo "ls 20*" | sftp ${JBDS}/9.0/snapshots/builds/jbosstools-${site}_${JBT_stream} 2>&1 | grep "20.\+" | grep -v sftp | sort | tail -1); ID=${ID%%/*}
-  if [[ $ID ]]; then
-    if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
-    echo "Latest build for ${sitename} (${site}): ${ID}"
-    tmpdir=/tmp/devstudio-staging__${site}_${JBT_stream}__${ID}
-    rsync -aPrz --rsh=ssh --protocol=28 ${JBDS}/9.0/snapshots/builds/jbosstools-${site}_${JBT_stream}/${ID}/* ${tmpdir}/
-    # copy build folder (and rename from jbosstools to devstudio)
-    echo "mkdir devstudio-${versionWithRespin}-build-${sitename}" | sftp ${JBDS}/9.0/staging/builds/
-    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/* ${JBDS}/9.0/staging/builds/devstudio-${versionWithRespin}-build-${sitename}/${ID}/
-    # copy update site
-    echo "mkdir ${sitename}" | sftp ${JBDS}/9.0/staging/updates/
-    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/all/repo/* ${JBDS}/9.0/staging/updates/${sitename}/${versionWithRespin}/
-    du -sh $tmpdir
-    rm -fr $tmpdir
-  else
-    echo "ERROR: no latest build found for ${site}" | grep ERROR
-  fi
+  ./stage.sh -sites $site -dd 9.0 -stream ${stream} -vr ${versionWithRespin} -JOB_NAME jbosstools-\${site}_\${stream} \
+    -DESTINATION ${JBDS} -DEST_URL https://devstudio.redhat.com &
 done
-echo "DONE: copy JBDS discovery sites to staging/builds/ and staging/updates/" | grep "copy JBDS discovery sites to staging/builds/ and staging/updates/"
 
 ----
 
@@ -251,7 +142,7 @@ Note that Akamai caching might result in the appearance of missing files (apache
 [source,bash]
 ----
 
-versionWithRespin=9.1.0.CR1a # a, b, c...
+versionWithRespin=9.1.0.CR1b # a, b, c...
 tmpfile=/tmp/jbosstools-staging__verify.txt
 for site in central earlyaccess discovery.central discovery.earlyaccess; do
   if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
@@ -319,9 +210,9 @@ This should point to the latest staging bits. Just copy what's in discovery.cent
 ----
 
 version=9.1.0.CR1
-versionWithRespin_PREV=9.1.0.CR1 # a, b, c...
-versionWithRespin=9.1.0.CR1a # a, b, c...
-TARGET_PLATFORM_VERSION_MAX=4.52.0.Final-SNAPSHOT
+versionWithRespin_PREV=9.1.0.CR1a # a, b, c...
+versionWithRespin=9.1.0.CR1b # a, b, c...
+TARGET_PLATFORM_VERSION_MAX=4.52.0.Final
 TARGET_PLATFORM_CENTRAL_MAX=4.52.0.Final-SNAPSHOT
 
 cd ~/truu
@@ -395,7 +286,7 @@ Before notifying team of staged release, must check for obvious problems.
 
 [source,bash]
 ----
-versionWithRespin=9.1.0.CR1a # a, b, c...
+versionWithRespin=9.1.0.CR1b # a, b, c...
 cd ~/tmp
 wget https://devstudio.redhat.com/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/
 installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
@@ -438,7 +329,7 @@ ____
 ----
 version_JBT=4.3.1.CR1
 version=9.1.0.CR1
-versionWithRespin=9.1.0.CR1a # a, b, c...
+versionWithRespin=9.1.0.CR1b # a, b, c...
 respin="respin-a"
 echo "
 Subject:

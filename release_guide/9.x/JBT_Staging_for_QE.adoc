@@ -21,8 +21,33 @@ Check o.j.t.foundation.core's currentversion.properties for the correct value of
 ----
 # @Since JBT 4.2.1 / JBDS 8.0.1 - JBIDE-18820, JBIDE-18806
 
-version=4.3.1.CR1 # or .Final
-versionWithRespin=4.3.1.CR1a # a, b, c...
+version=4.3.1.Final # or .Final
+versionWithRespin=4.3.1.CR1b # a, b, c...
+
+if [[ ${version:0:1} == "4" ]]; then # JBT
+  pluginName=foundation.core
+  updatesiteURL=http://download.jboss.org/jbosstools/mars/staging/updates/core/${versionWithRespin}/plugins/
+  updatesiteURL=http://download.jboss.org/jbosstools/mars/snapshots/updates/core/4.3.mars/plugins/
+  #updatesiteURL=http://download.jboss.org/jbosstools/mars/snapshots/updates/core/master/plugins/
+else
+  pluginName=core.central
+  updatesiteURL=https://devstudio.redhat.com/9.0/staging/updates/core/${versionWithRespin}/plugins/
+  updatesiteURL=https://devstudio.redhat.com/9.0/snapshots/updates/core/4.3.mars/plugins/
+  #updatesiteURL=https://devstudio.redhat.com/9.0/snapshots/updates/core/master/plugins/
+fi
+pushd /tmp; wget -q -nc $updatesiteURL
+thejars=`cat index.html | egrep -v "source|pack.gz" | egrep ${pluginName} | sed -e "s#.\+href=\"\([^\"]\+\)\">.\+#\1#" | sort`
+echo "Found: $thejars" | egrep ${pluginName}
+thejar=`cat index.html | egrep -v "source|pack.gz" | egrep ${pluginName} | sed -e "s#.\+href=\"\([^\"]\+\)\">.\+#\1#" | sort | tail -1; rm -f index.html`
+echo ${updatesiteURL}/${thejar} | egrep ${pluginName}
+wget -q -nc ${updatesiteURL}/${thejar}
+theversion=`unzip -p ${thejar} */currentversion.properties | grep version= | sed -e "s/version=//" | tail -1`; theversion=${theversion/-SNAPSHOT/} # remove -SNAPSHOT suffix from version
+rm -f ${thejar}
+popd
+echo "In ${pluginName}, want ${version}, got $theversion" | egrep "${pluginName}|${version}"
+
+version=9.1.0.GA # or .GA
+versionWithRespin=9.1.0.CR1b # a, b, c...
 
 if [[ ${version:0:1} == "4" ]]; then # JBT
   pluginName=foundation.core
@@ -82,22 +107,12 @@ To prevent accidentally rebuilding something while you're copying it away, make 
 ----
 # kerberos login for the Jenkins server
 userpass=nboldt:PASSWORD
-for j in jbosstools-build.parent_4.3.mars jbosstoolstargetplatforms-matrix jbosstools-buildflow_4.3.mars jbosstools-composite-install_4.3.mars jbosstools-browsersim-standalone_4.3.mars jbosstools-build-sites.aggregate.site_4.3.mars jbosstools-build-sites.aggregate.coretests-site_4.3.mars jbosstools-centraltarget_4.3.mars jbosstools-build-sites.aggregate.child-sites_4.3.mars devstudio.product_9.0.mars devstudio.versionwatch_9.0.mars jbosstools-install-p2director.install-tests.matrix_4.3.mars jbosstools-install-grinder.install-tests.matrix_4.3.mars
-; do
+for j in jbosstools-build.parent_4.3.mars jbosstoolstargetplatforms-matrix jbosstools-buildflow_4.3.mars jbosstools-composite-install_4.3.mars jbosstools-browsersim-standalone_4.3.mars jbosstools-build-sites.aggregate.site_4.3.mars jbosstools-build-sites.aggregate.coretests-site_4.3.mars jbosstools-centraltarget_4.3.mars jbosstools-build-sites.aggregate.child-sites_4.3.mars devstudio.product_9.0.mars devstudio.versionwatch_9.0.mars jbosstools-install-p2director.install-tests.matrix_4.3.mars jbosstools-install-grinder.install-tests.matrix_4.3.mars; do
   curl -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/disable && echo -n "."
 done
 echo ""
 
 ----
-
-Do not disable this job (not published as part of the release and continues to be updated during staging):
-
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/job/jbosstools-integration-tests.aggregate_4.3.mars/
-
-If you want to disable all jobs from the https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_9.0.mars/[9.0.mars view], see https://github.com/jbdevstudio/jbdevstudio-ci/blob/master/bin/toggleJenkinsJobs.py[toggleJenkinsJobs.py]. See also https://github.com/jbdevstudio/jbdevstudio-ci/blob/master/bin/toggleJenkinsJobs.py.examples.txt[usage examples].
-
-Should a respin be needed, they can be re-enabled as needed.
-
 
 == Update Discovery Sites and URLs
 
@@ -113,11 +128,13 @@ Then respin the job and verify that sites were correctly populated:
 # kerberos login for the Jenkins server
 userpass=nboldt:PASSWORD
 
-versionWithRespin=CR1a # a, b, c... (not SNAPSHOT!)
-TARGET_PLATFORM_VERSION_MAX=4.52.0.Final-SNAPSHOT
+versionWithRespin=CR1b # a, b, c... (not SNAPSHOT!)
+TARGET_PLATFORM_VERSION_MAX=4.52.0.Final
 TARGET_PLATFORM_CENTRAL_MAX=4.52.0.Final-SNAPSHOT
 for j in jbosstools-discovery_4.3.mars; do
+  curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/enable
   curl -k -u ${userpass} --data "VERSION=${versionWithRespin}&TARGET_PLATFORM_VERSION_MAXIMUM=${TARGET_PLATFORM_VERSION_MAX}&JBTCENTRALTARGET_VERSION=${TARGET_PLATFORM_CENTRAL_MAX}" https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/buildWithParameters
+  sleep 15s
   # then disable the job
   curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/disable
 done
@@ -129,13 +146,18 @@ If you ran the above in Jenkins / on dev01, this next step needs to be run local
 [source,bash]
 ----
 
-firefox \
+google-chrome \
 http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-discovery_4.3.mars/lastBuild/parameters \
 http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-discovery_4.3.mars/lastBuild/console \
 http://download.jboss.org/jbosstools/mars/snapshots/builds/jbosstools-discovery.central_4.3.mars/latest/all/repo/compositeArtifacts.xml \
 http://download.jboss.org/jbosstools/mars/snapshots/builds/jbosstools-discovery.central_4.3.mars/latest/all/repo/jbosstools-directory.xml \
 http://download.jboss.org/jbosstools/mars/snapshots/builds/jbosstools-discovery.earlyaccess_4.3.mars/latest/all/repo/compositeArtifacts.xml \
 http://download.jboss.org/jbosstools/mars/snapshots/builds/jbosstools-discovery.earlyaccess_4.3.mars/latest/all/repo/jbosstools-directory.xml
+google-chrome \
+https://devstudio.redhat.com/9.0/snapshots/builds/jbosstools-discovery.central_4.3.mars/latest/all/repo/compositeArtifacts.xml \
+https://devstudio.redhat.com/9.0/snapshots/builds/jbosstools-discovery.central_4.3.mars/latest/all/repo/devstudio-directory.xml \
+https://devstudio.redhat.com/9.0/snapshots/builds/jbosstools-discovery.earlyaccess_4.3.mars/latest/all/repo/compositeArtifacts.xml \
+https://devstudio.redhat.com/9.0/snapshots/builds/jbosstools-discovery.earlyaccess_4.3.mars/latest/all/repo/devstudio-directory.xml
 
 ----
 
@@ -164,24 +186,26 @@ Here is a script that performs the copy (& rename) from /snapshots/ to /staging/
 [source,bash]
 ----
 stream=4.3.mars
-versionWithRespin=4.3.1.CR1a # a, b, c...
-
+versionWithRespin=4.3.1.CR1b # a, b, c...
 cd /tmp
-if [[ -f /tmp/stage.sh ]]; rm -f /tmp/stage.sh; fi
+if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
 wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.3.x/publish/stage.sh --no-check-certificate
 chmod +x stage.sh
-
-# Do these steps in parallel to save time
 for site in site coretests-site central-site earlyaccess-site; do
   ./stage.sh -sites $site -eclipseReleaseName mars -stream ${stream} -vr ${versionWithRespin} -JOB_NAME jbosstools-build-sites.aggregate.\${site}_\${stream} &
 done
-wait && echo $#
-
 for site in browsersim-standalone; do
   ./stage.sh -sites $site -eclipseReleaseName mars -stream ${stream} -vr ${versionWithRespin} &
 done
 
+
 # TODO: make sure you've rebuilt the discovery sites and disabled the job first before doing this step!
+stream=4.3.mars
+versionWithRespin=4.3.1.CR1b # a, b, c...
+cd /tmp
+if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
+wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.3.x/publish/stage.sh --no-check-certificate
+chmod +x stage.sh
 for site in discovery.central discovery.earlyaccess; do
   ./stage.sh -sites $site -eclipseReleaseName mars -stream ${stream} -vr ${versionWithRespin} &
 done
@@ -195,7 +219,7 @@ Note that Akamai caching might result in the appearance of missing files (apache
 [source,bash]
 ----
 
-versionWithRespin=4.3.1.CR1a # a, b, c...
+versionWithRespin=4.3.1.CR1b # a, b, c...
 tmpfile=/tmp/jbosstools-staging__verify.txt
 for site in site coretests-site central-site earlyaccess-site discovery.central discovery.earlyaccess; do
   if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
@@ -259,12 +283,12 @@ This site needs to contain:
 
 [source,bash]
 ----
-versionWithRespin_PREV=4.3.1.CR1 # a, b, c...
-TARGET_PLATFORM_VERSION_MAX_PREV=4.52.0.CR1-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX_PREV=4.52.0.CR1-SNAPSHOT
+versionWithRespin_PREV=4.3.1.CR1a # a, b, c...
+TARGET_PLATFORM_VERSION_MAX_PREV=4.52.0.Final-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX_PREV=4.52.0.Final-SNAPSHOT
 
-versionWithRespin=4.3.1.CR1a # a, b, c...
-TARGET_PLATFORM_VERSION_MAX=4.52.0.Final-SNAPSHOT
+versionWithRespin=4.3.1.CR1b # a, b, c...
+TARGET_PLATFORM_VERSION_MAX=4.52.0.Final
 TARGET_PLATFORM_CENTRAL_MAX=4.52.0.Final-SNAPSHOT
 
 cd ~/tru
@@ -324,9 +348,9 @@ Update it so that the links for the latest milestone point to valid URLs. Commen
 cd ~/tru
 pushd jbosstools-download.jboss.org/jbosstools/configuration
 version=4.3.1.CR1
-versionWithRespin=4.3.1.CR1a # a, b, c...
+versionWithRespin=4.3.1.CR1b # a, b, c...
 jbdsFixVersion=9.1.0.CR1 # no respin suffix here
-jbdsFixVersionWithRespin=9.1.0.CR1a # a, b, c...
+jbdsFixVersionWithRespin=9.1.0.CR1b # a, b, c...
 
 git fetch origin master
 git checkout FETCH_HEAD
@@ -396,10 +420,10 @@ ____
 
 [source,bash]
 ----
-versionWithRespin=4.3.1.CR1a # a, b, c...
-respin="respin-a"
-TARGET_PLATFORM_VERSION_MIN=4.50.2.Final-SNAPSHOT
-TARGET_PLATFORM_VERSION_MAX=4.52.0.Final-SNAPSHOT
+versionWithRespin=4.3.1.CR1b # a, b, c...
+respin="respin-b"
+TARGET_PLATFORM_VERSION_MIN=4.50.2.Final
+TARGET_PLATFORM_VERSION_MAX=4.52.0.Final
 TARGET_PLATFORM_CENTRAL_MAX=4.52.0.Final-SNAPSHOT
 jbdsFixVersion=9.1.0.CR1 # no respin suffix here
 jbtFixVersion=4.3.1.CR1 # no respin suffix here

@@ -415,8 +415,8 @@ https://github.com/jbosstools/jbosstools-download.jboss.org/commit/d5306ce940814
 
 cd ~/tru # or where you have jbosstools-download.jboss.org checked out
 
-TARGET_PLATFORM_VERSION_MAX_PREV=4.51.2.Beta1-SNAPSHOT
-TARGET_PLATFORM_VERSION_MAX=4.52.0.Beta2-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX_PREV=4.51.2.Beta2-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.52.0.Final
 now=`date +%s000`
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 

@@ -322,6 +322,9 @@ Build: http://machydra.brq.redhat.com:8080/job/developer-platform-installer-buil
 
 
 == Notify the team (send 1 email)
+
+Run this on dev01 so that we can use /bin/mail. Email should be generated automatically rather than requiring copy & paste into your mail client.
+
 ____
 *To* jboss-devstudio-list@redhat.com +
 
@@ -331,14 +334,11 @@ version_JBT=4.3.1.CR1
 version=9.1.0.CR1
 versionWithRespin=9.1.0.CR1b # a, b, c...
 respin="respin-a"
+recipients=jboss-devstudio-list@redhat.com
+sender=nboldt@redhat.com
+subject="JBDS ${versionWithRespin} Core bits available for QE testing"
 echo "
-Subject:
-
-JBDS ${versionWithRespin} Core bits available for QE testing
-
-Body:
-
-As always, these are not FINAL bits, but preliminary results for QE testing. Not for redistribution to customers. Update sites are public; installers require VPN access.
+These are not FINAL bits, but preliminary results for QE & community testing. Not for redistribution to customers or end users.
 
 Universal Installers:
 * http://www.qa.jboss.com/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/ (EAP bundles; VPN required)
@@ -353,11 +353,9 @@ New + Noteworthy (subject to change):
 * http://tools.jboss.org/documentation/whatsnew/
 
 Schedule / Upcoming Releases: https://issues.jboss.org/projects/JBDS?selectedItem=com.atlassian.jira.jira-projects-plugin:release-page
-
-"
+" > /tmp/mailbody.jbds.txt
 if [[ $respin != "respin-" ]]; then
 echo "
-
 --
 
 Changes prompting this $respin are:
@@ -370,9 +368,12 @@ To compare the upcoming version of Central (${versionWithRespin}) against an old
  -Djboss.discovery.earlyaccess.site.url=https://devstudio.redhat.com/9.0/staging/updates/discovery.earlyaccess/${versionWithRespin}/
  -Djboss.discovery.earlyaccess.list.url=https://devstudio.redhat.com/9.0/staging/updates/discovery.earlyaccess/${versionWithRespin}/devstudio-earlyaccess.properties
 
-"
+" >> /tmp/mailbody.jbds.txt
 fi
 
+# use mail (with sendmail's -f flag), NOT mailx
+/bin/mail -s "$subject" $recipients -- -f"$sender" < /tmp/mailbody.jbds.txt
+rm -f /tmp/mailbody.jbds.txt
 
 ----
 ____

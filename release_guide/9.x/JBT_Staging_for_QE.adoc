@@ -415,11 +415,14 @@ If the next build will NOT be a respin, you will also need to ALSO make these ch
 
 == Notify the team
 
+Run this on dev01 so that we can use /bin/mail. Email should be generated automatically rather than requiring copy & paste into your mail client.
+
 ____
 *To* jbosstools-dev@lists.jboss.org +
 
 [source,bash]
 ----
+
 versionWithRespin=4.3.1.CR1b # a, b, c...
 respin="respin-b"
 TARGET_PLATFORM_VERSION_MIN=4.50.2.Final
@@ -427,14 +430,11 @@ TARGET_PLATFORM_VERSION_MAX=4.52.0.Final
 TARGET_PLATFORM_CENTRAL_MAX=4.52.0.Final-SNAPSHOT
 jbdsFixVersion=9.1.0.CR1 # no respin suffix here
 jbtFixVersion=4.3.1.CR1 # no respin suffix here
+recipients=jbosstools-dev@lists.jboss.org
+sender=nboldt@redhat.com
+subject="JBoss Tools Core ${versionWithRespin} bits available for QE testing"
 echo "
-Subject:
-
-JBoss Tools Core ${versionWithRespin} bits available for QE testing
-
-Body:
-
-As always, these are not FINAL bits, but preliminary results for QE & community testing. Not for use by customers or end users.
+These are not FINAL bits, but preliminary results for QE & community testing. Not for redistribution to customers or end users.
 
 Update site: http://download.jboss.org/jbosstools/mars/staging/updates/
 
@@ -460,11 +460,9 @@ Discovery sites:
 
 Build folders (for build logs & update site zips):
 * http://download.jboss.org/jbosstools/mars/staging/builds/
-
-"
+" > /tmp/mailbody.jbt.txt
 if [[ $respin != "respin-" ]]; then
 echo "
-
 --
 
 Changes prompting this $respin are:
@@ -476,8 +474,12 @@ To compare the upcoming version of Central (${versionWithRespin}) against an old
  -Djboss.discovery.site.url=http://download.jboss.org/jbosstools/mars/staging/updates/
  -Djboss.discovery.earlyaccess.site.url=http://download.jboss.org/jbosstools/mars/staging/updates/discovery.earlyaccess/${versionWithRespin}/
  -Djboss.discovery.earlyaccess.list.url=http://download.jboss.org/jbosstools/mars/staging/updates/discovery.earlyaccess/${versionWithRespin}/jbosstools-earlyaccess.properties
-"
+" >> /tmp/mailbody.jbt.txt
 fi
+
+# use mail (with sendmail's -f flag), NOT mailx
+/bin/mail -s "$subject" $recipients -- -f"$sender" < /tmp/mailbody.jbt.txt
+rm -f /tmp/mailbody.jbt.txt
 
 ----
 ____

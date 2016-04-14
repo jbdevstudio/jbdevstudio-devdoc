@@ -329,7 +329,7 @@ version=9.1.0.CR1
 versionWithRespin=9.1.0.CR1c # a, b, c...
 respin="respin-c"
 recipients=jboss-devstudio-list@redhat.com
-sender=nboldt@redhat.com
+sender="Nick Boldt <nboldt@redhat.com>"
 subject="JBDS ${versionWithRespin} Core bits available for QE testing"
 echo "
 These are not FINAL bits, but preliminary results for QE & community testing. Not for redistribution to customers or end users.

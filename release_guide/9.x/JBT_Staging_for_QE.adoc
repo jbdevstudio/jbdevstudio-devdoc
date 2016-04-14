@@ -426,7 +426,7 @@ TARGET_PLATFORM_CENTRAL_MAX=4.52.0.Final-SNAPSHOT
 jbdsFixVersion=9.1.0.CR1 # no respin suffix here
 jbtFixVersion=4.3.1.CR1 # no respin suffix here
 recipients=jbosstools-dev@lists.jboss.org
-sender=nboldt@redhat.com
+sender="Nick Boldt <nboldt@redhat.com>"
 subject="JBoss Tools Core ${versionWithRespin} bits available for QE testing"
 echo "
 These are not FINAL bits, but preliminary results for QE & community testing. Not for redistribution to customers or end users.

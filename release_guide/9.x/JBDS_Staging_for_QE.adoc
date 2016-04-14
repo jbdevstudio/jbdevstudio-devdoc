@@ -327,7 +327,7 @@ ____
 version_JBT=4.3.1.CR1
 version=9.1.0.CR1
 versionWithRespin=9.1.0.CR1c # a, b, c...
-respin="respin-a"
+respin="respin-c"
 recipients=jboss-devstudio-list@redhat.com
 sender=nboldt@redhat.com
 subject="JBDS ${versionWithRespin} Core bits available for QE testing"

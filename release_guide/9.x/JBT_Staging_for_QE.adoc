@@ -22,7 +22,7 @@ Check o.j.t.foundation.core's currentversion.properties for the correct value of
 # @Since JBT 4.2.1 / JBDS 8.0.1 - JBIDE-18820, JBIDE-18806
 
 version=4.3.1.Final # or .Final
-versionWithRespin=4.3.1.CR1b # a, b, c...
+versionWithRespin=4.3.1.CR1c # a, b, c...
 
 if [[ ${version:0:1} == "4" ]]; then # JBT
   pluginName=foundation.core
@@ -47,7 +47,7 @@ popd
 echo "In ${pluginName}, want ${version}, got $theversion" | egrep "${pluginName}|${version}"
 
 version=9.1.0.GA # or .GA
-versionWithRespin=9.1.0.CR1b # a, b, c...
+versionWithRespin=9.1.0.CR1c # a, b, c...
 
 if [[ ${version:0:1} == "4" ]]; then # JBT
   pluginName=foundation.core
@@ -128,7 +128,7 @@ Then respin the job and verify that sites were correctly populated:
 # kerberos login for the Jenkins server
 userpass=nboldt:PASSWORD
 
-versionWithRespin=CR1b # a, b, c... (not SNAPSHOT!)
+versionWithRespin=CR1c # a, b, c... (not SNAPSHOT!)
 TARGET_PLATFORM_VERSION_MAX=4.52.0.Final
 TARGET_PLATFORM_CENTRAL_MAX=4.52.0.Final-SNAPSHOT
 for j in jbosstools-discovery_4.3.mars; do
@@ -186,28 +186,28 @@ Here is a script that performs the copy (& rename) from /snapshots/ to /staging/
 [source,bash]
 ----
 stream=4.3.mars
-versionWithRespin=4.3.1.CR1b # a, b, c...
+versionWithRespin=4.3.1.CR1c # a, b, c...
 cd /tmp
 if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
 wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.3.x/publish/stage.sh --no-check-certificate
 chmod +x stage.sh
 for site in site coretests-site central-site earlyaccess-site; do
-  ./stage.sh -sites $site -eclipseReleaseName mars -stream ${stream} -vr ${versionWithRespin} -JOB_NAME jbosstools-build-sites.aggregate.\${site}_\${stream} &
+  ./stage.sh -sites $site -eclipseReleaseName mars -stream ${stream} -vr ${versionWithRespin} -JOB_NAME jbosstools-build-sites.aggregate.\${site}_\${stream} -q &
 done
 for site in browsersim-standalone; do
-  ./stage.sh -sites $site -eclipseReleaseName mars -stream ${stream} -vr ${versionWithRespin} &
+  ./stage.sh -sites $site -eclipseReleaseName mars -stream ${stream} -vr ${versionWithRespin} -q &
 done
 
 
 # TODO: make sure you've rebuilt the discovery sites and disabled the job first before doing this step!
 stream=4.3.mars
-versionWithRespin=4.3.1.CR1b # a, b, c...
+versionWithRespin=4.3.1.CR1c # a, b, c...
 cd /tmp
 if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
 wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.3.x/publish/stage.sh --no-check-certificate
 chmod +x stage.sh
 for site in discovery.central discovery.earlyaccess; do
-  ./stage.sh -sites $site -eclipseReleaseName mars -stream ${stream} -vr ${versionWithRespin} &
+  ./stage.sh -sites $site -eclipseReleaseName mars -stream ${stream} -vr ${versionWithRespin} -q &
 done
 
 ----
@@ -219,7 +219,7 @@ Note that Akamai caching might result in the appearance of missing files (apache
 [source,bash]
 ----
 
-versionWithRespin=4.3.1.CR1b # a, b, c...
+versionWithRespin=4.3.1.CR1c # a, b, c...
 tmpfile=/tmp/jbosstools-staging__verify.txt
 for site in site coretests-site central-site earlyaccess-site discovery.central discovery.earlyaccess; do
   if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
@@ -232,7 +232,7 @@ for site in browsersim-standalone; do
 done
 echo "" >> $tmpfile
 cat $tmpfile
-firefox `cat $tmpfile`
+google-chrome `cat $tmpfile`
 rm -fr $tmpfile
 
 ----
@@ -255,7 +255,7 @@ Then move old builds into an OLD/ folder to they're less visible and ready for d
 
 [source,bash]
 ----
-version_PREV=4.3.1.Beta2 # a, b, c...
+version_PREV=4.3.1.CR1b # a, b, c...
 for d in updates/core updates/central updates/earlyaccess updates/discovery.central updates/discovery.earlyaccess builds; do
   if [[ -d /media/TOOLS-ssh/mars/staging/${d}/ ]]; then
     echo "${d}/*${version_PREV}* ..."
@@ -268,64 +268,57 @@ done
 
 === Update http://download.jboss.org/jbosstools/mars/staging/updates/
 
-# TODO this needs a big revamp because we're now going to have the exact files in /staging/ that will be copied to /development/ ... give or take some simple sed string replacements
-#/staging/#/development/# (update sites)
-#/mars/#/static/mars/# (target platforms)
-# etc.
-
-Update files __http://download.jboss.org/jbosstools/mars/staging/updates/composite*.xml__ , with SFTP/SCP via command-line or your
-favourite SFTP GUI client (such as Eclipse RSE).
-
-This site needs to contain:
-* The latest JBoss Tools core site
-* The latest matching target platform site
-* The latest matching JBoss Tools Central site
+This should point to the latest staging bits. Just copy what's in discovery.central/composite*.xml into this folder.
 
 [source,bash]
 ----
-versionWithRespin_PREV=4.3.1.CR1a # a, b, c...
-TARGET_PLATFORM_VERSION_MAX_PREV=4.52.0.Final-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX_PREV=4.52.0.Final-SNAPSHOT
-
-versionWithRespin=4.3.1.CR1b # a, b, c...
-TARGET_PLATFORM_VERSION_MAX=4.52.0.Final
-TARGET_PLATFORM_CENTRAL_MAX=4.52.0.Final-SNAPSHOT
 
 cd ~/tru
-pushd jbosstools-download.jboss.org/jbosstools/mars/staging/updates
+RSYNC="rsync -aPrz --rsh=ssh --protocol=28"
+
+versionWithRespin_PREV=4.3.1.CR1b # a, b, c...
+versionWithRespin=4.3.1.CR1c # a, b, c...
+DESTINATION=tools@filemgmt.jboss.org:/downloads_htdocs/tools
+PROJECT_PATH=jbosstools-download.jboss.org/jbosstools
+DEST_URL="http://download.jboss.org/jbosstools"
+updatePath=mars/staging/updates
+
+pushd ${PROJECT_PATH}/${updatePath}
 git fetch origin master
 git checkout FETCH_HEAD
 
-# replace static/releases with mars/staging/updates, then replace all the versions
-now=`date +%s000`
-for c in compositeContent.xml compositeArtifacts.xml; do
-  sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#" $c
-  sed -i -e "s#/static/releases/#/mars/staging/updates/#" $c
-  sed -i -e "s#${versionWithRespin_PREV}#${versionWithRespin}#" $c
-  sed -i -e "s#${TARGET_PLATFORM_CENTRAL_MAX_PREV}#${TARGET_PLATFORM_CENTRAL_MAX}#" $c
-  sed -i -e "s#${TARGET_PLATFORM_VERSION_MAX_PREV}#${TARGET_PLATFORM_VERSION_MAX}#" $c
+for d in discovery.central discovery.earlyaccess; do
+  mkdir -p ${d}/${versionWithRespin}/
+  pushd ${d}/${versionWithRespin}/
+    ${RSYNC} ${DESTINATION}/${updatePath}/${d}/${versionWithRespin}/composite*xml ./
+    cat $c | egrep "${versionWithRespin}|targetplatforms|REPO|updates|timestamp"
+  popd
 done
-cat $c | egrep "${versionWithRespin}|${TARGET_PLATFORM_VERSION_MAX}|${TARGET_PLATFORM_CENTRAL_MAX}|timestamp"
-scpr composite*.xml core/
-git add composite*.xml core/composite*.xml
+rsync discovery.central/${versionWithRespin}/composite*.xml ./
 
-# push updated file to server
-TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
-scp composite*.xml ${TOOLS}/mars/staging/updates/
-scp core/composite*.xml ${TOOLS}/mars/staging/updates/core/
+# update index.html
+if [[ -f index.html ]]; then
+  sed -i "s#${versionWithRespin_PREV}#${versionWithRespin}#" index.html
+  cat index.html | egrep "${versionWithRespin_PREV}|${versionWithRespin}"
+fi
+
+# push changes to server
+${RSYNC} discovery.central/${versionWithRespin}/composite*xml ${DESTINATION}/${updatePath}/discovery.central/${versionWithRespin}/
+${RSYNC} discovery.earlyaccess/${versionWithRespin}/composite*xml ${DESTINATION}/${updatePath}/discovery.earlyaccess/${versionWithRespin}/
+${RSYNC} ./composite*xml *.html ${DESTINATION}/${updatePath}/
 
 # verify changes
-echo "Check 6 URLs:"
-firefox \
-http://download.jboss.org/jbosstools/mars/staging/updates/discovery.central/${versionWithRespin}/compositeContent.xml \
-http://download.jboss.org/jbosstools/mars/staging/updates/discovery.earlyaccess/${versionWithRespin}/compositeContent.xml \
-http://download.jboss.org/jbosstools/mars/staging/updates/compositeContent.xml \
-http://download.jboss.org/jbosstools/mars/staging/updates/core/compositeContent.xml \
-http://download.jboss.org/jbosstools/mars/staging/updates/core/ \
-http://download.jboss.org/jbosstools/mars/staging/updates/
+echo "Check 4 URLs:"
+google-chrome \
+${DEST_URL}/${updatePath}/discovery.central/${versionWithRespin}/compositeContent.xml \
+${DEST_URL}/${updatePath}/discovery.earlyaccess/${versionWithRespin}/compositeContent.xml \
+${DEST_URL}/${updatePath}/compositeContent.xml \
+${DEST_URL}/${updatePath}/
+
+rm -fr discovery.central/${versionWithRespin}/composite*.xml discovery.earlyaccess/${versionWithRespin}/composite*.xml
 
 # commit the change and push to master
-git commit -m "release JBT ${versionWithRespin} to QE" composite*.xml core/composite*.xml
+git commit -m "release ${versionWithRespin} to QE"
 git push origin HEAD:master
 popd
 
@@ -348,9 +341,9 @@ Update it so that the links for the latest milestone point to valid URLs. Commen
 cd ~/tru
 pushd jbosstools-download.jboss.org/jbosstools/configuration
 version=4.3.1.CR1
-versionWithRespin=4.3.1.CR1b # a, b, c...
+versionWithRespin=4.3.1.CR1c # a, b, c...
 jbdsFixVersion=9.1.0.CR1 # no respin suffix here
-jbdsFixVersionWithRespin=9.1.0.CR1b # a, b, c...
+jbdsFixVersionWithRespin=9.1.0.CR1c # a, b, c...
 
 git fetch origin master
 git checkout FETCH_HEAD
@@ -358,6 +351,8 @@ git checkout FETCH_HEAD
 # then edit ide-config.properties
 # vim ide-config.properties
 # st ide-config.properties
+# TODO something like this?
+# sed -i "s/CR1b/CR1c/g" ide-config.properties
 
 # commit the change and push to master
 ci "release JBT ${version} (${versionWithRespin}) to staging: link to latest dev milestone discovery site" ide-config.properties
@@ -368,7 +363,7 @@ TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 rsync -Pzrlt --rsh=ssh --protocol=28 ide-config.properties $TOOLS/configuration/ide-config.properties
 
 # verify these 6 URLs exist
-firefox $(egrep "/${version}/|/${versionWithRespin}/|/${jbdsFixVersion}/|/${jbdsFixVersionWithRespin}/" ide-config.properties | sed -e "s#.\+=\(.\+\)#\1#")
+google-chrome $(egrep "/${version}/|/${versionWithRespin}/|/${jbdsFixVersion}/|/${jbdsFixVersionWithRespin}/" ide-config.properties | sed -e "s#.\+=\(.\+\)#\1#")
 popd
 
 ----
@@ -423,7 +418,7 @@ ____
 [source,bash]
 ----
 
-versionWithRespin=4.3.1.CR1b # a, b, c...
+versionWithRespin=4.3.1.CR1c # a, b, c...
 respin="respin-b"
 TARGET_PLATFORM_VERSION_MIN=4.50.2.Final
 TARGET_PLATFORM_VERSION_MAX=4.52.0.Final

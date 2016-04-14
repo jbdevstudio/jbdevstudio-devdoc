@@ -25,7 +25,7 @@ Whenever you're starting a new shell, you should set those variables:
 [sources,bash]
 ----
 version=9.1.0.CR1
-versionWithRespin=9.1.0.CR1b # a, b, c...
+versionWithRespin=9.1.0.CR1c # a, b, c...
 TARGET_PLATFORM_VERSION_MAX=4.52.0.Final
 TARGET_PLATFORM_CENTRAL_MAX=4.52.0.Final-SNAPSHOT
 now=$(date +%s000)
@@ -60,7 +60,7 @@ WARNING: Don't use symlinks are they are too risky to use. Those operations can 
 # can run these 6 steps in parallel
 
 # 1. copy JBDS target platform zips from INTERNAL (www.qa) to EXTERNAL (devstudio.redhat.com)
-versionWithRespin=9.1.0.CR1b # a, b, c...
+versionWithRespin=9.1.0.CR1c # a, b, c...
 TARGET_PLATFORM_VERSION_MAX=4.52.0.Final
 TARGET_PLATFORM_CENTRAL_MAX=4.52.0.Final-SNAPSHOT
 for targetname in jbdevstudio jbtcentral jbtearlyaccess; do
@@ -84,10 +84,10 @@ if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
 wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.3.x/publish/stage.sh --no-check-certificate
 chmod +x stage.sh
 stream=4.3.mars
-versionWithRespin=9.1.0.CR1b # a, b, c...
+versionWithRespin=9.1.0.CR1c # a, b, c...
 for site in central-site earlyaccess-site; do
   ./stage.sh -sites $site -dd 9.0 -stream ${stream} -vr ${versionWithRespin} -JOB_NAME jbosstools-build-sites.aggregate.\${site}_\${stream} \
-    -DESTINATION ${JBDS} -DEST_URL https://devstudio.redhat.com &
+    -DESTINATION ${JBDS} -DEST_URL https://devstudio.redhat.com -q &
 done
 wait && echo $#
 
@@ -99,10 +99,10 @@ if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
 wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.3.x/publish/stage.sh --no-check-certificate
 chmod +x stage.sh
 stream=9.0.mars
-versionWithRespin=9.1.0.CR1b # a, b, c...
+versionWithRespin=9.1.0.CR1c # a, b, c...
 for site in product; do
   ./stage.sh -sites $site -dd 9.0 -stream ${stream} -vr ${versionWithRespin} -JOB_NAME devstudio.\${site}_\${stream} \
-    -DESTINATION /qa/services/http/binaries/RHDS -DEST_URL http://www.qa.jboss.com/binaries/RHDS &
+    -DESTINATION /qa/services/http/binaries/RHDS -DEST_URL http://www.qa.jboss.com/binaries/RHDS -q &
 done
 
 
@@ -113,10 +113,10 @@ if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
 wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.3.x/publish/stage.sh --no-check-certificate
 chmod +x stage.sh
 stream=9.0.mars
-versionWithRespin=9.1.0.CR1b # a, b, c...
+versionWithRespin=9.1.0.CR1c # a, b, c...
 for site in product; do
   ./stage.sh -sites $site -dd 9.0 -stream ${stream} -vr ${versionWithRespin} -JOB_NAME devstudio.\${site}_\${stream} \
-    -DESTINATION ${JBDS} -DEST_URL https://devstudio.redhat.com &
+    -DESTINATION ${JBDS} -DEST_URL https://devstudio.redhat.com -q &
 done
 
 
@@ -127,10 +127,10 @@ if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
 wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.3.x/publish/stage.sh --no-check-certificate
 chmod +x stage.sh
 stream=4.3.mars
-versionWithRespin=9.1.0.CR1b # a, b, c...
+versionWithRespin=9.1.0.CR1c # a, b, c...
 for site in discovery.central discovery.earlyaccess; do
   ./stage.sh -sites $site -dd 9.0 -stream ${stream} -vr ${versionWithRespin} -JOB_NAME jbosstools-\${site}_\${stream} \
-    -DESTINATION ${JBDS} -DEST_URL https://devstudio.redhat.com &
+    -DESTINATION ${JBDS} -DEST_URL https://devstudio.redhat.com -q &
 done
 
 ----
@@ -142,7 +142,7 @@ Note that Akamai caching might result in the appearance of missing files (apache
 [source,bash]
 ----
 
-versionWithRespin=9.1.0.CR1b # a, b, c...
+versionWithRespin=9.1.0.CR1c # a, b, c...
 tmpfile=/tmp/jbosstools-staging__verify.txt
 for site in central earlyaccess discovery.central discovery.earlyaccess; do
   if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
@@ -155,7 +155,7 @@ echo "https://devstudio.redhat.com/9.0/staging/builds/#_____(5_folders_w/_${vers
 echo "https://devstudio.redhat.com/9.0/staging/updates/core/#_____(6_zips,_6_sums,_1_folder_w/_${versionWithRespin}) " >> $tmpfile
 echo "" >> $tmpfile
 cat $tmpfile
-firefox `cat $tmpfile`
+google-chrome `cat $tmpfile`
 popd >/dev/null
 rm -fr $tmpfile
 
@@ -191,7 +191,7 @@ Then move old builds into an OLD/ folder to they're less visible and ready for d
 
 [source,bash]
 ----
-version_PREV=9.1.0.Beta2 # a, b, c...
+version_PREV=9.1.0.CR1b # a, b, c...
 for d in updates/core updates/central updates/earlyaccess updates/discovery.central updates/discovery.earlyaccess builds; do
   if [[ -d /media/JBDS-ssh/9.0/staging/${d}/ ]]; then
     echo "${d}/*${version_PREV}* ..."
@@ -209,59 +209,53 @@ This should point to the latest staging bits. Just copy what's in discovery.cent
 [source,bash]
 ----
 
-version=9.1.0.CR1
-versionWithRespin_PREV=9.1.0.CR1a # a, b, c...
-versionWithRespin=9.1.0.CR1b # a, b, c...
-TARGET_PLATFORM_VERSION_MAX=4.52.0.Final
-TARGET_PLATFORM_CENTRAL_MAX=4.52.0.Final-SNAPSHOT
-
 cd ~/truu
-pushd jbdevstudio-website/content/9.0/staging/updates
+RSYNC="rsync -aPrz --rsh=ssh --protocol=28"
 
+versionWithRespin_PREV=9.1.0.CR1b # a, b, c...
+versionWithRespin=9.1.0.CR1c # a, b, c...
+DESTINATION=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
+PROJECT_PATH=jbdevstudio-website/content
+DEST_URL="https://devstudio.redhat.com"
+updatePath=9.0/staging/updates
+
+pushd ${PROJECT_PATH}/${updatePath}
 git fetch origin master
 git checkout FETCH_HEAD
 
 for d in discovery.central discovery.earlyaccess; do
-  mkdir -p ${d}/${versionWithRespin}/; pushd ${d}/${versionWithRespin}/
-  rsync -aPrz --rsh=ssh --protocol=28 ${JBDS}/9.0/staging/updates/${d}/${versionWithRespin}/composite*xml ./
-  # replace dl.jb.o and 4.3-> ds.rh.c and 9.0
-  now=`date +%s000`
-  for c in compositeContent.xml compositeArtifacts.xml; do
-    sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#" $c
-    # TODO: are these next 3 sed steps still needed?
-      sed -i -e "s#http://download.jboss.org/jbosstools/mars/#https://devstudio.redhat.com/9.0/#" $c
-      sed -i -e "s#http://download.jboss.org/jbosstools/targetplatforms/#https://devstudio.redhat.com/targetplatforms/#" $c
-      sed -i -e "s#4\.3\.0#9\.0\.0#" $c
-  done
-  cat $c | egrep "${versionWithRespin}|${TARGET_PLATFORM_VERSION_MAX}|${TARGET_PLATFORM_CENTRAL_MAX}|timestamp"
+  mkdir -p ${d}/${versionWithRespin}/
+  pushd ${d}/${versionWithRespin}/
+    ${RSYNC} ${DESTINATION}/${updatePath}/${d}/${versionWithRespin}/composite*xml ./
+    cat $c | egrep "${versionWithRespin}|targetplatforms|REPO|updates|timestamp"
   popd
 done
 rsync discovery.central/${versionWithRespin}/composite*.xml ./
 
 # update index.html
-sed -i "s#${versionWithRespin_PREV}#${versionWithRespin}#" index.html
-cat index.html | egrep "${versionWithRespin_PREV}|${versionWithRespin}"
+if [[ -f index.html ]]; then
+  sed -i "s#${versionWithRespin_PREV}#${versionWithRespin}#" index.html
+  cat index.html | egrep "${versionWithRespin_PREV}|${versionWithRespin}"
+fi
 
 # push changes to server
-rsync -aPrz --rsh=ssh --protocol=28 discovery.central/${versionWithRespin}/composite*xml ${JBDS}/9.0/staging/updates/discovery.central/${versionWithRespin}/
-rsync -aPrz --rsh=ssh --protocol=28 discovery.earlyaccess/${versionWithRespin}/composite*xml ${JBDS}/9.0/staging/updates/discovery.earlyaccess/${versionWithRespin}/
-rsync -aPrz --rsh=ssh --protocol=28 ./composite*xml ./index.html ${JBDS}/9.0/staging/updates/
+${RSYNC} discovery.central/${versionWithRespin}/composite*xml ${DESTINATION}/${updatePath}/discovery.central/${versionWithRespin}/
+${RSYNC} discovery.earlyaccess/${versionWithRespin}/composite*xml ${DESTINATION}/${updatePath}/discovery.earlyaccess/${versionWithRespin}/
+${RSYNC} ./composite*xml *.html ${DESTINATION}/${updatePath}/
 
 # verify changes
 echo "Check 4 URLs:"
-firefox \
-https://devstudio.redhat.com/9.0/staging/updates/discovery.central/${versionWithRespin}/compositeContent.xml \
-https://devstudio.redhat.com/9.0/staging/updates/discovery.earlyaccess/${versionWithRespin}/compositeContent.xml \
-https://devstudio.redhat.com/9.0/staging/updates/compositeContent.xml \
-https://devstudio.redhat.com/9.0/staging/updates/
+google-chrome \
+${DEST_URL}/${updatePath}/discovery.central/${versionWithRespin}/compositeContent.xml \
+${DEST_URL}/${updatePath}/discovery.earlyaccess/${versionWithRespin}/compositeContent.xml \
+${DEST_URL}/${updatePath}/compositeContent.xml \
+${DEST_URL}/${updatePath}/
 
 rm -fr discovery.central/${versionWithRespin}/composite*.xml discovery.earlyaccess/${versionWithRespin}/composite*.xml
 
 # commit the change and push to master
-ci "release JBDS ${version} (${versionWithRespin}) to staging" .
+git commit -m "release ${versionWithRespin} to QE"
 git push origin HEAD:master
-
-# done
 popd
 
 ----
@@ -286,7 +280,7 @@ Before notifying team of staged release, must check for obvious problems.
 
 [source,bash]
 ----
-versionWithRespin=9.1.0.CR1b # a, b, c...
+versionWithRespin=9.1.0.CR1c # a, b, c...
 cd ~/tmp
 wget https://devstudio.redhat.com/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/
 installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
@@ -332,7 +326,7 @@ ____
 ----
 version_JBT=4.3.1.CR1
 version=9.1.0.CR1
-versionWithRespin=9.1.0.CR1b # a, b, c...
+versionWithRespin=9.1.0.CR1c # a, b, c...
 respin="respin-a"
 recipients=jboss-devstudio-list@redhat.com
 sender=nboldt@redhat.com

@@ -421,3 +421,9 @@ scpr ${wonkaDir}/${installerDir}/${installerExe}.sha256 $HOME/${installerDir}/
 scpr ${wonkaDir}/${installerDir}/${installerExe} $HOME/${installerDir}/
 
 ----
+
+Review content here:
+
+http://www.qa.jboss.com/binaries/RHDS/9.0/staging/builds/devstudio-9.1.0.CR1c-build-product/latest/all/
+http://wonka.mw.lab.eng.bos.redhat.com/RHDS/9.0/staging/builds/devstudio-9.1.0.CR1c-build-product/latest/all/
+

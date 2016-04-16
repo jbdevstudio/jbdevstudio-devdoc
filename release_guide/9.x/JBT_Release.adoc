@@ -18,7 +18,7 @@ DO NOT proceed with the release if there are any unresolved issues. Only JIRAs a
 
 [source,bash]
 ----
-firefox https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
+google-chrome https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
   https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
 ----
 
@@ -207,7 +207,7 @@ for qual in $quals; do
 done
 echo "" >> $tmpfile
 cat $tmpfile
-firefox `cat $tmpfile`
+google-chrome `cat $tmpfile`
 rm -fr $tmpfile
 
 
@@ -308,7 +308,7 @@ done
 popd
 
 # verify site contents are shown
-firefox \
+google-chrome \
 http://download.jboss.org/jbosstools/mars/development/updates/ \
 http://download.jboss.org/jbosstools/mars/development/updates/core/ \
 http://download.jboss.org/jbosstools/mars/development/updates/coretests/ \
@@ -327,7 +327,7 @@ If this is a /stable/ release, carefully merge changes from /development into /s
 ----
 
 # verify site contents are shown
-firefox \
+google-chrome \
 http://download.jboss.org/jbosstools/mars/stable/updates/ \
 http://download.jboss.org/jbosstools/mars/stable/updates/core/ \
 http://download.jboss.org/jbosstools/mars/stable/updates/coretests/ \
@@ -377,7 +377,7 @@ pushd jbosstools-download.jboss.org/jbosstools/updates/webtools
 popd
 
 # verify site contents are shown
-firefox http://download.jboss.org/jbosstools/updates/webtools/mars http://download.jboss.org/jbosstools/updates/webtools/
+google-chrome http://download.jboss.org/jbosstools/updates/webtools/mars http://download.jboss.org/jbosstools/updates/webtools/
 
 ----
 
@@ -465,12 +465,12 @@ pushd jbosstools-download.jboss.org/jbosstools/targetplatforms/
 popd
 
 # for Final TPs only!
-firefox \
+google-chrome \
 http://download.jboss.org/jbosstools/static/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MAX}/REPO/ \
 http://download.jboss.org/jbosstools/static/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MAX}/compositeContent.xml \
 
 # verify files are correct
-firefox \
+google-chrome \
 http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MAX}/REPO/compositeContent.xml \
 http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MAX}/compositeContent.xml \
 http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/mars/compositeContent.xml
@@ -486,7 +486,7 @@ There's nothing more to do here (it was done above). Just review these URLs:
 
 # verify site are correct:
 version=4.3.1.Beta2
-firefox \
+google-chrome \
 http://download.jboss.org/jbosstools/static/mars/development/updates/central/${version} \
 http://download.jboss.org/jbosstools/static/mars/development/updates/earlyaccess/${version} \
 http://download.jboss.org/jbosstools/mars/development/updates/discovery.earlyaccess/${version} \
@@ -515,7 +515,7 @@ done
 
 # verify site are correct:
 version=4.3.1.Beta2
-firefox \
+google-chrome \
 http://download.jboss.org/jbosstools/static/mars/stable/updates/central/${version} \
 http://download.jboss.org/jbosstools/static/mars/stable/updates/earlyaccess/${version} \
 http://download.jboss.org/jbosstools/mars/stable/updates/discovery.earlyaccess/${version} \
@@ -544,7 +544,7 @@ for d in central core coretests earlyaccess; do
   if [[ ! -d ${TOOLSmnt}/static/mars/stable/updates/${d}/${version} ]]; then mv ${TOOLSmnt}/static/mars/{development,stable}/updates/${d}/${version}; fi
   pushd ${TOOLSmnt}/static/mars/development/updates/${d}/; rm -f $version; ln -s ../../../../../static/mars/stable/updates/${d}/${version}/; popd
   ls -la ${TOOLSmnt}/static/mars/{development,stable}/updates/${d}
-  firefox http://download.jboss.org/jbosstools/static/mars/development/updates/${d}/ http://download.jboss.org/jbosstools/static/mars/development/updates/${d}/${version}
+  google-chrome http://download.jboss.org/jbosstools/static/mars/development/updates/${d}/ http://download.jboss.org/jbosstools/static/mars/development/updates/${d}/${version}
 done
 
 # verify discovery content is where it should be:
@@ -595,7 +595,7 @@ git fetch origin master
 git checkout FETCH_HEAD
 
 # you'll want to use URLs like these
-firefox \
+google-chrome \
 http://download.jboss.org/jbosstools/mars/development/updates/discovery.central/${version}/jbosstools-directory.xml \
 http://download.jboss.org/jbosstools/mars/development/updates/ \
 http://download.jboss.org/jbosstools/mars/development/updates/compositeContent.xml \
@@ -650,7 +650,7 @@ wget -O ${version}.properties http://download.jboss.org/jbosstools/static/mars/d
 diff -u ${versionWithRespin_PREV}.properties ${version}.properties
 
 # then verify the the new feature(s) were added to the CoreTools category
-firefox https://marketplace.eclipse.org/content/jboss-tools/edit
+google-chrome https://marketplace.eclipse.org/content/jboss-tools/edit
 
 rm -f /tmp/${versionWithRespin_PREV}.properties /tmp/${version}.properties
 
@@ -751,7 +751,7 @@ Launch the config pages for JBIDE and JBDS and using the gear icons, release the
 [source,bash]
 ----
 
-firefox https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
+google-chrome https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
   https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
 
 ----

@@ -20,8 +20,9 @@ DO NOT proceed with the release if there are any unresolved issues. Only JIRAs a
 
 [source,bash]
 ----
-firefox https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
+google-chrome https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
   https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
+
 ----
 
 == Rename artifacts to remove timestamp and buildID
@@ -292,7 +293,7 @@ for qual in $quals; do
   echo "https://devstudio.redhat.com/9.0/${qual}/builds/installer/${version}/ " >> $tmpfile
 done
 echo "" >> $tmpfile
-cat $tmpfile && firefox `cat $tmpfile` && rm -fr $tmpfile
+cat $tmpfile && google-chrome `cat $tmpfile` && rm -fr $tmpfile
 
 
 ----
@@ -350,7 +351,7 @@ rsync -Pzrlt --rsh=ssh --protocol=28 development/updates/earlyaccess/*.*ml $JBDS
 popd >/dev/null
 
 # review changes
-firefox \
+google-chrome \
 https://devstudio.redhat.com/9.0/development/updates/ \
 https://devstudio.redhat.com/9.0/development/updates/earlyaccess/ \
 https://devstudio.redhat.com/9.0/development/updates/compositeContent.xml \
@@ -383,7 +384,7 @@ git checkout FETCH_HEAD
 st ide-config.properties
 
 # verify
-firefox \
+google-chrome \
 https://devstudio.redhat.com/9.0/development/updates/discovery.central/${version}/devstudio-directory.xml \
 https://devstudio.redhat.com/9.0/development/updates/ \
 https://devstudio.redhat.com/9.0/development/updates/compositeContent.xml \
@@ -524,7 +525,7 @@ Launch the config pages for JBIDE and JBDS and using the gear icons, release the
 [source,bash]
 ----
 
-firefox https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
+google-chrome https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
   https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
 
 ----

@@ -306,15 +306,6 @@ If this fails, it is most likely due to a bug or a failure in a step above. If p
 See details in JBT_Staging_For_QE.adoc
 
 
-== Kick downstream Dev Platform Installer
-
-Now that JBDS installer is staged, you can submit a PR against the dev platform installer and have that built.
-
-See: https://github.com/redhat-developer-tooling/developer-platform-install/blob/master/requirements.json#L24
-
-Build: http://machydra.brq.redhat.com:8080/job/developer-platform-installer-build-aggregate
-
-
 == Notify the team (send 1 email)
 
 Run this on dev01 so that we can use /bin/mail. Email should be generated automatically rather than requiring copy & paste into your mail client.
@@ -372,3 +363,61 @@ rm -f /tmp/mailbody.jbds.txt
 ----
 ____
 
+
+== Kick downstream Dev Platform Installer
+
+Now that JBDS installer is staged, you can submit a PR against the dev platform installer and have that built.
+
+See: https://github.com/redhat-developer-tooling/developer-platform-install/blob/master/requirements.json#L24
+
+Build: http://machydra.brq.redhat.com:8080/job/developer-platform-installer-build-aggregate
+
+
+
+
+== Copy Dev Platform Installer exe & SHA files to Wonka
+
+Denis will publish the latest installer to Wonka.
+
+On wonka.mw.lab.eng.bos.redhat.com (10.16.89.81), the signed installer will be in this folder
+
+you@wonka.mw.lab.eng.bos.redhat.com:/home/windup/apache2/www/html/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all
+
+
+== Copy Dev Platform Installer & description/instruction files to www.qa
+
+To prepare for staging in CSP, copy these files into the build folder and rename them so they match the filename of the .exe installer:
+
+https://raw.githubusercontent.com/jbdevstudio/jbdevstudio-product/master/results/customer-portal/installer-platform.detailed-description.html
+https://raw.githubusercontent.com/jbdevstudio/jbdevstudio-product/master/results/customer-portal/installer-platform.manual-instructions.txt
+
+First connect to dev01.mw.lab.eng.bos.redhat.com as +hudson+ user (requires permissions).
+
+[source,bash]
+----
+me@local$ ssh dev01.mw.lab.eng.bos.redhat.com
+me@dev01$ sudo su - hudson
+hudson@dev01$ ...
+----
+
+Then:
+
+[source,bash]
+----
+
+versionWithRespin=9.1.0.CR1c # a, b, c...
+installerExe=jboss-devstudio-platform-9.1.0-Beta1-20160416-130-installer.exe
+installerDir=RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all
+
+wonkaDir=nboldt@wonka.mw.lab.eng.bos.redhat.com:/home/windup/apache2/www/html
+for d in manual-instructions.txt detailed-description.html; do
+  wget --no-check-certificate https://raw.githubusercontent.com/jbdevstudio/jbdevstudio-product/master/results/customer-portal/installer-platform.${d} \
+    -O $HOME/${installerDir}/${installerExe}.${d}
+  scpr $HOME/${installerDir}/${installerExe}.${d} ${wonkaDir}/${installerDir}/
+done
+
+# and grab a copy of the installer.exe from Wonka
+scpr ${wonkaDir}/${installerDir}/${installerExe}.sha256 $HOME/${installerDir}/
+scpr ${wonkaDir}/${installerDir}/${installerExe} $HOME/${installerDir}/
+
+----

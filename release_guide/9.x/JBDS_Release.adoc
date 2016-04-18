@@ -56,6 +56,20 @@ ls -l
 popd
 ----
 
+Now, move & symlink the ${versionWithRespin} folder:
+
+[source,bash]
+----
+version=9.1.0.GA
+versionWithRespin=9.1.0.CR1c # a, b, c...
+buildType=stable # use /stable/ or /development/ as appropriate
+pushd /qa/services/http/binaries/RHDS/9.0/staging/builds/
+mv devstudio-${versionWithRespin}-build-product ../../${buildType}/builds/devstudio-${version}-build-product
+ln -s ../../${buildType}/builds/devstudio-${version}-build-product devstudio-${versionWithRespin}-build-product
+popd
+
+----
+
 == Verify install instructions are correct
 
 Look at the .txt and .html files in /qa/services/http/binaries/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/
@@ -101,6 +115,7 @@ and +
 ----
 version=9.1.0.GA
 versionWithRespin=9.1.0.GA # a, b, c...
+buildType=stable # use /stable/ or /development/ as appropriate
 GOLIVEDATE="Tuesday, April 19, 2016"
 JIRA="https://issues.jboss.org/browse/DEVELOPER-2900"
 
@@ -126,32 +141,28 @@ ${JIRA}
 
 Please include the 5 jars/zips and 1 exe listed here:
 
-* http://www.qa.jboss.com/binaries/RHDS/9.0/stable/builds/devstudio-${versionWithRespin}-build-product/latest/all/
+* http://www.qa.jboss.com/binaries/RHDS/9.0/${buildType}/builds/devstudio-${versionWithRespin}-build-product/latest/all/
 
 Please include the pre-generated the HTML and text content in the above folder when creating new CSP pages.
 
-Only TWO of those artifacts [0],[1] require sign in. The rest are free.
-
-[0] jboss-devstudio-*-installer-eap.jar [contains EAP]
-[1] jboss-devstudio-platform-*-installer.jar [contains RHEL]
-
 When pushed, please reply so that QE can review the CSP pages & files for push to production.
 
-Note that in addition to the new CSP page, eg., [2] or [3], the CSP landing page [4] should also be updated to point to the latest release.
+Note that in addition to the new CSP page, eg., [1] or [2], the CSP landing page [3] should also be updated to point to the latest release.
 
-[2] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=${version}
-[3] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=9.1.0
-[4] https://access.redhat.com/downloads/
+[1] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=${version}
+[2] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=9.1.0
+[3] https://access.redhat.com/downloads/
 
-Thanks in advance,
+In addition to the CSP, these files need to be published on the production CDN and download-manager. Only TWO of those artifacts [4],[5] require sign in. The rest are No T&C.
+
+[4] jboss-devstudio-*-installer-eap.jar (contains EAP)
+[5] jboss-devstudio-platform-*-installer.jar (contains RHEL)
 
 " > /tmp/mailbody.jbds.txt
 
 # use mail (with sendmail's -f flag), NOT mailx
 /bin/mail -s "$subject" "$TOrecipients" -c "$CCrecipients" -- -f"$sender" < /tmp/mailbody.jbds.txt
 rm -f /tmp/mailbody.jbds.txt
-
-
 
 ----
 
@@ -374,6 +385,21 @@ https://devstudio.redhat.com/9.0/development/updates/earlyaccess/compositeConten
 
 NOTE: If this is a GA release, merge these changes into 9.0/stable/ too.
 
+
+== Merge in Integration Stack content
+
+See details in Merge_IS_Discovery.adoc
+
+[source,bash]
+----
+pushd /tmp
+  rm -f /tmp/mergeISdiscovery.sh
+  wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.3.x/publish/mergeISdiscovery.sh && chmod +x mergeISdiscovery.sh
+  ./mergeISdiscovery.sh -q development -q -stable -version 9.1.0.GA -versionWithRespin 9.1.0.GA -is https://devstudio.redhat.com/9.0/staging/updates/integration-stack/discovery/9.0.0.CR1a/earlyaccess/ -JBDS
+  rm -f /tmp/mergeISdiscovery.sh
+popd
+
+----
 
 == Release the latest milestone to ide-config.properties
 

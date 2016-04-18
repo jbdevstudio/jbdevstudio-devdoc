@@ -57,7 +57,7 @@ WARNING: Don't use symlinks are they are too risky to use. Those operations can 
 
 [source,bash]
 ----
-# can run these 6 steps in parallel
+# can run these 5 steps in parallel
 
 # 1. copy JBDS target platform zips from INTERNAL (www.qa) to EXTERNAL (devstudio.redhat.com)
 versionWithRespin=9.1.0.CR1c # a, b, c...
@@ -86,14 +86,12 @@ chmod +x stage.sh
 stream=4.3.mars
 versionWithRespin=9.1.0.CR1c # a, b, c...
 for site in central-site earlyaccess-site; do
-  ./stage.sh -sites $site -dd 9.0 -stream ${stream} -vr ${versionWithRespin} -JOB_NAME jbosstools-build-sites.aggregate.\${site}_\${stream} \
+  ./stage.sh -sites $site -sd 9.0 -stream ${stream} -vr ${versionWithRespin} -JOB_NAME jbosstools-build-sites.aggregate.\${site}_\${stream} \
     -DESTINATION ${JBDS} -DEST_URL https://devstudio.redhat.com -q &
 done
-wait && echo $#
 
 
-# 3. copy JBDS installers: snapshots/builds/ to staging/builds/ [INTERNAL - both installers]
-#    copy JBDS update: snapshots/builds/*/repo/* to staging/updates/core/${versionWithRespin}; also copy updatesite-core.zip
+# 3. copy JBDS installers & update site [INTERNAL - includes EAP installer]
 cd /tmp
 if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
 wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.3.x/publish/stage.sh --no-check-certificate
@@ -101,13 +99,12 @@ chmod +x stage.sh
 stream=9.0.mars
 versionWithRespin=9.1.0.CR1c # a, b, c...
 for site in product; do
-  ./stage.sh -sites $site -dd 9.0 -stream ${stream} -vr ${versionWithRespin} -JOB_NAME devstudio.\${site}_\${stream} \
+  ./stage.sh -sites $site -sd 9.0 -stream ${stream} -vr ${versionWithRespin} -JOB_NAME devstudio.\${site}_\${stream} \
     -DESTINATION /qa/services/http/binaries/RHDS -DEST_URL http://www.qa.jboss.com/binaries/RHDS -q &
 done
 
 
-# 4. copy JBDS installers: snapshots/builds/ to staging/builds/ [EXTERNAL - Standalone installer only]
-# 5. copy JBDS update: snapshots/builds/*/repo/* to staging/updates/core/${versionWithRespin}; also copy updatesite-core.zip
+# 4. copy JBDS installers & update site [EXTERNAL - Standalone installer only]
 cd /tmp
 if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
 wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.3.x/publish/stage.sh --no-check-certificate
@@ -115,13 +112,13 @@ chmod +x stage.sh
 stream=9.0.mars
 versionWithRespin=9.1.0.CR1c # a, b, c...
 for site in product; do
-  ./stage.sh -sites $site -dd 9.0 -stream ${stream} -vr ${versionWithRespin} -JOB_NAME devstudio.\${site}_\${stream} \
+  ./stage.sh -sites $site -sd 9.0 -stream ${stream} -vr ${versionWithRespin} -JOB_NAME devstudio.\${site}_\${stream} \
     -DESTINATION ${JBDS} -DEST_URL https://devstudio.redhat.com -q &
 done
 
 
 # TODO: make sure you've rebuilt the discovery sites and disabled the job first before doing this step!
-# 6. copy JBDS discovery sites to staging/builds/ and staging/updates/
+# 5. copy JBDS discovery sites to staging/builds/ and staging/updates/
 cd /tmp
 if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
 wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.3.x/publish/stage.sh --no-check-certificate
@@ -129,7 +126,7 @@ chmod +x stage.sh
 stream=4.3.mars
 versionWithRespin=9.1.0.CR1c # a, b, c...
 for site in discovery.central discovery.earlyaccess; do
-  ./stage.sh -sites $site -dd 9.0 -stream ${stream} -vr ${versionWithRespin} -JOB_NAME jbosstools-\${site}_\${stream} \
+  ./stage.sh -sites $site -sd 9.0 -stream ${stream} -vr ${versionWithRespin} -JOB_NAME jbosstools-\${site}_\${stream} \
     -DESTINATION ${JBDS} -DEST_URL https://devstudio.redhat.com -q &
 done
 

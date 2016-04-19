@@ -723,23 +723,22 @@ If co-releasing JBT and JBDS, make sure that JBDS is released too!
 DO NOT send email notification until the above update to the website is done, and the new blog announcement is live, with image inclusion, spelling, & grammar checks done.
 
 ____
-*To:* alkazako@redhat.com +
-*Cc:* max.andersen@redhat.com, fbricon@redhat.com +
 
 [source,bash]
 ----
 
 version=4.3.1.Final
 eclipseVersion="Eclipse 4.5.2 Mars.2"
+qual="development"; if [[ ${version##*GA} == "" ]]; then qual="stable"; fi # **##
 pullrequestURL=https://github.com/jbosstools/jbosstools-website/pull/568
+blogURL=/blog/ga-for-mars2.html
 
 TOrecipients="alkazako@redhat.com"
 CCrecipients="max.andersen@redhat.com, nboldt@redhat.com"
 sender="Nick Boldt <nboldt@redhat.com>"
-blogURL=/blog/ga-for-mars2.html
 subject="Ready for JBT ${version} blog & announcement / JBDS release STILL IN PROGRESS"
 echo "
-Here's a PR for adding ${version} JBoss Tools download page:
+Here's a PR for adding ${version} to the JBoss Tools download page:
 
 ${pullrequestURL}
 
@@ -747,7 +746,7 @@ Suggested blog filename: ${blogURL}
 
 The complete list of projects in JBoss Tools, and the SHAs used to build those projects, can be seen here:
 
-http://download.jboss.org/jbosstools/static/mars/development/updates/core/${version}/buildinfo.json
+http://download.jboss.org/jbosstools/static/mars/${qual}/updates/core/${version}/buildinfo.json
 
 From that list you can create all the jbosstools-${version} tags in Github, should you so desire.
 
@@ -763,13 +762,13 @@ JBoss Tools ${version} is now available
 
 Body:
 
-This is a development release aimed at ${eclipseVersion} users.
+This is a ${qual} release aimed at ${eclipseVersion} users.
 
 Announcement Blog: http://tools.jboss.org/blog/
 
 Eclipse Marketplace: https://marketplace.eclipse.org/content/jboss-tools
 
-Update Site: http://download.jboss.org/jbosstools/mars/development/updates/
+Update Site: http://download.jboss.org/jbosstools/mars/${qual}/updates/
 
 Zips: http://tools.jboss.org/downloads/jbosstools/mars/${version}.html#zips
 
@@ -783,7 +782,6 @@ Schedule / Upcoming Releases: https://issues.jboss.org/browse/JBIDE?selectedTab=
 # use mail (with sendmail's -f flag), NOT mailx
 /bin/mail -s "$subject" "$TOrecipients" -c "$CCrecipients" -- -f"$sender" < /tmp/mailbody.jbt.txt
 rm -f /tmp/mailbody.jbt.txt
-
 
 ----
 ____

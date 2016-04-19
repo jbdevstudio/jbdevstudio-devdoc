@@ -346,7 +346,6 @@ done
 
 NOTE: If this is a GA release, merge these changes into 9.0/stable/ too.
 
-
 == Merge in Integration Stack content
 
 See details in Merge_IS_Discovery.adoc
@@ -363,6 +362,25 @@ pushd /tmp
 popd
 
 ----
+
+Ensure content exists!
+
+[source,bash]
+----
+version=9.1.0.GA
+versionWithRespin=9.1.0.CR1c # a, b, c...
+
+# review changes
+quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi # **##
+for qual in $quals; do
+  google-chrome \
+  https://devstudio.redhat.com/9.0/${qual}/updates/discovery.earlyaccess/${version}/devstudio-directory.xml
+  https://devstudio.redhat.com/9.0/${qual}/updates/discovery.earlyaccess/${version}/devstudio-earlyaccess.properties
+  https://devstudio.redhat.com/9.0/${qual}/updates/discovery.earlyaccess/${version}/plugins/
+done
+
+----
+
 
 == Release the latest milestone to ide-config.properties
 
@@ -545,7 +563,7 @@ Before notifying team of release, must check for obvious problems. Any failure t
 
 === Validate installer install
 
-1. Download JBDS installer from https://devstudio.redhat.com/9.0/development/builds/installer/ or https://devstudio.redhat.com/9.0/stable/builds/installer/
+1. Download JBDS installer from https://devstudio.redhat.com/9.0/development/builds/ or https://devstudio.redhat.com/9.0/stable/builds/
 2. Install via UI or headlessly with
     java -jar jboss-devstudio-*.jar -console -options /dev/null
 3. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
@@ -559,11 +577,11 @@ Before notifying team of release, must check for obvious problems. Any failure t
 version=9.1.0.GA
 qual="development"; if [[ ${version##*GA} == "" ]]; then qual="stable"; fi # **##
 cd ~/tmp # ~
-wget https://devstudio.redhat.com/9.0/${qual}/builds/installer/${version}/
+wget https://devstudio.redhat.com/static/9.0/${qual}/builds/devstudio-${version}-build-product/latest/all/
 installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 echo "Installer jar: ${installerJar}"
 rm -f index.html
-wget https://devstudio.redhat.com/9.0/${qual}/builds/installer/${version}/${installerJar}
+wget https://devstudio.redhat.com/static/9.0/${qual}/builds/devstudio-${version}-build-product/latest/all/${installerJar}
 
 java -jar ~/tmp/${installerJar} # ~
 
@@ -592,27 +610,29 @@ Thus, you need to:
 
 == Notify the team lead
 
-____
+Notifify Alexy & Max that the website is ready to be updated & blog ready to be posted.
 
-*To:* alkazako@redhat.com +
-*Cc:* max.andersen@redhat.com, fbricon@redhat.com +
+If co-releasing JBT and JBDS, make sure that JBT is released too!
+
+DO NOT send email notification until the above update to the website is done, and the new blog announcement is live, with image inclusion, spelling, & grammar checks done.
+
+____
 
 [source,bash]
 ----
+
 version_JBT=4.3.1.GA
 version=9.1.0.GA
-qual=development # development or stable
-pullrequestURL=https://github.com/jbosstools/jbosstools-website/pull/546
-blogURL=/blog/beta2-for-mars2.html
+qual="development"; if [[ ${version##*GA} == "" ]]; then qual="stable"; fi # **##
+pullrequestURL=https://github.com/jbosstools/jbosstools-website/pull/568
+blogURL=/blog/ga-for-mars2.html
 
+TOrecipients="alkazako@redhat.com"
+CCrecipients="max.andersen@redhat.com, nboldt@redhat.com"
+sender="Nick Boldt <nboldt@redhat.com>"
+subject="Ready for JBoss Developer Studio ${version} blog & announcement"
 echo "
-Subject:
-
-Ready for JBoss Developer Studio ${version} blog & announcement
-
-Body:
-
-Here's a PR for adding ${version} JBoss Tools download page:
+Here's a PR for adding ${version} to the JBDS download page:
 
 ${pullrequestURL}
 
@@ -624,7 +644,7 @@ Do not cross-post to both internal and external lists! Better to send 4 separate
 To: jbosstools-dev@lists.jboss.org
 To: jboss-devstudio-list@redhat.com
 To: jboss-announce@redhat.com (optional for major milestones, recommended for GA releases)
-To: gss-support-readiness@redhat.com, dgeoffro@redhat.com, mmusaji@redhat.com (for all GA releases (major, minor, maintenance) ONLY)
+To: gss-support-readiness@redhat.com, dgeoffro@redhat.com, rwagner@redhat.com (for all GA releases (major, minor, maintenance) ONLY)
 
 --
 
@@ -650,7 +670,12 @@ New + Noteworthy: http://tools.jboss.org/documentation/whatsnew/jbosstools/${ver
 
 Schedule / Upcoming Releases: https://issues.jboss.org/browse/JBDS#selectedTab=com.atlassian.jira.plugin.system.project%3Aversions-panel
 
-"
+ "> /tmp/mailbody.jbds.txt
+
+# use mail (with sendmail's -f flag), NOT mailx
+/bin/mail -s "$subject" "$TOrecipients" -c "$CCrecipients" -- -f"$sender" < /tmp/mailbody.jbds.txt
+rm -f /tmp/mailbody.jbds.txt
+
 ----
 ____
 

@@ -78,11 +78,11 @@ wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools
 chmod +x stage.sh
 
 stream=4.3.1.CR1c # staged version # a, b, c...
-version=4.3.1.Final # release version, no a, b, c suffix
+version=4.3.1.Final # release version: no a, b, c suffix
 quals="development"; if [[ ${version##*Final} == "" ]]; then quals="development stable"; fi
 for qual in $quals; do
   for site in core coretests central earlyaccess discovery.central discovery.earlyaccess browsersim-standalone; do
-    ./stage.sh -sites $site -sd mars -dd static/mars -stream ${stream} -vr ${version} -JOB_NAME jbosstools-\${stream}-build-\${site} -SRC_TYPE staging -DESTTYPE $qual -q &
+    ./stage.sh -sites $site -stream ${stream} -vr ${version} -sd mars -dd static/mars -st staging -dt $qual -JOB_NAME jbosstools-\${stream}-build-\${site} -q &
   done
 done
 
@@ -116,7 +116,7 @@ quals="development"; if [[ ${version##*Final} == "" ]]; then quals="development 
 rm -f /tmp/${version}.found.txt
 for qual in $quals; do
   (( expectedCount += 18 ));
-  find /media/TOOLS-ssh/static/mars/${qual}/updates/* -maxdepth 1 -name "*${version}*" | sort >> /tmp/${version}.found.txt
+  find $HOME/TOOLS-ssh/static/mars/${qual}/updates/* -maxdepth 1 -name "*${version}*" | sort >> /tmp/${version}.found.txt
 done
 theCount=$(cat /tmp/${version}.found.txt | wc -l)
 if [[ ${theCount} == ${expectedCount} ]]; then
@@ -128,9 +128,9 @@ else
 fi
 
 echo "Download all these zips to verify they work:"
-cat /tmp/${version}.found.txt | sed "s#/media/TOOLS-ssh/#http://download.jboss.org/jbosstools/#" | egrep "\.zip"
+cat /tmp/${version}.found.txt | sed "s#$HOME/TOOLS-ssh/#http://download.jboss.org/jbosstools/#" | egrep "\.zip"
 echo "Review these pages to verify the work:"
-google-chrome $(cat /tmp/${version}.found.txt | sed "s#/media/TOOLS-ssh/#http://download.jboss.org/jbosstools/#" | egrep -v "\.zip")
+google-chrome $(cat /tmp/${version}.found.txt | sed "s#$HOME/TOOLS-ssh/#http://download.jboss.org/jbosstools/#" | egrep -v "\.zip")
 
 ----
 
@@ -436,7 +436,7 @@ http://download.jboss.org/jbosstools/mars/stable/updates/discovery.central/${ver
 
 If this is a .Final release:
 
-First, mount an sshfs drive for $TOOLS, tools@filemgmt.jboss.org:/downloads_htdocs/tools, eg., into /media/TOOLS-ssh/
+First, mount an sshfs drive for $TOOLS, tools@filemgmt.jboss.org:/downloads_htdocs/tools, eg., into $HOME/TOOLS-ssh/
 
 Then, ensure that the destination dirs exist. Move the contents of /development/ into /stable/, then symlink back from the old place:
 
@@ -445,7 +445,7 @@ Then, ensure that the destination dirs exist. Move the contents of /development/
 
 # TODO SKIPPED for 4.3.1.Final because we just published bits to both paths using stage.sh so no need to move/symlink
 
-TOOLSmnt=/media/TOOLS-ssh
+TOOLSmnt=$HOME/TOOLS-ssh
 version=4.3.1.Final
 mkdir -p ${TOOLSmnt}/static/mars/{development,stable}/updates/{central,core,coretests,earlyaccess}
 for d in central core coretests earlyaccess; do

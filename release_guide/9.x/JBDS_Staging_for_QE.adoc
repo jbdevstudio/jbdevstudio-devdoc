@@ -180,7 +180,7 @@ First, use sshfs to mount filemgmt file paths.
 ----
 
 JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
-sshfs $JBDS /media/JBDS-ssh
+sshfs $JBDS $HOME/JBDS-ssh
 
 ----
 
@@ -190,10 +190,10 @@ Then move old builds into an OLD/ folder to they're less visible and ready for d
 ----
 version_PREV=9.1.0.CR1b # a, b, c...
 for d in updates/core updates/central updates/earlyaccess updates/discovery.central updates/discovery.earlyaccess builds; do
-  if [[ -d /media/JBDS-ssh/9.0/staging/${d}/ ]]; then
+  if [[ -d $HOME/JBDS-ssh/9.0/staging/${d}/ ]]; then
     echo "${d}/*${version_PREV}* ..."
-    mkdir -p /media/JBDS-ssh/9.0/staging/${d}/OLD/
-    mv /media/JBDS-ssh/9.0/staging/${d}/*${version_PREV}* /media/JBDS-ssh/9.0/staging/${d}/OLD/
+    mkdir -p $HOME/JBDS-ssh/9.0/staging/${d}/OLD/
+    mv $HOME/JBDS-ssh/9.0/staging/${d}/*${version_PREV}* $HOME/JBDS-ssh/9.0/staging/${d}/OLD/
   fi
 done
 

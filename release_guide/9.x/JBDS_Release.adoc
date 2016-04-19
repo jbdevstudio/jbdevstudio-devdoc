@@ -194,62 +194,24 @@ Then copy the latest JBDS artifacts:
 [source,bash]
 ----
 
-# TODO: https://issues.jboss.org/browse/JBIDE-20904 script this and run as Jenkins job #
+# ================================= HERE
 
-# can run these 4 steps in parallel to save time
+# can run these 2 steps in parallel to save time
 
-
-# copy JBDS update site (> 800M)
-version=9.1.0.GA
-versionWithRespin=9.1.0.CR1c # a, b, c...
-tmpdir=~/tmp/release_${version}_update_site # ~
+# 1. installers, update sites, central/earlyaccess, discovery (5 builds)
+cd /tmp
+if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
+wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.3.x/publish/stage.sh --no-check-certificate
+chmod +x stage.sh
+stream=9.1.0.CR1c # staged version # a, b, c...
+version=9.1.0.GA # release version: no a, b, c suffix
 quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi # **##
-for site in core; do
-  mkdir -p ${tmpdir}/9.0/development/updates/${site}/${version}
-  # rename from staging/*/versionWithRespin to development/*/version/
-  rsync -aPrz --rsh=ssh --protocol=28 ${JBDS}/9.0/staging/updates/${site}/${versionWithRespin}/* ${tmpdir}/9.0/development/updates/${site}/${version}/
-  # push to remote
-  for qual in $quals; do
-    echo "mkdir ${site} | sftp ${JBDS}/9.0/${qual}/updates/"
-    echo "mkdir ${version} | sftp ${JBDS}/9.0/${qual}/updates/${site}"
-    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/9.0/development/updates/${site}/${version} ${JBDS}/9.0/${qual}/updates/${site}/
+for qual in $quals; do
+  for site in product central earlyaccess discovery.central discovery.earlyaccess; do
+    ./stage.sh -sites $site -stream ${stream} -vr ${version} -sd 9.0 -dd static/9.0 -st staging -dt ${qual} \
+      -JOB_NAME devstudio-\${stream}-build-\${site} -DESTINATION ${JBDS} -DEST_URL https://devstudio.redhat.com &
   done
 done
-rm -fr $tmpdir
-echo "copy JBDS update site" | grep "copy JBDS update site"
-
-
-# copy Central/EA/Discovery sites (< 8M), and update metadata refs in discovery sites
-version=9.1.0.GA
-versionWithRespin=9.1.0.CR1c # a, b, c...
-quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi # **##
-for site in central earlyaccess discovery.central discovery.earlyaccess; do
-  tmpdir=~/tmp/release__${site}__${version} # ~
-  mkdir -p ${tmpdir}/9.0/development/updates/${site}/${version}
-  # rename from staging/*/versionWithRespin to development/*/version/
-  rsync -arzq --rsh=ssh --protocol=28 ${JBDS}/9.0/staging/updates/${site}/${versionWithRespin}/* ${tmpdir}/9.0/development/updates/${site}/${version}/
-  for qual in $quals; do
-    # sed .xml files to point at /${qual}/ instead of /staging/, and ${version} instead of $versionWithRespin}
-    if [[ ${site/discovery/} != ${site} ]]; then
-      pushd ${tmpdir}/9.0/development/updates/${site}/${version}/ >/dev/null
-      now=`date +%s000`
-      for c in compositeContent.xml compositeArtifacts.xml; do
-        sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#" $c
-        sed -i -e "s#staging#${qual}#" $c
-        sed -i -e "s#${versionWithRespin}#${version}#" $c
-      done
-      cat compositeContent.xml | egrep "staging|${qual}|${version}|${versionWithRespin}"
-      popd >/dev/null
-    fi
-    # push to remote
-    echo "mkdir ${site}" | sftp ${JBDS}/9.0/${qual}/updates/
-    echo "mkdir ${version}" | sftp ${JBDS}/9.0/${qual}/updates/${site}
-    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/9.0/development/updates/${site}/${version} ${JBDS}/9.0/${qual}/updates/${site}/
-  done
-  rm -fr $tmpdir
-done
-echo "copy Central/EA/Discovery sites" | grep "copy Central/EA/Discovery sites"
-
 
 # copy 6 zips & SHAs
 # jboss-devstudio-9.0.0.CR2b-target-platform-central.zip           jboss-devstudio-9.0.0.CR2b-target-platform.zip          jboss-devstudio-9.0.0.CR2b-updatesite-core.zip
@@ -268,59 +230,35 @@ for site in core; do
     for zip in ${tmpdir}/9.0/development/updates/${site}/jboss-devstudio-${versionWithRespin}*.zip*; do
       zipNew=${zip/${versionWithRespin}/${version}}; echo $zipNew
       zipNew=${zipNew##*/}; echo $zipNew # **##
-      rsync -aPrz --rsh=ssh --protocol=28 ${zip} ${JBDS}/9.0/${qual}/updates/${site}/${zipNew}
+      rsync -aPrz --rsh=ssh --protocol=28 ${zip} ${JBDS}/static/9.0/${qual}/updates/${site}/${zipNew}
     done
   done
 done
 rm -fr $tmpdir
 echo "copy zips & SHAs" | grep "copy zips & SHAs"
 
-
-# copy installer jar
+#  verify zips/SHAa exist
+# mount an sshfs drive for $JBDS, tools@filemgmt.jboss.org:/downloads_htdocs/tools, eg., into $HOME/TOOLS-ssh/
+JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
+sshfs $JBDS $HOME/JBDS-ssh
 version=9.1.0.GA
-versionWithRespin=9.1.0.CR1c # a, b, c...
-tmpdir=~/tmp/release_${version}_installer # ~
 quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi # **##
-for site in builds; do
-  mkdir -p ${tmpdir}/9.0/development/${site}/installer/${version}
-  # rename from staging/*/versionWithRespin to development/*/version/
-  rsync -aPrz --rsh=ssh --protocol=28 ${JBDS}/9.0/staging/${site}/devstudio-${versionWithRespin}-build-product/latest/all/jboss-devstudio-*.jar* ${tmpdir}/9.0/development/${site}/installer/${version}
-  # push to remote
-  for qual in $quals; do
-    echo "mkdir ${site}" | sftp ${JBDS}/9.0/${qual}/
-    echo "mkdir installer" | sftp ${JBDS}/9.0/${qual}/${site}
-    echo "mkdir ${version}" | sftp ${JBDS}/9.0/${qual}/${site}/installer
-    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/9.0/development/${site}/installer/${version} ${JBDS}/9.0/${qual}/${site}/installer/
-  done
-done
-rm -fr $tmpdir
-echo "copy installer jar" | grep "copy installer jar"
 
-
-#  verify sites are correctly populated (run locally, not on dev01):
-version=9.1.0.GA
-tmpfile=/tmp/devstudio-staging__verify.txt
-quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi # **##
-for site in site central-site earlyaccess-site; do
-  if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
-  for qual in $quals; do
-    echo "https://devstudio.redhat.com/9.0/${qual}/updates/${sitename}/${version}/ " >> $tmpfile
-  done
-done
-for site in discovery.central discovery.earlyaccess; do
-  if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
-  for qual in $quals; do
-    echo "https://devstudio.redhat.com/9.0/${qual}/updates/${sitename}/${version}/ " >> $tmpfile
-  done
-done
-# zip & installers
+cd $HOME/JBDS-ssh
 for qual in $quals; do
-  echo "https://devstudio.redhat.com/9.0/${qual}/updates/core/#_____(6_zips_+_SHAs,_and_${version}_folder) " >> $tmpfile ##
-  echo "https://devstudio.redhat.com/9.0/${qual}/builds/installer/${version}/ " >> $tmpfile
+  checkPath=static/9.0/${qual}/updates/core
+  if [[ $(ll ${checkPath} | grep    zip | grep -v sha256 | grep $version | wc -l) != 6 ]]; then echo "Error: missing zip in ${checkPath}"; fi
+  if [[ $(ll ${checkPath} | grep    zip | grep    sha256 | grep $version | wc -l) != 6 ]]; then echo "Error: missing sha in ${checkPath}"; fi
 done
-echo "" >> $tmpfile
-cat $tmpfile && google-chrome `cat $tmpfile` && rm -fr $tmpfile
 
+# verify sites exist
+for site in site central-site earlyaccess-site discovery.central discovery.earlyaccess; do
+  if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
+  for qual in $quals; do
+    checkPath=static/9.0/${qual}/updates/${sitename}/${version}
+    if [[ ! -d ${checkPath} ]]; then echo "Error: missing dir ${checkPath}"; fi
+  done
+done
 
 ----
 
@@ -358,30 +296,51 @@ egrep "staging|development|${version}|${versionWithRespin}" compositeContent.xml
 # update EA site
 pushd earlyaccess >/dev/null
 rm -f composite*.xml
-wget https://devstudio.redhat.com/9.0/development/updates/discovery.earlyaccess/${version}/compositeContent.xml
-wget https://devstudio.redhat.com/9.0/development/updates/discovery.earlyaccess/${version}/compositeArtifacts.xml
+wget https://devstudio.redhat.com/static/9.0/development/updates/discovery.earlyaccess/${version}/compositeContent.xml
+wget https://devstudio.redhat.com/static/9.0/development/updates/discovery.earlyaccess/${version}/compositeArtifacts.xml
+for c in compositeContent.xml compositeArtifacts.xml index.html; do
+  sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#" $c
+  sed -i -e "s#staging#development#" $c
+  sed -i -e "s#${versionWithRespin}#${version}#" $c
+done
+git status -s
+egrep "staging|development|${version}|${versionWithRespin}" index.html
 echo "------------"
 egrep "staging|development|${version}|${versionWithRespin}" compositeContent.xml
 popd >/dev/null
 
+popd >/dev/null
+
+# NOTE: If this is a GA release, merge these changes into 9.0/stable/ too.
+# NOTE: Stable site content for IS may be different from development site, because IS releases make no sense.
+
 # commit changes to git
-git add development/updates/
-git commit -m "release JBDS ${version} (${versionWithRespin}) to production" development/updates/
+quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi # **##
+for qual in $quals; do
+  git add ${qual}/updates/
+  git commit -m "release JBDS ${version} (${versionWithRespin}) to production" ${qual}/updates/
+done
 git push origin HEAD:master
 
 # push changes to server
-rsync -Pzrlt --rsh=ssh --protocol=28 development/updates/*.*ml $JBDS/9.0/development/updates/
-rsync -Pzrlt --rsh=ssh --protocol=28 development/updates/earlyaccess/*.*ml $JBDS/9.0/development/updates/earlyaccess/
+quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi # **##
+for qual in $quals; do
+  rsync -Pzrlt --rsh=ssh --protocol=28 ${qual}/updates/*.*ml $JBDS/9.0/${qual}/updates/
+  rsync -Pzrlt --rsh=ssh --protocol=28 ${qual}/updates/earlyaccess/*.*ml $JBDS/9.0/${qual}/updates/earlyaccess/
+done
 
 # done
 popd >/dev/null
 
 # review changes
-google-chrome \
-https://devstudio.redhat.com/9.0/development/updates/ \
-https://devstudio.redhat.com/9.0/development/updates/earlyaccess/ \
-https://devstudio.redhat.com/9.0/development/updates/compositeContent.xml \
-https://devstudio.redhat.com/9.0/development/updates/earlyaccess/compositeContent.xml
+quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi # **##
+for qual in $quals; do
+  google-chrome \
+  https://devstudio.redhat.com/9.0/${qual}/updates/ \
+  https://devstudio.redhat.com/9.0/${qual}/updates/earlyaccess/ \
+  https://devstudio.redhat.com/9.0/${qual}/updates/compositeContent.xml \
+  https://devstudio.redhat.com/9.0/${qual}/updates/earlyaccess/compositeContent.xml
+done
 
 ----
 
@@ -391,6 +350,8 @@ NOTE: If this is a GA release, merge these changes into 9.0/stable/ too.
 == Merge in Integration Stack content
 
 See details in Merge_IS_Discovery.adoc
+
+CAUTION: Integration Stack sites change and often won't publish JBT IS and JBDS IS at the same time, or will fail to push content into /stable/ and /development at the same time. Best option is to just ask Paul Leacu.
 
 [source,bash]
 ----

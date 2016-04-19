@@ -168,6 +168,7 @@ rm -f /tmp/mailbody.jbds.txt
 
 Communicate with Paul Robinson / Daniel Coughlin, Chris O'Brien, etc. to coordinate the release. All the above can happen in parallel / before the updates below.
 
+
 = Release steps
 
 Once QE has signed off, and bits are staged to CSP, you can proceed w/ the rest of the release.
@@ -192,7 +193,8 @@ Then copy the latest JBDS artifacts:
 
 [source,bash]
 ----
-#TODO: https://issues.jboss.org/browse/JBIDE-20904 script this and run as Jenkins job
+
+# TODO: https://issues.jboss.org/browse/JBIDE-20904 script this and run as Jenkins job #
 
 # can run these 4 steps in parallel to save time
 
@@ -200,8 +202,8 @@ Then copy the latest JBDS artifacts:
 # copy JBDS update site (> 800M)
 version=9.1.0.GA
 versionWithRespin=9.1.0.CR1c # a, b, c...
-tmpdir=~/tmp/release_${version}_update_site
-quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi
+tmpdir=~/tmp/release_${version}_update_site # ~
+quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi # **##
 for site in core; do
   mkdir -p ${tmpdir}/9.0/development/updates/${site}/${version}
   # rename from staging/*/versionWithRespin to development/*/version/
@@ -220,9 +222,9 @@ echo "copy JBDS update site" | grep "copy JBDS update site"
 # copy Central/EA/Discovery sites (< 8M), and update metadata refs in discovery sites
 version=9.1.0.GA
 versionWithRespin=9.1.0.CR1c # a, b, c...
-quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi
+quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi # **##
 for site in central earlyaccess discovery.central discovery.earlyaccess; do
-  tmpdir=~/tmp/release__${site}__${version}
+  tmpdir=~/tmp/release__${site}__${version} # ~
   mkdir -p ${tmpdir}/9.0/development/updates/${site}/${version}
   # rename from staging/*/versionWithRespin to development/*/version/
   rsync -arzq --rsh=ssh --protocol=28 ${JBDS}/9.0/staging/updates/${site}/${versionWithRespin}/* ${tmpdir}/9.0/development/updates/${site}/${version}/
@@ -254,8 +256,8 @@ echo "copy Central/EA/Discovery sites" | grep "copy Central/EA/Discovery sites"
 # jboss-devstudio-9.0.0.CR2b-target-platform-earlyaccess.zip       jboss-devstudio-9.0.0.CR2b-updatesite-central.zip       jboss-devstudio-9.0.0.CR2b-updatesite-earlyaccess.zip
 version=9.1.0.GA
 versionWithRespin=9.1.0.CR1c # a, b, c...
-tmpdir=~/tmp/release_${version}_zips
-quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi
+tmpdir=~/tmp/release_${version}_zips # ~
+quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi # **##
 for site in core; do
   mkdir -p ${tmpdir}/9.0/development/updates/${site}
   # get zips
@@ -265,7 +267,7 @@ for site in core; do
     # rename from staging/*/versionWithRespin/ to ${qual}/*/version/
     for zip in ${tmpdir}/9.0/development/updates/${site}/jboss-devstudio-${versionWithRespin}*.zip*; do
       zipNew=${zip/${versionWithRespin}/${version}}; echo $zipNew
-      zipNew=${zipNew##*/}; echo $zipNew
+      zipNew=${zipNew##*/}; echo $zipNew # **##
       rsync -aPrz --rsh=ssh --protocol=28 ${zip} ${JBDS}/9.0/${qual}/updates/${site}/${zipNew}
     done
   done
@@ -277,8 +279,8 @@ echo "copy zips & SHAs" | grep "copy zips & SHAs"
 # copy installer jar
 version=9.1.0.GA
 versionWithRespin=9.1.0.CR1c # a, b, c...
-tmpdir=~/tmp/release_${version}_installer
-quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi
+tmpdir=~/tmp/release_${version}_installer # ~
+quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi # **##
 for site in builds; do
   mkdir -p ${tmpdir}/9.0/development/${site}/installer/${version}
   # rename from staging/*/versionWithRespin to development/*/version/
@@ -298,7 +300,7 @@ echo "copy installer jar" | grep "copy installer jar"
 #  verify sites are correctly populated (run locally, not on dev01):
 version=9.1.0.GA
 tmpfile=/tmp/devstudio-staging__verify.txt
-quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi
+quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi # **##
 for site in site central-site earlyaccess-site; do
   if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
   for qual in $quals; do
@@ -313,7 +315,7 @@ for site in discovery.central discovery.earlyaccess; do
 done
 # zip & installers
 for qual in $quals; do
-  echo "https://devstudio.redhat.com/9.0/${qual}/updates/core/#_____(6_zips_+_SHAs,_and_${version}_folder) " >> $tmpfile
+  echo "https://devstudio.redhat.com/9.0/${qual}/updates/core/#_____(6_zips_+_SHAs,_and_${version}_folder) " >> $tmpfile ##
   echo "https://devstudio.redhat.com/9.0/${qual}/builds/installer/${version}/ " >> $tmpfile
 done
 echo "" >> $tmpfile
@@ -332,7 +334,7 @@ version=9.1.0.GA
 versionWithRespin=9.1.0.CR1c # a, b, c...
 
 # adjust these steps to fit your own path location & git workflow
-cd ~/truu
+cd ~/truu # ~
 pushd jbdevstudio-website/content/9.0/
 git fetch origin master
 git checkout FETCH_HEAD
@@ -410,7 +412,7 @@ And update it it as required, so that the links for the latest milestone point t
 [source,bash]
 ----
 # adjust these steps to fit your own path location & git workflow
-cd ~/tru
+cd ~/tru # ~
 pushd jbosstools-download.jboss.org/jbosstools/configuration
 version=9.1.0.GA
 versionWithRespin=9.1.0.CR1c # a, b, c...
@@ -473,7 +475,7 @@ Then run this:
 version=9.1.0.GA
 versionWithRespin=9.1.0.CR1c # a, b, c...
 
-cd ~/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/
+cd ~/RHDS/9.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/ # ~
 for f in *.jar *.zip; do
   size=$(du -h $f); size=${size%*M*};
   sha=$(cat ${f}.sha256); sh=${sha:0:2};
@@ -583,23 +585,26 @@ Before notifying team of release, must check for obvious problems. Any failure t
 === Validate installer install
 
 1. Download JBDS installer from https://devstudio.redhat.com/9.0/development/builds/installer/ or https://devstudio.redhat.com/9.0/stable/builds/installer/
-2. Install via UI or headlessly with `java -jar jboss-devstudio-*.jar -console -options /dev/null`
+2. Install via UI or headlessly with
+    java -jar jboss-devstudio-*.jar -console -options /dev/null
 3. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
 4. Check log, start an example project, check log again
+
+
 
 [source,bash]
 ----
 
 version=9.1.0.GA
-qual="development"; if [[ ${version##*GA} == "" ]]; then qual="stable"; fi
-cd ~/tmp
+qual="development"; if [[ ${version##*GA} == "" ]]; then qual="stable"; fi # **##
+cd ~/tmp # ~
 wget https://devstudio.redhat.com/9.0/${qual}/builds/installer/${version}/
 installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 echo "Installer jar: ${installerJar}"
 rm -f index.html
 wget https://devstudio.redhat.com/9.0/${qual}/builds/installer/${version}/${installerJar}
 
-java -jar ~/tmp/${installerJar}
+java -jar ~/tmp/${installerJar} # ~
 
 ----
 

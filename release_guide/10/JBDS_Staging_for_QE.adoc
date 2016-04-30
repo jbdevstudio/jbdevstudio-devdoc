@@ -3,6 +3,7 @@
 This document describe how to provide a valid JBoss Developer Studio build to QE so they can test us.
 
 TODO: use consistent instructions for fetching sources from git & pushing changes
+TODO: use sshfs to do copies in a single step, instead of rsync-pull/rsync-push (2 steps)
 
 == Update Discovery Sites and URLs
 
@@ -93,7 +94,7 @@ cd /tmp
 if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
 wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/stage.sh --no-check-certificate
 chmod +x stage.sh
-stream=10.0.neon
+stream=master # or 10.0.neon
 versionWithRespin=10.0.0.Alpha1 # a, b, c...
 for site in product; do
   ./stage.sh -sites $site -sd 10.0 -stream ${stream} -vr ${versionWithRespin} -JOB_NAME devstudio.\${site}_\${stream} \
@@ -106,7 +107,7 @@ cd /tmp
 if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
 wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/stage.sh --no-check-certificate
 chmod +x stage.sh
-stream=10.0.neon
+stream=master # or 10.0.neon
 versionWithRespin=10.0.0.Alpha1 # a, b, c...
 for site in product; do
   ./stage.sh -sites $site -sd 10.0 -stream ${stream} -vr ${versionWithRespin} -JOB_NAME devstudio.\${site}_\${stream} \
@@ -221,7 +222,7 @@ for d in discovery.central discovery.earlyaccess; do
   mkdir -p ${d}/${versionWithRespin}/
   pushd ${d}/${versionWithRespin}/
     ${RSYNC} ${DESTINATION}/${updatePath}/${d}/${versionWithRespin}/composite*xml ./
-    cat $c | egrep "${versionWithRespin}|targetplatforms|REPO|updates|timestamp"
+    cat composite*.xml | egrep "${versionWithRespin}|targetplatforms|REPO|updates|timestamp"
   popd
 done
 rsync discovery.central/${versionWithRespin}/composite*.xml ./
@@ -248,7 +249,7 @@ ${DEST_URL}/${updatePath}/
 rm -fr discovery.central/${versionWithRespin}/composite*.xml discovery.earlyaccess/${versionWithRespin}/composite*.xml
 
 # commit the change and push to master
-git commit -m "release ${versionWithRespin} to QE"
+git commit -m "release ${versionWithRespin} to QE" .
 git push origin HEAD:master
 popd
 
@@ -312,7 +313,7 @@ ____
 version_JBT=4.4.0.Alpha1
 version=10.0.0.Alpha1
 versionWithRespin=10.0.0.Alpha1 # a, b, c...
-respin="respin-c"
+respin="respin-"
 recipients=jboss-devstudio-list@redhat.com
 sender="Nick Boldt <nboldt@redhat.com>"
 subject="JBDS ${versionWithRespin} Core bits available for QE testing"

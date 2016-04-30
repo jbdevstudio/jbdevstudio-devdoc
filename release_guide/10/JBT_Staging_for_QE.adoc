@@ -3,6 +3,7 @@
 This document describe how to provide a valid JBoss Tools build to QE so they can test us.
 
 TODO: use consistent instructions for fetching sources from git & pushing changes
+TODO: use sshfs to do copies in a single step, instead of rsync-pull/rsync-push (2 steps)
 
 [NOTE]
 ====
@@ -298,7 +299,7 @@ ${DEST_URL}/${updatePath}/
 rm -fr discovery.central/${versionWithRespin}/composite*.xml discovery.earlyaccess/${versionWithRespin}/composite*.xml
 
 # commit the change and push to master
-git commit -m "release ${versionWithRespin} to QE"
+git commit -m "release ${versionWithRespin} to QE" .
 git push origin HEAD:master
 popd
 
@@ -334,6 +335,11 @@ st ide-config.properties
 # TODO something like this?
 # sed -i "s/CR1b/CR1c/g" ide-config.properties
 
+# verify these 6 URLs exist
+URLs="$(egrep -v "#" ide-config.properties | egrep "${version}|${versionWithRespin}|${jbdsFixVersion}|${jbdsFixVersionWithRespin}" | sed -e "s#.\+=\(.\+\)#\1#")"
+google-chrome && google-chrome $URLs
+for u in $URLs; do echo $u; done
+
 # commit the change and push to master
 ci "release JBT ${version} (${versionWithRespin}) to staging: link to latest dev milestone discovery site" ide-config.properties
 git push origin HEAD:master
@@ -342,10 +348,6 @@ git push origin HEAD:master
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 rsync -Pzrlt --rsh=ssh --protocol=28 ide-config.properties $TOOLS/configuration/ide-config.properties
 
-# verify these 6 URLs exist
-URLs="$(egrep -v "#" ide-config.properties | egrep "${version}|${versionWithRespin}|${jbdsFixVersion}|${jbdsFixVersionWithRespin}" | sed -e "s#.\+=\(.\+\)#\1#")"
-google-chrome && google-chrome $URLs
-for u in $URLs; do echo $u; done
 popd
 
 ----
@@ -403,7 +405,7 @@ ____
 ----
 
 versionWithRespin=4.4.0.Alpha1 # a, b, c...
-respin="respin-c"
+respin="respin-"
 TARGET_PLATFORM_VERSION_MIN=4.60.0.Alpha1-SNAPSHOT
 TARGET_PLATFORM_VERSION_MAX=4.60.0.Alpha1-SNAPSHOT
 TARGET_PLATFORM_CENTRAL_MAX=4.60.0.Alpha1-SNAPSHOT

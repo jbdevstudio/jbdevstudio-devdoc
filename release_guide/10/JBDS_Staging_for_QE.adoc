@@ -1,0 +1,423 @@
+= Publishing JBDS Installers & update sites for QE
+
+This document describe how to provide a valid JBoss Developer Studio build to QE so they can test us.
+
+TODO: use consistent instructions for fetching sources from git & pushing changes
+
+== Update Discovery Sites and URLs
+
+See details in JBT_Staging_For_QE.adoc
+
+== Verify correct version set in com.jboss.devstudio.central.core
+
+See details in JBT_Staging_For_QE.adoc
+
+== Disable jobs
+
+See details in JBT_Staging_For_QE.adoc
+
+== Variables to use
+
+Whenever you're starting a new shell, you should set those variables:
+
+[sources,bash]
+----
+version=10.0.0.Alpha1
+versionWithRespin=10.0.0.Alpha1 # a, b, c...
+TARGET_PLATFORM_VERSION_MAX=4.60.0.Alpha1-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.60.0.Alpha1-SNAPSHOT
+now=$(date +%s000)
+JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
+----
+
+== Stage to qa.jboss.org
+
+*qa.jboss.org* is actually mapped to folder +/qa/services/http/binaries/RHDS+ accessible from CI machines (such as dev01.mw.lab.eng.bos.redhat.com). So first connect to dev01.mw.lab.eng.bos.redhat.com as +hudson+ user (requires permissions).
+
+[source,bash]
+----
+me@local$ ssh dev01.mw.lab.eng.bos.redhat.com
+me@dev01$ sudo su - hudson
+hudson@dev01$ ...
+----
+
+Then copy the latest JBDS artifacts:
+
+* installer
+* target platforms & zips
+* update sites & zips
+* discovery sites
+
+WARNING: Don't use symlinks are they are too risky to use. Those operations can be done in parallel (using multiple terminals is the easiest way)
+
+=== Push installers, update site, and discovery site
+
+[source,bash]
+----
+# can run these 5 steps in parallel
+
+# 1. copy JBDS target platform zips from INTERNAL (www.qa) to EXTERNAL (devstudio.redhat.com)
+versionWithRespin=10.0.0.Alpha1 # a, b, c...
+TARGET_PLATFORM_VERSION_MAX=4.60.0.Alpha1-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.60.0.Alpha1-SNAPSHOT
+for targetname in jbdevstudio jbtcentral jbtearlyaccess; do
+  if [[ ${targetname} == "jbdevstudio" ]]; then
+    TARGET_PLATFORM_VERSION=${TARGET_PLATFORM_VERSION_MAX}
+    suffix="-target-platform"
+  else
+    TARGET_PLATFORM_VERSION=${TARGET_PLATFORM_CENTRAL_MAX}
+    suffix="-target-platform-${targetname:3}"
+  fi
+  y=/qa/services/http/binaries/RHDS/targetplatforms/${targetname}target/${TARGET_PLATFORM_VERSION}/${targetname}target-${TARGET_PLATFORM_VERSION}.zip
+  rsync -aPrz --rsh=ssh --protocol=28 ${y} ${JBDS}/10.0/staging/updates/core/jboss-devstudio-${versionWithRespin}${suffix}.zip
+  rsync -aPrz --rsh=ssh --protocol=28 ${y}.sha256 ${JBDS}/10.0/staging/updates/core/jboss-devstudio-${versionWithRespin}${suffix}.zip.sha256
+done
+echo "DONE: copy JBDS target platform zips" | grep "copy JBDS target platform zips"
+
+
+# 2. central/earlyaccess & discovery
+cd /tmp
+if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
+wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/stage.sh --no-check-certificate
+chmod +x stage.sh
+stream=master
+versionWithRespin=10.0.0.Alpha1 # a, b, c...
+for site in central-site earlyaccess-site; do
+  ./stage.sh -sites $site -sd 10.0 -stream ${stream} -vr ${versionWithRespin} -JOB_NAME jbosstools-build-sites.aggregate.\${site}_\${stream} \
+    -DESTINATION ${JBDS} -DEST_URL https://devstudio.redhat.com -q &
+done
+
+
+# 3. copy JBDS installers & update site [INTERNAL - includes EAP installer]
+cd /tmp
+if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
+wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/stage.sh --no-check-certificate
+chmod +x stage.sh
+stream=10.0.neon
+versionWithRespin=10.0.0.Alpha1 # a, b, c...
+for site in product; do
+  ./stage.sh -sites $site -sd 10.0 -stream ${stream} -vr ${versionWithRespin} -JOB_NAME devstudio.\${site}_\${stream} \
+    -DESTINATION /qa/services/http/binaries/RHDS -DEST_URL http://www.qa.jboss.com/binaries/RHDS -q &
+done
+
+
+# 4. copy JBDS installers & update site [EXTERNAL - Standalone installer only]
+cd /tmp
+if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
+wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/stage.sh --no-check-certificate
+chmod +x stage.sh
+stream=10.0.neon
+versionWithRespin=10.0.0.Alpha1 # a, b, c...
+for site in product; do
+  ./stage.sh -sites $site -sd 10.0 -stream ${stream} -vr ${versionWithRespin} -JOB_NAME devstudio.\${site}_\${stream} \
+    -DESTINATION ${JBDS} -DEST_URL https://devstudio.redhat.com -q &
+done
+
+
+# TODO: make sure you've rebuilt the discovery sites and disabled the job first before doing this step!
+# 5. copy JBDS discovery sites to staging/builds/ and staging/updates/
+cd /tmp
+if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
+wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/stage.sh --no-check-certificate
+chmod +x stage.sh
+stream=master
+versionWithRespin=10.0.0.Alpha1 # a, b, c...
+for site in discovery.central discovery.earlyaccess; do
+  ./stage.sh -sites $site -sd 10.0 -stream ${stream} -vr ${versionWithRespin} -JOB_NAME jbosstools-\${site}_\${stream} \
+    -DESTINATION ${JBDS} -DEST_URL https://devstudio.redhat.com -q &
+done
+
+----
+
+Verify sites are correctly populated (run locally, not on dev01).
+
+Note that Akamai caching might result in the appearance of missing files (apache directories may look incomplete) but if you ping specific files, they should be there.
+
+[source,bash]
+----
+
+versionWithRespin=10.0.0.Alpha1 # a, b, c...
+tmpfile=/tmp/jbosstools-staging__verify.txt
+for site in central earlyaccess discovery.central discovery.earlyaccess; do
+  if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
+  echo "https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin}-build-${sitename}/ " >> $tmpfile
+  echo "https://devstudio.redhat.com/10.0/staging/updates/${sitename}/${versionWithRespin}/ " >> $tmpfile
+done
+echo "https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin}-build-product/ " >> $tmpfile
+echo "http://www.qa.jboss.com/binaries/RHDS/10.0/staging/builds/devstudio-${versionWithRespin}-build-product/ " >> $tmpfile
+echo "https://devstudio.redhat.com/10.0/staging/builds/#_____(5_folders_w/_${versionWithRespin}) " >> $tmpfile
+echo "https://devstudio.redhat.com/10.0/staging/updates/core/#_____(6_zips,_6_sums,_1_folder_w/_${versionWithRespin}) " >> $tmpfile
+echo "" >> $tmpfile
+cat $tmpfile
+google-chrome && google-chrome `cat $tmpfile`
+popd >/dev/null
+rm -fr $tmpfile
+
+# once the staging build folder exists, start fetching the JBDS installer (we'll need it later to do a smoke test)
+
+cd ~/tmp
+wget https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/
+installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
+echo "Installer jar: ${installerJar}"
+rm -f index.html
+wget https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/${installerJar}
+
+----
+
+You'll use this downloaded installer later, but since it takes a while to download, it's more efficient to start it now.
+
+
+=== Cleanup OLD builds
+
+Optional step.
+
+First, use sshfs to mount filemgmt file paths.
+
+[source,bash]
+----
+
+JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
+sshfs $JBDS $HOME/JBDS-ssh
+
+----
+
+Then move old builds into an OLD/ folder to they're less visible and ready for deletion later.
+
+[source,bash]
+----
+version_PREV=10.0.0.Alpha1 # a, b, c...
+for d in updates/core updates/central updates/earlyaccess updates/discovery.central updates/discovery.earlyaccess builds; do
+  if [[ -d $HOME/JBDS-ssh/10.0/staging/${d}/ ]]; then
+    echo "${d}/*${version_PREV}* ..."
+    mkdir -p $HOME/JBDS-ssh/10.0/staging/${d}/OLD/
+    mv $HOME/JBDS-ssh/10.0/staging/${d}/*${version_PREV}* $HOME/JBDS-ssh/10.0/staging/${d}/OLD/
+  fi
+done
+
+----
+
+=== Update https://devstudio.jboss.com/10.0/staging/updates/
+
+This should point to the latest staging bits. Just copy what's in discovery.central/composite*.xml into this folder.
+
+[source,bash]
+----
+
+cd ~/truu
+RSYNC="rsync -aPrz --rsh=ssh --protocol=28"
+
+versionWithRespin_PREV=10.0.0.Alpha1 # a, b, c...
+versionWithRespin=10.0.0.Alpha1 # a, b, c...
+DESTINATION=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
+PROJECT_PATH=jbdevstudio-website/content
+DEST_URL="https://devstudio.redhat.com"
+updatePath=10.0/staging/updates
+
+pushd ${PROJECT_PATH}/${updatePath}
+git fetch origin master
+git checkout FETCH_HEAD
+
+for d in discovery.central discovery.earlyaccess; do
+  mkdir -p ${d}/${versionWithRespin}/
+  pushd ${d}/${versionWithRespin}/
+    ${RSYNC} ${DESTINATION}/${updatePath}/${d}/${versionWithRespin}/composite*xml ./
+    cat $c | egrep "${versionWithRespin}|targetplatforms|REPO|updates|timestamp"
+  popd
+done
+rsync discovery.central/${versionWithRespin}/composite*.xml ./
+
+# update index.html
+if [[ -f index.html ]]; then
+  sed -i "s#${versionWithRespin_PREV}#${versionWithRespin}#" index.html
+  cat index.html | egrep "${versionWithRespin_PREV}|${versionWithRespin}"
+fi
+
+# push changes to server
+${RSYNC} discovery.central/${versionWithRespin}/composite*xml ${DESTINATION}/${updatePath}/discovery.central/${versionWithRespin}/
+${RSYNC} discovery.earlyaccess/${versionWithRespin}/composite*xml ${DESTINATION}/${updatePath}/discovery.earlyaccess/${versionWithRespin}/
+${RSYNC} ./composite*xml *.html ${DESTINATION}/${updatePath}/
+
+# verify changes
+echo "Check 4 URLs:"
+google-chrome && google-chrome \
+${DEST_URL}/${updatePath}/discovery.central/${versionWithRespin}/compositeContent.xml \
+${DEST_URL}/${updatePath}/discovery.earlyaccess/${versionWithRespin}/compositeContent.xml \
+${DEST_URL}/${updatePath}/compositeContent.xml \
+${DEST_URL}/${updatePath}/
+
+rm -fr discovery.central/${versionWithRespin}/composite*.xml discovery.earlyaccess/${versionWithRespin}/composite*.xml
+
+# commit the change and push to master
+git commit -m "release ${versionWithRespin} to QE"
+git push origin HEAD:master
+popd
+
+----
+
+=== Merge in Integration Stack content
+
+See details in Merge_IS_Discovery.adoc
+
+== Release the latest staging site to ide-config.properties
+
+See details in JBT_Staging_For_QE.adoc
+
+
+== Smoke test the release
+
+Before notifying team of staged release, must check for obvious problems.
+
+1. Get a recent Eclipse (compatible with the target version of JBT)
+2. Install BYOE category from https://devstudio.redhat.com/10.0/staging/updates/
+3. Restart when prompted. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
+4. Check log, start an example project, check log again
+
+[source,bash]
+----
+versionWithRespin=10.0.0.Alpha1 # a, b, c...
+cd ~/tmp
+wget https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/
+installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
+echo "Installer jar: ${installerJar}"
+rm -f index.html
+
+# should have already downloaded this above
+if [[ ! -f ${installerJar} ]]; then wget https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/${installerJar}; fi
+
+java -jar ~/tmp/${installerJar}
+
+----
+
+0. After downloading and installing JBDS from the step above...
+1. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
+2. Check log, start an example project, check log again
+
+If this fails, it is most likely due to a bug or a failure in a step above. If possible, fix it before notifying team below.
+
+
+== Enable jobs
+
+See details in JBT_Staging_For_QE.adoc
+
+
+== Notify the team (send 1 email)
+
+Run this on dev01 so that we can use /bin/mail. Email should be generated automatically rather than requiring copy & paste into your mail client.
+
+____
+*To* jboss-devstudio-list@redhat.com +
+
+[source,bash]
+----
+version_JBT=4.4.0.Alpha1
+version=10.0.0.Alpha1
+versionWithRespin=10.0.0.Alpha1 # a, b, c...
+respin="respin-c"
+recipients=jboss-devstudio-list@redhat.com
+sender="Nick Boldt <nboldt@redhat.com>"
+subject="JBDS ${versionWithRespin} Core bits available for QE testing"
+echo "
+These are not FINAL bits, but preliminary results for QE & community testing. Not for redistribution to customers or end users.
+
+Universal Installers:
+* http://www.qa.jboss.com/binaries/RHDS/10.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/ (EAP bundles; VPN required)
+* https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/ (Standalone + other zips)
+
+Update Sites:
+* https://devstudio.redhat.com/10.0/staging/updates/ (includes ${versionWithRespin} Core + Target Platform + JBoss Central)
+* https://devstudio.redhat.com/10.0/staging/updates/discovery.earlyaccess/${versionWithRespin}/ (includes the above site + Early Access)
+
+New + Noteworthy (subject to change):
+* https://github.com/jbosstools/jbosstools-website/tree/master/documentation/whatsnew
+* http://tools.jboss.org/documentation/whatsnew/
+
+Schedule / Upcoming Releases: https://issues.jboss.org/projects/JBDS?selectedItem=com.atlassian.jira.jira-projects-plugin:release-page
+" > /tmp/mailbody.jbds.txt
+if [[ $respin != "respin-" ]]; then
+echo "
+--
+
+Changes prompting this $respin are:
+
+https://issues.jboss.org/issues/?jql=labels%20in%20%28%22${respin}%22%29%20and%20%28%28project%20in%20%28%22JBDS%22%29%20and%20fixversion%20in%20%28%22${version}%22%29%29%20or%20%28project%20in%20%28%22JBIDE%22%2C%22TOOLSDOC%22%29%20and%20fixversion%20in%20%28%22${version_JBT}%22%29%29%29
+
+To compare the upcoming version of Central (${versionWithRespin}) against an older version, add lines similar to these your eclipse.ini file after the -vmargs line for the appropriate version & URLs:
+ -Djboss.discovery.directory.url=https://devstudio.redhat.com/10.0/staging/updates/discovery.central/${versionWithRespin}/devstudio-directory.xml
+ -Djboss.discovery.site.url=https://devstudio.redhat.com/10.0/staging/updates/
+ -Djboss.discovery.earlyaccess.site.url=https://devstudio.redhat.com/10.0/staging/updates/discovery.earlyaccess/${versionWithRespin}/
+ -Djboss.discovery.earlyaccess.list.url=https://devstudio.redhat.com/10.0/staging/updates/discovery.earlyaccess/${versionWithRespin}/devstudio-earlyaccess.properties
+
+" >> /tmp/mailbody.jbds.txt
+fi
+
+# use mail (with sendmail's -f flag), NOT mailx
+/bin/mail -s "$subject" $recipients -- -f"$sender" < /tmp/mailbody.jbds.txt
+rm -f /tmp/mailbody.jbds.txt
+
+----
+____
+
+
+== Kick downstream Dev Platform Installer
+
+Now that JBDS installer is staged, you can submit a PR against the dev platform installer and have that built.
+
+See: https://github.com/redhat-developer-tooling/developer-platform-install/blob/master/requirements.json#L24
+
+Build: http://machydra.brq.redhat.com:8080/job/developer-platform-installer-build-aggregate
+
+
+
+
+== Copy Dev Platform Installer exe & SHA files to Wonka
+
+Denis will publish the latest installer to Wonka.
+
+On wonka.mw.lab.eng.bos.redhat.com (10.16.89.81), the signed installer will be in this folder
+
+you@wonka.mw.lab.eng.bos.redhat.com:/home/windup/apache2/www/html/RHDS/10.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all
+
+
+== Copy Dev Platform Installer & description/instruction files to www.qa
+
+To prepare for staging in CSP, copy these files into the build folder and rename them so they match the filename of the .exe installer:
+
+https://raw.githubusercontent.com/jbdevstudio/jbdevstudio-product/master/results/customer-portal/installer-platform.detailed-description.html
+https://raw.githubusercontent.com/jbdevstudio/jbdevstudio-product/master/results/customer-portal/installer-platform.manual-instructions.txt
+
+First connect to dev01.mw.lab.eng.bos.redhat.com as +hudson+ user (requires permissions).
+
+[source,bash]
+----
+me@local$ ssh dev01.mw.lab.eng.bos.redhat.com
+me@dev01$ sudo su - hudson
+hudson@dev01$ ...
+----
+
+Then:
+
+[source,bash]
+----
+
+versionWithRespin=10.0.0.Alpha1 # a, b, c...
+installerExe=jboss-devstudio-platform-???-installer.exe
+installerDir=RHDS/10.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all
+
+wonkaDir=nboldt@wonka.mw.lab.eng.bos.redhat.com:/home/windup/apache2/www/html
+for d in manual-instructions.txt detailed-description.html; do
+  wget --no-check-certificate https://raw.githubusercontent.com/jbdevstudio/jbdevstudio-product/master/results/customer-portal/installer-platform.${d} \
+    -O $HOME/${installerDir}/${installerExe}.${d}
+  scpr $HOME/${installerDir}/${installerExe}.${d} ${wonkaDir}/${installerDir}/
+done
+
+# and grab a copy of the installer.exe from Wonka
+scpr ${wonkaDir}/${installerDir}/${installerExe}.sha256 $HOME/${installerDir}/
+scpr ${wonkaDir}/${installerDir}/${installerExe} $HOME/${installerDir}/
+
+----
+
+Review content here:
+
+http://www.qa.jboss.com/binaries/RHDS/10.0/staging/builds/devstudio-10.0.0.Alpha1-build-product/latest/all/
+http://wonka.mw.lab.eng.bos.redhat.com/RHDS/10.0/staging/builds/devstudio-10.0.0.Alpha1-build-product/latest/all/
+

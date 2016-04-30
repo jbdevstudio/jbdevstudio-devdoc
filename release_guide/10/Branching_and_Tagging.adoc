@@ -1,0 +1,200 @@
+= Branching
+
+== Branching JBoss Tools
+
+[source,bash]
+----
+# if not already cloned, the do this:
+git clone https://github.com/jbosstools/jbosstools-build
+git clone https://github.com/jbosstools/jbosstools-build-ci
+git clone https://github.com/jbosstools/jbosstools-build-sites
+git clone https://github.com/jbosstools/jbosstools-devdoc
+git clone https://github.com/jbosstools/jbosstools-discovery
+git clone https://github.com/jbosstools/jbosstools-download.jboss.org
+git clone https://github.com/jbosstools/jbosstools-maven-plugins
+git clone https://github.com/jbosstools/jbosstools-versionwatch
+
+jbt_branch=master
+for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins versionwatch; do
+  echo "====================================================================="
+  echo "Branching jbosstools-${d} from branch ${jbt_branch}..."
+  pushd jbosstools-${d}
+  git checkout master
+  git pull origin master
+  git checkout -b ${jbt_branch}
+  git push origin ${jbt_branch}
+  echo ">>> https://github.com/jbosstools/jbosstools-${d}/tree/${jbt_branch}"
+  popd >/dev/null
+  echo "====================================================================="
+  echo ""
+done
+----
+
+If you have just branched for a.b.x (rather than a.b.0.y), please make sure you update "master" symlinks to now point to "a.b.simrel" instead.
+
+[source,bash]
+----
+pushd jbosstools-download.jboss.org/jbosstools/
+
+pushd neon/snapshots/updates/
+ls -l com*
+# lrwxrwxrwx  compositeArtifacts.xml -> discovery.central/master/compositeArtifacts.xml
+# lrwxrwxrwx  compositeContent.xml -> discovery.central/master/compositeContent.xml
+rm -f compositeArtifacts.xml compositeContent.xml
+stream=master # not master
+ln -s discovery.central/${stream}/compositeArtifacts.xml
+ln -s discovery.central/${stream}/compositeContent.xml
+popd
+
+# then commit changes to github and rsync new symlinks to to $TOOLS/neon/snapshots/updates/
+# ...
+
+# may also want to create new/updated symlinks for future release Eclipse 4.6 Neon / JBDS 10.0
+
+pushd updates/snapshots
+ls -l 10.0.neon master
+# lrwxrwxrwx  neon -> ../../neon/snapshots/updates/
+# lrwxrwxrwx  10.0 -> neon/
+# lrwxrwxrwx  master -> neon/
+rm -f master
+ln -s ../../neon/snapshots/updates/ neon
+ln -s neon/ 10.0
+ln -s neon/ master
+popd
+
+# then commit changes to github and rsync new symlinks to to $TOOLS/updates/snapshots/
+# ...
+
+popd
+
+----
+
+
+== Branching Developer Studio
+
+[source,bash]
+----
+# if not already cloned, the do this:
+git clone https://github.com/jbdevstudio/jbdevstudio-product
+git clone https://github.com/jbdevstudio/jbdevstudio-ci
+git clone https://github.com/jbdevstudio/jbdevstudio-website
+git clone https://github.com/jbdevstudio/jbdevstudio-artwork
+git clone https://github.com/jbdevstudio/jbdevstudio-devdoc
+
+jbt_branch=master
+for d in product ci website artwork devdoc; do
+  echo "====================================================================="
+  echo "Branching jbdevstudio-${d} from branch ${jbt_branch}..."
+  pushd jbdevstudio-${d}
+  git checkout master
+  git pull origin master
+  git checkout -b ${jbt_branch}
+  git push origin ${jbt_branch}
+  echo ">>> https://github.com/jbosstools/jbosstools-${d}/tree/${jbt_branch}"
+  popd >/dev/null
+  echo "====================================================================="
+  echo ""
+done
+----
+
+If you have just branched for a.b.x (rather than a.b.0.y), please make sure you update "master" symlinks to now point to "a.b.simrel" instead.
+
+[source,bash]
+----
+pushd jbdevstudio-website/content/
+
+pushd 10.0/snapshots/updates/
+ls -l com*
+# lrwxrwxrwx  compositeArtifacts.xml -> discovery.central/master/compositeArtifacts.xml
+# lrwxrwxrwx  compositeContent.xml -> discovery.central/master/compositeContent.xml
+rm -f compositeArtifacts.xml compositeContent.xml
+stream=master # not master
+ln -s discovery.central/${stream}/compositeArtifacts.xml
+ln -s discovery.central/${stream}/compositeContent.xml
+popd
+
+# then commit changes to github and rsync new symlinks to to $JBDS/10.0/snapshots/updates/
+# ...
+
+# may also want to create new/updated symlinks for future release Eclipse 4.6 Neon / JBDS 10.0
+
+pushd updates/snapshots
+ls -l 10.0.neon master
+# lrwxrwxrwx  10.0 -> ../../10.0/snapshots/updates/
+# lrwxrwxrwx  neon -> 10.0/
+# lrwxrwxrwx  master -> 10.0/
+rm -f master
+ln -s ../../10.0/snapshots/updates/ 10.0
+ln -s 10.0 neon
+ln -s 10.0/ master
+popd
+
+# then commit changes to github and rsync new symlinks to to $JBDS/updates/snapshots/
+# ...
+
+popd
+
+----
+
+
+= Tagging
+
+== Tagging JBoss Tools
+
+[source,bash]
+----
+# if not already cloned, the do this:
+git clone https://github.com/jbosstools/jbosstools-build
+git clone https://github.com/jbosstools/jbosstools-build-ci
+git clone https://github.com/jbosstools/jbosstools-build-sites
+git clone https://github.com/jbosstools/jbosstools-devdoc
+git clone https://github.com/jbosstools/jbosstools-discovery
+git clone https://github.com/jbosstools/jbosstools-download.jboss.org
+git clone https://github.com/jbosstools/jbosstools-maven-plugins
+git clone https://github.com/jbosstools/jbosstools-versionwatch
+
+# maven-plugins does not get released/branched the same as other projects, but tag it anyway
+# download.jboss.org tag might not be valid as tweaks to ide-config.properties happen frequently
+
+jbt_branch=master
+version=4.4.0.Alpha1
+for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins versionwatch; do
+  echo "====================================================================="
+  echo "Tagging jbosstools-${d} from branch ${jbt_branch} as tag ${version}..."
+  pushd jbosstools-${d}
+  git fetch origin ${jbt_branch}
+  git tag jbosstools-${version} FETCH_HEAD
+  git push origin jbosstools-${version}
+  echo ">>> https://github.com/jbosstools/jbosstools-${d}/tree/jbosstools-${version}"
+  popd >/dev/null
+  echo "====================================================================="
+  echo ""
+done
+----
+
+== Tagging Developer Studio
+
+[source,bash]
+----
+# if not already cloned, the do this:
+git clone https://github.com/jbdevstudio/jbdevstudio-product
+git clone https://github.com/jbdevstudio/jbdevstudio-ci
+git clone https://github.com/jbdevstudio/jbdevstudio-website
+git clone https://github.com/jbdevstudio/jbdevstudio-artwork
+git clone https://github.com/jbdevstudio/jbdevstudio-devdoc
+
+jbt_branch=master
+version=10.0.0.Alpha1
+for d in product ci website artwork devdoc; do
+  echo "====================================================================="
+  echo "Tagging jbdevstudio-${d} from branch ${jbt_branch} as tag ${version}..."
+  pushd jbdevstudio-${d}
+  git fetch origin ${jbt_branch}
+  git tag jbdevstudio-${version} FETCH_HEAD
+  git push origin jbdevstudio-${version}
+  echo ">>> https://github.com/jbdevstudio/jbdevstudio-${d}/tree/jbdevstudio-${version}"
+  popd >/dev/null
+  echo "====================================================================="
+  echo ""
+done
+----

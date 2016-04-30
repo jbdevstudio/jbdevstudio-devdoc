@@ -1,0 +1,55 @@
+The JBT/JBDS composite sites now include a composite pointer to the JBTIS/JBDSIS composite sites, so no changes are required there.
+
+HOWEVER, the IS jar still needs to copied over into the discovery site, and the XML file needs to be updated. Hence, this script.
+
+=== Merge in Integration Stack content
+
+For JBT and JBDS, we need a way to include the downstream IS jars in the upstream JBT/JBDS Discovery sites.
+
+As of 4.4.0.Alpha1 / 10.0.0.Alpha1, the latest plugins to pull can be found at the URLs below (see script).
+
+Here is a script that performs the merge for the JBT and JBDS /staging/ sites.
+
+[source,bash]
+----
+
+# If all IS content is currently Early Access (EA), make sure you use the /discovery/{version}/earlyaccess/ URLs which include BOTH GA and EA plugins.
+# If all IS content is released (GA), you can use the /discovery/{version}/ URLs here.
+pushd /tmp
+  wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/mergeISdiscovery.sh && chmod +x mergeISdiscovery.sh
+  ./mergeISdiscovery.sh -version 4.4.0.Alpha1 -versionWithRespin 4.4.0.Alpha1 -is http://download.jboss.org/jbosstools/mars/staging/updates/integration-stack/discovery/4.3.0.Final/earlyaccess/
+  ./mergeISdiscovery.sh -version 10.0.0.Alpha1 -versionWithRespin 10.0.0.Alpha1 -is https://devstudio.redhat.com/9.0/staging/updates/integration-stack/discovery/9.0.0.GA/earlyaccess/ -JBDS
+  rm -f /tmp/mergeISdiscovery.sh
+popd
+
+----
+
+Once in staging, you can test the content as seen from Eclipse by installing JBT or JBDS into Eclipse, then restarting Eclipse with these flags:
+
+[source,bash]
+----
+
+# JBoss Tools
+url=http://download.jboss.org/jbosstools/neon/staging/updates/discovery.central/4.4.0.Alpha1/
+./eclipse -vmargs -Djboss.discovery.directory.url=${url}jbosstools-directory.xml -Djboss.discovery.site.integration-stack.url=${url}
+
+# JBDS
+url=https://devstudio.redhat.com/10.0/staging/updates/discovery.earlyaccess/10.0.0.Alpha1/
+./eclipse -vmargs -Djboss.discovery.directory.url=${url}devstudio-directory.xml -Djboss.discovery.site.integration-stack.url=${url}
+
+----
+
+Note that the jboss.discovery.site.integration-stack.url is only needed if there's no value defined in http://download.jboss.org/jbosstools/configuration/ide-config.properties .
+
+Without a defined value, you will see an error like this in the Eclipse log:
+
+```
+!MESSAGE org.jboss.tools.central.discovery.integration_stack_4.4.0.Alpha1_v20150922_1058_B430.jar_4644660859188953740.jar: Must specify connectorDescriptor/@siteUrl
+!STACK 1
+org.eclipse.mylyn.internal.discovery.core.model.ValidationException: Must specify connectorDescriptor/@siteUrl
+```
+
+TODO https://issues.jboss.org/browse/JBIDE-20664 could we pull the URLs directly from those declared in http://download.jboss.org/jbosstools/configuration/ide-config.properties ?
+jboss.discovery.site.integration-stack.url|jbosstools|4.4.0.Alpha1=http://download.jboss.org/jbosstools/neon/staging/updates/integration-stack/discovery/4.4.0.Alpha1/
+jboss.discovery.site.integration-stack.url|devstudio|10.0.0.Alpha1=https://devstudio.redhat.com/10.0/staging/updates/integration-stack/discovery/10.0.0.Alpha1/
+

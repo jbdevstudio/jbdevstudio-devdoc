@@ -98,7 +98,7 @@ stream=master # or 10.0.neon
 versionWithRespin=10.0.0.Alpha1 # a, b, c...
 for site in product; do
   ./stage.sh -sites $site -sd 10.0 -stream ${stream} -vr ${versionWithRespin} -JOB_NAME devstudio.\${site}_\${stream} \
-    -DESTINATION /qa/services/http/binaries/RHDS -DEST_URL http://www.qa.jboss.com/binaries/RHDS -q &
+    -DESTINATION /qa/services/http/binaries/RHDS -DEST_URL http://www.qa.jboss.com/binaries/devstudio -q &
 done
 
 
@@ -145,7 +145,7 @@ for site in central earlyaccess discovery.central discovery.earlyaccess; do
   echo "https://devstudio.redhat.com/10.0/staging/updates/${sitename}/${versionWithRespin}/ " >> $tmpfile
 done
 echo "https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin}-build-product/ " >> $tmpfile
-echo "http://www.qa.jboss.com/binaries/RHDS/10.0/staging/builds/devstudio-${versionWithRespin}-build-product/ " >> $tmpfile
+echo "http://www.qa.jboss.com/binaries/devstudio/10.0/staging/builds/devstudio-${versionWithRespin}-build-product/ " >> $tmpfile
 echo "https://devstudio.redhat.com/10.0/staging/builds/#_____(5_folders_w/_${versionWithRespin}) " >> $tmpfile
 echo "https://devstudio.redhat.com/10.0/staging/updates/core/#_____(6_zips,_6_sums,_1_folder_w/_${versionWithRespin}) " >> $tmpfile
 echo "" >> $tmpfile
@@ -321,7 +321,7 @@ echo "
 These are not FINAL bits, but preliminary results for QE & community testing. Not for redistribution to customers or end users.
 
 Universal Installers:
-* http://www.qa.jboss.com/binaries/RHDS/10.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/ (EAP bundles; VPN required)
+* http://www.qa.jboss.com/binaries/devstudio/10.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/ (EAP bundles; VPN required)
 * https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/ (Standalone + other zips)
 
 Update Sites:
@@ -419,6 +419,6 @@ scpr ${wonkaDir}/${installerDir}/${installerExe} $HOME/${installerDir}/
 
 Review content here:
 
-http://www.qa.jboss.com/binaries/RHDS/10.0/staging/builds/devstudio-10.0.0.Alpha1-build-product/latest/all/
+http://www.qa.jboss.com/binaries/devstudio/10.0/staging/builds/devstudio-10.0.0.Alpha1-build-product/latest/all/
 http://wonka.mw.lab.eng.bos.redhat.com/RHDS/10.0/staging/builds/devstudio-10.0.0.Alpha1-build-product/latest/all/
 

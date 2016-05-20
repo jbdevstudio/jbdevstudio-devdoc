@@ -17,8 +17,8 @@ Here is a script that performs the merge for the JBT and JBDS /staging/ sites.
 # If all IS content is released (GA), you can use the /discovery/{version}/ URLs here.
 pushd /tmp
   wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/mergeISdiscovery.sh && chmod +x mergeISdiscovery.sh
-  ./mergeISdiscovery.sh -version 4.4.0.Alpha1 -versionWithRespin 4.4.0.Alpha1 -is http://download.jboss.org/jbosstools/mars/staging/updates/integration-stack/discovery/4.3.0.Final/earlyaccess/
-  ./mergeISdiscovery.sh -version 10.0.0.Alpha1 -versionWithRespin 10.0.0.Alpha1 -is https://devstudio.redhat.com/9.0/staging/updates/integration-stack/discovery/9.0.0.GA/earlyaccess/ -JBDS
+  ./mergeISdiscovery.sh -version 4.4.0.Alpha2 -versionWithRespin 4.4.0.Alpha2 -is http://download.jboss.org/jbosstools/neon/staging/updates/integration-stack/discovery/4.4.0.Alpha1-SNAPSHOT/earlyaccess/
+  ./mergeISdiscovery.sh -version 10.0.0.Alpha2 -versionWithRespin 10.0.0.Alpha2 -is https://devstudio.redhat.com/10.0/staging/updates/integration-stack/discovery/10.0.0.Alpha1-SNAPSHOT/earlyaccess/ -JBDS
   rm -f /tmp/mergeISdiscovery.sh
 popd
 
@@ -30,11 +30,11 @@ Once in staging, you can test the content as seen from Eclipse by installing JBT
 ----
 
 # JBoss Tools
-url=http://download.jboss.org/jbosstools/neon/staging/updates/discovery.central/4.4.0.Alpha1/
+url=http://download.jboss.org/jbosstools/neon/staging/updates/discovery.central/4.4.0.Alpha2/
 ./eclipse -vmargs -Djboss.discovery.directory.url=${url}jbosstools-directory.xml -Djboss.discovery.site.integration-stack.url=${url}
 
 # JBDS
-url=https://devstudio.redhat.com/10.0/staging/updates/discovery.earlyaccess/10.0.0.Alpha1/
+url=https://devstudio.redhat.com/10.0/staging/updates/discovery.earlyaccess/10.0.0.Alpha2/
 ./eclipse -vmargs -Djboss.discovery.directory.url=${url}devstudio-directory.xml -Djboss.discovery.site.integration-stack.url=${url}
 
 ----
@@ -50,6 +50,6 @@ org.eclipse.mylyn.internal.discovery.core.model.ValidationException: Must specif
 ```
 
 TODO https://issues.jboss.org/browse/JBIDE-20664 could we pull the URLs directly from those declared in http://download.jboss.org/jbosstools/configuration/ide-config.properties ?
-jboss.discovery.site.integration-stack.url|jbosstools|4.4.0.Alpha1=http://download.jboss.org/jbosstools/neon/staging/updates/integration-stack/discovery/4.4.0.Alpha1/
-jboss.discovery.site.integration-stack.url|devstudio|10.0.0.Alpha1=https://devstudio.redhat.com/10.0/staging/updates/integration-stack/discovery/10.0.0.Alpha1/
+jboss.discovery.site.integration-stack.url|jbosstools|4.4.0.Alpha2=http://download.jboss.org/jbosstools/neon/staging/updates/integration-stack/discovery/4.4.0.Alpha1-SNAPSHOT/
+jboss.discovery.site.integration-stack.url|devstudio|10.0.0.Alpha2=https://devstudio.redhat.com/10.0/staging/updates/integration-stack/discovery/10.0.0.Alpha1-SNAPSHOT/
 

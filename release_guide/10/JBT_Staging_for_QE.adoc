@@ -102,7 +102,7 @@ Then respin the job and verify that sites were correctly populated:
 # kerberos login for the Jenkins server
 userpass=nboldt:PASSWORD
 
-versionWithRespin=4.4.0.Alpha1 # a, b, c... (not SNAPSHOT!)
+versionWithRespin=4.4.0.Alpha2 # a, b, c... (not SNAPSHOT!)
 stream_JBT=master # or 4.4.neon
 stream_DS=master # or 10.0.neon
 TARGET_PLATFORM_VERSION_MAX=4.60.0.Alpha1-SNAPSHOT
@@ -129,8 +129,7 @@ http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-discovery_${strea
 http://download.jboss.org/jbosstools/neon/snapshots/builds/jbosstools-discovery.central_${stream_JBT}/latest/all/repo/compositeArtifacts.xml \
 http://download.jboss.org/jbosstools/neon/snapshots/builds/jbosstools-discovery.central_${stream_JBT}/latest/all/repo/jbosstools-directory.xml \
 http://download.jboss.org/jbosstools/neon/snapshots/builds/jbosstools-discovery.earlyaccess_${stream_JBT}/latest/all/repo/compositeArtifacts.xml \
-http://download.jboss.org/jbosstools/neon/snapshots/builds/jbosstools-discovery.earlyaccess_${stream_JBT}/latest/all/repo/jbosstools-directory.xml
-google-chrome && google-chrome \
+http://download.jboss.org/jbosstools/neon/snapshots/builds/jbosstools-discovery.earlyaccess_${stream_JBT}/latest/all/repo/jbosstools-directory.xml \
 https://devstudio.redhat.com/10.0/snapshots/builds/jbosstools-discovery.central_${stream_JBT}/latest/all/repo/compositeArtifacts.xml \
 https://devstudio.redhat.com/10.0/snapshots/builds/jbosstools-discovery.central_${stream_JBT}/latest/all/repo/devstudio-directory.xml \
 https://devstudio.redhat.com/10.0/snapshots/builds/jbosstools-discovery.earlyaccess_${stream_JBT}/latest/all/repo/compositeArtifacts.xml \
@@ -169,7 +168,7 @@ chmod +x stage.sh
 
 # 5 builds of total 7
 stream=master
-versionWithRespin=4.4.0.Alpha1 # a, b, c...
+versionWithRespin=4.4.0.Alpha2 # a, b, c...
 for site in site coretests-site central-site earlyaccess-site; do
   ./stage.sh -sites $site -sd neon -stream ${stream} -vr ${versionWithRespin} -JOB_NAME jbosstools-build-sites.aggregate.\${site}_\${stream} -q &
 done
@@ -186,7 +185,7 @@ chmod +x stage.sh
 
 # 2 builds of total 7
 stream=master
-versionWithRespin=4.4.0.Alpha1 # a, b, c...
+versionWithRespin=4.4.0.Alpha2 # a, b, c...
 for site in discovery.central discovery.earlyaccess; do
   ./stage.sh -sites $site -sd neon -stream ${stream} -vr ${versionWithRespin} -q &
 done
@@ -200,7 +199,7 @@ Note that Akamai caching might result in the appearance of missing files (apache
 [source,bash]
 ----
 
-versionWithRespin=4.4.0.Alpha1 # a, b, c...
+versionWithRespin=4.4.0.Alpha2 # a, b, c...
 tmpfile=/tmp/jbosstools-staging__verify.txt
 for site in site coretests-site central-site earlyaccess-site discovery.central discovery.earlyaccess; do
   if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
@@ -257,8 +256,8 @@ This should point to the latest staging bits. Just copy what's in discovery.cent
 cd ~/tru
 RSYNC="rsync -aPrz --rsh=ssh --protocol=28"
 
-versionWithRespin_PREV=4.4.0.Alpha0 # a, b, c...
-versionWithRespin=4.4.0.Alpha1 # a, b, c...
+versionWithRespin_PREV=4.4.0.Alpha1 # a, b, c...
+versionWithRespin=4.4.0.Alpha2 # a, b, c...
 DESTINATION=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 PROJECT_PATH=jbosstools-download.jboss.org/jbosstools
 DEST_URL="http://download.jboss.org/jbosstools"
@@ -321,10 +320,10 @@ Update it so that the links for the latest milestone point to valid URLs. Commen
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru
 pushd jbosstools-download.jboss.org/jbosstools/configuration
-version=4.4.0.Alpha1
-versionWithRespin=4.4.0.Alpha1 # a, b, c...
-jbdsFixVersion=10.0.0.Alpha1 # no respin suffix here
-jbdsFixVersionWithRespin=10.0.0.Alpha1 # a, b, c...
+version=4.4.0.Alpha2
+versionWithRespin=4.4.0.Alpha2 # a, b, c...
+jbdsFixVersion=10.0.0.Alpha2 # no respin suffix here
+jbdsFixVersionWithRespin=10.0.0.Alpha2 # a, b, c...
 
 git fetch origin master
 git checkout FETCH_HEAD
@@ -404,18 +403,20 @@ ____
 [source,bash]
 ----
 
-versionWithRespin=4.4.0.Alpha1 # a, b, c...
+versionWithRespin=4.4.0.Alpha2 # a, b, c...
 respin="respin-"
 TARGET_PLATFORM_VERSION_MIN=4.60.0.Alpha1-SNAPSHOT
 TARGET_PLATFORM_VERSION_MAX=4.60.0.Alpha1-SNAPSHOT
 TARGET_PLATFORM_CENTRAL_MAX=4.60.0.Alpha1-SNAPSHOT
-jbdsFixVersion=10.0.0.Alpha1 # no respin suffix here
-jbtFixVersion=4.4.0.Alpha1 # no respin suffix here
+jbdsFixVersion=10.0.0.Alpha2 # no respin suffix here
+jbtFixVersion=4.4.0.Alpha2 # no respin suffix here
 recipients=jbosstools-dev@lists.jboss.org
 sender="Nick Boldt <nboldt@redhat.com>"
 subject="JBoss Tools Core ${versionWithRespin} bits available for QE testing"
 echo "
 These are not FINAL bits, but preliminary results for QE & community testing. Not for redistribution to customers or end users.
+
+Note that these bits will still have "Alpha1" in their name, but will have a newer timestamp than the previous staged build, eg., matching 05/19 or 05/20.
 
 Update site: http://download.jboss.org/jbosstools/neon/staging/updates/
 

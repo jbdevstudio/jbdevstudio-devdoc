@@ -77,8 +77,8 @@ if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
 wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/stage.sh --no-check-certificate
 chmod +x stage.sh
 
-stream=4.4.0.Alpha1 # staged version # a, b, c...
-version=4.4.0.Alpha1 # release version: no a, b, c suffix
+stream=4.4.0.Alpha2 # staged version # a, b, c...
+version=4.4.0.Alpha2 # release version: no a, b, c suffix
 quals="development"; if [[ ${version##*Final} == "" ]]; then quals="development stable"; fi
 for qual in $quals; do
   for site in core coretests central earlyaccess discovery.central discovery.earlyaccess browsersim-standalone; do
@@ -92,7 +92,7 @@ ps ax | grep stage.sh | grep "sites"
 # TODO merge this into stage.sh?
 # JBT zips into http://download.jboss.org/jbosstools/static/neon/development/updates/core/
 version=4.4.0.Alpha1
-versionWithRespin=4.4.0.Alpha1 # a, b, c...
+versionWithRespin=4.4.0.Alpha2 # a, b, c...
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 quals="development"; if [[ ${version##*Final} == "" ]]; then quals="development stable"; fi
 for site in core; do
@@ -109,28 +109,29 @@ for site in core; do
 done
 echo "DONE: JBT zips" | grep "JBT zips"
 
-# verify we have all the files we expect to see
+# verify we have all the files we expect to see (run locally, not on dev01)
+#TODO make sure you've mounted ~/TOOLS-ssh first!
 version=4.4.0.Alpha1
+versionWithRespin=4.4.0.Alpha2 # a, b, c...
 expectedCount=0
 quals="development"; if [[ ${version##*Final} == "" ]]; then quals="development stable"; fi
 rm -f /tmp/${version}.found.txt
 for qual in $quals; do
   (( expectedCount += 18 ));
-  find $HOME/TOOLS-ssh/static/neon/${qual}/updates/* -maxdepth 1 -name "*${version}*" | sort >> /tmp/${version}.found.txt
+  find $HOME/TOOLS-ssh/static/neon/${qual}/updates/* -maxdepth 1 -name "*${version}*" -o -name "*${versionWithRespin}*" | sort >> /tmp/${version}.found.txt
 done
 theCount=$(cat /tmp/${version}.found.txt | wc -l)
 if [[ ${theCount} == ${expectedCount} ]]; then
   echo "[INFO] Found all expected ${expectedCount} files/folders" | egrep "${expectedCount}|${theCount}|INFO|ERROR"
-  rm -f /tmp/${version}.found.txt
 else
   echo "[ERROR] expected ${expectedCount} files/folders, found ${theCount}:" | egrep "${expectedCount}|${theCount}|INFO|ERROR"
-  cat   | sort | grep "${version}"
+  cat /tmp/${version}.found.txt | sort | egrep "${version}|${versionWithRespin}"
 fi
-
 echo "Download all these zips to verify they work:"
 cat /tmp/${version}.found.txt | sed "s#$HOME/TOOLS-ssh/#http://download.jboss.org/jbosstools/#" | egrep "\.zip"
 echo "Review these pages to verify the work:"
 google-chrome && google-chrome $(cat /tmp/${version}.found.txt | sed "s#$HOME/TOOLS-ssh/#http://download.jboss.org/jbosstools/#" | egrep -v "\.zip")
+rm -f /tmp/${version}.found.txt
 
 ----
 
@@ -153,13 +154,13 @@ This site needs to contain:
 
 cd ~/tru # or where you have jbosstools-download.jboss.org checked out
 
-pushd jbosstools-download.jboss.org/jbosstools/neon/
+pushd jbosstools-download.jboss.org/jbosstools/neon
 
 git fetch origin master
 git checkout FETCH_HEAD
 
-version=4.4.0.Alpha1
-versionWithRespin=4.4.0.Alpha1 # a, b, c...
+version=4.4.0.Alpha2
+versionWithRespin=4.4.0.Alpha2 # a, b, c...
 echo "
 - integration-stack/*
 - webtools/*
@@ -181,6 +182,8 @@ echo "
 + discovery.central/composite*.xml
 - discovery.central/*
 + discovery.earlyaccess/${versionWithRespin}/
++ discovery.earlyaccess/${versionWithRespin}/plugins/
++ discovery.earlyaccess/${versionWithRespin}/plugins/*.jar
 + discovery.earlyaccess/composite*.xml
 - discovery.earlyaccess/*
 - site.css
@@ -188,9 +191,11 @@ echo "
 - *.jar
 - *.zip
 " > /tmp/filter
-scpr ../../staging/updates/* ./ --include-from=/tmp/filter
+scpr $TOOLS/neon/staging/updates/* staging/updates/ --include-from=/tmp/filter
+scpr staging/updates/* development/updates/ --include-from=/tmp/filter
 rm -f /tmp/filter
 
+pushd development/updates/
 if [[ ${versionWithRespin} != ${version} ]]; then
   # rename the staging folders to their final names (CR1c -> Final)
   for d in core coretests central earlyaccess discovery.central discovery.earlyaccess; do
@@ -228,6 +233,7 @@ for d in discovery.central discovery.earlyaccess; do
   scpr ${d}/${version}/* ${TOOLS}/neon/development/updates/${d}/${version}/
 done
 
+popd
 popd
 
 # verify site contents are shown
@@ -267,11 +273,11 @@ Open p2-browser and verify these sites load correctly:
 
 http://download.jboss.org/jbosstools/neon/development/updates/coretests/
 http://download.jboss.org/jbosstools/neon/development/updates/discovery.earlyaccess/
-http://download.jboss.org/jbosstools/neon/development/updates/discovery.earlyaccess/4.4.0.Alpha1/
+http://download.jboss.org/jbosstools/neon/development/updates/discovery.earlyaccess/4.4.0.Alpha2/
 
 http://download.jboss.org/jbosstools/neon/stable/updates/coretests/
 http://download.jboss.org/jbosstools/neon/stable/updates/discovery.earlyaccess/
-http://download.jboss.org/jbosstools/neon/stable/updates/discovery.earlyaccess/4.4.0.Alpha1/
+http://download.jboss.org/jbosstools/neon/stable/updates/discovery.earlyaccess/4.4.0.Alpha2/
 
 
 === WebTools
@@ -326,26 +332,11 @@ TARGET_PLATFORM_VERSION_MAX=4.60.0.Alpha1-SNAPSHOT
 now=`date +%s000`
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 
+# for Final TPs only!
 pushd jbosstools-download.jboss.org/jbosstools/targetplatforms/
   git fetch origin master
   git checkout FETCH_HEAD
 
-  for f in jbosstools; do
-    pushd ${f}target
-      mkdir ${TARGET_PLATFORM_VERSION_MAX}
-      for d in neon/composite*.xml; do
-        sed -i -e "s#${TARGET_PLATFORM_VERSION_MAX_PREV}#${TARGET_PLATFORM_VERSION_MAX}#g" $d
-        sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#g" $d ##
-      done
-      mkdir -p ${TARGET_PLATFORM_VERSION_MAX}/REPO/
-      cp -f neon/composite* ${TARGET_PLATFORM_VERSION_MAX}/
-      cp -f neon/composite* ${TARGET_PLATFORM_VERSION_MAX}/REPO/
-    popd
-  done
-
-  # check your changes here before changing stuff on the server!
-
-  # for Final TPs only!
   for f in jbosstools; do
     git add ${f}target
     # move actual TP to /static/ folder
@@ -356,15 +347,7 @@ pushd jbosstools-download.jboss.org/jbosstools/targetplatforms/
     done
     # create composite pointer
     rsync -Pzrlt --rsh=ssh --protocol=28 ${f}target/${TARGET_PLATFORM_VERSION_MAX}/* $TOOLS/targetplatforms/${f}target/${TARGET_PLATFORM_VERSION_MAX}/
-    # update neon pointer
-    rsync -Pzrlt --rsh=ssh --protocol=28 ${f}target/neon/* $TOOLS/targetplatforms/${f}target/neon/
   done
-
-  for f in jbosstools; do
-    # update neon pointer
-    rsync -Pzrlt --rsh=ssh --protocol=28 ${f}target/neon/* $TOOLS/targetplatforms/${f}target/neon/
-  done
-
   # commit changes to github
   git commit -m "move target platforms into /static/ and update composite pointers to latest neon => ${TARGET_PLATFORM_VERSION_MAX}" .
   git push origin HEAD:master
@@ -378,8 +361,7 @@ http://download.jboss.org/jbosstools/static/targetplatforms/jbosstoolstarget/${T
 # verify files are correct
 google-chrome && google-chrome \
 http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MAX}/REPO/compositeContent.xml \
-http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MAX}/compositeContent.xml \
-http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/neon/compositeContent.xml
+http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MAX}/compositeContent.xml
 
 ----
 
@@ -391,7 +373,7 @@ There's nothing more to do here (it was done above). Just review these URLs:
 ----
 
 # verify site are correct:
-version=4.4.0.Alpha1
+version=4.4.0.Alpha2
 google-chrome && google-chrome \
 http://download.jboss.org/jbosstools/static/neon/development/updates/central/${version} \
 http://download.jboss.org/jbosstools/static/neon/development/updates/earlyaccess/${version} \
@@ -404,7 +386,7 @@ If this is a .Final release make sure that content in development is copied over
 
 [source,bash]
 ----
-version=4.4.0.Alpha1
+version=4.4.0.Alpha2
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 cd ~/tru # ~
 for d in central earlyaccess; do
@@ -421,7 +403,7 @@ for d in central earlyaccess; do
 done
 
 # verify site are correct:
-version=4.4.0.Alpha1
+version=4.4.0.Alpha2
 google-chrome && google-chrome \
 http://download.jboss.org/jbosstools/static/neon/stable/updates/central/${version} \
 http://download.jboss.org/jbosstools/static/neon/stable/updates/earlyaccess/${version} \
@@ -442,10 +424,10 @@ Then, ensure that the destination dirs exist. Move the contents of /development/
 [source,bash]
 ----
 
-# TODO SKIPPED for 4.4.0.Alpha1 because we just published bits to both paths using stage.sh so no need to move/symlink
+# TODO SKIPPED for 4.4.0.Alpha2 because we just published bits to both paths using stage.sh so no need to move/symlink
 
 TOOLSmnt=$HOME/TOOLS-ssh
-version=4.4.0.Alpha1
+version=4.4.0.Alpha2
 mkdir -p ${TOOLSmnt}/static/neon/{development,stable}/updates/{central,core,coretests,earlyaccess}
 for d in central core coretests earlyaccess; do
   if [[ ! -d ${TOOLSmnt}/static/neon/stable/updates/${d}/${version} ]]; then mv ${TOOLSmnt}/static/neon/{development,stable}/updates/${d}/${version}; fi
@@ -490,7 +472,7 @@ See details in Merge_IS_Discovery.adoc
 
 pushd /tmp
   wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/mergeISdiscovery.sh && chmod +x mergeISdiscovery.sh
-  ./mergeISdiscovery.sh -q development -q -stable -version 4.4.0.Alpha1 -versionWithRespin 4.4.0.Alpha1 -is http://download.jboss.org/jbosstools/mars/staging/updates/integration-stack/discovery/4.3.0.Final/earlyaccess/
+  ./mergeISdiscovery.sh -q development -q -stable -version 4.4.0.Alpha2 -versionWithRespin 4.4.0.Alpha2 -is http://download.jboss.org/jbosstools/mars/staging/updates/integration-stack/discovery/4.3.0.Final/earlyaccess/
   rm -f /tmp/mergeISdiscovery.sh
 popd
 
@@ -509,8 +491,8 @@ Update it so that the links for the latest milestone point to valid URLs. Commen
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru # ~
 pushd jbosstools-download.jboss.org/jbosstools/configuration
-version=4.4.0.Alpha1
-versionWithRespin=4.4.0.Alpha1 # a, b, c...
+version=4.4.0.Alpha2
+versionWithRespin=4.4.0.Alpha2 # a, b, c...
 
 git fetch origin master
 git checkout FETCH_HEAD
@@ -548,7 +530,7 @@ NOTE: for 4.3.1.*, we will skip this step until Final (no Betas)!
 
 This is usually the case of first Beta version.
 
-Create a new node on Marketplace, use content of http://download.jboss.org/jbosstools/static/neon/stable/updates/core/4.4.0.Alpha1/site.properties
+Create a new node on Marketplace, use content of http://download.jboss.org/jbosstools/static/neon/stable/updates/core/4.4.0.Alpha2/site.properties
 
 === If node already exists
 
@@ -556,14 +538,14 @@ Access it via +https://marketplace.eclipse.org/content/jboss-tools/edit+ and upd
 
 * Title to match new version
 * Description to match new version & dependencies
-* Update list of features, using content of http://download.jboss.org/jbosstools/static/neon/stable/updates/core/4.4.0.Alpha1/site.properties
+* Update list of features, using content of http://download.jboss.org/jbosstools/static/neon/stable/updates/core/4.4.0.Alpha2/site.properties
 
 To diff if any new features have been added/removed:
 
 [source,bash]
 ----
 versionWithRespin_PREV=4.3.1.Final
-version=4.4.0.Alpha1
+version=4.4.0.Alpha2
 
 cd /tmp
 wget -O ${versionWithRespin_PREV}.properties http://download.jboss.org/jbosstools/static/neon/development/updates/core/${versionWithRespin_PREV}/site.properties
@@ -620,7 +602,7 @@ git clone https://github.com/jbosstools/jbosstools-versionwatch
 # download.jboss.org tag might not be valid as tweaks to ide-config.properties happen frequently
 
 jbt_branch=master
-version=4.4.0.Alpha1
+version=4.4.0.Alpha2
 cd ~/tru # ~
 for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins versionwatch; do
   echo "====================================================================="
@@ -645,7 +627,7 @@ done
 
 [source,bash]
 ----
-version=4.4.0.Alpha1
+version=4.4.0.Alpha2
 recipients=alkazako@redhat.com
 sender="nboldt@redhat.com"
 subject="Ready for JBT ${version} tag creation"
@@ -696,7 +678,7 @@ Example:
 * https://github.com/jbosstools/jbosstools-website/pull/449 (JBT Final)
 * https://github.com/jbosstools/jbosstools-website/pull/488 (JBT CR2)
 * https://github.com/jbosstools/jbosstools-website/pull/513 (JBDS GA)
-* https://github.com/jbosstools/jbosstools-website/pull/568 (JBT 4.4.0.Alpha1)
+* https://github.com/jbosstools/jbosstools-website/pull/568 (JBT 4.4.0.Alpha2)
 
 
 == Enable jobs
@@ -708,7 +690,7 @@ As you have just released something, the next build will be a CI snapshot for th
 Thus, you need to:
 
 * re-enable jobs that were disabled during staging
-* set correct github branch, eg., switch from 4.4.0.Alpha1x to 4.4.x
+* set correct github branch, eg., switch from 4.4.0.Alpha2x to 4.4.x
 * upversion dependencies, eg., releng scripts move from version Final to CR1 (if that's been released)
 * upversion target platforms / Central version (if those have been released)
 
@@ -726,16 +708,16 @@ ____
 [source,bash]
 ----
 
-version=4.4.0.Alpha1
-eclipseVersion="Eclipse 4.6.0.M5 neon.0.M5"
+version=4.4.0.Alpha2
+eclipseVersion="Eclipse 4.6.0.M7 neon.0.M7"
 qual="development"; if [[ ${version##*GA} == "" ]]; then qual="stable"; fi # **##
-pullrequestURL=https://github.com/jbosstools/jbosstools-website/pull/568
-blogURL=/blog/ga-for-neon2.html
+pullrequestURL=https://github.com/jbosstools/jbosstools-website/pull/583
+blogURL=/blog/alpha-for-neon.html
 
 TOrecipients="alkazako@redhat.com"
 CCrecipients="max.andersen@redhat.com, nboldt@redhat.com"
 sender="Nick Boldt <nboldt@redhat.com>"
-subject="Ready for JBT ${version} blog & announcement / JBDS release STILL IN PROGRESS"
+subject="Ready for JBT ${version} blog & announcement"
 echo "
 Here's a PR for adding ${version} to the JBoss Tools download page:
 
@@ -748,8 +730,6 @@ The complete list of projects in JBoss Tools, and the SHAs used to build those p
 http://download.jboss.org/jbosstools/static/neon/${qual}/updates/core/${version}/buildinfo.json
 
 From that list you can create all the jbosstools-${version} tags in Github, should you so desire.
-
-NOTE THAT the JBDS co-release is STILL IN PROGRESS.
 
 Below is a sample email you could send to the jbosstools-dev mailing list when the blog is live.
 

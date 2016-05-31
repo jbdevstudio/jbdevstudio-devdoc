@@ -81,17 +81,19 @@ If anything is wrong, fix it by hand, then also commit your changes to the templ
 https://github.com/jbdevstudio/jbdevstudio-product/commit/3827045dca85e73c5ae339cc13f514591e3c1835
 https://github.com/jbdevstudio/jbdevstudio-product/commit/e6c2954207d1db7451f7adfd2d89c7ceccd6adbe
 
-== Submit JIRA and PR to update https://www.jboss.org/products/devstudio/
+== Submit PRs to update https://www.jboss.org/products/devstudio/ and http://developers.redhat.com/products/devstudio/
 
 Goal is to update the following pages to include links to guides and to set the correct latest GA release version:
 
 * https://www.jboss.org/products/devstudio/download/
 * https://www.jboss.org/products/devstudio/overview/
+* http://developers.redhat.com/products/devstudio/overview/
+* http://developers.redhat.com/products/devstudio/download/
 
 by updating these lines:
 
-* https://github.com/nickboldt/www.jboss.org/blob/DEVELOPER-210.0/products/devstudio/_common/product.yml#L3
-* https://github.com/nickboldt/developers.redhat.com/blob/DEVELOPER-210.0/products/devstudio/_common/product.yml#L4
+* https://github.com/jboss-developer/www.jboss.org/blob/master/products/devstudio/_common/product.yml#L3
+* https://github.com/redhat-developer/developers.redhat.com/blob/master/products/devstudio/_common/product.yml#L4
 
 Past example:
 
@@ -100,6 +102,11 @@ Past example:
 * https://github.com/redhat-developer/developers.redhat.com/pull/1021
 
 Once you have the JIRA, you can link to it when sending the note to release-engineering@ below.
+
+TODO: add EAP 7 zip / installer to list of devstudio artifacts on both developers.redhat.com and www.jboss.org. Explicit listing of files used to be done like this:
+* https://github.com/redhat-developer/developers.redhat.com/blob/25640af93a8d7d219c189d37c528534acda17483/products/devstudio/_common/product.yml and
+* https://github.com/redhat-developer/developers.redhat.com/blob/25640af93a8d7d219c189d37c528534acda17483/products/eap/_common/product.yml
+
 
 == Announce internally for push to CSP staging site
 

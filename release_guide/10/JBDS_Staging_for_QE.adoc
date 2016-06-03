@@ -307,6 +307,8 @@ If this fails, it is most likely due to a bug or a failure in a step above. If p
 
 See details in JBT_Staging_For_QE.adoc
 
+TODO: Important: if you switched the _master jobs to run from origin/jbosstools-4.4.x or some other branch, make sure that the jobs are once again building from the correct branch.
+
 
 == Notify the team (send 1 email)
 

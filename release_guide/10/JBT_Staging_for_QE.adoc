@@ -396,6 +396,8 @@ done
 
 ----
 
+TODO: Important: if you switched the _master jobs to run from origin/jbosstools-4.4.x or some other branch, make sure that the jobs are once again building from the correct branch.
+
 If the next build will NOT be a respin, you will also need to ALSO make these changes to jobs, and upversion/release artifacts such as releng scripts or target platforms if you haven't done so already:
 
 * set correct github branch, eg., switch from 4.4.0.Finalx to 4.4.x

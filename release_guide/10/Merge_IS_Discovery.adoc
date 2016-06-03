@@ -6,21 +6,38 @@ HOWEVER, the IS jar still needs to copied over into the discovery site, and the 
 
 For JBT and JBDS, we need a way to include the downstream IS jars in the upstream JBT/JBDS Discovery sites.
 
-As of 4.4.0.Alpha1 / 10.0.0.Alpha1, the latest plugins to pull can be found at the URLs below (see script).
+As of 4.4.0 / 10.0.0, the latest plugins to pull can be found at the URLs below (see script).
 
 Here is a script that performs the merge for the JBT and JBDS /staging/ sites.
 
 [source,bash]
 ----
 
+version=4.4.0.Final
+versionWithRespin=4.4.0.Final # a, b, c...
+versionIS=4.4.0.Alpha1-SNAPSHOT
+jbdsFixVersion=10.0.0.GA # no respin suffix here
+jbdsFixVersionWithRespin=10.0.0.GA # a, b, c...
+jbdsFixVersionIS=10.0.0.Alpha1-SNAPSHOT
+
 # If all IS content is currently Early Access (EA), make sure you use the /discovery/{version}/earlyaccess/ URLs which include BOTH GA and EA plugins.
 # If all IS content is released (GA), you can use the /discovery/{version}/ URLs here.
 pushd /tmp
   wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/mergeISdiscovery.sh && chmod +x mergeISdiscovery.sh
-  ./mergeISdiscovery.sh -version 4.4.0.Alpha2 -versionWithRespin 4.4.0.Alpha2 -is http://download.jboss.org/jbosstools/neon/staging/updates/integration-stack/discovery/4.4.0.Alpha1-SNAPSHOT/earlyaccess/
-  ./mergeISdiscovery.sh -version 10.0.0.Alpha2 -versionWithRespin 10.0.0.Alpha2 -is https://devstudio.redhat.com/10.0/staging/updates/integration-stack/discovery/10.0.0.Alpha1-SNAPSHOT/earlyaccess/ -JBDS
+  ./mergeISdiscovery.sh -version ${version} -versionWithRespin ${versionWithRespin} -is http://download.jboss.org/jbosstools/neon/staging/updates/integration-stack/discovery/${versionIS}/earlyaccess/
+  ./mergeISdiscovery.sh -version ${jbdsFixVersion} -versionWithRespin ${jbdsFixVersionWithRespin} -is https://devstudio.redhat.com/10.0/staging/updates/integration-stack/discovery/${jbdsFixVersionIS}/earlyaccess/ -JBDS
   rm -f /tmp/mergeISdiscovery.sh
 popd
+
+google-chrome \
+http://download.jboss.org/jbosstools/neon/staging/updates/discovery.central/${versionWithRespin}/jbosstools-directory.xml \
+http://download.jboss.org/jbosstools/neon/staging/updates/discovery.central/${versionWithRespin}/plugins/ \
+http://download.jboss.org/jbosstools/neon/staging/updates/discovery.earlyaccess/${versionWithRespin}/jbosstools-directory.xml \
+http://download.jboss.org/jbosstools/neon/staging/updates/discovery.earlyaccess/${versionWithRespin}/plugins/ \
+https://devstudio.redhat.com/10.0/staging/updates/discovery.central/${jbdsFixVersionWithRespin}/devstudio-directory.xml \
+https://devstudio.redhat.com/10.0/staging/updates/discovery.central/${jbdsFixVersionWithRespin}/plugins/ \
+https://devstudio.redhat.com/10.0/staging/updates/discovery.earlyaccess/${jbdsFixVersionWithRespin}/devstudio-directory.xml \
+https://devstudio.redhat.com/10.0/staging/updates/discovery.earlyaccess/${jbdsFixVersionWithRespin}/plugins/
 
 ----
 
@@ -30,11 +47,11 @@ Once in staging, you can test the content as seen from Eclipse by installing JBT
 ----
 
 # JBoss Tools
-url=http://download.jboss.org/jbosstools/neon/staging/updates/discovery.central/4.4.0.Alpha2/
+url=http://download.jboss.org/jbosstools/neon/staging/updates/discovery.central/${versionWithRespin}/
 ./eclipse -vmargs -Djboss.discovery.directory.url=${url}jbosstools-directory.xml -Djboss.discovery.site.integration-stack.url=${url}
 
 # JBDS
-url=https://devstudio.redhat.com/10.0/staging/updates/discovery.earlyaccess/10.0.0.Alpha2/
+url=https://devstudio.redhat.com/10.0/staging/updates/discovery.earlyaccess/${jbdsFixVersionWithRespin}/
 ./eclipse -vmargs -Djboss.discovery.directory.url=${url}devstudio-directory.xml -Djboss.discovery.site.integration-stack.url=${url}
 
 ----
@@ -44,12 +61,12 @@ Note that the jboss.discovery.site.integration-stack.url is only needed if there
 Without a defined value, you will see an error like this in the Eclipse log:
 
 ```
-!MESSAGE org.jboss.tools.central.discovery.integration_stack_4.4.0.Alpha1_v20150922_1058_B430.jar_4644660859188953740.jar: Must specify connectorDescriptor/@siteUrl
+!MESSAGE org.jboss.tools.central.discovery.integration_stack_4.4.0.Final_v20150922_1058_B430.jar_4644660859188953740.jar: Must specify connectorDescriptor/@siteUrl
 !STACK 1
 org.eclipse.mylyn.internal.discovery.core.model.ValidationException: Must specify connectorDescriptor/@siteUrl
 ```
 
 TODO https://issues.jboss.org/browse/JBIDE-20664 could we pull the URLs directly from those declared in http://download.jboss.org/jbosstools/configuration/ide-config.properties ?
-jboss.discovery.site.integration-stack.url|jbosstools|4.4.0.Alpha2=http://download.jboss.org/jbosstools/neon/staging/updates/integration-stack/discovery/4.4.0.Alpha1-SNAPSHOT/
-jboss.discovery.site.integration-stack.url|devstudio|10.0.0.Alpha2=https://devstudio.redhat.com/10.0/staging/updates/integration-stack/discovery/10.0.0.Alpha1-SNAPSHOT/
+jboss.discovery.site.integration-stack.url|jbosstools|4.4.0.Final=http://download.jboss.org/jbosstools/neon/staging/updates/integration-stack/discovery/4.4.0.Alpha1-SNAPSHOT/
+jboss.discovery.site.integration-stack.url|devstudio|10.0.0.GA=https://devstudio.redhat.com/10.0/staging/updates/integration-stack/discovery/10.0.0.Alpha1-SNAPSHOT/
 

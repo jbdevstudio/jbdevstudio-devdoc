@@ -19,7 +19,7 @@ Check o.j.t.foundation.core's currentversion.properties for the correct value of
 
 [sources,bash]
 ----
-versions="4.4.0.Alpha1 10.0.0.Alpha1"
+versions="4.4.0.Final 10.0.0.GA"
 for version in $versions; do
   if [[ ${version:0:1} == "4" ]]; then # JBT
     pluginName=foundation.core
@@ -102,11 +102,11 @@ Then respin the job and verify that sites were correctly populated:
 # kerberos login for the Jenkins server
 userpass=nboldt:PASSWORD
 
-versionWithRespin=4.4.0.Alpha2 # a, b, c... (not SNAPSHOT!)
+versionWithRespin=4.4.0.Final # a, b, c... (not SNAPSHOT!)
 stream_JBT=master # or 4.4.neon
 stream_DS=master # or 10.0.neon
-TARGET_PLATFORM_VERSION_MAX=4.60.0.Alpha1-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.60.0.Alpha1-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.60.0.Final-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.60.0.Final-SNAPSHOT
 for j in jbosstools-discovery_${stream_JBT}; do
   curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/enable && echo -n ".E"
   curl -k -u ${userpass} --data "VERSION=${versionWithRespin##*.}&TARGET_PLATFORM_VERSION_MAXIMUM=${TARGET_PLATFORM_VERSION_MAX}&JBTCENTRALTARGET_VERSION=${TARGET_PLATFORM_CENTRAL_MAX}" https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/buildWithParameters && echo -n ".B"
@@ -137,6 +137,16 @@ https://devstudio.redhat.com/10.0/snapshots/builds/jbosstools-discovery.earlyacc
 
 ----
 
+== Download the latest Eclipse
+
+You'll need this later for smoke testing. Start fetching it now to save time later.
+
+[source,bash]
+----
+
+wget https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/neon/RC2/eclipse-jee-neon-RC2-linux-gtk-x86_64.tar.gz
+
+----
 
 == Stage to download.jboss.org
 
@@ -168,7 +178,7 @@ chmod +x stage.sh
 
 # 5 builds of total 7
 stream=master
-versionWithRespin=4.4.0.Alpha2 # a, b, c...
+versionWithRespin=4.4.0.Final # a, b, c...
 for site in site coretests-site central-site earlyaccess-site; do
   ./stage.sh -sites $site -sd neon -stream ${stream} -vr ${versionWithRespin} -JOB_NAME jbosstools-build-sites.aggregate.\${site}_\${stream} -q &
 done
@@ -182,10 +192,9 @@ cd /tmp
 if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
 wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/stage.sh --no-check-certificate
 chmod +x stage.sh
-
 # 2 builds of total 7
 stream=master
-versionWithRespin=4.4.0.Alpha2 # a, b, c...
+versionWithRespin=4.4.0.Final # a, b, c...
 for site in discovery.central discovery.earlyaccess; do
   ./stage.sh -sites $site -sd neon -stream ${stream} -vr ${versionWithRespin} -q &
 done
@@ -199,7 +208,7 @@ Note that Akamai caching might result in the appearance of missing files (apache
 [source,bash]
 ----
 
-versionWithRespin=4.4.0.Alpha2 # a, b, c...
+versionWithRespin=4.4.0.Final # a, b, c...
 tmpfile=/tmp/jbosstools-staging__verify.txt
 for site in site coretests-site central-site earlyaccess-site discovery.central discovery.earlyaccess; do
   if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
@@ -235,7 +244,7 @@ Then move old builds into an OLD/ folder to they're less visible and ready for d
 
 [source,bash]
 ----
-version_PREV=4.3.4.Alpha0 # a, b, c...
+version_PREV=4.4.0.Alpha0 # a, b, c...
 for d in updates/core updates/central updates/earlyaccess updates/discovery.central updates/discovery.earlyaccess builds; do
   if [[ -d /media/TOOLS-ssh/neon/staging/${d}/ ]]; then
     echo "${d}/*${version_PREV}* ..."
@@ -256,8 +265,8 @@ This should point to the latest staging bits. Just copy what's in discovery.cent
 cd ~/tru
 RSYNC="rsync -aPrz --rsh=ssh --protocol=28"
 
-versionWithRespin_PREV=4.4.0.Alpha1 # a, b, c...
-versionWithRespin=4.4.0.Alpha2 # a, b, c...
+versionWithRespin_PREV=4.4.0.Alpha2 # a, b, c...
+versionWithRespin=4.4.0.Final # a, b, c...
 DESTINATION=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 PROJECT_PATH=jbosstools-download.jboss.org/jbosstools
 DEST_URL="http://download.jboss.org/jbosstools"
@@ -320,10 +329,10 @@ Update it so that the links for the latest milestone point to valid URLs. Commen
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru
 pushd jbosstools-download.jboss.org/jbosstools/configuration
-version=4.4.0.Alpha2
-versionWithRespin=4.4.0.Alpha2 # a, b, c...
-jbdsFixVersion=10.0.0.Alpha2 # no respin suffix here
-jbdsFixVersionWithRespin=10.0.0.Alpha2 # a, b, c...
+version=4.4.0.Final
+versionWithRespin=4.4.0.Final # a, b, c...
+jbdsFixVersion=10.0.0.GA # no respin suffix here
+jbdsFixVersionWithRespin=10.0.0.GA # a, b, c...
 
 git fetch origin master
 git checkout FETCH_HEAD
@@ -335,9 +344,9 @@ st ide-config.properties
 # sed -i "s/CR1b/CR1c/g" ide-config.properties
 
 # verify these 6 URLs exist
-URLs="$(egrep -v "#" ide-config.properties | egrep "${version}|${versionWithRespin}|${jbdsFixVersion}|${jbdsFixVersionWithRespin}" | sed -e "s#.\+=\(.\+\)#\1#")"
+URLs="$(egrep -v "#" ide-config.properties | egrep "${version}|${versionWithRespin}|${jbdsFixVersion}|${jbdsFixVersionWithRespin}" | sed -e "s#.\+|\([0-9.a-zA-Z]\+\)=\(.\+\)#\2#")"
 google-chrome && google-chrome $URLs
-for u in $URLs; do echo $u; done
+for u in $URLs; do echo "$u"; done
 
 # commit the change and push to master
 ci "release JBT ${version} (${versionWithRespin}) to staging: link to latest dev milestone discovery site" ide-config.properties
@@ -345,7 +354,8 @@ git push origin HEAD:master
 
 # push updated file to server
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
-rsync -Pzrlt --rsh=ssh --protocol=28 ide-config.properties $TOOLS/configuration/ide-config.properties
+RSYNC="rsync -aPrz --rsh=ssh --protocol=28"
+${RSYNC} ide-config.properties $TOOLS/configuration/ide-config.properties
 
 popd
 
@@ -388,7 +398,7 @@ done
 
 If the next build will NOT be a respin, you will also need to ALSO make these changes to jobs, and upversion/release artifacts such as releng scripts or target platforms if you haven't done so already:
 
-* set correct github branch, eg., switch from 4.4.0.Alpha1x to 4.4.x
+* set correct github branch, eg., switch from 4.4.0.Finalx to 4.4.x
 * upversion dependencies, eg., releng scripts move from version CR1 to CR1 (if that's been released)
 * upversion target platforms / Central version (if those have been released)
 
@@ -403,20 +413,20 @@ ____
 [source,bash]
 ----
 
-versionWithRespin=4.4.0.Alpha2 # a, b, c...
+versionWithRespin=4.4.0.Final # a, b, c...
 respin="respin-"
-TARGET_PLATFORM_VERSION_MIN=4.60.0.Alpha1-SNAPSHOT
-TARGET_PLATFORM_VERSION_MAX=4.60.0.Alpha1-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.60.0.Alpha1-SNAPSHOT
-jbdsFixVersion=10.0.0.Alpha2 # no respin suffix here
-jbtFixVersion=4.4.0.Alpha2 # no respin suffix here
+TARGET_PLATFORM_VERSION_MIN=4.60.0.Final-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.60.0.Final-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.60.0.Final-SNAPSHOT
+jbdsFixVersion=10.0.0.GA # no respin suffix here
+jbtFixVersion=4.4.0.Final # no respin suffix here
 recipients=jbosstools-dev@lists.jboss.org
 sender="Nick Boldt <nboldt@redhat.com>"
 subject="JBoss Tools Core ${versionWithRespin} bits available for QE testing"
 echo "
 These are not FINAL bits, but preliminary results for QE & community testing. Not for redistribution to customers or end users.
 
-Note that these bits will still have "Alpha1" in their name, but will have a newer timestamp than the previous staged build, eg., matching 05/19 or 05/20.
+Note that there is an issue installing the Integration Stack content -- currently, everything except Teiid Designer can be installed, prompting remediation.
 
 Update site: http://download.jboss.org/jbosstools/neon/staging/updates/
 

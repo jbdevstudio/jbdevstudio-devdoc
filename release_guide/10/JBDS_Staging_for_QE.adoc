@@ -129,7 +129,7 @@ for site in discovery.central discovery.earlyaccess; do
 done
 
 # TODO you can check which staging steps are still running with:
-ps ax | grep stage.sh | grep -v grep
+ps ax | grep stage.sh | grep -v grep | egrep -- "-sites|-sd"
 
 ----
 
@@ -161,9 +161,10 @@ google-chrome && google-chrome `cat $tmpfile`
 popd >/dev/null
 rm -fr $tmpfile
 
-# once the staging build folder exists, start fetching the JBDS installer (we'll need it later to do a smoke test)
+# TODO once the staging build folder exists, start fetching the JBDS installer (we'll need it later to do a smoke test)
 
 cd ~/tmp
+versionWithRespin=10.0.0.GA-a # a, b, c...
 wget https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/
 installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 echo "Installer jar: ${installerJar}"

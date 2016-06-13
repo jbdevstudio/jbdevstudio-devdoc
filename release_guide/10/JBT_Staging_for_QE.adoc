@@ -144,7 +144,9 @@ You'll need this later for smoke testing. Start fetching it now to save time lat
 [source,bash]
 ----
 
-wget https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/neon/RC2/eclipse-jee-neon-RC2-linux-gtk-x86_64.tar.gz
+cd ~/tmp & wget https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/neon/RC3/eclipse-jee-neon-RC3-linux-gtk-x86_64.tar.gz &
+# or
+cd ~/tmp & wget https://hudson.eclipse.org/packaging/job/neon.epp-tycho-build/387/artifact/org.eclipse.epp.packages/archive/20160610-1200_eclipse-jee-neon-R-linux.gtk.x86_64.tar.gz &
 
 ----
 
@@ -198,6 +200,9 @@ versionWithRespin=4.4.0.Final-a # a, b, c...
 for site in discovery.central discovery.earlyaccess; do
   ./stage.sh -sites $site -sd neon -stream ${stream} -vr ${versionWithRespin} -q &
 done
+
+# TODO you can check which staging steps are still running with:
+ps ax | grep stage.sh | grep -v grep | egrep -- "-sites|-sd"
 
 ----
 

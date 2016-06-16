@@ -24,8 +24,8 @@ Whenever you're starting a new shell, you should set those variables:
 [sources,bash]
 ----
 version=10.0.0.GA
-versionWithRespin=10.0.0.GA-a # a, b, c...
-TARGET_PLATFORM_VERSION_MAX=4.60.0.Final-SNAPSHOT
+versionWithRespin=10.0.0.GA-b # a, b, c...
+TARGET_PLATFORM_VERSION_MAX=4.60.0.Final
 TARGET_PLATFORM_CENTRAL_MAX=4.60.0.Final-SNAPSHOT
 now=$(date +%s000)
 JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
@@ -58,8 +58,8 @@ WARNING: Don't use symlinks are they are too risky to use. Those operations can 
 # can run these 5 steps in parallel
 
 # 1. copy JBDS target platform zips from INTERNAL (www.qa) to EXTERNAL (devstudio.redhat.com)
-versionWithRespin=10.0.0.GA-a # a, b, c...
-TARGET_PLATFORM_VERSION_MAX=4.60.0.Final-SNAPSHOT
+versionWithRespin=10.0.0.GA-b # a, b, c...
+TARGET_PLATFORM_VERSION_MAX=4.60.0.Final
 TARGET_PLATFORM_CENTRAL_MAX=4.60.0.Final-SNAPSHOT
 for targetname in jbdevstudio jbtcentral jbtearlyaccess; do
   if [[ ${targetname} == "jbdevstudio" ]]; then
@@ -82,7 +82,7 @@ if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
 wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/stage.sh --no-check-certificate
 chmod +x stage.sh
 stream=4.4.neon
-versionWithRespin=10.0.0.GA-a # a, b, c...
+versionWithRespin=10.0.0.GA-b # a, b, c...
 for site in central-site earlyaccess-site; do
   ./stage.sh -sites $site -sd 10.0 -stream ${stream} -vr ${versionWithRespin} -JOB_NAME jbosstools-build-sites.aggregate.\${site}_\${stream} \
     -DESTINATION ${JBDS} -DEST_URL https://devstudio.redhat.com -q &
@@ -95,7 +95,7 @@ if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
 wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/stage.sh --no-check-certificate
 chmod +x stage.sh
 stream=10.0.neon # or master
-versionWithRespin=10.0.0.GA-a # a, b, c...
+versionWithRespin=10.0.0.GA-b # a, b, c...
 for site in product; do
   ./stage.sh -sites $site -sd 10.0 -stream ${stream} -vr ${versionWithRespin} -JOB_NAME devstudio.\${site}_\${stream} \
     -DESTINATION /qa/services/http/binaries/RHDS -DEST_URL http://www.qa.jboss.com/binaries/devstudio -q &
@@ -108,7 +108,7 @@ if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
 wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/stage.sh --no-check-certificate
 chmod +x stage.sh
 stream=10.0.neon # or master
-versionWithRespin=10.0.0.GA-a # a, b, c...
+versionWithRespin=10.0.0.GA-b # a, b, c...
 for site in product; do
   ./stage.sh -sites $site -sd 10.0 -stream ${stream} -vr ${versionWithRespin} -JOB_NAME devstudio.\${site}_\${stream} \
     -DESTINATION ${JBDS} -DEST_URL https://devstudio.redhat.com -q &
@@ -122,7 +122,7 @@ if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
 wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/stage.sh --no-check-certificate
 chmod +x stage.sh
 stream=4.4.neon
-versionWithRespin=10.0.0.GA-a # a, b, c...
+versionWithRespin=10.0.0.GA-b # a, b, c...
 for site in discovery.central discovery.earlyaccess; do
   ./stage.sh -sites $site -sd 10.0 -stream ${stream} -vr ${versionWithRespin} -JOB_NAME jbosstools-\${site}_\${stream} \
     -DESTINATION ${JBDS} -DEST_URL https://devstudio.redhat.com -q &
@@ -140,7 +140,7 @@ Note that Akamai caching might result in the appearance of missing files (apache
 [source,bash]
 ----
 
-versionWithRespin=10.0.0.GA-a # a, b, c...
+versionWithRespin=10.0.0.GA-b # a, b, c...
 tmpfile=/tmp/jbosstools-staging__verify.txt
 for site in central earlyaccess discovery.central discovery.earlyaccess; do
   if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
@@ -164,7 +164,8 @@ rm -fr $tmpfile
 # TODO once the staging build folder exists, start fetching the JBDS installer (we'll need it later to do a smoke test)
 
 cd ~/tmp
-versionWithRespin=10.0.0.GA-a # a, b, c...
+rm -f index.html
+versionWithRespin=10.0.0.GA-b # a, b, c...
 wget https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/
 installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 echo "Installer jar: ${installerJar}"
@@ -215,8 +216,8 @@ This should point to the latest staging bits. Just copy what's in discovery.cent
 cd ~/truu
 RSYNC="rsync -aPrz --rsh=ssh --protocol=28"
 
-versionWithRespin_PREV=10.0.0.GA # a, b, c...
-versionWithRespin=10.0.0.GA-a # a, b, c...
+versionWithRespin_PREV=10.0.0.GA-a # a, b, c...
+versionWithRespin=10.0.0.GA-b # a, b, c...
 DESTINATION=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
 PROJECT_PATH=jbdevstudio-website/content
 DEST_URL="https://devstudio.redhat.com"
@@ -230,6 +231,8 @@ for d in discovery.central discovery.earlyaccess; do
   mkdir -p ${d}/${versionWithRespin}/
   pushd ${d}/${versionWithRespin}/
     ${RSYNC} ${DESTINATION}/${updatePath}/${d}/${versionWithRespin}/composite*xml ./
+	# should not have and devstudio .Final stuff (except target platform versions)
+	for c in composite*.xml; do sed -i "s/10.0.0.Final/10.0.0.GA/g" $c; done
     cat compositeContent.xml | egrep "${versionWithRespin}|targetplatforms|REPO|updates|timestamp"
   popd
 done
@@ -283,7 +286,7 @@ Before notifying team of staged release, must check for obvious problems.
 
 [source,bash]
 ----
-versionWithRespin=10.0.0.GA-a # a, b, c...
+versionWithRespin=10.0.0.GA-b # a, b, c...
 cd ~/tmp
 wget https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/
 installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
@@ -321,8 +324,8 @@ ____
 ----
 version_JBT=4.4.0.Final
 version=10.0.0.GA
-versionWithRespin=10.0.0.GA-a # a, b, c...
-respin="respin-a"
+versionWithRespin=10.0.0.GA-b # a, b, c...
+respin="respin-b"
 recipients=jboss-devstudio-list@redhat.com
 sender="Nick Boldt <nboldt@redhat.com>"
 subject="JBDS ${versionWithRespin} Core bits available for QE testing"
@@ -344,7 +347,7 @@ New + Noteworthy (subject to change):
 * http://tools.jboss.org/documentation/whatsnew/
 
 Schedule / Upcoming Releases: https://issues.jboss.org/projects/JBDS?selectedItem=com.atlassian.jira.jira-projects-plugin:release-page
-" > /tmp/mailbody.jbds.txt
+" > /tmp/mailbody.ds.txt
 if [[ $respin != "respin-" ]]; then
 echo "
 --
@@ -359,12 +362,12 @@ To compare the upcoming version of Central (${versionWithRespin}) against an old
  -Djboss.discovery.earlyaccess.site.url=https://devstudio.redhat.com/10.0/staging/updates/discovery.earlyaccess/${versionWithRespin}/
  -Djboss.discovery.earlyaccess.list.url=https://devstudio.redhat.com/10.0/staging/updates/discovery.earlyaccess/${versionWithRespin}/devstudio-earlyaccess.properties
 
-" >> /tmp/mailbody.jbds.txt
+" >> /tmp/mailbody.ds.txt
 fi
 
 # use mail (with sendmail's -f flag), NOT mailx
-/bin/mail -s "$subject" $recipients -- -f"$sender" < /tmp/mailbody.jbds.txt
-rm -f /tmp/mailbody.jbds.txt
+/bin/mail -s "$subject" $recipients -- -f"$sender" < /tmp/mailbody.ds.txt
+rm -f /tmp/mailbody.ds.txt
 
 ----
 ____
@@ -411,7 +414,7 @@ Then:
 [source,bash]
 ----
 
-versionWithRespin=10.0.0.GA-a # a, b, c...
+versionWithRespin=10.0.0.GA-b # a, b, c...
 installerExe=devstudio-platform-???-installer.exe
 installerDir=RHDS/10.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all
 

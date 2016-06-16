@@ -14,18 +14,18 @@ Here is a script that performs the merge for the JBT and JBDS /staging/ sites.
 ----
 
 version=4.4.0.Final
-versionWithRespin=4.4.0.Final-a # a, b, c...
+versionWithRespin=4.4.0.Final-b # a, b, c...
 versionIS=4.4.0.Alpha1-SNAPSHOT
-jbdsFixVersion=10.0.0.GA # no respin suffix here
-jbdsFixVersionWithRespin=10.0.0.GA # a, b, c...
-jbdsFixVersionIS=10.0.0.Alpha1-SNAPSHOT
+dsFixVersion=10.0.0.GA # no respin suffix here
+dsFixVersionWithRespin=10.0.0.GA-b # a, b, c...
+dsFixVersionIS=10.0.0.Alpha1-SNAPSHOT
 
 # If all IS content is currently Early Access (EA), make sure you use the /discovery/{version}/earlyaccess/ URLs which include BOTH GA and EA plugins.
 # If all IS content is released (GA), you can use the /discovery/{version}/ URLs here.
 pushd /tmp
   wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/mergeISdiscovery.sh && chmod +x mergeISdiscovery.sh
   ./mergeISdiscovery.sh -version ${version} -versionWithRespin ${versionWithRespin} -is http://download.jboss.org/jbosstools/neon/staging/updates/integration-stack/discovery/${versionIS}/earlyaccess/
-  ./mergeISdiscovery.sh -version ${jbdsFixVersion} -versionWithRespin ${jbdsFixVersionWithRespin} -is https://devstudio.redhat.com/10.0/staging/updates/integration-stack/discovery/${jbdsFixVersionIS}/earlyaccess/ -JBDS
+  ./mergeISdiscovery.sh -version ${dsFixVersion} -versionWithRespin ${dsFixVersionWithRespin} -is https://devstudio.redhat.com/10.0/staging/updates/integration-stack/discovery/${dsFixVersionIS}/earlyaccess/ -JBDS
   rm -f /tmp/mergeISdiscovery.sh
 popd
 
@@ -34,10 +34,10 @@ http://download.jboss.org/jbosstools/neon/staging/updates/discovery.central/${ve
 http://download.jboss.org/jbosstools/neon/staging/updates/discovery.central/${versionWithRespin}/plugins/ \
 http://download.jboss.org/jbosstools/neon/staging/updates/discovery.earlyaccess/${versionWithRespin}/jbosstools-directory.xml \
 http://download.jboss.org/jbosstools/neon/staging/updates/discovery.earlyaccess/${versionWithRespin}/plugins/ \
-https://devstudio.redhat.com/10.0/staging/updates/discovery.central/${jbdsFixVersionWithRespin}/devstudio-directory.xml \
-https://devstudio.redhat.com/10.0/staging/updates/discovery.central/${jbdsFixVersionWithRespin}/plugins/ \
-https://devstudio.redhat.com/10.0/staging/updates/discovery.earlyaccess/${jbdsFixVersionWithRespin}/devstudio-directory.xml \
-https://devstudio.redhat.com/10.0/staging/updates/discovery.earlyaccess/${jbdsFixVersionWithRespin}/plugins/
+https://devstudio.redhat.com/10.0/staging/updates/discovery.central/${dsFixVersionWithRespin}/devstudio-directory.xml \
+https://devstudio.redhat.com/10.0/staging/updates/discovery.central/${dsFixVersionWithRespin}/plugins/ \
+https://devstudio.redhat.com/10.0/staging/updates/discovery.earlyaccess/${dsFixVersionWithRespin}/devstudio-directory.xml \
+https://devstudio.redhat.com/10.0/staging/updates/discovery.earlyaccess/${dsFixVersionWithRespin}/plugins/
 
 ----
 
@@ -51,7 +51,7 @@ url=http://download.jboss.org/jbosstools/neon/staging/updates/discovery.central/
 ./eclipse -vmargs -Djboss.discovery.directory.url=${url}jbosstools-directory.xml -Djboss.discovery.site.integration-stack.url=${url}
 
 # JBDS
-url=https://devstudio.redhat.com/10.0/staging/updates/discovery.earlyaccess/${jbdsFixVersionWithRespin}/
+url=https://devstudio.redhat.com/10.0/staging/updates/discovery.earlyaccess/${dsFixVersionWithRespin}/
 ./eclipse -vmargs -Djboss.discovery.directory.url=${url}devstudio-directory.xml -Djboss.discovery.site.integration-stack.url=${url}
 
 ----

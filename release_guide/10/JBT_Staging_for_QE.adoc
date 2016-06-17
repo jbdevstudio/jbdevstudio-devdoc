@@ -44,7 +44,7 @@ done
 
 ----
 
-If value found above for `$theversion` != current release version, then you need to rebuild foundation or JBDS w/ a new value inserted.
+If value found above for `$theversion` != current release version, then you need to rebuild foundation or devstudio w/ a new value inserted.
 
 
 == Verify all branches have been created & all master branch root poms point to the NEXT parent pom version.
@@ -154,7 +154,7 @@ cd ~/tmp; wget https://hudson.eclipse.org/packaging/job/neon.epp-tycho-build/388
 
 === Copy & rename builds & update sites from "snapshots" to "staging"
 
-@Since JBT 4.3 / JBDS 9
+@Since JBT 4.3 / devstudio 9
 
 Nightly builds are continuously built in http://download.jboss.org/jbosstools/neon/snapshots/builds/. Aggregate sites are also copied into http://download.jboss.org/jbosstools/neon/snapshots/updates/.
 
@@ -434,8 +434,6 @@ sender="Nick Boldt <nboldt@redhat.com>"
 subject="JBoss Tools Core ${versionWithRespin} bits available for QE testing"
 echo "
 These are not FINAL bits, but preliminary results for QE & community testing. Not for redistribution to customers or end users.
-
-Note that there is an issue installing the Integration Stack content -- currently, everything except Teiid Designer can be installed, prompting remediation.
 
 Update site: http://download.jboss.org/jbosstools/neon/staging/updates/
 

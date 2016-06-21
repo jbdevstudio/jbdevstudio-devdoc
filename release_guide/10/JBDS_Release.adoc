@@ -228,13 +228,13 @@ cd /tmp
 if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
 wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/stage.sh --no-check-certificate
 chmod +x stage.sh
-stream_JBT=10.0.0.GA # staged version # a, b, c...
 version=10.0.0.GA # release version: no a, b, c suffix
+versionWithRespin=10.0.0.GA-b # a, b, c...
 quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi # **##
 for qual in $quals; do
   for site in product central earlyaccess discovery.central discovery.earlyaccess; do
-    ./stage.sh -sites $site -stream ${stream_JBT} -vr ${version} -sd 10.0 -dd static/10.0 -st staging -dt ${qual} \
-      -JOB_NAME devstudio-\${stream_JBT}-build-\${site} -DESTINATION ${JBDS} -DEST_URL https://devstudio.redhat.com -q &
+    ./stage.sh -sites $site -stream "${versionWithRespin}" -vr ${version} -sd 10.0 -dd static/10.0 -st staging -dt ${qual} \
+      -JOB_NAME devstudio-\${stream}-build-\${site} -DESTINATION ${JBDS} -DEST_URL https://devstudio.redhat.com -q &
   done
 done
 
@@ -297,8 +297,6 @@ done
 
 ----
 
-============ CONTINUE HERE ...
-
 
 == Update https://devstudio.redhat.com/10.0/development/updates/
 
@@ -306,98 +304,135 @@ To update the content in https://devstudio.redhat.com/10.0/development/updates/ 
 
 [source,bash]
 ----
-version=10.0.0.GA
-versionWithRespin=10.0.0.GA-b # a, b, c...
 
-# adjust these steps to fit your own path location & git workflow
 cd ~/truu # ~
 pushd jbdevstudio-website/content/10.0/
 git fetch origin master
 git checkout FETCH_HEAD
 
-# merge updates in 10.0/staging/updates/ into 10.0/development/updates/
-rsync -aPrz staging/updates/*.*ml development/updates/
+# mount an sshfs drive for $JBDS
+JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
+sshfs $JBDS $HOME/JBDS-ssh
 
-# sed *.*ml files to point at /development/ instead of /staging/, and ${version} instead of $versionWithRespin}
-pushd development/updates/ >/dev/null
-now=`date +%s000`
-for c in compositeContent.xml compositeArtifacts.xml index.html; do
-  sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#" $c
-  sed -i -e "s#staging#development#" $c
-  sed -i -e "s#${versionWithRespin}#${version}#" $c
-done
-git status -s
-egrep "staging|development|${version}|${versionWithRespin}" index.html
-echo "------------"
-egrep "staging|development|${version}|${versionWithRespin}" compositeContent.xml
-
-# update EA site
-pushd earlyaccess >/dev/null
-rm -f composite*.xml
-wget https://devstudio.redhat.com/static/10.0/development/updates/discovery.earlyaccess/${version}/compositeContent.xml
-wget https://devstudio.redhat.com/static/10.0/development/updates/discovery.earlyaccess/${version}/compositeArtifacts.xml
-for c in compositeContent.xml compositeArtifacts.xml index.html; do
-  sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#" $c
-  sed -i -e "s#staging#development#" $c
-  sed -i -e "s#${versionWithRespin}#${version}#" $c
-done
-git status -s
-egrep "staging|development|${version}|${versionWithRespin}" index.html
-echo "------------"
-egrep "staging|development|${version}|${versionWithRespin}" compositeContent.xml
-popd >/dev/null
-
-popd >/dev/null
-
-# NOTE: If this is a GA release, merge these changes into 10.0/stable/ too.
-# NOTE: Stable site content for IS may be different from development site, because IS releases make no sense.
-
-# commit changes to git
+version=10.0.0.GA
+versionWithRespin=10.0.0.GA-b # a, b, c...
 quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi # **##
+echo "
+- integration-stack/*
+- */OLD/
+- */binary/
++ core/${versionWithRespin}/
++ core/composite*.xml
+- core/*
++ central/${versionWithRespin}/
++ central/composite*.xml
+- central/*
++ earlyaccess/${versionWithRespin}/
++ earlyaccess/composite*.xml
+- earlyaccess/*
++ discovery.central/${versionWithRespin}/
++ discovery.central/composite*.xml
+- discovery.central/*
++ discovery.earlyaccess/${versionWithRespin}/
++ discovery.earlyaccess/${versionWithRespin}/plugins/
++ discovery.earlyaccess/${versionWithRespin}/plugins/*.jar
++ discovery.earlyaccess/composite*.xml
+- discovery.earlyaccess/*
+- site.css
+- *.gz
+- *.jar
+- *.zip
+" > /tmp/filter-devstudio
+scpr $JBDS/10.0/staging/updates/* staging/updates/ --include-from=/tmp/filter-devstudio
+
 for qual in $quals; do
-  git add ${qual}/updates/
-  git commit -m "release JBDS ${version} (${versionWithRespin}) to production" ${qual}/updates/
+  echo ":: $qual"
+  scpr staging/updates/* ${qual}/updates/ --include-from=/tmp/filter-devstudio -q
+
+  pushd ${qual}/updates/
+  if [[ ${versionWithRespin} != ${version} ]]; then
+    # rename the staging folders to their final names (CR1c -> Final)
+    for d in core central earlyaccess discovery.central discovery.earlyaccess; do
+      rm -fr ${d}/${version}
+      mv ${d}/${versionWithRespin} ${d}/${version}
+    done
+  fi
+
+  # fix composite sites to use the correct paths (not /staging, but /static)
+  now=`date +%s000`
+  for c in index.html compositeContent.xml compositeArtifacts.xml */compositeContent.xml */compositeArtifacts.xml */${version}/compositeContent.xml */${version}/compositeArtifacts.xml; do
+    if [[ $c == ${c/integration-stack/} ]]; then
+      echo "$c ..."
+      sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#" $c
+      sed -i -e "s#10.0/staging/updates/#static/10.0/${qual}/updates/#" $c
+      sed -i -e "s#${versionWithRespin}#${version}#" $c
+    fi
+  done
+  popd
 done
+rm -f /tmp/filter-devstudio
+
+# copy versioned composite site into parent folder
+for qual in $quals; do
+  echo ":: $qual"
+  pushd ${qual}/updates/ >/dev/null
+    for d in core central earlyaccess discovery.central discovery.earlyaccess; do
+      if [[ -f ${d}/${version}/compositeContent.xml ]]; then
+        scpr ${d}/${version}/composite*.xml ${d}/
+      fi
+      ga -f ${d}/${version}/* ${d}/*.*ml
+    done
+  popd >/dev/null
+done
+
+# push updated files to server
+for qual in $quals; do
+  pushd ${qual}/updates/ >/dev/null
+    JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
+    scpr *.*ml ${JBDS}/10.0/${qual}/updates/
+    for d in discovery.central discovery.earlyaccess; do
+      echo ${d}/
+      scpr ${d}/*.*ml ${JBDS}/10.0/${qual}/updates/${d}/
+      scpr ${d}/*.*ml ${JBDS}/static/10.0/${qual}/updates/${d}/
+    done
+    for d in discovery.central discovery.earlyaccess; do
+      echo ${d}/
+      scpr ${d}/${version}/* ${JBDS}/10.0/${qual}/updates/${d}/${version}/
+      scpr ${d}/${version}/* ${JBDS}/static/10.0/${qual}/updates/${d}/${version}/
+    done
+  popd >/dev/null
+done
+
+# commit the change and push to master
+for qual in $quals; do git add ${qual}/updates; done
+git commit -m "release JBT ${versionWithRespin} to public" .
 git push origin HEAD:master
 
-# push changes to server
-quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi # **##
-for qual in $quals; do
-  rsync -Pzrlt --rsh=ssh --protocol=28 ${qual}/updates/*.*ml $JBDS/10.0/${qual}/updates/
-  rsync -Pzrlt --rsh=ssh --protocol=28 ${qual}/updates/earlyaccess/*.*ml $JBDS/10.0/${qual}/updates/earlyaccess/
-done
+popd
 
-# done
-popd >/dev/null
-
-# review changes
+# verify site contents are shown
 quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi # **##
 for qual in $quals; do
   google-chrome && google-chrome \
-  https://devstudio.redhat.com/10.0/${qual}/updates/ \
-  https://devstudio.redhat.com/10.0/${qual}/updates/earlyaccess/ \
+  https://devstudio.redhat.com/10.0/${qual}/updates \
   https://devstudio.redhat.com/10.0/${qual}/updates/compositeContent.xml \
-  https://devstudio.redhat.com/10.0/${qual}/updates/earlyaccess/compositeContent.xml
+  https://devstudio.redhat.com/10.0/${qual}/updates/discovery.earlyaccess/ \
+  https://devstudio.redhat.com/10.0/${qual}/updates/discovery.earlyaccess/compositeContent.xml \
+  https://devstudio.redhat.com/10.0/${qual}/updates/earlyaccess/ \
+
 done
 
 ----
 
-NOTE: If this is a GA release, merge these changes into 10.0/stable/ too.
+Open p2-browser and verify these sites load correctly:
 
-== Merge in Integration Stack content
+https://devstudio.redhat.com/10.0/development/updates/
+https://devstudio.redhat.com/10.0/development/updates/discovery.earlyaccess/
+https://devstudio.redhat.com/10.0/development/updates/discovery.earlyaccess/10.0.0.GA/
 
-See details in Merge_IS_Discovery.adoc
-
-CAUTION: Integration Stack sites change and often won't publish JBT IS and JBDS IS at the same time, or will fail to push content into /stable/ and /development at the same time. Best option is to just ask Paul Leacu.
-
-[source,bash]
-----
-pushd /tmp
-  rm -f /tmp/mergeISdiscovery.sh
-  wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/mergeISdiscovery.sh && chmod +x mergeISdiscovery.sh
-  ./mergeISdiscovery.sh -q development -q -stable -version 10.0.0.GA -versionWithRespin 10.0.0.GA -is https://devstudio.redhat.com/9.0/staging/updates/integration-stack/discovery/9.0.0.GA/earlyaccess/ -JBDS
-  rm -f /tmp/mergeISdiscovery.sh
-popd
+https://devstudio.redhat.com/10.0/stable/updates/
+https://devstudio.redhat.com/10.0/stable/updates/discovery.earlyaccess/
+https://devstudio.redhat.com/10.0/stable/updates/discovery.earlyaccess/10.0.0.GA/
 
 ----
 
@@ -406,60 +441,58 @@ Ensure content exists!
 [source,bash]
 ----
 version=10.0.0.GA
-versionWithRespin=10.0.0.GA-b # a, b, c...
-
 # review changes
 quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi # **##
 for qual in $quals; do
   google-chrome && google-chrome \
-  https://devstudio.redhat.com/10.0/${qual}/updates/discovery.earlyaccess/${version}/devstudio-directory.xml
-  https://devstudio.redhat.com/10.0/${qual}/updates/discovery.earlyaccess/${version}/devstudio-earlyaccess.properties
-  https://devstudio.redhat.com/10.0/${qual}/updates/discovery.earlyaccess/${version}/plugins/
+  https://devstudio.redhat.com/10.0/${qual}/updates/discovery.earlyaccess/${version}/devstudio-directory.xml \
+  https://devstudio.redhat.com/10.0/${qual}/updates/discovery.earlyaccess/${version}/devstudio-earlyaccess.properties \
+  https://devstudio.redhat.com/10.0/${qual}/updates/discovery.earlyaccess/${version}/plugins/ \
+
 done
 
 ----
 
+== Update Target Platforms
+
+If this new release includes a new Target Platform, you need to release the latest target platform. If not, there's nothing to do here.
+
+TODO: clone this process from JBT_Release.adoc
+
 
 == Release the latest milestone to ide-config.properties
 
-Check out this file: http://download.jboss.org/jbosstools/configuration/ide-config.properties from _http://github.com/jbosstools/jbosstools-download.jboss.org_ repository.
+See JBT_Release.adoc
 
-And update it it as required, so that the links for the latest milestone point to valid URLs, eg.,
 
-[source,bash]
-----
-# adjust these steps to fit your own path location & git workflow
-cd ~/tru # ~
-pushd jbosstools-download.jboss.org/jbosstools/configuration
-version=10.0.0.GA
-versionWithRespin=10.0.0.GA-b # a, b, c...
+== Update Marketplace entry
 
-git fetch origin master
-git checkout FETCH_HEAD
+WARNING: Only applies to Beta and better versions.
 
-# then edit ide-config.properties
-# vim ide-config.properties
-st ide-config.properties
+=== If node doesn't exist yet
 
-# verify
-google-chrome && google-chrome \
-https://devstudio.redhat.com/10.0/development/updates/discovery.central/${version}/devstudio-directory.xml \
-https://devstudio.redhat.com/10.0/development/updates/ \
-https://devstudio.redhat.com/10.0/development/updates/compositeContent.xml \
-https://devstudio.redhat.com/10.0/development/updates/earlyaccess/ \
-https://devstudio.redhat.com/10.0/development/updates/earlyaccess/compositeContent.xml \
-https://devstudio.redhat.com/10.0/development/updates/discovery.earlyaccess/${version}/devstudio-earlyaccess.properties
+For the first Beta, create a new node on Marketplace, using single feature, com.jboss.devstudio.core.feature
 
-# commit the change and push to master
-ci "release JBDS ${version} (${versionWithRespin}) to public: link to latest dev milestone discovery site" ide-config.properties
-git push origin HEAD:master
+=== If node already exists
 
-# push updated file to server
-TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
-rsync -Pzrlt --rsh=ssh --protocol=28 ide-config.properties $TOOLS/configuration/ide-config.properties
-popd
+Access it via +http://marketplace.eclipse.org/content/red-hat-jboss-developer-studio/edit+ and update the following things:
 
-----
+* Title to match new version
+* Description to match new version & dependencies
+* Notes / warnings (if applicable, eg., JDK issues)
+
+=== Validate Marketplace install
+
+1. Get a compatible Eclipse
+2. Install from Marketplace
+3. Install everything from Central + Earlyaccess
+4. Test a project example
+
+
+== Release JIRA
+
+See JBT_Release.adoc
+
 
 == Submit PR to update tools.jboss.org
 
@@ -469,12 +502,9 @@ https://github.com/jbosstools/jbosstools-website/blob/master/_config/products.ym
 
 Examples:
 
-* https://github.com/jbosstools/jbosstools-website/pull/418 (JBT / JBDS GA)
-* https://github.com/jbosstools/jbosstools-website/pull/449 (JBT GA)
-* https://github.com/jbosstools/jbosstools-website/pull/489 (JBDS CR2)
-* https://github.com/jbosstools/jbosstools-website/pull/513 (JBDS GA)
+* https://github.com/jbosstools/jbosstools-website/pull/590 (JBT 4.4 / JBDS 10.0)
 
-==== SHA256 values
+=== SHA256 values
 
 To get the SHA256 values for easy pasting into the product.yml file, first connect to dev01.mw.lab.eng.bos.redhat.com as +hudson+ user (requires permissions).
 
@@ -544,50 +574,6 @@ done
 
 ----
 
-== Commit updates to release guide (including this document):
-
-[source,bash]
-----
-
-version=10.0.0.GA
-cd jbdevstudio-devdoc/release_guide/9.x
-git commit -m "update release guide for ${version}" .
-git push origin HEAD:master
-
-----
-
-
-== Update Marketplace entry
-
-WARNING: Only applies to Beta and better versions.
-NOTE: for 9.1.*, we will skip this step until GA (no Betas)!
-
-=== If node doesn't exist yet
-
-Create a new node on Marketplace, listing the single "BYOE" feature, com.jboss.devstudio.core.feature
-
-=== If node already exists
-
-Access it via +http://marketplace.eclipse.org/content/red-hat-jboss-developer-studio/edit+ and update the following things:
-
-* Title to match new version
-* Description to match new version & dependencies
-* Notes / warnings (if applicable, eg., JDK issues)
-
-== Mark release as complete in JIRA
-
-If there are no unresolved issues, release the milestone version in JIRA.
-
-Launch the config pages for JBIDE and JBDS and using the gear icons, release the milestone version in JIRA.
-
-[source,bash]
-----
-
-google-chrome && google-chrome https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
-  https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
-
-----
-
 == Smoke test the release
 
 Before notifying team of release, must check for obvious problems. Any failure there should be fixed with highest priority. In general, it could be wrong URLs in a composite site.
@@ -607,8 +593,6 @@ Before notifying team of release, must check for obvious problems. Any failure t
 3. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
 4. Check log, start an example project, check log again
 
-
-
 [source,bash]
 ----
 
@@ -624,26 +608,6 @@ wget https://devstudio.redhat.com/static/10.0/${qual}/builds/devstudio-${version
 java -jar ~/tmp/${installerJar} # ~
 
 ----
-
-=== Validate Marketplace install
-
-1. Get a compatible Eclipse
-2. Install from Marketplace
-3. Install everything from Central + Earlyaccess
-4. Test a project example
-
-== Enable jobs
-
-NOTE: This should have been done after staging, but just in case it was not, here's a reminder.
-
-As you have just released something, the next build will be a CI snapshot for the following milestone.
-
-Thus, you need to:
-
-* re-enable jobs that were disabled during staging
-* set correct github branch, eg., switch from 4.4.0.Finalx to 4.4.x
-* upversion dependencies, eg., releng scripts move from version GA to CR1 (if that's been released)
-* upversion target platforms / Central version (if those have been released)
 
 
 == Notify the team lead
@@ -663,7 +627,7 @@ version_JBT=4.4.0.Final
 version=10.0.0.GA
 qual="development"; if [[ ${version##*GA} == "" ]]; then qual="stable"; fi # **##
 pullrequestURL=https://github.com/jbosstools/jbosstools-website/pull/568
-blogURL=/blog/ga-for-neon2.html
+blogURL=/blog/ga-for-neon.html
 
 TOrecipients="alkazako@redhat.com"
 CCrecipients="max.andersen@redhat.com, nboldt@redhat.com"
@@ -716,4 +680,17 @@ rm -f /tmp/mailbody.jbds.txt
 
 ----
 ____
+
+
+== Commit updates to release guide (including this document):
+
+[source,bash]
+----
+
+version=10.0.0.GA
+cd jbdevstudio-devdoc/release_guide/9.x
+git commit -m "update release guide for ${version}" .
+git push origin HEAD:master
+
+----
 

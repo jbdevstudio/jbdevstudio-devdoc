@@ -81,10 +81,10 @@ cd /tmp
 if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
 wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/stage.sh --no-check-certificate
 chmod +x stage.sh
-stream=4.4.neon
+stream_JBT=4.4.neon
 versionWithRespin=10.0.0.GA-b # a, b, c...
 for site in central-site earlyaccess-site; do
-  ./stage.sh -sites $site -sd 10.0 -stream ${stream} -vr ${versionWithRespin} -JOB_NAME jbosstools-build-sites.aggregate.\${site}_\${stream} \
+  ./stage.sh -sites $site -sd 10.0 -stream ${stream_JBT} -vr ${versionWithRespin} -JOB_NAME jbosstools-build-sites.aggregate.\${site}_\${stream_JBT} \
     -DESTINATION ${JBDS} -DEST_URL https://devstudio.redhat.com -q &
 done
 
@@ -94,10 +94,10 @@ cd /tmp
 if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
 wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/stage.sh --no-check-certificate
 chmod +x stage.sh
-stream=10.0.neon # or master
+stream_JBT=10.0.neon # or master
 versionWithRespin=10.0.0.GA-b # a, b, c...
 for site in product; do
-  ./stage.sh -sites $site -sd 10.0 -stream ${stream} -vr ${versionWithRespin} -JOB_NAME devstudio.\${site}_\${stream} \
+  ./stage.sh -sites $site -sd 10.0 -stream ${stream_JBT} -vr ${versionWithRespin} -JOB_NAME devstudio.\${site}_\${stream_JBT} \
     -DESTINATION /qa/services/http/binaries/RHDS -DEST_URL http://www.qa.jboss.com/binaries/devstudio -q &
 done
 
@@ -107,10 +107,10 @@ cd /tmp
 if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
 wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/stage.sh --no-check-certificate
 chmod +x stage.sh
-stream=10.0.neon # or master
+stream_JBT=10.0.neon # or master
 versionWithRespin=10.0.0.GA-b # a, b, c...
 for site in product; do
-  ./stage.sh -sites $site -sd 10.0 -stream ${stream} -vr ${versionWithRespin} -JOB_NAME devstudio.\${site}_\${stream} \
+  ./stage.sh -sites $site -sd 10.0 -stream ${stream_JBT} -vr ${versionWithRespin} -JOB_NAME devstudio.\${site}_\${stream_JBT} \
     -DESTINATION ${JBDS} -DEST_URL https://devstudio.redhat.com -q &
 done
 
@@ -121,10 +121,10 @@ cd /tmp
 if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
 wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/stage.sh --no-check-certificate
 chmod +x stage.sh
-stream=4.4.neon
+stream_JBT=4.4.neon
 versionWithRespin=10.0.0.GA-b # a, b, c...
 for site in discovery.central discovery.earlyaccess; do
-  ./stage.sh -sites $site -sd 10.0 -stream ${stream} -vr ${versionWithRespin} -JOB_NAME jbosstools-\${site}_\${stream} \
+  ./stage.sh -sites $site -sd 10.0 -stream ${stream_JBT} -vr ${versionWithRespin} -JOB_NAME jbosstools-\${site}_\${stream_JBT} \
     -DESTINATION ${JBDS} -DEST_URL https://devstudio.redhat.com -q &
 done
 
@@ -395,8 +395,8 @@ you@wonka.mw.lab.eng.bos.redhat.com:/home/windup/apache2/www/html/RHDS/10.0/stag
 
 To prepare for staging in CSP, copy these files into the build folder and rename them so they match the filename of the .exe installer:
 
-https://raw.githubusercontent.com/jbdevstudio/jbdevstudio-product/master/results/customer-portal/installer-platform.detailed-description.html
-https://raw.githubusercontent.com/jbdevstudio/jbdevstudio-product/master/results/customer-portal/installer-platform.manual-instructions.txt
+https://raw.githubusercontent.com/jbdevstudio/jbdevstudio-product/jbosstools-4.4.0.x/results/customer-portal/devsuite.detailed-description.html
+https://raw.githubusercontent.com/jbdevstudio/jbdevstudio-product/jbosstools-4.4.0.x/results/customer-portal/devsuite.manual-instructions.txt
 
 First connect to dev01.mw.lab.eng.bos.redhat.com as +hudson+ user (requires permissions).
 

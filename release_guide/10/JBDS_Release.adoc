@@ -28,7 +28,7 @@ google-chrome && google-chrome https://issues.jboss.org/plugins/servlet/project-
 == Rename artifacts to remove timestamp and buildID
 
 To comply with Goldengate URL rules, we need to rename artifacts before they go to the CSP. For example
-`jboss-devstudio-10.0.0.Alpha1-v20151002-2235-B124-installer-eap.jar` must be renamed to `jboss-devstudio-10.0.0.Alpha1-installer-eap.jar`.
+`devstudio-10.0.0.GA-v20151002-2235-B124-installer-eap.jar` must be renamed to `devstudio-10.0.0.GA-installer-eap.jar`.
 
 Connect to dev01.mw.lab.eng.bos.redhat.com as +hudson+ user (requires permissions).
 
@@ -43,13 +43,13 @@ Then:
 
 [source,bash]
 ----
-version=10.0.0.Alpha1
-versionExe=10.0.0-Alpha1 # note the dash, not period after x.y.z
-versionWithRespin=10.0.0.Alpha1 # a, b, c...
+version=10.0.0.GA
+versionExe=1.0.0-GA # note the dash, not period after x.y.z
+versionWithRespin=10.0.0.GA-b # a, b, c...
 pushd /qa/services/http/binaries/RHDS/10.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/
 for f in $(ls *latest*); do echo "rm $f"; rm -f $f; done
-for f in $(ls jboss-devstudio-${version}-* | grep -v latest); do g=$(echo $f | sed s#-v[[:digit:]]*-[[:digit:]]*-B[[:digit:]]*##); echo "mv $f $g"; mv $f $g; done
-for f in $(ls jboss-devstudio-platform-${versionExe}-* | grep -v latest); do g=$(echo $f | sed s#-[[:digit:]]*-[[:digit:]]*##); echo "mv $f $g"; mv $f $g; done
+for f in $(ls devstudio-${version}-* | grep -v latest); do g=$(echo $f | sed s#-v[[:digit:]]*-[[:digit:]]*-B[[:digit:]]*##); echo "mv $f $g"; mv $f $g; done
+for f in $(ls development-suite-${versionExe}-* | grep -v latest); do g=$(echo $f | sed s#-[[:digit:]]*-[[:digit:]]*##); echo "mv $f $g"; mv $f $g; done
 touch *
 chmod +x *.jar *.exe
 ls -l
@@ -60,10 +60,11 @@ Now, move & symlink the ${versionWithRespin} folder:
 
 [source,bash]
 ----
-version=10.0.0.Alpha1
-versionWithRespin=10.0.0.Alpha1 # a, b, c...
+version=10.0.0.GA
+versionWithRespin=10.0.0.GA-b # a, b, c...
 buildType=stable # use /stable/ or /development/ as appropriate
 pushd /qa/services/http/binaries/RHDS/10.0/staging/builds/
+mkdir -p ../../${buildType}/builds/
 mv devstudio-${versionWithRespin}-build-product ../../${buildType}/builds/devstudio-${version}-build-product
 ln -s ../../${buildType}/builds/devstudio-${version}-build-product devstudio-${versionWithRespin}-build-product
 popd
@@ -120,11 +121,12 @@ and +
 
 [source,bash]
 ----
-version=10.0.0.Alpha1
-versionWithRespin=10.0.0.Alpha1 # a, b, c...
+version=10.0.0.GA
+versionWithRespin=10.0.0.GA-b # a, b, c...
+versionExe=1.0.0-GA # note the dash, not period after x.y.z
 buildType=stable # use /stable/ or /development/ as appropriate
-GOLIVEDATE="Tuesday, April 19, 2016"
-JIRA="https://issues.jboss.org/browse/DEVELOPER-2900"
+GOLIVEDATE="Tuesday, June 22, 2016"
+JIRA="https://issues.jboss.org/browse/DEVELOPER-3207"
 
 if [[ ${version} != ${versionWithRespin} ]]; then
   versionFriendlyName="${version} (to be renamed from ${versionWithRespin})"
@@ -133,37 +135,55 @@ else
 fi
 
 TOrecipients="release-engineering@redhat.com"
-CCrecipients="cobrien@redhat.com, ldimaggi@redhat.com, mhusnain@redhat.com, jpallich@redhat.com, nboldt@redhat.com, mistria@redhat.com, alkazako@redhat.com, manderse@redhat.com, bsutter@redhat.com, pmuir@redhat.com, paul.robinson@redhat.com, dcoughli@redhat.com"
+CCrecipients="cobrien@redhat.com, ldimaggi@redhat.com, mhusnain@redhat.com, nboldt@redhat.com, alkazako@redhat.com, paul.robinson@redhat.com, dcoughli@redhat.com, dbhole@redhat.com, lmohanty@redhat.com"
 sender="Nick Boldt <nboldt@redhat.com>"
-subject="JBoss Developer Studio ${versionFriendlyName} available for push to CSP staging server"
+subject="Red Hat JBoss Developer Studio ${versionFriendlyName} & Red Hat Development Suite ${versionExe} available for push to CSP staging server & CDN / Download Manager"
 
 echo "
-JBoss Developer Studio ${versionFriendlyName} is available to push to CSP staging server, for subsequent smoke test & review by QE.
+JBoss Developer Studio ${versionFriendlyName} & Red Hat Development Suite ${versionExe} are available to push to CSP staging server and to the CDN / Download Manager, for subsequent smoke test & review by QE.
 
 We hope to go live by ${GOLIVEDATE}.
 
-Here's a JIRA to update https://www.jboss.org/products/devstudio/
+Here's a JIRA to update http://developers.redhat.com/products/devstudio/ and https://www.jboss.org/products/devstudio/
 
 ${JIRA}
 
-Please include the 5 jars/zips and 1 exe listed here:
+Files to publish are available from here [0]:
 
-* http://www.qa.jboss.com/binaries/devstudio/10.0/${buildType}/builds/devstudio-${versionWithRespin}-build-product/latest/all/
+[0] http://www.qa.jboss.com/binaries/devstudio/10.0/${buildType}/builds/devstudio-${versionWithRespin}-build-product/latest/all/
+
+There are 4 files for push to CSP:
+
+* devstudio-${version}-installer-standalone.jar
+* devstudio-${version}-installer-eap.jar
+* devstudio-${version}-updatesite-core.zip
+* devstudio-${version}-updatesite-central.zip
+* (exclude development-suite-*-installer.exe)
+* (exclude *-src.zip
 
 Please include the pre-generated the HTML and text content in the above folder when creating new CSP pages.
 
-When pushed, please reply so that QE can review the CSP pages & files for push to production.
+There are 5 files for for push to CDN:
+
+* devstudio-${version}-installer-standalone.jar
+* devstudio-${version}-installer-eap.jar
+* devstudio-${version}-updatesite-core.zip
+* devstudio-${version}-updatesite-central.zip
+* development-suite-${versionExe}-bundle-installer.exe
+* (exclude *-src.zip)
+
+When pushed, please reply so that QE can review the CSP pages & CDN files for push to production.
 
 Note that in addition to the new CSP page, eg., [1] or [2], the CSP landing page [3] should also be updated to point to the latest release.
 
 [1] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=${version}
-[2] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=9.1.0
+[2] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=10.0.0
 [3] https://access.redhat.com/downloads/
 
-In addition to the CSP, these files need to be published on the production CDN and download-manager. Only TWO of those artifacts [4],[5] require sign in. The rest are No T&C.
+Only TWO of the artifacts above [4],[5] require sign in from CDN/Download Manager. The rest are No T&C.
 
-[4] jboss-devstudio-*-installer-eap.jar (contains EAP)
-[5] jboss-devstudio-platform-*-installer.jar (contains RHEL)
+[4] devstudio-*-installer-eap.jar (contains EAP)
+[5] development-suite-*-installer.jar (contains RHEL)
 
 " > /tmp/mailbody.jbds.txt
 
@@ -201,8 +221,6 @@ Then copy the latest JBDS artifacts:
 [source,bash]
 ----
 
-# ================================= HERE
-
 # can run these 2 steps in parallel to save time
 
 # 1. installers, update sites, central/earlyaccess, discovery (5 builds)
@@ -210,31 +228,31 @@ cd /tmp
 if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
 wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/stage.sh --no-check-certificate
 chmod +x stage.sh
-stream=10.0.0.Alpha1 # staged version # a, b, c...
-version=10.0.0.Alpha1 # release version: no a, b, c suffix
+stream_JBT=10.0.0.GA # staged version # a, b, c...
+version=10.0.0.GA # release version: no a, b, c suffix
 quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi # **##
 for qual in $quals; do
   for site in product central earlyaccess discovery.central discovery.earlyaccess; do
-    ./stage.sh -sites $site -stream ${stream} -vr ${version} -sd 10.0 -dd static/10.0 -st staging -dt ${qual} \
-      -JOB_NAME devstudio-\${stream}-build-\${site} -DESTINATION ${JBDS} -DEST_URL https://devstudio.redhat.com &
+    ./stage.sh -sites $site -stream ${stream_JBT} -vr ${version} -sd 10.0 -dd static/10.0 -st staging -dt ${qual} \
+      -JOB_NAME devstudio-\${stream_JBT}-build-\${site} -DESTINATION ${JBDS} -DEST_URL https://devstudio.redhat.com -q &
   done
 done
 
 # copy 6 zips & SHAs
-# jboss-devstudio-10.0.0.Alpha1-target-platform-central.zip           jboss-devstudio-10.0.0.Alpha1-target-platform.zip          jboss-devstudio-10.0.0.Alpha1-updatesite-core.zip
-# jboss-devstudio-10.0.0.Alpha1-target-platform-earlyaccess.zip       jboss-devstudio-10.0.0.Alpha1-updatesite-central.zip       jboss-devstudio-10.0.0.Alpha1-updatesite-earlyaccess.zip
-version=10.0.0.Alpha1
-versionWithRespin=10.0.0.Alpha1 # a, b, c...
+# devstudio-10.0.0.GA-target-platform-central.zip           devstudio-10.0.0.GA-target-platform.zip          devstudio-10.0.0.GA-updatesite-core.zip
+# devstudio-10.0.0.GA-target-platform-earlyaccess.zip       devstudio-10.0.0.GA-updatesite-central.zip       devstudio-10.0.0.GA-updatesite-earlyaccess.zip
+version=10.0.0.GA
+versionWithRespin=10.0.0.GA-b # a, b, c...
 tmpdir=~/tmp/release_${version}_zips # ~
 quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi # **##
 for site in core; do
   mkdir -p ${tmpdir}/10.0/development/updates/${site}
   # get zips
-  rsync -aPrz --rsh=ssh --protocol=28 ${JBDS}/10.0/staging/updates/${site}/jboss-devstudio-${versionWithRespin}*.zip* ${tmpdir}/10.0/development/updates/${site}/
+  rsync -aPrz --rsh=ssh --protocol=28 ${JBDS}/10.0/staging/updates/${site}/devstudio-${versionWithRespin}*.zip* ${tmpdir}/10.0/development/updates/${site}/
   for qual in $quals; do
     echo "mkdir ${site}" | sftp ${JBDS}/10.0/${qual}/updates/
     # rename from staging/*/versionWithRespin/ to ${qual}/*/version/
-    for zip in ${tmpdir}/10.0/development/updates/${site}/jboss-devstudio-${versionWithRespin}*.zip*; do
+    for zip in ${tmpdir}/10.0/development/updates/${site}/devstudio-${versionWithRespin}*.zip*; do
       zipNew=${zip/${versionWithRespin}/${version}}; echo $zipNew
       zipNew=${zipNew##*/}; echo $zipNew # **##
       rsync -aPrz --rsh=ssh --protocol=28 ${zip} ${JBDS}/static/10.0/${qual}/updates/${site}/${zipNew}
@@ -244,18 +262,28 @@ done
 rm -fr $tmpdir
 echo "copy zips & SHAs" | grep "copy zips & SHAs"
 
+# TODO wait until the above 6 (or 2x6) pushes are done (should be nothing if you run this:
+ps ax | grep stage.sh | grep -v grep | egrep -- "-sites|-sd"
+
 #  verify zips/SHAa exist
 # mount an sshfs drive for $JBDS, tools@filemgmt.jboss.org:/downloads_htdocs/tools, eg., into $HOME/TOOLS-ssh/
 JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
 sshfs $JBDS $HOME/JBDS-ssh
-version=10.0.0.Alpha1
+version=10.0.0.GA
 quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi # **##
 
 cd $HOME/JBDS-ssh
 for qual in $quals; do
-  checkPath=static/10.0/${qual}/updates/core
-  if [[ $(ll ${checkPath} | grep    zip | grep -v sha256 | grep $version | wc -l) != 6 ]]; then echo "Error: missing zip in ${checkPath}"; fi
-  if [[ $(ll ${checkPath} | grep    zip | grep    sha256 | grep $version | wc -l) != 6 ]]; then echo "Error: missing sha in ${checkPath}"; fi
+  for site in core; do
+    checkPath=static/10.0/${qual}/updates/${site}
+    if [[ $(ll ${checkPath} | grep    zip | grep -v sha256 | grep $version | wc -l) != 4 ]]; then echo "Error: missing zip in ${checkPath}: "; ll ${checkPath}; fi
+    if [[ $(ll ${checkPath} | grep    zip | grep    sha256 | grep $version | wc -l) != 4 ]]; then echo "Error: missing sha in ${checkPath}: "; ll ${checkPath}; fi
+  done
+  for site in central earlyaccess; do
+    checkPath=static/10.0/${qual}/updates/${site}
+    if [[ $(ll ${checkPath} | grep    zip | grep -v sha256 | grep $version | wc -l) != 1 ]]; then echo "Error: missing zip in ${checkPath}: "; ll ${checkPath}; fi
+    if [[ $(ll ${checkPath} | grep    zip | grep    sha256 | grep $version | wc -l) != 1 ]]; then echo "Error: missing sha in ${checkPath}: "; ll ${checkPath}; fi
+  done
 done
 
 # verify sites exist
@@ -269,14 +297,17 @@ done
 
 ----
 
+============ CONTINUE HERE ...
+
+
 == Update https://devstudio.redhat.com/10.0/development/updates/
 
 To update the content in https://devstudio.redhat.com/10.0/development/updates/ ...
 
 [source,bash]
 ----
-version=10.0.0.Alpha1
-versionWithRespin=10.0.0.Alpha1 # a, b, c...
+version=10.0.0.GA
+versionWithRespin=10.0.0.GA-b # a, b, c...
 
 # adjust these steps to fit your own path location & git workflow
 cd ~/truu # ~
@@ -364,7 +395,7 @@ CAUTION: Integration Stack sites change and often won't publish JBT IS and JBDS 
 pushd /tmp
   rm -f /tmp/mergeISdiscovery.sh
   wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/mergeISdiscovery.sh && chmod +x mergeISdiscovery.sh
-  ./mergeISdiscovery.sh -q development -q -stable -version 10.0.0.Alpha1 -versionWithRespin 10.0.0.Alpha1 -is https://devstudio.redhat.com/9.0/staging/updates/integration-stack/discovery/9.0.0.GA/earlyaccess/ -JBDS
+  ./mergeISdiscovery.sh -q development -q -stable -version 10.0.0.GA -versionWithRespin 10.0.0.GA -is https://devstudio.redhat.com/9.0/staging/updates/integration-stack/discovery/9.0.0.GA/earlyaccess/ -JBDS
   rm -f /tmp/mergeISdiscovery.sh
 popd
 
@@ -374,8 +405,8 @@ Ensure content exists!
 
 [source,bash]
 ----
-version=10.0.0.Alpha1
-versionWithRespin=10.0.0.Alpha1 # a, b, c...
+version=10.0.0.GA
+versionWithRespin=10.0.0.GA-b # a, b, c...
 
 # review changes
 quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi # **##
@@ -400,8 +431,8 @@ And update it it as required, so that the links for the latest milestone point t
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru # ~
 pushd jbosstools-download.jboss.org/jbosstools/configuration
-version=10.0.0.Alpha1
-versionWithRespin=10.0.0.Alpha1 # a, b, c...
+version=10.0.0.GA
+versionWithRespin=10.0.0.GA-b # a, b, c...
 
 git fetch origin master
 git checkout FETCH_HEAD
@@ -458,8 +489,8 @@ Then run this:
 
 [source,bash]
 ----
-version=10.0.0.Alpha1
-versionWithRespin=10.0.0.Alpha1 # a, b, c...
+version=10.0.0.GA
+versionWithRespin=10.0.0.GA-b # a, b, c...
 
 cd ~/RHDS/10.0/staging/builds/devstudio-${versionWithRespin}-build-product/latest/all/ # ~
 for f in *.jar *.zip; do
@@ -469,8 +500,8 @@ for f in *.jar *.zip; do
   echo "            file_size: ${size}MB" >> /tmp/yml.txt
 done
 cd /tmp
-f=jboss-devstudio-${version}-target-platform.zip
-size=$(wget https://devstudio.redhat.com/10.0/development/updates/core/ --no-check-certificate -q -O - | egrep jboss-devstudio-${version}-target-platform.zip | egrep -v sha256 | sed "s#.\+>\([0-9]\+M\)</td.\+#\1#")
+f=devstudio-${version}-target-platform.zip
+size=$(wget https://devstudio.redhat.com/10.0/development/updates/core/ --no-check-certificate -q -O - | egrep devstudio-${version}-target-platform.zip | egrep -v sha256 | sed "s#.\+>\([0-9]\+M\)</td.\+#\1#")
 # sha=$(wget https://devstudio.redhat.com/10.0/development/updates/core/${f}.sha256 --no-check-certificate -q -O -); sh=${sha:0:2}
 echo "            url: https://devstudio.redhat.com/10.0/development/updates/core/${f}" >> /tmp/yml.txt
 echo "            file_size: ${size}B" >> /tmp/yml.txt
@@ -496,8 +527,8 @@ git clone https://github.com/jbdevstudio/jbdevstudio-website
 git clone https://github.com/jbdevstudio/jbdevstudio-artwork
 git clone https://github.com/jbdevstudio/jbdevstudio-devdoc
 
-jbt_branch=master
-version=10.0.0.Alpha1
+jbt_branch=jbosstools-4.4.0.x
+version=10.0.0.GA
 for d in product ci website artwork devdoc; do
   echo "====================================================================="
   echo "Tagging jbdevstudio-${d} from branch ${jbt_branch} as tag ${version}..."
@@ -518,7 +549,7 @@ done
 [source,bash]
 ----
 
-version=10.0.0.Alpha1
+version=10.0.0.GA
 cd jbdevstudio-devdoc/release_guide/9.x
 git commit -m "update release guide for ${version}" .
 git push origin HEAD:master
@@ -572,7 +603,7 @@ Before notifying team of release, must check for obvious problems. Any failure t
 
 1. Download JBDS installer from https://devstudio.redhat.com/10.0/development/builds/ or https://devstudio.redhat.com/10.0/stable/builds/
 2. Install via UI or headlessly with
-    java -jar jboss-devstudio-*.jar -console -options /dev/null
+    java -jar devstudio-*.jar -console -options /dev/null
 3. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
 4. Check log, start an example project, check log again
 
@@ -581,7 +612,7 @@ Before notifying team of release, must check for obvious problems. Any failure t
 [source,bash]
 ----
 
-version=10.0.0.Alpha1
+version=10.0.0.GA
 qual="development"; if [[ ${version##*GA} == "" ]]; then qual="stable"; fi # **##
 cd ~/tmp # ~
 wget https://devstudio.redhat.com/static/10.0/${qual}/builds/devstudio-${version}-build-product/latest/all/
@@ -610,7 +641,7 @@ As you have just released something, the next build will be a CI snapshot for th
 Thus, you need to:
 
 * re-enable jobs that were disabled during staging
-* set correct github branch, eg., switch from 4.4.0.Alpha1x to 4.4.x
+* set correct github branch, eg., switch from 4.4.0.Finalx to 4.4.x
 * upversion dependencies, eg., releng scripts move from version GA to CR1 (if that's been released)
 * upversion target platforms / Central version (if those have been released)
 
@@ -628,8 +659,8 @@ ____
 [source,bash]
 ----
 
-version_JBT=4.4.0.Alpha1
-version=10.0.0.Alpha1
+version_JBT=4.4.0.Final
+version=10.0.0.GA
 qual="development"; if [[ ${version##*GA} == "" ]]; then qual="stable"; fi # **##
 pullrequestURL=https://github.com/jbosstools/jbosstools-website/pull/568
 blogURL=/blog/ga-for-neon2.html

@@ -20,15 +20,17 @@ Check o.j.t.foundation.core's currentversion.properties for the correct value of
 [sources,bash]
 ----
 versions="4.4.0.Final 10.0.0.GA"
+stream_JBT=4.4.neon
+stream_JBT=master
 for version in $versions; do
   if [[ ${version:0:1} == "4" ]]; then # JBT
     pluginName=foundation.core
-    #updatesiteURL=http://download.jboss.org/jbosstools/neon/snapshots/updates/core/4.4.neon/plugins
-    updatesiteURL=http://download.jboss.org/jbosstools/neon/snapshots/updates/core/4.4.neon/plugins
+    #updatesiteURL=http://download.jboss.org/jbosstools/neon/snapshots/updates/core/${stream_JBT}/plugins
+    updatesiteURL=http://download.jboss.org/jbosstools/neon/snapshots/updates/core/${stream_JBT}/plugins
   else
     pluginName=core.central
-    #updatesiteURL=https://devstudio.redhat.com/10.0/snapshots/updates/core/4.4.neon/plugins
-    updatesiteURL=https://devstudio.redhat.com/10.0/snapshots/updates/core/4.4.neon/plugins
+    #updatesiteURL=https://devstudio.redhat.com/10.0/snapshots/updates/core/${stream_JBT}/plugins
+    updatesiteURL=https://devstudio.redhat.com/10.0/snapshots/updates/core/${stream_JBT}/plugins
   fi
   pushd /tmp >/dev/null; wget -q -nc ${updatesiteURL}/
   thejars=`cat index.html | egrep -v "source|pack.gz" | egrep ${pluginName} | sed -e "s#.\+href=\"\([^\"]\+\)\">.\+#\1#" | sort`
@@ -179,13 +181,13 @@ wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools
 chmod +x stage.sh
 
 # 5 builds of total 7
-stream=4.4.neon
+stream_JBT=4.4.neon
 versionWithRespin=4.4.0.Final-b # a, b, c...
 for site in site coretests-site central-site earlyaccess-site; do
-  ./stage.sh -sites $site -sd neon -stream ${stream} -vr ${versionWithRespin} -JOB_NAME jbosstools-build-sites.aggregate.\${site}_\${stream} -q &
+  ./stage.sh -sites $site -sd neon -stream ${stream_JBT} -vr ${versionWithRespin} -JOB_NAME jbosstools-build-sites.aggregate.\${site}_\${stream_JBT} -q &
 done
 for site in browsersim-standalone; do
-  ./stage.sh -sites $site -sd neon -stream ${stream} -vr ${versionWithRespin} -q &
+  ./stage.sh -sites $site -sd neon -stream ${stream_JBT} -vr ${versionWithRespin} -q &
 done
 
 
@@ -195,10 +197,10 @@ if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
 wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/stage.sh --no-check-certificate
 chmod +x stage.sh
 # 2 builds of total 7
-stream=4.4.neon
+stream_JBT=4.4.neon
 versionWithRespin=4.4.0.Final-b # a, b, c...
 for site in discovery.central discovery.earlyaccess; do
-  ./stage.sh -sites $site -sd neon -stream ${stream} -vr ${versionWithRespin} -q &
+  ./stage.sh -sites $site -sd neon -stream ${stream_JBT} -vr ${versionWithRespin} -q &
 done
 
 # TODO you can check which staging steps are still running with:

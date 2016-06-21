@@ -626,11 +626,11 @@ ____
 version_JBT=4.4.0.Final
 version=10.0.0.GA
 qual="development"; if [[ ${version##*GA} == "" ]]; then qual="stable"; fi # **##
-pullrequestURL=https://github.com/jbosstools/jbosstools-website/pull/568
+pullrequestURL=https://github.com/jbosstools/jbosstools-website/pull/590
 blogURL=/blog/ga-for-neon.html
 
 TOrecipients="alkazako@redhat.com"
-CCrecipients="max.andersen@redhat.com, nboldt@redhat.com"
+CCrecipients="nboldt@redhat.com"
 sender="Nick Boldt <nboldt@redhat.com>"
 subject="Ready for JBoss Developer Studio ${version} blog & announcement"
 echo "
@@ -688,7 +688,7 @@ ____
 ----
 
 version=10.0.0.GA
-cd jbdevstudio-devdoc/release_guide/9.x
+cd jbdevstudio-devdoc/release_guide/
 git commit -m "update release guide for ${version}" .
 git push origin HEAD:master
 

@@ -96,7 +96,7 @@ echo ""
 == Update Discovery Sites and URLs
 
 [[update-discovery-urls]]
-Update the *stable branch* discovery job ( https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-discovery_4.4.neon/configure ) to use the correct source URLs and versions +
+Update the *stable branch* (or master) discovery job ( https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-discovery_4.4.neon/configure (or jbosstools-discovery_master)) to use the correct source URLs and versions +
 
 
 Then respin the job and verify that sites were correctly populated:
@@ -210,7 +210,7 @@ Note that Akamai caching might result in the appearance of missing files (apache
 
 versionWithRespin=4.4.1.AM2 # a, b, c...
 tmpfile=/tmp/jbosstools-staging__verify.txt
-for site in site coretests-site central-site earlyaccess-site discovery.central discovery.earlyaccess; do
+for site in site coretests-site central-site earlyaccess-site; do
   if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
   echo "http://download.jboss.org/jbosstools/neon/staging/builds/jbosstools-${versionWithRespin}-build-${sitename}/ " >> $tmpfile
   echo "http://download.jboss.org/jbosstools/neon/staging/updates/${sitename}/${versionWithRespin}/ " >> $tmpfile

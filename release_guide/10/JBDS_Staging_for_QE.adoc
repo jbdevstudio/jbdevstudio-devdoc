@@ -47,11 +47,11 @@ Then copy the latest devstudio artifacts:
 * installer
 * target platforms & zips
 * update sites & zips
-* discovery sites
+* discovery sites (already staged in JBT_Staging_for_QE.doc)
 
 WARNING: Don't use symlinks are they are too risky to use. Those operations can be done in parallel (using multiple terminals is the easiest way)
 
-=== Push installers, update site, and discovery site
+=== Push installers & update sites
 
 [source,bash]
 ----
@@ -115,19 +115,6 @@ for site in product; do
 done
 
 
-# TODO: make sure you've rebuilt the discovery sites and disabled the job first before doing this step!
-# 5. copy devstudio discovery sites to staging/builds/ and staging/updates/
-cd /tmp
-if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
-wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/stage.sh --no-check-certificate
-chmod +x stage.sh
-stream_JBT=master # or 4.4.neon
-versionWithRespin=10.0.1.AM2 # a, b, c...
-for site in discovery.central discovery.earlyaccess; do
-  ./stage.sh -sites $site -sd 10.0 -stream ${stream_JBT} -vr ${versionWithRespin} -JOB_NAME jbosstools-\${site}_${stream_JBT} \
-    -DESTINATION ${JBDS} -DEST_URL https://devstudio.redhat.com -q &
-done
-
 # TODO you can check which staging steps are still running with:
 ps ax | grep stage.sh | grep -v grep | egrep -- "-sites|-sd"
 
@@ -142,7 +129,7 @@ Note that Akamai caching might result in the appearance of missing files (apache
 
 versionWithRespin=10.0.1.AM2 # a, b, c...
 tmpfile=/tmp/jbosstools-staging__verify.txt
-for site in central earlyaccess discovery.central discovery.earlyaccess; do
+for site in central earlyaccess; do
   if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
   echo "https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin}-build-${sitename}/ " >> $tmpfile
   echo "https://devstudio.redhat.com/10.0/staging/updates/${sitename}/${versionWithRespin}/ " >> $tmpfile

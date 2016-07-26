@@ -55,7 +55,7 @@ WARNING: Don't use symlinks are they are too risky to use. Those operations can 
 
 [source,bash]
 ----
-# can run these 5 steps in parallel
+# can run these 4 steps in parallel
 
 # 1. copy devstudio target platform zips from INTERNAL (www.qa) to EXTERNAL (devstudio.redhat.com)
 versionWithRespin=10.0.1.AM2 # a, b, c...
@@ -70,10 +70,13 @@ for targetname in jbdevstudio jbtcentral jbtearlyaccess; do
     suffix="-target-platform-${targetname:3}"
   fi
   y=/qa/services/http/binaries/RHDS/targetplatforms/${targetname}target/${TARGET_PLATFORM_VERSION}/${targetname}target-${TARGET_PLATFORM_VERSION}.zip
-  rsync -aPrz --rsh=ssh --protocol=28 ${y} ${JBDS}/10.0/staging/updates/core/devstudio-${versionWithRespin}${suffix}.zip
-  rsync -aPrz --rsh=ssh --protocol=28 ${y}.sha256 ${JBDS}/10.0/staging/updates/core/devstudio-${versionWithRespin}${suffix}.zip.sha256
+  {
+    echo "[INFO] [${targetname} TP] Copy devstudio-${versionWithRespin}${suffix}.zip" | egrep "devstudio|${versionWithRespin}|${targetname}|${targetname:3}" &&
+    rsync -aPrz --rsh=ssh --protocol=28 ${y} ${JBDS}/10.0/staging/updates/core/devstudio-${versionWithRespin}${suffix}.zip &&
+    rsync -aPrz --rsh=ssh --protocol=28 ${y}.sha256 ${JBDS}/10.0/staging/updates/core/devstudio-${versionWithRespin}${suffix}.zip.sha256 &&
+    echo "[INFO] [${targetname} TP] DONE: devstudio-${versionWithRespin}${suffix}.zip" | egrep "devstudio|${versionWithRespin}|${targetname}|${targetname:3}" &
+  }
 done
-echo "DONE: copy devstudio target platform zips" | grep "copy devstudio target platform zips"
 
 
 # 2. central/earlyaccess
@@ -127,6 +130,8 @@ Note that Akamai caching might result in the appearance of missing files (apache
 [source,bash]
 ----
 
+# TODO rewrite these as curl checks to see if the files exist
+
 versionWithRespin=10.0.1.AM2 # a, b, c...
 tmpfile=/tmp/jbosstools-staging__verify.txt
 for site in central earlyaccess; do
@@ -139,9 +144,9 @@ echo "http://www.qa.jboss.com/binaries/devstudio/10.0/staging/builds/devstudio-$
 echo "https://devstudio.redhat.com/10.0/staging/builds/#_____(5_folders_w/_${versionWithRespin}) " >> $tmpfile
 echo "https://devstudio.redhat.com/10.0/staging/updates/core/#_____(4_zips,_4_sums,_1_folder_w/_${versionWithRespin}) " >> $tmpfile
 echo "https://devstudio.redhat.com/10.0/staging/updates/central/#_____(1_zip,_1_sum,_1_folder_w/_${versionWithRespin}) " >> $tmpfile
-echo "https://devstudio.redhat.com/10.0/staging/updates/earlyaccess/${versionWithRespin}/ " >> $tmpfile
-echo "https://devstudio.redhat.com/10.0/staging/updates/earlyaccess/devstudio-${versionWithRespin}-updatesite-earlyaccess.zip " >> $tmpfile
-echo "https://devstudio.redhat.com/10.0/staging/updates/earlyaccess/devstudio-${versionWithRespin}-updatesite-earlyaccess.zip.sha256 " >> $tmpfile
+echo "https://devstudio.redhat.com/10.0/staging/updates/earlyaccess/#_____(1_zip,_1_sum,_1_folder_w/_${versionWithRespin}) " >> $tmpfile
+#echo "https://devstudio.redhat.com/10.0/staging/updates/earlyaccess/devstudio-${versionWithRespin}-updatesite-earlyaccess.zip " >> $tmpfile
+#echo "https://devstudio.redhat.com/10.0/staging/updates/earlyaccess/devstudio-${versionWithRespin}-updatesite-earlyaccess.zip.sha256 " >> $tmpfile
 echo "" >> $tmpfile
 cat $tmpfile
 google-chrome && google-chrome `cat $tmpfile`

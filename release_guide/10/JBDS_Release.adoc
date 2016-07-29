@@ -557,8 +557,9 @@ git clone https://github.com/jbdevstudio/jbdevstudio-website
 git clone https://github.com/jbdevstudio/jbdevstudio-artwork
 git clone https://github.com/jbdevstudio/jbdevstudio-devdoc
 
-jbt_branch=jbosstools-4.4.0.x
-version=10.0.0.GA
+jbt_branch=master # jbosstools-4.4.0.x
+version=10.0.1.AM2
+cd ~/truu # ~
 for d in product ci website artwork devdoc; do
   echo "====================================================================="
   echo "Tagging jbdevstudio-${d} from branch ${jbt_branch} as tag ${version}..."

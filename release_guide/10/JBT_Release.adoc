@@ -547,13 +547,13 @@ done
 
 @since 4.3: bulk-tagging via script; email generated
 
-*To:* alkazako@redhat.com +
+*To:* alkazako@redhat.com, jmaury@redhat.com +
 
 [source,bash]
 ----
 version=4.4.1.AM2
 recipients=alkazako@redhat.com
-sender="nboldt@redhat.com"
+sender="nboldt@redhat.com, jmaury@redhat.com"
 subject="Ready for JBT ${version} tag creation"
 qual="development"; if [[ ${version##*Final} == "" ]]; then qual="stable"; fi # **##
 echo "

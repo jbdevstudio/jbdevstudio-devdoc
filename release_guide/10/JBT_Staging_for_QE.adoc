@@ -21,7 +21,7 @@ Check o.j.t.foundation.core's currentversion.properties for the correct value of
 
 [sources,bash]
 ----
-versions="4.4.1.AM2 10.0.1.AM2"
+versions="4.4.1.AM3 10.0.1.AM3"
 stream_JBT=master # or 4.4.neon
 for version in $versions; do
   if [[ ${version:0:1} == "4" ]]; then # JBT
@@ -107,11 +107,11 @@ Then respin the job and verify that sites were correctly populated:
 # kerberos login for the Jenkins server
 userpass=nboldt:PASSWORD
 
-versionWithRespin=4.4.1.AM2 # a, b, c... (not SNAPSHOT!)
+versionWithRespin=4.4.1.AM3 # a, b, c... (not SNAPSHOT!)
 stream_JBT=master # or 4.4.neon
 stream_DS=master # or 10.0.neon
-TARGET_PLATFORM_VERSION_MAX=4.60.1.AM1-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.60.0.Final-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.60.1.AM3-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.60.01.AM3-SNAPSHOT
 for j in jbosstools-discovery_${stream_JBT}; do
   curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/enable && echo -n ".E"
   curl -k -u ${userpass} --data "VERSION=${versionWithRespin##*.}&TARGET_PLATFORM_VERSION_MAXIMUM=${TARGET_PLATFORM_VERSION_MAX}&JBTCENTRALTARGET_VERSION=${TARGET_PLATFORM_CENTRAL_MAX}" https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/buildWithParameters && echo -n ".B"
@@ -129,8 +129,8 @@ If you ran the above in Jenkins / on dev01, this next step needs to be run local
 ----
 
 stream_JBT=master # or 4.4.neon
-versionWithRespin=4.4.1.AM2 # a, b, c...
-dsFixVersionWithRespin=10.0.1.AM2 # a, b, c...
+versionWithRespin=4.4.1.AM3 # a, b, c...
+dsFixVersionWithRespin=10.1.0.AM3 # a, b, c...
 google-chrome && google-chrome \
 http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-discovery_${stream_JBT}/lastBuild/parameters \
 http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-discovery_${stream_JBT}/lastBuild/console \
@@ -188,7 +188,7 @@ chmod +x stage.sh
 
 # 5 builds of total 5 (discovery.* sites were already staged above!)
 stream_JBT=master # or 4.4.neon
-versionWithRespin=4.4.1.AM2 # a, b, c...
+versionWithRespin=4.4.1.AM3 # a, b, c...
 for site in site coretests-site central-site earlyaccess-site; do
   ./stage.sh -sites $site -sd neon -stream ${stream_JBT} -vr ${versionWithRespin} -JOB_NAME jbosstools-build-sites.aggregate.\${site}_${stream_JBT} -q &
 done
@@ -208,7 +208,7 @@ Note that Akamai caching might result in the appearance of missing files (apache
 [source,bash]
 ----
 
-versionWithRespin=4.4.1.AM2 # a, b, c...
+versionWithRespin=4.4.1.AM3 # a, b, c...
 tmpfile=/tmp/jbosstools-staging__verify.txt
 for site in site coretests-site central-site earlyaccess-site; do
   if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
@@ -265,8 +265,8 @@ This should point to the latest staging bits. Just copy what's in discovery.cent
 cd ~/tru
 RSYNC="rsync -aPrz --rsh=ssh --protocol=28"
 
-versionWithRespin_PREV=4.4.0.Final # a, b, c...
-versionWithRespin=4.4.1.AM2 # a, b, c...
+versionWithRespin_PREV=4.4.1.AM3 # a, b, c...
+versionWithRespin=4.4.1.AM3 # a, b, c...
 DESTINATION=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 PROJECT_PATH=jbosstools-download.jboss.org/jbosstools
 DEST_URL="http://download.jboss.org/jbosstools"
@@ -333,10 +333,10 @@ Update it so that the links for the latest milestone point to valid URLs. Commen
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru
 pushd jbosstools-download.jboss.org/jbosstools/configuration
-version=4.4.1.AM2
-versionWithRespin=4.4.1.AM2 # a, b, c...
-dsFixVersion=10.0.1.AM2 # no respin suffix here
-dsFixVersionWithRespin=10.0.1.AM2 # a, b, c...
+version=4.4.1.AM3
+versionWithRespin=4.4.1.AM3 # a, b, c...
+dsFixVersion=10.1.0.AM3 # no respin suffix here
+dsFixVersionWithRespin=10.1.0.AM3 # a, b, c...
 
 git fetch origin master
 git checkout FETCH_HEAD
@@ -404,7 +404,7 @@ TODO: Important: if you switched the _master jobs to run from origin/jbosstools-
 
 If the next build will NOT be a respin, you will also need to ALSO make these changes to jobs, and upversion/release artifacts such as releng scripts or target platforms if you haven't done so already:
 
-* set correct github branch, eg., switch from 4.4.1.AM2x to 4.4.x
+* set correct github branch, eg., switch from 4.4.1.AM3x to 4.4.x
 * upversion dependencies, eg., releng scripts move from version CR1 to CR1 (if that's been released)
 * upversion target platforms / Central version (if those have been released)
 
@@ -419,13 +419,13 @@ ____
 [source,bash]
 ----
 
-versionWithRespin=4.4.1.AM2 # a, b, c...
+versionWithRespin=4.4.1.AM3 # a, b, c...
 respin="respin-"
 TARGET_PLATFORM_VERSION_MIN=4.60.0.Final
-TARGET_PLATFORM_VERSION_MAX=4.60.1.AM1-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.60.0.Final-SNAPSHOT
-dsFixVersion=10.0.1.AM2 # no respin suffix here
-jbtFixVersion=4.4.1.AM2 # no respin suffix here
+TARGET_PLATFORM_VERSION_MAX=4.60.1.AM3-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.60.01.AM3-SNAPSHOT
+dsFixVersion=10.1.0.AM3 # no respin suffix here
+jbtFixVersion=4.4.1.AM3 # no respin suffix here
 recipients=jbosstools-dev@lists.jboss.org
 sender="Nick Boldt <nboldt@redhat.com>"
 subject="JBoss Tools Core ${versionWithRespin} bits available for QE testing"

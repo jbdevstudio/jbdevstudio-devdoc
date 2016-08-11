@@ -77,8 +77,8 @@ if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
 wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/stage.sh --no-check-certificate
 chmod +x stage.sh
 
-version=4.4.1.AM2 # release version: no a, b, c suffix
-versionWithRespin=4.4.1.AM2 # a, b, c...
+version=4.4.1.AM3 # release version: no a, b, c suffix
+versionWithRespin=4.4.1.AM3 # a, b, c...
 quals="development"; if [[ ${version##*Final} == "" ]]; then quals="development stable"; fi # **##
 for qual in $quals; do
   for site in core coretests central earlyaccess discovery.central discovery.earlyaccess browsersim-standalone; do
@@ -89,8 +89,8 @@ done
 
 # TODO merge this into stage.sh?
 # JBT zips into http://download.jboss.org/jbosstools/static/neon/development/updates/core/
-version=4.4.1.AM2
-versionWithRespin=4.4.1.AM2 # a, b, c...
+version=4.4.1.AM3
+versionWithRespin=4.4.1.AM3 # a, b, c...
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 quals="development"; if [[ ${version##*Final} == "" ]]; then quals="development stable"; fi # **##
 for site in core; do
@@ -116,8 +116,8 @@ ps ax | grep stage.sh | grep -v grep | egrep -- "-sites|-sd"
 #TODO migrate this to staging script and into a Jenkins job too!
 TOOLS=tools@filemgmt.jboss.org:/download_htdocs/tools
 sshfs $TOOLS $HOME/TOOLS-ssh
-version=4.4.1.AM2
-versionWithRespin=4.4.1.AM2 # a, b, c...
+version=4.4.1.AM3
+versionWithRespin=4.4.1.AM3 # a, b, c...
 expectedCount=0
 quals="development"; if [[ ${version##*Final} == "" ]]; then quals="development stable"; fi # **##
 rm -f /tmp/${version}.found.txt
@@ -161,8 +161,8 @@ pushd jbosstools-download.jboss.org/jbosstools/neon
 git fetch origin master
 git checkout FETCH_HEAD
 
-version=4.4.1.AM2
-versionWithRespin=4.4.1.AM2 # a, b, c...
+version=4.4.1.AM3
+versionWithRespin=4.4.1.AM3 # a, b, c...
 quals="development"; if [[ ${version##*Final} == "" ]]; then quals="development stable"; fi # **##
 echo "
 - integration-stack/*
@@ -284,15 +284,15 @@ Open p2-browser and verify these sites load correctly:
 
 http://download.jboss.org/jbosstools/neon/development/updates/
 http://download.jboss.org/jbosstools/neon/development/updates/discovery.earlyaccess/
-http://download.jboss.org/jbosstools/neon/development/updates/discovery.earlyaccess/4.4.1.AM2/
-http://download.jboss.org/jbosstools/static/neon/development/updates/coretests/4.4.1.AM2/
+http://download.jboss.org/jbosstools/neon/development/updates/discovery.earlyaccess/4.4.1.AM3/
+http://download.jboss.org/jbosstools/static/neon/development/updates/coretests/4.4.1.AM3/
 
 (and, if this is a Final)
 
 http://download.jboss.org/jbosstools/neon/stable/updates/
 http://download.jboss.org/jbosstools/neon/stable/updates/discovery.earlyaccess/
-http://download.jboss.org/jbosstools/neon/stable/updates/discovery.earlyaccess/4.4.1.AM2/
-http://download.jboss.org/jbosstools/static/neon/stable/updates/coretests/4.4.1.AM2/
+http://download.jboss.org/jbosstools/neon/stable/updates/discovery.earlyaccess/4.4.1.AM3/
+http://download.jboss.org/jbosstools/static/neon/stable/updates/coretests/4.4.1.AM3/
 
 
 === WebTools
@@ -342,8 +342,8 @@ https://github.com/jbosstools/jbosstools-download.jboss.org/commit/d5306ce940814
 
 cd ~/tru # or where you have jbosstools-download.jboss.org checked out ~
 
-TARGET_PLATFORM_VERSION_MAX_PREV=4.60.0.Final
-TARGET_PLATFORM_VERSION_MAX=4.60.1.AM2-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX_PREV=4.60.1.AM1-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.60.1.AM3-SNAPSHOT
 now=`date +%s000`
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 
@@ -393,10 +393,10 @@ Update it so that the links for the latest milestone point to valid URLs. Commen
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru # ~
 pushd jbosstools-download.jboss.org/jbosstools/configuration
-version=4.4.1.AM2
-versionWithRespin=4.4.1.AM2 # a, b, c...
-dsFixVersion=10.0.1.AM2 # no respin suffix here
-dsFixVersionWithRespin=10.0.1.AM2 # a, b, c...
+version=4.4.1.AM3
+versionWithRespin=4.4.1.AM3 # a, b, c...
+dsFixVersion=10.1.0.AM3 # no respin suffix here
+dsFixVersionWithRespin=10.1.0.AM3 # a, b, c...
 
 git fetch origin master
 git checkout FETCH_HEAD
@@ -446,7 +446,7 @@ WARNING: Only applies to Beta and better versions.
 
 === If node does not yet exist
 
-For the first Beta, create a new node on Marketplace, using content from http://download.jboss.org/jbosstools/static/neon/stable/updates/core/4.4.1.AM2/site.properties
+For the first Beta, create a new node on Marketplace, using content from http://download.jboss.org/jbosstools/static/neon/stable/updates/core/4.4.1.AM3/site.properties
 
 === If node already exists
 
@@ -454,14 +454,14 @@ Access it via +https://marketplace.eclipse.org/content/jboss-tools/edit+ and upd
 
 * Title to match new version
 * Description to match new version & dependencies
-* Update list of features, using content of http://download.jboss.org/jbosstools/static/neon/stable/updates/core/4.4.1.AM2/site.properties
+* Update list of features, using content of http://download.jboss.org/jbosstools/static/neon/stable/updates/core/4.4.1.AM3/site.properties
 
 To diff if any new features have been added/removed:
 
 [source,bash]
 ----
-versionWithRespin_PREV=4.3.1.Final
-version=4.4.1.AM2
+versionWithRespin_PREV=4.4.0.Final
+version=4.4.1.AM3
 
 cd /tmp
 wget -O ${versionWithRespin_PREV}.properties http://download.jboss.org/jbosstools/static/mars/development/updates/core/${versionWithRespin_PREV}/site.properties
@@ -526,7 +526,7 @@ git clone https://github.com/jbosstools/jbosstools-versionwatch
 # download.jboss.org tag might not be valid as tweaks to ide-config.properties happen frequently
 
 jbt_branch=master # jbosstools-4.4.0.x
-version=4.4.1.AM2
+version=4.4.1.AM3
 cd ~/tru # ~
 for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins versionwatch; do
   echo "====================================================================="
@@ -551,7 +551,7 @@ done
 
 [source,bash]
 ----
-version=4.4.1.AM2
+version=4.4.1.AM3
 recipients=alkazako@redhat.com
 sender="nboldt@redhat.com, jmaury@redhat.com"
 subject="Ready for JBT ${version} tag creation"
@@ -599,7 +599,7 @@ ____
 [source,bash]
 ----
 
-version=4.4.1.AM2
+version=4.4.1.AM3
 eclipseVersion="Eclipse 4.6.0 Neon.0"
 qual="development"; if [[ ${version##*Final} == "" ]]; then qual="stable"; fi # **##
 pullrequestURL=https://github.com/jbosstools/jbosstools-website/pull/590

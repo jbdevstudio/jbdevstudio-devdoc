@@ -81,7 +81,7 @@ If you ran the above in Jenkins / on dev01, this next step needs to be run local
 
 stream_jbt=master # or 4.4.neon
 versionWithRespin_jbt=4.4.1.AM3 # a, b, c...
-dsFixVersionWithRespin=10.1.0.AM3 # a, b, c...
+versionWithRespin_ds=10.1.0.AM3 # a, b, c...
 google-chrome && google-chrome \
 http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-discovery_${stream_jbt}/lastBuild/parameters \
 http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-discovery_${stream_jbt}/lastBuild/console \
@@ -89,10 +89,10 @@ http://download.jboss.org/jbosstools/neon/staging/builds/jbosstools-${versionWit
 http://download.jboss.org/jbosstools/neon/staging/builds/jbosstools-${versionWithRespin_jbt}-build-discovery.central/latest/all/repo/jbosstools-directory.xml \
 http://download.jboss.org/jbosstools/neon/staging/builds/jbosstools-${versionWithRespin_jbt}-build-discovery.earlyaccess/latest/all/repo/compositeArtifacts.xml \
 http://download.jboss.org/jbosstools/neon/staging/builds/jbosstools-${versionWithRespin_jbt}-build-discovery.earlyaccess/latest/all/repo/jbosstools-directory.xml \
-https://devstudio.redhat.com/10.0/staging/builds/devstudio-${dsFixVersionWithRespin}-build-discovery.central/latest/all/repo/compositeArtifacts.xml \
-https://devstudio.redhat.com/10.0/staging/builds/devstudio-${dsFixVersionWithRespin}-build-discovery.central/latest/all/repo/devstudio-directory.xml \
-https://devstudio.redhat.com/10.0/staging/builds/devstudio-${dsFixVersionWithRespin}-build-discovery.earlyaccess/latest/all/repo/compositeArtifacts.xml \
-https://devstudio.redhat.com/10.0/staging/builds/devstudio-${dsFixVersionWithRespin}-build-discovery.earlyaccess/latest/all/repo/devstudio-directory.xml
+https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-discovery.central/latest/all/repo/compositeArtifacts.xml \
+https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-discovery.central/latest/all/repo/devstudio-directory.xml \
+https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-discovery.earlyaccess/latest/all/repo/compositeArtifacts.xml \
+https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-discovery.earlyaccess/latest/all/repo/devstudio-directory.xml
 
 ----
 
@@ -256,7 +256,7 @@ pushd jbosstools-download.jboss.org/jbosstools/configuration
 version=4.4.1.AM3
 versionWithRespin_jbt=4.4.1.AM3 # a, b, c...
 dsFixVersion=10.1.0.AM3 # no respin suffix here
-dsFixVersionWithRespin=10.1.0.AM3 # a, b, c...
+versionWithRespin_ds=10.1.0.AM3 # a, b, c...
 
 git fetch origin master
 git checkout FETCH_HEAD
@@ -268,7 +268,7 @@ st ide-config.properties
 # sed -i "s/CR1b/CR1c/g" ide-config.properties
 
 # verify these 6 URLs exist
-URLs="$(egrep -v "#" ide-config.properties | egrep "${version}|${versionWithRespin_jbt}|${dsFixVersion}|${dsFixVersionWithRespin}" | sed -e "s#.\+|\([0-9.a-zA-Z]\+\)=\(.\+\)#\2#")"
+URLs="$(egrep -v "#" ide-config.properties | egrep "${version}|${versionWithRespin_jbt}|${dsFixVersion}|${versionWithRespin_ds}" | sed -e "s#.\+|\([0-9.a-zA-Z]\+\)=\(.\+\)#\2#")"
 google-chrome && google-chrome $URLs
 for u in $URLs; do echo "$u"; done
 

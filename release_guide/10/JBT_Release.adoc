@@ -395,7 +395,7 @@ cd ~/tru # ~
 pushd jbosstools-download.jboss.org/jbosstools/configuration
 version=4.4.1.AM3
 versionWithRespin=4.4.1.AM3 # a, b, c...
-dsFixVersion=10.1.0.AM3 # no respin suffix here
+version_ds=10.1.0.AM3 # no respin suffix here
 versionWithRespin_ds=10.1.0.AM3 # a, b, c...
 
 git fetch origin master
@@ -424,7 +424,7 @@ https://devstudio.redhat.com/10.0/development/updates/discovery.earlyaccess/${ve
 st ide-config.properties
 
 # verify these 4 to 6 URLs exist
-URLs="$(egrep -v "#" ide-config.properties | egrep "${version}|${versionWithRespin}|${dsFixVersion}|${versionWithRespin_ds}" | sed -e "s#.\+|\([0-9.a-zA-Z]\+\)=\(.\+\)#\2#")"
+URLs="$(egrep -v "#" ide-config.properties | egrep "${version}|${versionWithRespin}|${version_ds}|${versionWithRespin_ds}" | sed -e "s#.\+|\([0-9.a-zA-Z]\+\)=\(.\+\)#\2#")"
 google-chrome && google-chrome $URLs
 for u in $URLs; do echo "$u"; done
 

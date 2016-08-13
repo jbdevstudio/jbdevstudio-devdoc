@@ -13,31 +13,33 @@ Here is a script that performs the merge for the JBT and JBDS /staging/ sites.
 [source,bash]
 ----
 
-version=4.4.1.AM3
-versionWithRespin=4.4.1.AM3 # a, b, c...
-versionIS=4.4.0.Alpha1-SNAPSHOT
-dsFixVersion=10.1.0.AM3 # no respin suffix here
-dsFixVersionWithRespin=10.1.0.AM3 # a, b, c...
-dsFixVersionIS=10.0.0.Alpha1-SNAPSHOT
+version_jbt=4.4.1.AM3
+versionWithRespin_jbt=4.4.1.AM3 # a, b, c...
+version_jbt_IS=4.4.0.Alpha1-SNAPSHOT
+version_ds=10.1.0.AM3 # no respin suffix here
+versionWithRespin_jbt_ds=10.1.0.AM3 # a, b, c...
+version_ds_IS=10.0.0.Alpha1-SNAPSHOT
 
-# If all IS content is currently Early Access (EA), make sure you use the /discovery/{version}/earlyaccess/ URLs which include BOTH GA and EA plugins.
-# If all IS content is released (GA), you can use the /discovery/{version}/ URLs here.
+# If all IS content is currently Early Access (EA), make sure you use the /discovery/{version_jbt}/earlyaccess/ URLs which include BOTH GA and EA plugins.
+# If all IS content is released (GA), you can use the /discovery/{version_jbt}/ URLs here.
 pushd /tmp
-  wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/mergeISdiscovery.sh && chmod +x mergeISdiscovery.sh
-  ./mergeISdiscovery.sh -version ${version} -versionWithRespin ${versionWithRespin} -is http://download.jboss.org/jbosstools/neon/staging/updates/integration-stack/discovery/${versionIS}/earlyaccess/
-  ./mergeISdiscovery.sh -version ${dsFixVersion} -versionWithRespin ${dsFixVersionWithRespin} -is https://devstudio.redhat.com/10.0/staging/updates/integration-stack/discovery/${dsFixVersionIS}/earlyaccess/ -JBDS
+  wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/mergeISdiscovery.sh -q -nc && chmod +x mergeISdiscovery.sh
+  ./mergeISdiscovery.sh -v ${version_jbt} -vr ${versionWithRespin_jbt} \
+    -is http://download.jboss.org/jbosstools/neon/staging/updates/integration-stack/discovery/${version_jbt_IS}/earlyaccess/ -quiet
+  ./mergeISdiscovery.sh -v ${version_ds} -vr ${versionWithRespin_jbt_ds} \
+    -is https://devstudio.redhat.com/10.0/staging/updates/integration-stack/discovery/${version_ds_IS}/earlyaccess/ -JBDS -quiet
   rm -f /tmp/mergeISdiscovery.sh
 popd
 
 google-chrome \
-http://download.jboss.org/jbosstools/neon/staging/updates/discovery.central/${versionWithRespin}/jbosstools-directory.xml \
-http://download.jboss.org/jbosstools/neon/staging/updates/discovery.central/${versionWithRespin}/plugins/ \
-http://download.jboss.org/jbosstools/neon/staging/updates/discovery.earlyaccess/${versionWithRespin}/jbosstools-directory.xml \
-http://download.jboss.org/jbosstools/neon/staging/updates/discovery.earlyaccess/${versionWithRespin}/plugins/ \
-https://devstudio.redhat.com/10.0/staging/updates/discovery.central/${dsFixVersionWithRespin}/devstudio-directory.xml \
-https://devstudio.redhat.com/10.0/staging/updates/discovery.central/${dsFixVersionWithRespin}/plugins/ \
-https://devstudio.redhat.com/10.0/staging/updates/discovery.earlyaccess/${dsFixVersionWithRespin}/devstudio-directory.xml \
-https://devstudio.redhat.com/10.0/staging/updates/discovery.earlyaccess/${dsFixVersionWithRespin}/plugins/
+http://download.jboss.org/jbosstools/neon/staging/updates/discovery.central/${versionWithRespin_jbt}/jbosstools-directory.xml \
+http://download.jboss.org/jbosstools/neon/staging/updates/discovery.central/${versionWithRespin_jbt}/plugins/ \
+http://download.jboss.org/jbosstools/neon/staging/updates/discovery.earlyaccess/${versionWithRespin_jbt}/jbosstools-directory.xml \
+http://download.jboss.org/jbosstools/neon/staging/updates/discovery.earlyaccess/${versionWithRespin_jbt}/plugins/ \
+https://devstudio.redhat.com/10.0/staging/updates/discovery.central/${versionWithRespin_jbt_ds}/devstudio-directory.xml \
+https://devstudio.redhat.com/10.0/staging/updates/discovery.central/${versionWithRespin_jbt_ds}/plugins/ \
+https://devstudio.redhat.com/10.0/staging/updates/discovery.earlyaccess/${versionWithRespin_jbt_ds}/devstudio-directory.xml \
+https://devstudio.redhat.com/10.0/staging/updates/discovery.earlyaccess/${versionWithRespin_jbt_ds}/plugins/
 
 ----
 
@@ -47,11 +49,11 @@ Once in staging, you can test the content as seen from Eclipse by installing JBT
 ----
 
 # JBoss Tools
-url=http://download.jboss.org/jbosstools/neon/staging/updates/discovery.central/${versionWithRespin}/
+url=http://download.jboss.org/jbosstools/neon/staging/updates/discovery.central/${versionWithRespin_jbt}/
 ./eclipse -vmargs -Djboss.discovery.directory.url=${url}jbosstools-directory.xml -Djboss.discovery.site.integration-stack.url=${url}
 
 # JBDS
-url=https://devstudio.redhat.com/10.0/staging/updates/discovery.earlyaccess/${dsFixVersionWithRespin}/
+url=https://devstudio.redhat.com/10.0/staging/updates/discovery.earlyaccess/${versionWithRespin_jbt_ds}/
 ./eclipse -vmargs -Djboss.discovery.directory.url=${url}devstudio-directory.xml -Djboss.discovery.site.integration-stack.url=${url}
 
 ----

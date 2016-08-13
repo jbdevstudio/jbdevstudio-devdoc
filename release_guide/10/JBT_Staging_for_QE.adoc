@@ -13,6 +13,26 @@ If you do not need it urgently, you can push files there simply by pushing a cha
 A Jenkins job can then be triggered to sync changes to download.jboss.org: https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-download.jboss.org-rsync-from-svn/
 ====
 
+== Enable staging jobs
+
+You will need to enable the jobs:
+
+[source,bash]
+----
+
+# kerberos login for the Jenkins server
+userpass=nboldt:PASSWORD
+stream_jbt=master # or 4.4.neon
+for j in jbosstools-push-to-staging-07-notification-emails_${stream_jbt} \
+jbosstools-push-to-staging-03-verify-builds-update-sites_${stream_jbt} \
+jbosstools-push-to-staging-02-copy-builds-and-update-sites_${stream_jbt} \
+jbosstools-push-to-staging-01-check-versions-branches-root-poms_${stream_jbt} \
+jbosstools-push-to-staging-00-buildflow_${stream_jbt}; do
+  curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/enable && echo -n ".E"
+done
+
+----
+
 == Verify correct versions, branches exist, and root poms are correct
 
 Run this job:
@@ -48,7 +68,7 @@ echo ""
 Update the *stable branch* (or master) discovery job ( https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-discovery_4.4.neon/configure (or jbosstools-discovery_master)) to use the correct source URLs and versions +
 
 
-Then respin the job and verify that sites were correctly populated:
+Then respin the job:
 
 [source,bash]
 ----
@@ -72,29 +92,6 @@ done
 
 ----
 
-If you ran the above in Jenkins / on dev01, this next step needs to be run locally to launch a browser for manual verification.
-
-[source,bash]
-----
-
-# TODO rewrite these as curl checks to see if the files exist; throwing 'exit 1' if anything 404'd
-
-stream_jbt=master # or 4.4.neon
-versionWithRespin_jbt=4.4.1.AM3 # a, b, c...
-versionWithRespin_ds=10.1.0.AM3 # a, b, c...
-google-chrome && google-chrome \
-http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-discovery_${stream_jbt}/lastBuild/parameters \
-http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-discovery_${stream_jbt}/lastBuild/console \
-http://download.jboss.org/jbosstools/neon/staging/builds/jbosstools-${versionWithRespin_jbt}-build-discovery.central/latest/all/repo/compositeArtifacts.xml \
-http://download.jboss.org/jbosstools/neon/staging/builds/jbosstools-${versionWithRespin_jbt}-build-discovery.central/latest/all/repo/jbosstools-directory.xml \
-http://download.jboss.org/jbosstools/neon/staging/builds/jbosstools-${versionWithRespin_jbt}-build-discovery.earlyaccess/latest/all/repo/compositeArtifacts.xml \
-http://download.jboss.org/jbosstools/neon/staging/builds/jbosstools-${versionWithRespin_jbt}-build-discovery.earlyaccess/latest/all/repo/jbosstools-directory.xml \
-https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-discovery.central/latest/all/repo/compositeArtifacts.xml \
-https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-discovery.central/latest/all/repo/devstudio-directory.xml \
-https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-discovery.earlyaccess/latest/all/repo/compositeArtifacts.xml \
-https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-discovery.earlyaccess/latest/all/repo/devstudio-directory.xml
-
-----
 
 == Download the latest Eclipse
 
@@ -117,32 +114,10 @@ Here is a job that performs the copy (& rename) from /snapshots/ to /staging/:
 
 https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-push-to-staging-02-copy-builds-and-update-sites_master/
 
-----
+Here's a job that verifies everything is published:
 
-Verify sites are correctly populated (run locally, not on dev01):
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-push-to-staging-03-verify-builds-update-sites_master/
 
-Note that Akamai caching might result in the appearance of missing files (apache directories may look incomplete) but if you ping specific files, they should be there.
-
-[source,bash]
-----
-
-# TODO rewrite these as curl checks to see if the files exist; throwing 'exit 1' if anything 404'd
-
-versionWithRespin_jbt=4.4.1.AM3 # a, b, c...
-tmpfile=/tmp/jbosstools-staging__verify.txt
-for site in site coretests-site central-site earlyaccess-site; do
-  if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
-  echo "http://download.jboss.org/jbosstools/neon/staging/builds/jbosstools-${versionWithRespin_jbt}-build-${sitename}/ " >> $tmpfile
-  echo "http://download.jboss.org/jbosstools/neon/staging/updates/${sitename}/${versionWithRespin_jbt}/ " >> $tmpfile
-done
-for site in browsersim-standalone; do
-  if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
-  echo "http://download.jboss.org/jbosstools/neon/staging/builds/jbosstools-${versionWithRespin_jbt}-build-${sitename}/ " >> $tmpfile
-done
-echo "" >> $tmpfile
-cat $tmpfile
-google-chrome && google-chrome `cat $tmpfile`
-rm -fr $tmpfile
 
 ----
 
@@ -175,7 +150,7 @@ done
 
 ----
 
-=== Update http://download.jboss.org/jbosstools/neon/staging/updates/
+=== Update http://download.jboss.org/jbosstools/neon/staging/updates/ site
 
 This should point to the latest staging bits. Just copy what's in discovery.central/composite*.xml into this folder.
 
@@ -185,7 +160,7 @@ This should point to the latest staging bits. Just copy what's in discovery.cent
 cd ~/tru
 RSYNC="rsync -aPrz --rsh=ssh --protocol=28"
 
-versionWithRespin_jbt_PREV=4.4.1.AM3 # a, b, c...
+versionWithRespin_jbt_PREV=4.4.1.AM2 # a, b, c...
 versionWithRespin_jbt=4.4.1.AM3 # a, b, c...
 DESTINATION=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 PROJECT_PATH=jbosstools-download.jboss.org/jbosstools
@@ -255,7 +230,7 @@ cd ~/tru
 pushd jbosstools-download.jboss.org/jbosstools/configuration
 version=4.4.1.AM3
 versionWithRespin_jbt=4.4.1.AM3 # a, b, c...
-dsFixVersion=10.1.0.AM3 # no respin suffix here
+version_ds=10.1.0.AM3 # no respin suffix here
 versionWithRespin_ds=10.1.0.AM3 # a, b, c...
 
 git fetch origin master
@@ -268,7 +243,7 @@ st ide-config.properties
 # sed -i "s/CR1b/CR1c/g" ide-config.properties
 
 # verify these 6 URLs exist
-URLs="$(egrep -v "#" ide-config.properties | egrep "${version}|${versionWithRespin_jbt}|${dsFixVersion}|${versionWithRespin_ds}" | sed -e "s#.\+|\([0-9.a-zA-Z]\+\)=\(.\+\)#\2#")"
+URLs="$(egrep -v "#" ide-config.properties | egrep "${version}|${versionWithRespin_jbt}|${version_ds}|${versionWithRespin_ds}" | sed -e "s#.\+|\([0-9.a-zA-Z]\+\)=\(.\+\)#\2#")"
 google-chrome && google-chrome $URLs
 for u in $URLs; do echo "$u"; done
 
@@ -329,74 +304,28 @@ If the next build will NOT be a respin, you will also need to ALSO make these ch
 * upversion target platforms / Central version (if those have been released)
 
 
-== Notify the team
+== Notify the team (send 1 email)
 
-Run this on dev01 so that we can use /bin/mail. Email should be generated automatically rather than requiring copy & paste into your mail client.
+Run this build:
 
-____
-*To* jbosstools-dev@lists.jboss.org +
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-push-to-staging-07-notification-emails_master
+
+== Disable staging jobs
+
+You will need to disable the jobs once the bits are staged, so that they won't run accidentally.
 
 [source,bash]
 ----
 
-versionWithRespin_jbt=4.4.1.AM3 # a, b, c...
-respin="respin-"
-TARGET_PLATFORM_VERSION_MIN=4.60.0.Final
-TARGET_PLATFORM_VERSION_MAX=4.60.1.AM3-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.60.1.AM3-SNAPSHOT
-dsFixVersion=10.1.0.AM3 # no respin suffix here
-jbtFixVersion=4.4.1.AM3 # no respin suffix here
-recipients=jbosstools-dev@lists.jboss.org
-sender="Nick Boldt <nboldt@redhat.com>"
-subject="JBoss Tools Core ${versionWithRespin_jbt} bits available for QE testing"
-echo "
-These are not FINAL bits, but preliminary results for QE & community testing. Not for redistribution to customers or end users.
-
-Update site: http://download.jboss.org/jbosstools/neon/staging/updates/
-
-New + noteworthy (subject to change):
-* https://github.com/jbosstools/jbosstools-website/tree/master/documentation/whatsnew
-* http://tools.jboss.org/documentation/whatsnew/
-
-Schedule: https://issues.jboss.org/projects/JBIDE?selectedItem=com.atlassian.jira.jira-projects-plugin:release-page
-
---
-
-Additional update sites:
-* http://download.jboss.org/jbosstools/neon/staging/updates/core/${versionWithRespin_jbt}/
-* http://download.jboss.org/jbosstools/neon/staging/updates/coretests/${versionWithRespin_jbt}/
-
-Target platforms:
-* http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MIN}
-* http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MAX}
-
-Discovery sites:
-* http://download.jboss.org/jbosstools/neon/staging/updates/discovery.central/${versionWithRespin_jbt}/
-* http://download.jboss.org/jbosstools/neon/staging/updates/discovery.earlyaccess/${versionWithRespin_jbt}/
-
-Build folders (for build logs & update site zips):
-* http://download.jboss.org/jbosstools/neon/staging/builds/
-" > /tmp/mailbody.jbt.txt
-if [[ $respin != "respin-" ]]; then
-echo "
---
-
-Changes prompting this $respin are:
-
-https://issues.jboss.org/issues/?jql=labels%20in%20%28%22${respin}%22%29%20and%20%28%28project%20in%20%28%22JBDS%22%29%20and%20fixversion%20in%20%28%22${dsFixVersion}%22%29%29%20or%20%28project%20in%20%28%22JBIDE%22%2C%22TOOLSDOC%22%29%20and%20fixversion%20in%20%28%22${jbtFixVersion}%22%29%29%29
-
-To compare the upcoming version of Central (${versionWithRespin_jbt}) against an older version, add lines similar to these your eclipse.ini file after the -vmargs line for the appropriate version & URLs:
- -Djboss.discovery.directory.url=http://download.jboss.org/jbosstools/neon/staging/updates/discovery.central/${versionWithRespin_jbt}/jbosstools-directory.xml
- -Djboss.discovery.site.url=http://download.jboss.org/jbosstools/neon/staging/updates/
- -Djboss.discovery.earlyaccess.site.url=http://download.jboss.org/jbosstools/neon/staging/updates/discovery.earlyaccess/${versionWithRespin_jbt}/
- -Djboss.discovery.earlyaccess.list.url=http://download.jboss.org/jbosstools/neon/staging/updates/discovery.earlyaccess/${versionWithRespin_jbt}/jbosstools-earlyaccess.properties
-" >> /tmp/mailbody.jbt.txt
-fi
-
-# use mail (with sendmail's -f flag), NOT mailx
-/bin/mail -s "$subject" $recipients -- -f"$sender" < /tmp/mailbody.jbt.txt
-rm -f /tmp/mailbody.jbt.txt
+# kerberos login for the Jenkins server
+userpass=nboldt:PASSWORD
+stream_jbt=master # or 4.4.neon
+for j in jbosstools-push-to-staging-07-notification-emails_${stream_jbt} \
+jbosstools-push-to-staging-03-verify-builds-update-sites_${stream_jbt} \
+jbosstools-push-to-staging-02-copy-builds-and-update-sites_${stream_jbt} \
+jbosstools-push-to-staging-01-check-versions-branches-root-poms_${stream_jbt} \
+jbosstools-push-to-staging-00-buildflow_${stream_jbt}; do
+  curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/disable && echo -n ".D"
+done
 
 ----
-____
-

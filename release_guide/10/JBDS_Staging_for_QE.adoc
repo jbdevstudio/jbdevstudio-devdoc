@@ -25,44 +25,19 @@ Here is a job that performs the copy (& rename) from /snapshots/ to /staging/:
 
 https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-push-to-staging-02-copy-builds-and-update-sites_master/
 
+Here's a job that verifies everything is published:
 
-----
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-push-to-staging-03-verify-builds-update-sites_master/
 
-Verify sites are correctly populated (run locally, not on dev01).
-
-Note that Akamai caching might result in the appearance of missing files (apache directories may look incomplete) but if you ping specific files, they should be there.
 
 [source,bash]
 ----
-
-# TODO rewrite these as curl checks to see if the files exist; throwing 'exit 1' if anything 404'd
-
-versionWithRespin_ds=10.0.1.AM3 # a, b, c...
-tmpfile=/tmp/jbosstools-staging__verify.txt
-for site in central earlyaccess; do
-  if [[ ${site} == "site" ]]; then sitename="core"; else sitename=${site/-site/}; fi
-  echo "https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-${sitename}/ " >> $tmpfile
-  echo "https://devstudio.redhat.com/10.0/staging/updates/${sitename}/${versionWithRespin_ds}/ " >> $tmpfile
-done
-echo "https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/ " >> $tmpfile
-echo "http://www.qa.jboss.com/binaries/devstudio/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/ " >> $tmpfile
-echo "https://devstudio.redhat.com/10.0/staging/builds/#_____(5_folders_w/_${versionWithRespin_ds}) " >> $tmpfile
-echo "https://devstudio.redhat.com/10.0/staging/updates/core/#_____(4_zips,_4_sums,_1_folder_w/_${versionWithRespin_ds}) " >> $tmpfile
-echo "https://devstudio.redhat.com/10.0/staging/updates/central/#_____(1_zip,_1_sum,_1_folder_w/_${versionWithRespin_ds}) " >> $tmpfile
-echo "https://devstudio.redhat.com/10.0/staging/updates/earlyaccess/#_____(1_zip,_1_sum,_1_folder_w/_${versionWithRespin_ds}) " >> $tmpfile
-#echo "https://devstudio.redhat.com/10.0/staging/updates/earlyaccess/devstudio-${versionWithRespin_ds}-updatesite-earlyaccess.zip " >> $tmpfile
-#echo "https://devstudio.redhat.com/10.0/staging/updates/earlyaccess/devstudio-${versionWithRespin_ds}-updatesite-earlyaccess.zip.sha256 " >> $tmpfile
-echo "" >> $tmpfile
-cat $tmpfile
-google-chrome && google-chrome `cat $tmpfile`
-popd >/dev/null
-rm -fr $tmpfile
 
 # TODO once the staging build folder exists, start fetching the devstudio installer (we'll need it later to do a smoke test)
 
 cd ~/tmp
 rm -f index.html
-versionWithRespin_ds=10.0.1.AM3 # a, b, c...
+versionWithRespin_ds=10.1.0.AM3 # a, b, c...
 wget https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
 installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 echo "Installer jar: ${installerJar}"
@@ -113,8 +88,8 @@ This should point to the latest staging bits. Just copy what's in discovery.cent
 cd ~/truu
 RSYNC="rsync -aPrz --rsh=ssh --protocol=28"
 
-versionWithRespin_ds_PREV=10.1.0.AM3 # a, b, c...
-versionWithRespin_ds=10.0.1.AM3 # a, b, c...
+versionWithRespin_ds_PREV=10.0.1.AM2 # a, b, c...
+versionWithRespin_ds=10.1.0.AM3 # a, b, c...
 DESTINATION=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
 PROJECT_PATH=jbdevstudio-website/content
 DEST_URL="https://devstudio.redhat.com"
@@ -183,7 +158,7 @@ Before notifying team of staged release, must check for obvious problems.
 
 [source,bash]
 ----
-versionWithRespin_ds=10.0.1.AM3 # a, b, c...
+versionWithRespin_ds=10.1.0.AM3 # a, b, c...
 cd ~/tmp
 wget https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
 installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
@@ -213,59 +188,7 @@ TODO: Important: if you switched the _master jobs to run from origin/jbosstools-
 
 == Notify the team (send 1 email)
 
-Run this on dev01 so that we can use /bin/mail. Email should be generated automatically rather than requiring copy & paste into your mail client.
-
-____
-
-[source,bash]
-----
-version_JBT=4.4.1.AM3
-version=10.1.0.AM3
-versionWithRespin_ds=10.0.1.AM3 # a, b, c...
-respin="respin-"
-recipients=jboss-devstudio-list@redhat.com
-sender="Nick Boldt <nboldt@redhat.com>"
-subject="Red Hat JBoss Developer Studio ${versionWithRespin_ds} available for QE testing"
-echo "
-These are not FINAL bits, but preliminary results for QE & community testing. Not for redistribution to customers or end users.
-
-Universal Installers:
-* http://www.qa.jboss.com/binaries/devstudio/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ (EAP bundles; VPN required)
-* https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ (Standalone + other zips)
-
-Update Sites:
-* https://devstudio.redhat.com/10.0/staging/updates/ (includes ${versionWithRespin_ds} Core + Target Platform + JBoss Central)
-* https://devstudio.redhat.com/10.0/staging/updates/discovery.earlyaccess/${versionWithRespin_ds}/ (includes the above site + Early Access)
-
-New + Noteworthy (subject to change):
-* https://github.com/jbosstools/jbosstools-website/tree/master/documentation/whatsnew
-* http://tools.jboss.org/documentation/whatsnew/
-
-Schedule / Upcoming Releases: https://issues.jboss.org/projects/JBDS?selectedItem=com.atlassian.jira.jira-projects-plugin:release-page
-" > /tmp/mailbody.ds.txt
-if [[ $respin != "respin-" ]]; then
-echo "
---
-
-Changes prompting this $respin are:
-
-https://issues.jboss.org/issues/?jql=labels%20in%20%28%22${respin}%22%29%20and%20%28%28project%20in%20%28%22JBDS%22%29%20and%20fixversion%20in%20%28%22${version}%22%29%29%20or%20%28project%20in%20%28%22JBIDE%22%2C%22TOOLSDOC%22%29%20and%20fixversion%20in%20%28%22${version_JBT}%22%29%29%29
-
-To compare the upcoming version of Central (${versionWithRespin_ds}) against an older version, add lines similar to these your eclipse.ini file after the -vmargs line for the appropriate version & URLs:
- -Djboss.discovery.directory.url=https://devstudio.redhat.com/10.0/staging/updates/discovery.central/${versionWithRespin_ds}/devstudio-directory.xml
- -Djboss.discovery.site.url=https://devstudio.redhat.com/10.0/staging/updates/
- -Djboss.discovery.earlyaccess.site.url=https://devstudio.redhat.com/10.0/staging/updates/discovery.earlyaccess/${versionWithRespin_ds}/
- -Djboss.discovery.earlyaccess.list.url=https://devstudio.redhat.com/10.0/staging/updates/discovery.earlyaccess/${versionWithRespin_ds}/devstudio-earlyaccess.properties
-
-" >> /tmp/mailbody.ds.txt
-fi
-
-# use mail (with sendmail's -f flag), NOT mailx
-/bin/mail -s "$subject" $recipients -- -f"$sender" < /tmp/mailbody.ds.txt
-rm -f /tmp/mailbody.ds.txt
-
-----
-____
+See details in JBT_Staging_For_QE.adoc
 
 
 == Kick downstream Dev Platform Installer
@@ -309,7 +232,7 @@ Then:
 [source,bash]
 ----
 
-versionWithRespin_ds=10.0.1.AM3 # a, b, c...
+versionWithRespin_ds=10.1.0.AM3 # a, b, c...
 installerExe=development-suite-1.0.1-foo-fix-this-bundle-installer.exe
 installerDir=RHDS/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all
 wonkaDir=nboldt@wonka.mw.lab.eng.bos.redhat.com:/home/windup/apache2/www/html/
@@ -324,7 +247,7 @@ cat ${y}.sha256
 
 Review content here:
 
-http://www.qa.jboss.com/binaries/devstudio/10.0/staging/builds/devstudio-10.0.1.AM3-build-product/latest/all/
+http://www.qa.jboss.com/binaries/devstudio/10.0/staging/builds/devstudio-10.1.0.AM3-build-product/latest/all/
 
 == Notify the team (send 1 email)
 
@@ -332,9 +255,9 @@ Run this on dev01 so that we can use /bin/mail. Email should be generated automa
 
 [source,bash]
 ----
-version=10.1.0.AM3
+version_ds=10.1.0.AM3
 version_devsuite=1.0.0-GA
-versionWithRespin_ds=10.0.1.AM3 # a, b, c...
+versionWithRespin_ds=10.1.0.AM3 # a, b, c...
 installerExe=development-suite-1.0.1-foo-fix-this-bundle-installer.exe
 installerDir=RHDS/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all
 respin="respin-"
@@ -360,7 +283,7 @@ echo "
 
 Changes prompting this $respin are:
 
-https://issues.jboss.org/issues/?jql=labels%20in%20%28%22${respin}%22%29%20and%20%28%28project%20in%20%28%22JBDS%22%29%20and%20fixversion%20in%20%28%22${version}%22%29%29%20or%20%28project%20in%20%28%22JBIDE%22%2C%22TOOLSDOC%22%29%20and%20fixversion%20in%20%28%22${version_JBT}%22%29%29%29
+https://issues.jboss.org/issues/?jql=labels%20in%20%28%22${respin}%22%29%20and%20%28%28project%20in%20%28%22JBDS%22%29%20and%20fixversion%20in%20%28%22${version_ds}%22%29%29%20or%20%28project%20in%20%28%22JBIDE%22%2C%22TOOLSDOC%22%29%20and%20fixversion%20in%20%28%22${version_JBT}%22%29%29%29
 
 To compare the upcoming version of Central (${versionWithRespin_ds}) against an older version, add lines similar to these your eclipse.ini file after the -vmargs line for the appropriate version & URLs:
  -Djboss.discovery.directory.url=https://devstudio.redhat.com/10.0/staging/updates/discovery.central/${versionWithRespin_ds}/devstudio-directory.xml

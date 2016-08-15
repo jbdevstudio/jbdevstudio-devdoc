@@ -119,8 +119,6 @@ Here's a job that verifies everything is published:
 https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-push-to-staging-03-verify-builds-update-sites_master/
 
 
-----
-
 === Cleanup OLD builds
 
 Optional step.

@@ -14,7 +14,7 @@ Send an email to jbosstools-dev@ and jboss-devstudio-list@  reminding people to 
 
 Sample email: http://lists.jboss.org/pipermail/jbosstools-dev/2014-April/008799.html
 
-DO NOT proceed with the release if there are any unresolved issues. Only JIRAs allowed before release should be bookeping JIRAs or issues that cannot be closed until the push is complete.
+Should NOT proceed with the release if there are any unresolved issues. Only JIRAs allowed before release should be bookeping JIRAs or issues that cannot be closed until the push is complete. But in practice, this happens every time.
 
 [source,bash]
 ----
@@ -77,35 +77,55 @@ if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
 wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/stage.sh --no-check-certificate
 chmod +x stage.sh
 
-version=4.4.1.AM3 # release version: no a, b, c suffix
-versionWithRespin=4.4.1.AM3 # a, b, c...
-quals="development"; if [[ ${version##*Final} == "" ]]; then quals="development stable"; fi # **##
+eclipseReleaseName=neon
+quiet="-q" # "" for loud, or "-q" for quiet log
+version_jbt=4.4.1.AM3 # release version: no a, b, c suffix
+versionWithRespin_jbt=4.4.1.AM3 # a, b, c...
+STAGE=./stage.sh
+
+norm="\033[0;39m"
+green="\033[1;32m"
+red="\033[1;31m"
+
+#################
+
+TOOLS="tools@filemgmt.jboss.org:/downloads_htdocs/tools"
+
+quals="development"; # TODO enable stable?
+# if [[ ${version_jbt##*Final} == "" ]]; then quals="development stable"; fi # **##
 for qual in $quals; do
   for site in core coretests central earlyaccess discovery.central discovery.earlyaccess browsersim-standalone; do
-    ./stage.sh -sites $site -stream "${versionWithRespin}" -vr ${version} -sd neon -dd static/neon -st staging -dt ${qual} \
-      -JOB_NAME jbosstools-\${stream}-build-\${site} -q &
+    time ${STAGE} -sites $site -stream "${versionWithRespin_jbt}" -vr ${version_jbt} \
+      -sd ${eclipseReleaseName} -dd static/${eclipseReleaseName} -st staging -dt ${qual} \
+      -JOB_NAME jbosstools-${versionWithRespin_jbt}-build-\${site} ${quiet} &
   done
 done
 
-# TODO merge this into stage.sh?
-# JBT zips into http://download.jboss.org/jbosstools/static/neon/development/updates/core/
-version=4.4.1.AM3
-versionWithRespin=4.4.1.AM3 # a, b, c...
-TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
-quals="development"; if [[ ${version##*Final} == "" ]]; then quals="development stable"; fi # **##
-for site in core; do
-  tmpdir=~/temp-stage/jbosstools-static-${qual}-updates-${site}_${versionWithRespin}_zips; mkdir -p ${tmpdir}
-  # get src.zip
-  rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/neon/staging/builds/jbosstools-${versionWithRespin}-build-core/latest/all/jbosstools-${version}-src.zip* ${tmpdir}/
-  # get browsersim-standalone.zip
-  rsync -aPrz --rsh=ssh --protocol=28 ${TOOLS}/neon/staging/builds/jbosstools-${versionWithRespin}-build-browsersim-standalone/latest/jbosstools-*-browsersim-standalone.zip* ${tmpdir}/
+# JBT zips into http://download.jboss.org/jbosstools/static/${eclipseReleaseName}/development/updates/core/
+quals="development"; # TODO enable stable?
+# if [[ ${version_jbt##*Final} == "" ]]; then quals="development stable"; fi
+tmpdir=~/temp-stage/jbosstools-static-${qual}-updates-core_${versionWithRespin_jbt}_zips; mkdir -p ${tmpdir}
+# get src.zip & browsersim-standalone.zip
+srcprefix=${TOOLS}/${eclipseReleaseName}/staging/builds/jbosstools-${versionWithRespin_jbt}-build
+{
+  time rsync -aPrz --rsh=ssh ${quiet} --protocol=28 \
+  ${srcprefix}-core/latest/all/jbosstools-${version_jbt}-src.zip* \
+  ${srcprefix}-browsersim-standalone/latest/jbosstools-*-browsersim-standalone.zip* \
+  ${tmpdir}/ && \
   for qual in $quals; do
-    echo "mkdir ${site}" | sftp ${TOOLS}/static/neon/${qual}/updates/
-    rsync -aPrz --rsh=ssh --protocol=28 ${tmpdir}/*.zip* ${TOOLS}/static/neon/${qual}/updates/${site}/
-  done
-  rm -fr $tmpdir
-done
-echo "DONE: JBT zips" | grep "JBT zips"
+    echo "mkdir core" | sftp ${TOOLS}/static/${eclipseReleaseName}/${qual}/updates/ && \
+    destprefix=http://download.jboss.org/jbosstools/static/${eclipseReleaseName}/${qual}/updates/core && \
+    time rsync -aPrz --rsh=ssh ${quiet} --protocol=28 ${tmpdir}/*.zip* ${TOOLS}/static/${eclipseReleaseName}/${qual}/updates/core/
+  done && \
+  rm -fr $tmpdir && echo -e "
+[INFO] [zips] ${green}${destprefix}/${norm}
+[INFO] [zips] ${green}${destprefix}/jbosstools-${version_jbt}-src.zip${norm}
+[INFO] [zips] ${green}${destprefix}/jbosstools-${version_jbt}-browsersim-standalone.zip${norm}
+[INFO] [zips] ${green}DONE${norm}: ${green}jbosstools-*-src.zip + ${green}jbosstools-*-browsersim-standalone.zip${norm}" &
+}
+
+# wait until all 8+? background tasks (jbt: 8, ds: ?) are done
+wait
 
 # TODO wait until the above 7+1 (or 2x(7+1)) pushes are done (should be nothing if you run this:
 ps ax | grep stage.sh | grep -v grep | egrep -- "-sites|-sd"
@@ -114,29 +134,29 @@ ps ax | grep stage.sh | grep -v grep | egrep -- "-sites|-sd"
 # TODO run on local, not dev01
 # verify we have all the files we expect to see
 #TODO migrate this to staging script and into a Jenkins job too!
-TOOLS=tools@filemgmt.jboss.org:/download_htdocs/tools
+TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 sshfs $TOOLS $HOME/TOOLS-ssh
-version=4.4.1.AM3
-versionWithRespin=4.4.1.AM3 # a, b, c...
+version_jbt=4.4.1.AM3
+versionWithRespin_jbt=4.4.1.AM3 # a, b, c...
 expectedCount=0
-quals="development"; if [[ ${version##*Final} == "" ]]; then quals="development stable"; fi # **##
-rm -f /tmp/${version}.found.txt
+quals="development"; if [[ ${version_jbt##*Final} == "" ]]; then quals="development stable"; fi # **##
+rm -f /tmp/${version_jbt}.found.txt
 for qual in $quals; do
   (( expectedCount += 18 )); # now 18
-  find $HOME/TOOLS-ssh/static/neon/${qual}/updates/* -maxdepth 1 -name "*${version}*" -o -name "*${versionWithRespin}*" | sort >> /tmp/${version}.found.txt
+  find $HOME/TOOLS-ssh/static/neon/${qual}/updates/* -maxdepth 1 -name "*${version_jbt}*" -o -name "*${versionWithRespin_jbt}*" | sort >> /tmp/${version_jbt}.found.txt
 done
-theCount=$(cat /tmp/${version}.found.txt | wc -l)
+theCount=$(cat /tmp/${version_jbt}.found.txt | wc -l)
 if [[ ${theCount} == ${expectedCount} ]]; then
   echo "[INFO] Found all expected ${expectedCount} files/folders" | egrep "${expectedCount}|${theCount}|INFO|ERROR"
 else
   echo "[ERROR] expected ${expectedCount} files/folders, found ${theCount}:" | egrep "${expectedCount}|${theCount}|INFO|ERROR"
-  cat /tmp/${version}.found.txt | sort | egrep "${version}|${versionWithRespin}"
+  cat /tmp/${version_jbt}.found.txt | sort | egrep "${version_jbt}|${versionWithRespin_jbt}"
 fi
 echo "Download all these zips to verify they work:"
-cat /tmp/${version}.found.txt | sed "s#$HOME/TOOLS-ssh/#http://download.jboss.org/jbosstools/#" | egrep "\.zip"
+cat /tmp/${version_jbt}.found.txt | sed "s#$HOME/TOOLS-ssh/#http://download.jboss.org/jbosstools/#" | egrep "\.zip"
 echo "Review these pages to verify the work:"
-google-chrome && google-chrome $(cat /tmp/${version}.found.txt | sed "s#$HOME/TOOLS-ssh/#http://download.jboss.org/jbosstools/#" | egrep -v "\.zip")
-rm -f /tmp/${version}.found.txt
+google-chrome && google-chrome $(cat /tmp/${version_jbt}.found.txt | sed "s#$HOME/TOOLS-ssh/#http://download.jboss.org/jbosstools/#" | egrep -v "\.zip")
+rm -f /tmp/${version_jbt}.found.txt
 
 ----
 
@@ -161,32 +181,32 @@ pushd jbosstools-download.jboss.org/jbosstools/neon
 git fetch origin master
 git checkout FETCH_HEAD
 
-version=4.4.1.AM3
-versionWithRespin=4.4.1.AM3 # a, b, c...
-quals="development"; if [[ ${version##*Final} == "" ]]; then quals="development stable"; fi # **##
+version_jbt=4.4.1.AM3
+versionWithRespin_jbt=4.4.1.AM3 # a, b, c...
+quals="development"; if [[ ${version_jbt##*Final} == "" ]]; then quals="development stable"; fi # **##
 echo "
 - integration-stack/*
 - webtools/*
 - */OLD/
 - */reddeer/*
-+ core/${versionWithRespin}/
++ core/${versionWithRespin_jbt}/
 + core/composite*.xml
 - core/*
-+ coretests/${versionWithRespin}/
++ coretests/${versionWithRespin_jbt}/
 + coretests/composite*.xml
 - coretests/*
-+ central/${versionWithRespin}/
++ central/${versionWithRespin_jbt}/
 + central/composite*.xml
 - central/*
-+ earlyaccess/${versionWithRespin}/
++ earlyaccess/${versionWithRespin_jbt}/
 + earlyaccess/composite*.xml
 - earlyaccess/*
-+ discovery.central/${versionWithRespin}/
++ discovery.central/${versionWithRespin_jbt}/
 + discovery.central/composite*.xml
 - discovery.central/*
-+ discovery.earlyaccess/${versionWithRespin}/
-+ discovery.earlyaccess/${versionWithRespin}/plugins/
-+ discovery.earlyaccess/${versionWithRespin}/plugins/*.jar
++ discovery.earlyaccess/${versionWithRespin_jbt}/
++ discovery.earlyaccess/${versionWithRespin_jbt}/plugins/
++ discovery.earlyaccess/${versionWithRespin_jbt}/plugins/*.jar
 + discovery.earlyaccess/composite*.xml
 - discovery.earlyaccess/*
 - site.css
@@ -201,22 +221,22 @@ for qual in $quals; do
   scpr staging/updates/* ${qual}/updates/ --include-from=/tmp/filter-jbosstools
 
   pushd ${qual}/updates/
-  if [[ ${versionWithRespin} != ${version} ]]; then
+  if [[ ${versionWithRespin_jbt} != ${version_jbt} ]]; then
     # rename the staging folders to their final names (CR1c -> Final)
     for d in core coretests central earlyaccess discovery.central discovery.earlyaccess; do
-      rm -fr ${d}/${version}
-      mv ${d}/${versionWithRespin} ${d}/${version}
+      rm -fr ${d}/${version_jbt}
+      mv ${d}/${versionWithRespin_jbt} ${d}/${version_jbt}
     done
   fi
 
   # fix composite sites to use the correct paths (not /staging, but /static)
   now=`date +%s000`
-  for c in compositeContent.xml compositeArtifacts.xml */compositeContent.xml */compositeArtifacts.xml */${version}/compositeContent.xml */${version}/compositeArtifacts.xml; do
+  for c in compositeContent.xml compositeArtifacts.xml */compositeContent.xml */compositeArtifacts.xml */${version_jbt}/compositeContent.xml */${version_jbt}/compositeArtifacts.xml; do
     if [[ $c == ${c/integration-stack/} ]]; then
       echo "$c ..."
       sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#" $c
       sed -i -e "s#jbosstools/neon/staging/updates/#jbosstools/static/neon/${qual}/updates/#" $c
-      sed -i -e "s#${versionWithRespin}#${version}#" $c
+      sed -i -e "s#${versionWithRespin_jbt}#${version_jbt}#" $c
     fi
   done
   popd
@@ -228,10 +248,10 @@ for qual in $quals; do
   echo ":: $qual"
   pushd ${qual}/updates/ >/dev/null
     for d in core coretests central earlyaccess discovery.central discovery.earlyaccess; do
-      if [[ -f ${d}/${version}/compositeContent.xml ]]; then
-        scpr ${d}/${version}/composite*.xml ${d}/
+      if [[ -f ${d}/${version_jbt}/compositeContent.xml ]]; then
+        scpr ${d}/${version_jbt}/composite*.xml ${d}/
       fi
-      ga -f ${d}/${version}/* ${d}/*.*ml
+      ga -f ${d}/${version_jbt}/* ${d}/*.*ml
     done
   popd >/dev/null
 done
@@ -248,21 +268,21 @@ for qual in $quals; do
     done
     for d in discovery.central discovery.earlyaccess; do
       echo ${d}/
-      scpr ${d}/${version}/* ${TOOLS}/neon/${qual}/updates/${d}/${version}/
-      scpr ${d}/${version}/* ${TOOLS}/static/neon/${qual}/updates/${d}/${version}/
+      scpr ${d}/${version_jbt}/* ${TOOLS}/neon/${qual}/updates/${d}/${version_jbt}/
+      scpr ${d}/${version_jbt}/* ${TOOLS}/static/neon/${qual}/updates/${d}/${version_jbt}/
     done
   popd >/dev/null
 done
 
 # commit the change and push to master
 for qual in $quals; do git add ${qual}/updates; done
-git commit -m "release JBT ${versionWithRespin} to public" .
+git commit -m "release JBT ${versionWithRespin_jbt} to public" .
 git push origin HEAD:master
 
 popd
 
 # verify site contents are shown
-quals="development"; if [[ ${version##*Final} == "" ]]; then quals="development stable"; fi # **##
+quals="development"; if [[ ${version_jbt##*Final} == "" ]]; then quals="development stable"; fi # **##
 for qual in $quals; do
   google-chrome && google-chrome \
   http://download.jboss.org/jbosstools/neon/${qual}/updates \
@@ -393,8 +413,8 @@ Update it so that the links for the latest milestone point to valid URLs. Commen
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru # ~
 pushd jbosstools-download.jboss.org/jbosstools/configuration
-version=4.4.1.AM3
-versionWithRespin=4.4.1.AM3 # a, b, c...
+version_jbt=4.4.1.AM3
+versionWithRespin_jbt=4.4.1.AM3 # a, b, c...
 version_ds=10.1.0.AM3 # no respin suffix here
 versionWithRespin_ds=10.1.0.AM3 # a, b, c...
 
@@ -403,33 +423,33 @@ git checkout FETCH_HEAD
 
 # you'll want to use URLs like these
 google-chrome && google-chrome \
-http://download.jboss.org/jbosstools/neon/development/updates/discovery.central/${version}/jbosstools-directory.xml \
+http://download.jboss.org/jbosstools/neon/development/updates/discovery.central/${version_jbt}/jbosstools-directory.xml \
 http://download.jboss.org/jbosstools/neon/development/updates/ \
 http://download.jboss.org/jbosstools/neon/development/updates/compositeContent.xml \
 http://download.jboss.org/jbosstools/neon/development/updates/earlyaccess/ \
 http://download.jboss.org/jbosstools/neon/development/updates/earlyaccess/compositeContent.xml \
-http://download.jboss.org/jbosstools/neon/development/updates/discovery.earlyaccess/${version}/jbosstools-earlyaccess.properties \
+http://download.jboss.org/jbosstools/neon/development/updates/discovery.earlyaccess/${version_jbt}/jbosstools-earlyaccess.properties \
 
 # verify
 google-chrome && google-chrome \
-https://devstudio.redhat.com/10.0/development/updates/discovery.central/${version}/devstudio-directory.xml \
+https://devstudio.redhat.com/10.0/development/updates/discovery.central/${version_jbt}/devstudio-directory.xml \
 https://devstudio.redhat.com/10.0/development/updates/ \
 https://devstudio.redhat.com/10.0/development/updates/compositeContent.xml \
 https://devstudio.redhat.com/10.0/development/updates/earlyaccess/ \
 https://devstudio.redhat.com/10.0/development/updates/earlyaccess/compositeContent.xml \
-https://devstudio.redhat.com/10.0/development/updates/discovery.earlyaccess/${version}/devstudio-earlyaccess.properties
+https://devstudio.redhat.com/10.0/development/updates/discovery.earlyaccess/${version_jbt}/devstudio-earlyaccess.properties
 
 # then edit ide-config.properties
 # vim ide-config.properties
 st ide-config.properties
 
 # verify these 4 to 6 URLs exist
-URLs="$(egrep -v "#" ide-config.properties | egrep "${version}|${versionWithRespin}|${version_ds}|${versionWithRespin_ds}" | sed -e "s#.\+|\([0-9.a-zA-Z]\+\)=\(.\+\)#\2#")"
+URLs="$(egrep -v "#" ide-config.properties | egrep "${version_jbt}|${versionWithRespin_jbt}|${version_ds}|${versionWithRespin_ds}" | sed -e "s#.\+|\([0-9.a-zA-Z]\+\)=\(.\+\)#\2#")"
 google-chrome && google-chrome $URLs
 for u in $URLs; do echo "$u"; done
 
 # commit the change and push to master
-ci "release JBT ${version} (${versionWithRespin}) to public: link to latest dev milestone discovery site" ide-config.properties
+ci "release JBT ${version_jbt} (${versionWithRespin_jbt}) to public: link to latest dev milestone discovery site" ide-config.properties
 git push origin HEAD:master
 
 # push updated file to server
@@ -460,22 +480,24 @@ To diff if any new features have been added/removed:
 
 [source,bash]
 ----
-versionWithRespin_PREV=4.4.0.Final
-version=4.4.1.AM3
+version_jbt_PREV=4.4.1.AM2
+version_jbt=4.4.1.AM3
 
 cd /tmp
-wget -O ${versionWithRespin_PREV}.properties http://download.jboss.org/jbosstools/static/mars/development/updates/core/${versionWithRespin_PREV}/site.properties
-wget -O ${version}.properties http://download.jboss.org/jbosstools/static/neon/development/updates/core/${version}/site.properties
-diff -u ${versionWithRespin_PREV}.properties ${version}.properties
+wget -O ${version_jbt_PREV}.properties http://download.jboss.org/jbosstools/static/neon/development/updates/core/${version_jbt_PREV}/site.properties
+wget -O ${version_jbt}.properties http://download.jboss.org/jbosstools/static/neon/development/updates/core/${version_jbt}/site.properties
+diff -u ${version_jbt_PREV}.properties ${version_jbt}.properties
 
 # then verify the the new feature(s) were added to the CoreTools category
 google-chrome && google-chrome https://marketplace.eclipse.org/content/jboss-tools/edit
 
-rm -f /tmp/${versionWithRespin_PREV}.properties /tmp/${version}.properties
+rm -f /tmp/${version_jbt_PREV}.properties /tmp/${version_jbt}.properties
 
 ----
 
 === Validate Marketplace install
+
+(If this is an development milestone towards a .0.Final, or a stable .x.Final build...)
 
 1. Get a compatible Eclipse
 2. Install from Marketplace
@@ -526,16 +548,16 @@ git clone https://github.com/jbosstools/jbosstools-versionwatch
 # download.jboss.org tag might not be valid as tweaks to ide-config.properties happen frequently
 
 jbt_branch=master # jbosstools-4.4.0.x
-version=4.4.1.AM3
+version_jbt=4.4.1.AM3
 cd ~/tru # ~
 for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins versionwatch; do
   echo "====================================================================="
-  echo "Tagging jbosstools-${d} from branch ${jbt_branch} as tag ${version}..."
+  echo "Tagging jbosstools-${d} from branch ${jbt_branch} as tag ${version_jbt}..."
   pushd jbosstools-${d}
   git fetch origin ${jbt_branch}
-  git tag jbosstools-${version} FETCH_HEAD
-  git push origin jbosstools-${version}
-  echo ">>> https://github.com/jbosstools/jbosstools-${d}/tree/jbosstools-${version}"
+  git tag jbosstools-${version_jbt} FETCH_HEAD
+  git push origin jbosstools-${version_jbt}
+  echo ">>> https://github.com/jbosstools/jbosstools-${d}/tree/jbosstools-${version_jbt}"
   popd >/dev/null
   echo "====================================================================="
   echo ""
@@ -551,19 +573,19 @@ done
 
 [source,bash]
 ----
-version=4.4.1.AM3
-recipients=alkazako@redhat.com
-sender="nboldt@redhat.com, jmaury@redhat.com"
-subject="Ready for JBT ${version} tag creation"
-qual="development"; if [[ ${version##*Final} == "" ]]; then qual="stable"; fi # **##
+version_jbt=4.4.1.AM3
+recipients="alkazako@redhat.com, jmaury@redhat.com"
+sender="nboldt@redhat.com"
+subject="Ready for JBT ${version_jbt} tag creation"
+qual="development"; if [[ ${version_jbt##*Final} == "" ]]; then qual="stable"; fi # **##
 echo "
 
 cd ~/tru # to your clone of jbosstools-build-ci # ~
 pushd jbosstools-build-ci/util >/dev/null
 
 # get CSV file & tag repos
-curl http://download.jboss.org/jbosstools/static/neon/${qual}/updates/core/${version}/buildinfo.json | python buildinfo2tags.py \
--n jbosstools-${version} | python tagrepos.py GITHUBUSER GITHUBPWD
+curl http://download.jboss.org/jbosstools/static/neon/${qual}/updates/core/${version_jbt}/buildinfo.json | python buildinfo2tags.py \
+-n jbosstools-${version_jbt} | python tagrepos.py GITHUBUSER GITHUBPWD
 " > /tmp/mailbody.jbt.txt
 fi
 
@@ -599,18 +621,18 @@ ____
 [source,bash]
 ----
 
-version=4.4.1.AM3
+version_jbt=4.4.1.AM3
 eclipseVersion="Eclipse 4.6.0 Neon.0"
-qual="development"; if [[ ${version##*Final} == "" ]]; then qual="stable"; fi # **##
-pullrequestURL=https://github.com/jbosstools/jbosstools-website/pull/590
-blogURL=/blog/am2-for-neon.html
+qual="development"; if [[ ${version_jbt##*Final} == "" ]]; then qual="stable"; fi # **##
+pullrequestURL=https://github.com/jbosstools/jbosstools-website/pull/615
+blogURL=/blog/am3-for-neon.html
 
 TOrecipients="alkazako@redhat.com, jmaury@redhat.com"
 CCrecipients="nboldt@redhat.com"
 sender="Nick Boldt <nboldt@redhat.com>"
-subject="Ready for JBT ${version} blog & announcement"
+subject="Ready for JBT ${version_jbt} blog & announcement"
 echo "
-Here's a PR for adding ${version} to the JBoss Tools download page:
+Here's a PR for adding ${version_jbt} to the JBoss Tools download page:
 
 ${pullrequestURL}
 
@@ -618,9 +640,9 @@ Suggested blog filename: ${blogURL}
 
 The complete list of projects in JBoss Tools, and the SHAs used to build those projects, can be seen here:
 
-http://download.jboss.org/jbosstools/static/neon/${qual}/updates/core/${version}/buildinfo.json
+http://download.jboss.org/jbosstools/static/neon/${qual}/updates/core/${version_jbt}/buildinfo.json
 
-From that list you can create all the jbosstools-${version} tags in Github, should you so desire.
+From that list you can create all the jbosstools-${version_jbt} tags in Github, should you so desire.
 
 Below is a sample email you could send to the jbosstools-dev mailing list when the blog is live.
 
@@ -628,7 +650,7 @@ Below is a sample email you could send to the jbosstools-dev mailing list when t
 
 Subject:
 
-JBoss Tools ${version} is now available
+JBoss Tools ${version_jbt} is now available
 
 Body:
 
@@ -640,11 +662,11 @@ Eclipse Marketplace: https://marketplace.eclipse.org/content/jboss-tools
 
 Update Site: http://download.jboss.org/jbosstools/neon/${qual}/updates/
 
-Zips: http://tools.jboss.org/downloads/jbosstools/neon/${version}.html#zips
+Zips: http://tools.jboss.org/downloads/jbosstools/neon/${version_jbt}.html#zips
 
 Installation instructions: http://tools.jboss.org/downloads/installation.html
 
-New + Noteworthy (subject to change): http://tools.jboss.org/documentation/whatsnew/jbosstools/${version}.html
+New + Noteworthy (subject to change): http://tools.jboss.org/documentation/whatsnew/jbosstools/${version_jbt}.html
 
 Schedule / Upcoming Releases: https://issues.jboss.org/browse/JBIDE?selectedTab=com.atlassian.jira.jira-projects-plugin:versions-panel
 " > /tmp/mailbody.jbt.txt

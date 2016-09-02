@@ -22,7 +22,7 @@ You will need to enable the jobs:
 
 # kerberos login for the Jenkins server
 userpass=nboldt:PASSWORD
-stream_jbt=master # or 4.4.neon
+stream_jbt=4.4.neon # or 4.4.neon
 for j in jbosstools-push-to-staging-07-notification-emails_${stream_jbt} \
 jbosstools-push-to-staging-03-verify-builds-update-sites_${stream_jbt} \
 jbosstools-push-to-staging-02-copy-builds-and-update-sites_${stream_jbt} \
@@ -41,6 +41,15 @@ https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-push-to-staging-
 
 If any branches have not yet been created, you can either:
 * Ask Denis, Fred, or Max to get them created
+* Create them yourself like this:
+
+[source,bash]
+----
+git checkout master; git pull origin jmaster; git checkout -b jbosstools-4.4.1.x; git push origin jbosstools-4.4.1.x
+# or, for jbosstools-build-ci
+git checkout jbosstools-4.4.x; git pull origin jbosstools-4.4.x; git checkout -b jbosstools-4.4.1.x; git push origin jbosstools-4.4.1.x
+
+----
 
 Once the above conditions have been met, you can proceed to the next steps.
 
@@ -52,8 +61,8 @@ To prevent accidentally rebuilding something while you're copying it away, make 
 ----
 # kerberos login for the Jenkins server
 userpass=nboldt:PASSWORD
-stream_jbt=master # or 4.4.neon
-stream_ds=master # or 10.0.neon
+stream_jbt=4.4.neon # or 4.4.neon
+stream_ds=10.0.neon # or 10.0.neon
 for j in jbosstools-build.parent_${stream_jbt} jbosstoolstargetplatforms-matrix jbosstools-buildflow_${stream_jbt} jbosstools-composite-install_${stream_jbt} jbosstools-browsersim-standalone_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstools-centraltarget_${stream_jbt} jbosstools-build-sites.aggregate.child-sites_${stream_jbt} devstudio.product_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} jbosstools-install-grinder.install-tests.matrix_${stream_jbt}; do
   curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/disable && echo -n ".D"
   curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/lastBuild/toggleLogKeep && echo -n ".K"
@@ -76,11 +85,11 @@ Then respin the job:
 # kerberos login for the Jenkins server
 userpass=nboldt:PASSWORD
 
-versionWithRespin_jbt=4.4.1.AM3 # a, b, c... (not SNAPSHOT!)
-stream_jbt=master # or 4.4.neon
-stream_ds=master # or 10.0.neon
-TARGET_PLATFORM_VERSION_MAX=4.60.1.AM3-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.60.1.AM3-SNAPSHOT
+versionWithRespin_jbt=4.4.1.Final # a, b, c... (not SNAPSHOT!)
+stream_jbt=4.4.neon # or 4.4.neon
+stream_ds=10.0.neon # or 10.0.neon
+TARGET_PLATFORM_VERSION_MAX=4.60.1.Final
+TARGET_PLATFORM_CENTRAL_MAX=4.60.1.Final-SNAPSHOT
 for j in jbosstools-discovery_${stream_jbt}; do
   curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/enable && echo -n ".E"
   curl -k -u ${userpass} --data "VERSION=${versionWithRespin_jbt##*.}&TARGET_PLATFORM_VERSION_MAXIMUM=${TARGET_PLATFORM_VERSION_MAX}&JBTCENTRALTARGET_VERSION=${TARGET_PLATFORM_CENTRAL_MAX}" https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/buildWithParameters && echo -n ".B"
@@ -158,8 +167,8 @@ This should point to the latest staging bits. Just copy what's in discovery.cent
 cd ~/tru
 RSYNC="rsync -aPrz --rsh=ssh --protocol=28"
 
-versionWithRespin_jbt_PREV=4.4.1.AM2 # a, b, c...
-versionWithRespin_jbt=4.4.1.AM3 # a, b, c...
+versionWithRespin_jbt_PREV=4.4.1.AM3 # a, b, c...
+versionWithRespin_jbt=4.4.1.Final # a, b, c...
 DESTINATION=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 PROJECT_PATH=jbosstools-download.jboss.org/jbosstools
 DEST_URL="http://download.jboss.org/jbosstools"
@@ -226,10 +235,10 @@ Update it so that the links for the latest milestone point to valid URLs. Commen
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru
 pushd jbosstools-download.jboss.org/jbosstools/configuration
-version=4.4.1.AM3
-versionWithRespin_jbt=4.4.1.AM3 # a, b, c...
-version_ds=10.1.0.AM3 # no respin suffix here
-versionWithRespin_ds=10.1.0.AM3 # a, b, c...
+version=4.4.1.Final
+versionWithRespin_jbt=4.4.1.Final # a, b, c...
+version_ds=10.1.0.GA # no respin suffix here
+versionWithRespin_ds=10.1.0.GA # a, b, c...
 
 git fetch origin master
 git checkout FETCH_HEAD
@@ -281,8 +290,8 @@ If the next build WILL be a respin, you need to simply:
 
 # kerberos login for the Jenkins server
 userpass=nboldt:PASSWORD
-stream_jbt=master # or 4.4.neon
-stream_ds=master # or 10.0.neon
+stream_jbt=4.4.neon # or 4.4.neon
+stream_ds=10.0.neon # or 10.0.neon
 for j in jbosstools-build.parent_${stream_jbt} jbosstoolstargetplatforms-matrix jbosstools-buildflow_${stream_jbt} jbosstools-composite-install_${stream_jbt} jbosstools-browsersim-standalone_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstools-centraltarget_${stream_jbt} jbosstools-build-sites.aggregate.child-sites_${stream_jbt} devstudio.product_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} jbosstools-install-grinder.install-tests.matrix_${stream_jbt}; do
   curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/enable && echo -n ".E"
 done
@@ -297,7 +306,7 @@ TODO: Important: if you switched the _master jobs to run from origin/jbosstools-
 
 If the next build will NOT be a respin, you will also need to ALSO make these changes to jobs, and upversion/release artifacts such as releng scripts or target platforms if you haven't done so already:
 
-* set correct github branch, eg., switch from 4.4.1.AM3x to 4.4.x
+* set correct github branch, eg., switch from 4.4.1.Finalx to 4.4.x
 * upversion dependencies, eg., releng scripts move from version CR1 to CR1 (if that's been released)
 * upversion target platforms / Central version (if those have been released)
 
@@ -317,7 +326,7 @@ You will need to disable the jobs once the bits are staged, so that they won't r
 
 # kerberos login for the Jenkins server
 userpass=nboldt:PASSWORD
-stream_jbt=master # or 4.4.neon
+stream_jbt=4.4.neon # or 4.4.neon
 for j in jbosstools-push-to-staging-07-notification-emails_${stream_jbt} \
 jbosstools-push-to-staging-03-verify-builds-update-sites_${stream_jbt} \
 jbosstools-push-to-staging-02-copy-builds-and-update-sites_${stream_jbt} \

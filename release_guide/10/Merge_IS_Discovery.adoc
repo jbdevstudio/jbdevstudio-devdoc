@@ -13,11 +13,11 @@ Here is a script that performs the merge for the JBT and JBDS /staging/ sites.
 [source,bash]
 ----
 
-version_jbt=4.4.1.AM3
-versionWithRespin_jbt=4.4.1.AM3 # a, b, c...
+version_jbt=4.4.1.Final
+versionWithRespin_jbt=4.4.1.Final # a, b, c...
 version_jbt_IS=4.4.0.Alpha1-SNAPSHOT
-version_ds=10.1.0.AM3 # no respin suffix here
-versionWithRespin_jbt_ds=10.1.0.AM3 # a, b, c...
+version_ds=10.1.0.GA # no respin suffix here
+versionWithRespin_jbt_ds=10.1.0.GA # a, b, c...
 version_ds_IS=10.0.0.Alpha1-SNAPSHOT
 
 # If all IS content is currently Early Access (EA), make sure you use the /discovery/{version_jbt}/earlyaccess/ URLs which include BOTH GA and EA plugins.

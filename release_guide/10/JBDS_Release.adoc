@@ -117,7 +117,7 @@ NOTE: As this takes some time and can be easily cancelled, this step can be anti
 
 *To* release-engineering@redhat.com +
 and +
-*Cc* cobrien@redhat.com, ldimaggi@redhat.com, mhusnain@redhat.com, jpallich@redhat.com, nboldt@redhat.com, mistria@redhat.com, alkazako@redhat.com, manderse@redhat.com, bsutter@redhat.com, pmuir@redhat.com, paul.robinson@redhat.com, dcoughli@redhat.com +
+*Cc* cobrien@redhat.com, ldimaggi@redhat.com, mhusnain@redhat.com, jpallich@redhat.com, nboldt@redhat.com, mistria@redhat.com, alkazako@redhat.com, jmaury@redhat.com, bsutter@redhat.com, pmuir@redhat.com, paul.robinson@redhat.com, dcoughli@redhat.com +
 
 [source,bash]
 ----
@@ -135,7 +135,7 @@ else
 fi
 
 TOrecipients="release-engineering@redhat.com"
-CCrecipients="cobrien@redhat.com, ldimaggi@redhat.com, mhusnain@redhat.com, nboldt@redhat.com, alkazako@redhat.com, paul.robinson@redhat.com, dcoughli@redhat.com, dbhole@redhat.com, lmohanty@redhat.com"
+CCrecipients="cobrien@redhat.com, ldimaggi@redhat.com, mhusnain@redhat.com, nboldt@redhat.com, alkazako@redhat.com, jmaury@redhat.com, paul.robinson@redhat.com, dcoughli@redhat.com, dbhole@redhat.com, lmohanty@redhat.com"
 sender="Nick Boldt <nboldt@redhat.com>"
 subject="Red Hat JBoss Developer Studio ${versionFriendlyName} & Red Hat Development Suite ${versionExe} available for push to CSP staging server & CDN / Download Manager"
 
@@ -711,9 +711,9 @@ java -jar ~/tmp/${installerJar} # ~
 ----
 
 
-== Notify the team lead
+== Notify Team Lead(s)
 
-Notifify Alexy & Max that the website is ready to be updated & blog ready to be posted.
+Notifify Alexy & Jeff that the website is ready to be updated with a new blog post.
 
 https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-push-to-dev-stable-07-notification-emails_4.4.neon/configure
 

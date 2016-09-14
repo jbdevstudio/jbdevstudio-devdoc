@@ -581,7 +581,7 @@ done
 ----
 
 
-== Notify Alexey & Jeff
+== Notify Team Lead(s)
 
 Notifify Alexy & Jeff that bulk tagging should be done, and the website is ready to be updated with a new blog post.
 

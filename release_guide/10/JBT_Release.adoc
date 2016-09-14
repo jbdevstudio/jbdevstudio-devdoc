@@ -50,61 +50,56 @@ These steps happens on filemgmt.jboss.org, in the jbosstools download area.
 
 === Copy content to release directory
 
-TODO: is this warning still relevant?
-PLEASE NOTE! If you're pushing a new /development/ site and the last release was to /stable/, make sure you disconnect the symlinks first or you'll end up putting a milestone into /stable/ instead of /development/.
+Here is a job that performs the copy from /staging/ to /development/:
 
-See section "Copy from development to stable & create symlinks from /stable/ into /development/" for details.
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-push-to-dev-stable-02-copy-builds-and-update-sites_4.4.neon/configure
 
-
-We simply copy the content of the latest respin to the release directory (under _jbosstools/static_ which is using Akamai)
-
-First connect to dev01.mw.lab.eng.bos.redhat.com as +hudson+ user (requires permissions).
+Or, if that fails:
 
 [source,bash]
 ----
-me@local$ ssh dev01.mw.lab.eng.bos.redhat.com
-me@dev01$ sudo su - hudson
-hudson@dev01$ ...
-----
-
-Here is a script that performs the copy from /staging/ to /development/.
-
-[source,bash]
-----
-
-cd /tmp
-if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
-wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/stage.sh --no-check-certificate
-chmod +x stage.sh
-
+# globals
 eclipseReleaseName=neon
+devstudioReleaseVersion=10.0
 quiet="-q" # "" for loud, or "-q" for quiet log
-version_jbt=4.4.1.AM3 # release version: no a, b, c suffix
-versionWithRespin_jbt=4.4.1.AM3 # a, b, c...
-STAGE=./stage.sh
+STAGE=${WORKSPACE}/jbosstools-build-ci/publish/stage.sh
+
+if [[ ! -x ${STAGE} ]]; then
+  cd /tmp
+  if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
+  wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/stage.sh --no-check-certificate
+  chmod +x stage.sh
+  STAGE=/tmp/stage.sh
+fi
 
 norm="\033[0;39m"
 green="\033[1;32m"
 red="\033[1;31m"
 
-#################
+###################################################
+
+version_jbt=4.4.1.Final
+versionWithRespin_jbt=4.4.1.Final
 
 TOOLS="tools@filemgmt.jboss.org:/downloads_htdocs/tools"
+mkdir -p ${HOME}/TOOLS-ssh; sshfs $TOOLS ${HOME}/TOOLS-ssh
 
-quals="development"; # TODO enable stable?
-# if [[ ${version_jbt##*Final} == "" ]]; then quals="development stable"; fi # **##
+# 0. copy all 7 jbosstools builds/update sites
+quals="development"
+if [[ ${version_jbt##*Final} == "" ]]; then quals="development stable"; fi # **##
 for qual in $quals; do
   for site in core coretests central earlyaccess discovery.central discovery.earlyaccess browsersim-standalone; do
     time ${STAGE} -sites $site -stream "${versionWithRespin_jbt}" -vr ${version_jbt} \
       -sd ${eclipseReleaseName} -dd static/${eclipseReleaseName} -st staging -dt ${qual} \
       -JOB_NAME jbosstools-${versionWithRespin_jbt}-build-\${site} ${quiet} &
+    sleep 5
   done
 done
 
-# JBT zips into http://download.jboss.org/jbosstools/static/${eclipseReleaseName}/development/updates/core/
-quals="development"; # TODO enable stable?
-# if [[ ${version_jbt##*Final} == "" ]]; then quals="development stable"; fi
-tmpdir=~/temp-stage/jbosstools-static-${qual}-updates-core_${versionWithRespin_jbt}_zips; mkdir -p ${tmpdir}
+# 1. JBT zips into http://download.jboss.org/jbosstools/static/${eclipseReleaseName}/${qual}/updates/core/
+quals="development"
+if [[ ${version_jbt##*Final} == "" ]]; then quals="development stable"; fi
+tmpdir=~/temp-stage/release_jbt_${version_jbt}_zips; mkdir -p ${tmpdir}; # ~
 # get src.zip & browsersim-standalone.zip
 srcprefix=${TOOLS}/${eclipseReleaseName}/staging/builds/jbosstools-${versionWithRespin_jbt}-build
 {
@@ -124,39 +119,40 @@ srcprefix=${TOOLS}/${eclipseReleaseName}/staging/builds/jbosstools-${versionWith
 [INFO] [zips] ${green}DONE${norm}: ${green}jbosstools-*-src.zip + ${green}jbosstools-*-browsersim-standalone.zip${norm}" &
 }
 
-# wait until all 8+? background tasks (jbt: 8, ds: ?) are done
+###################################################
+
+# wait until all background tasks (jbt: 8, ds: 11) are done
 wait
 
-# TODO wait until the above 7+1 (or 2x(7+1)) pushes are done (should be nothing if you run this:
-ps ax | grep stage.sh | grep -v grep | egrep -- "-sites|-sd"
+----
 
+When the job is done, verify everything has been published:
 
-# TODO run on local, not dev01
-# verify we have all the files we expect to see
-#TODO migrate this to staging script and into a Jenkins job too!
-TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
-sshfs $TOOLS $HOME/TOOLS-ssh
-version_jbt=4.4.1.AM3
-versionWithRespin_jbt=4.4.1.AM3 # a, b, c...
-expectedCount=0
-quals="development"; if [[ ${version_jbt##*Final} == "" ]]; then quals="development stable"; fi # **##
-rm -f /tmp/${version_jbt}.found.txt
-for qual in $quals; do
-  (( expectedCount += 18 )); # now 18
-  find $HOME/TOOLS-ssh/static/neon/${qual}/updates/* -maxdepth 1 -name "*${version_jbt}*" -o -name "*${versionWithRespin_jbt}*" | sort >> /tmp/${version_jbt}.found.txt
-done
-theCount=$(cat /tmp/${version_jbt}.found.txt | wc -l)
-if [[ ${theCount} == ${expectedCount} ]]; then
-  echo "[INFO] Found all expected ${expectedCount} files/folders" | egrep "${expectedCount}|${theCount}|INFO|ERROR"
-else
-  echo "[ERROR] expected ${expectedCount} files/folders, found ${theCount}:" | egrep "${expectedCount}|${theCount}|INFO|ERROR"
-  cat /tmp/${version_jbt}.found.txt | sort | egrep "${version_jbt}|${versionWithRespin_jbt}"
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-push-to-dev-stable-03-verify-builds-update-sites_4.4.neon/build
+
+Or, if that fails:
+
+[source,bash]
+----
+
+# globals
+eclipseReleaseName=neon
+devstudioReleaseVersion=10.0
+quiet="-q" # "" for loud, or "-q" for quiet log
+CHECK=${WORKSPACE}/jbosstools-build-ci/publish/checkStagingURLs.sh
+
+if [[ ! -x ${CHECK} ]]; then
+  cd /tmp
+  if [[ -f /tmp/checkStagingURLs.sh ]]; then rm -f /tmp/checkStagingURLs.sh; fi
+  wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/checkStagingURLs.sh --no-check-certificate
+  chmod +x checkStagingURLs.sh
+  CHECK=/tmp/checkStagingURLs.sh
 fi
-echo "Download all these zips to verify they work:"
-cat /tmp/${version_jbt}.found.txt | sed "s#$HOME/TOOLS-ssh/#http://download.jboss.org/jbosstools/#" | egrep "\.zip"
-echo "Review these pages to verify the work:"
-google-chrome && google-chrome $(cat /tmp/${version_jbt}.found.txt | sed "s#$HOME/TOOLS-ssh/#http://download.jboss.org/jbosstools/#" | egrep -v "\.zip")
-rm -f /tmp/${version_jbt}.found.txt
+
+version_jbt=4.4.1.Final
+quals="development"
+if [[ ${version_jbt##*Final} == "" ]]; then quals="development stable"; fi # ** ##
+for qual in $quals; do time ${CHECK} -vrjbt ${version_jbt} -ern ${eclipseReleaseName} -qual $qual ${quiet}; echo ""; done
 
 ----
 
@@ -181,8 +177,8 @@ pushd jbosstools-download.jboss.org/jbosstools/neon
 git fetch origin master
 git checkout FETCH_HEAD
 
-version_jbt=4.4.1.AM3
-versionWithRespin_jbt=4.4.1.AM3 # a, b, c...
+version_jbt=4.4.1.Final
+versionWithRespin_jbt=4.4.1.Final # a, b, c...
 quals="development"; if [[ ${version_jbt##*Final} == "" ]]; then quals="development stable"; fi # **##
 echo "
 - integration-stack/*
@@ -304,15 +300,15 @@ Open p2-browser and verify these sites load correctly:
 
 http://download.jboss.org/jbosstools/neon/development/updates/
 http://download.jboss.org/jbosstools/neon/development/updates/discovery.earlyaccess/
-http://download.jboss.org/jbosstools/neon/development/updates/discovery.earlyaccess/4.4.1.AM3/
-http://download.jboss.org/jbosstools/static/neon/development/updates/coretests/4.4.1.AM3/
+http://download.jboss.org/jbosstools/neon/development/updates/discovery.earlyaccess/4.4.1.Final/
+http://download.jboss.org/jbosstools/static/neon/development/updates/coretests/4.4.1.Final/
 
 (and, if this is a Final)
 
 http://download.jboss.org/jbosstools/neon/stable/updates/
 http://download.jboss.org/jbosstools/neon/stable/updates/discovery.earlyaccess/
-http://download.jboss.org/jbosstools/neon/stable/updates/discovery.earlyaccess/4.4.1.AM3/
-http://download.jboss.org/jbosstools/static/neon/stable/updates/coretests/4.4.1.AM3/
+http://download.jboss.org/jbosstools/neon/stable/updates/discovery.earlyaccess/4.4.1.Final/
+http://download.jboss.org/jbosstools/static/neon/stable/updates/coretests/4.4.1.Final/
 
 
 === WebTools
@@ -362,8 +358,7 @@ https://github.com/jbosstools/jbosstools-download.jboss.org/commit/d5306ce940814
 
 cd ~/tru # or where you have jbosstools-download.jboss.org checked out ~
 
-TARGET_PLATFORM_VERSION_MAX_PREV=4.60.1.AM1-SNAPSHOT
-TARGET_PLATFORM_VERSION_MAX=4.60.1.AM3-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.60.1.Final
 now=`date +%s000`
 TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 
@@ -373,30 +368,39 @@ pushd jbosstools-download.jboss.org/jbosstools/targetplatforms/
   git checkout FETCH_HEAD
 
   for f in jbosstools; do
-    git add ${f}target
+    tppath=${f}target/${TARGET_PLATFORM_VERSION_MAX}
     # move actual TP to /static/ folder
-    echo "rename targetplatforms/${f}target/${TARGET_PLATFORM_VERSION_MAX} static/targetplatforms/${f}target/${TARGET_PLATFORM_VERSION_MAX}" | sftp ${TOOLS}/
+    echo "rename targetplatforms/${tppath} static/targetplatforms/${tppath}" | sftp ${TOOLS}/
+    # get contents from remote
+    rsync -Pzrlt --rsh=ssh --protocol=28 $TOOLS/static/targetplatforms/${tppath}/composite*.xml ${tppath}/
     # change pointer to include /static/
-    for d in ${f}target/${TARGET_PLATFORM_VERSION_MAX}/composite*.xml ${f}target/${TARGET_PLATFORM_VERSION_MAX}/REPO/composite*.xml; do
-      sed -i -e "s#jbosstools/targetplatforms#jbosstools/static/targetplatforms#g" $d
+    for d in ${tppath}/composite*.xml; do
+      sed -i -e "s#[\'\"]REPO/[\'\"]#'http://download.jboss.org/jbosstools/static/targetplatforms/${tppath}/REPO/'#g" $d ##
     done
+    echo "version = 1
+metadata.repository.factory.order = compositeContent.xml,\!
+artifact.repository.factory.order = compositeArtifacts.xml,\!" > ${tppath}/p2.index
+    rsync -Przlt ${tppath}/composite*.xml ${tppath}/p2.index ${tppath}/REPO/
     # create composite pointer
-    rsync -Pzrlt --rsh=ssh --protocol=28 ${f}target/${TARGET_PLATFORM_VERSION_MAX}/* $TOOLS/targetplatforms/${f}target/${TARGET_PLATFORM_VERSION_MAX}/
+    rsync -Pzrlt --rsh=ssh --protocol=28 ${tppath}/* $TOOLS/targetplatforms/${tppath}/
   done
   # commit changes to github
-  git commit -m "move target platforms into /static/ and update composite pointers to latest neon => ${TARGET_PLATFORM_VERSION_MAX}" .
+  git add ${f}target
+  git commit -m "move target platforms into /static/ and update composite pointers to latest => ${TARGET_PLATFORM_VERSION_MAX}" .
   git push origin HEAD:master
 popd
 
 # for Final TPs only!
 google-chrome && google-chrome \
-http://download.jboss.org/jbosstools/static/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MAX}/REPO/ \
-http://download.jboss.org/jbosstools/static/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MAX}/compositeContent.xml \
+http://download.jboss.org/jbosstools/static/targetplatforms/${tppath}/REPO/ \
+http://download.jboss.org/jbosstools/static/targetplatforms/${tppath}/compositeContent.xml \
 
 # verify files are correct
 google-chrome && google-chrome \
-http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MAX}/REPO/compositeContent.xml \
-http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/${TARGET_PLATFORM_VERSION_MAX}/compositeContent.xml
+http://download.jboss.org/jbosstools/targetplatforms/${tppath}/REPO/compositeContent.xml \
+http://download.jboss.org/jbosstools/targetplatforms/${tppath}/REPO/p2.index \
+http://download.jboss.org/jbosstools/targetplatforms/${tppath}/compositeContent.xml \
+http://download.jboss.org/jbosstools/targetplatforms/${tppath}/p2.index
 
 ----
 
@@ -413,10 +417,10 @@ Update it so that the links for the latest milestone point to valid URLs. Commen
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru # ~
 pushd jbosstools-download.jboss.org/jbosstools/configuration
-version_jbt=4.4.1.AM3
-versionWithRespin_jbt=4.4.1.AM3 # a, b, c...
-version_ds=10.1.0.AM3 # no respin suffix here
-versionWithRespin_ds=10.1.0.AM3 # a, b, c...
+version_jbt=4.4.1.Final
+versionWithRespin_jbt=4.4.1.Final # a, b, c...
+version_ds=10.1.0.GA # no respin suffix here
+versionWithRespin_ds=10.1.0.GA # a, b, c...
 
 git fetch origin master
 git checkout FETCH_HEAD
@@ -466,7 +470,7 @@ WARNING: Only applies to Beta and better versions.
 
 === If node does not yet exist
 
-For the first Beta, create a new node on Marketplace, using content from http://download.jboss.org/jbosstools/static/neon/stable/updates/core/4.4.1.AM3/site.properties
+For the first Beta, create a new node on Marketplace, using content from http://download.jboss.org/jbosstools/static/neon/stable/updates/core/4.4.1.Final/site.properties
 
 === If node already exists
 
@@ -474,14 +478,14 @@ Access it via +https://marketplace.eclipse.org/content/jboss-tools/edit+ and upd
 
 * Title to match new version
 * Description to match new version & dependencies
-* Update list of features, using content of http://download.jboss.org/jbosstools/static/neon/stable/updates/core/4.4.1.AM3/site.properties
+* Update list of features, using content of http://download.jboss.org/jbosstools/static/neon/stable/updates/core/4.4.1.Final/site.properties
 
 To diff if any new features have been added/removed:
 
 [source,bash]
 ----
-version_jbt_PREV=4.4.1.AM2
-version_jbt=4.4.1.AM3
+version_jbt_PREV=4.4.0.Final
+version_jbt=4.4.1.Final
 
 cd /tmp
 wget -O ${version_jbt_PREV}.properties http://download.jboss.org/jbosstools/static/neon/development/updates/core/${version_jbt_PREV}/site.properties
@@ -525,6 +529,17 @@ google-chrome && google-chrome https://issues.jboss.org/plugins/servlet/project-
 See JBDS_Release.adoc
 
 
+== Smoke test the release
+
+Before notifying team of release, must check for obvious problems. Any failure there should be fixed with highest priority. In general, it could be wrong URLs in a composite site.
+
+=== Validate update site install
+
+1. Get a recent Eclipse (compatible with the target version of JBT)
+2. Install Abridged category from http://download.jboss.org/jbosstools/neon/development/updates/ and/or http://download.jboss.org/jbosstools/neon/stable/updates/
+3. Restart. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
+4. Check log, start an example project, check log again
+
 == Tag Git
 
 === Create tags for build-related repositories
@@ -547,8 +562,8 @@ git clone https://github.com/jbosstools/jbosstools-versionwatch
 # maven-plugins does not get released/branched the same as other projects, but tag it anyway
 # download.jboss.org tag might not be valid as tweaks to ide-config.properties happen frequently
 
-jbt_branch=master # jbosstools-4.4.0.x
-version_jbt=4.4.1.AM3
+jbt_branch=jbosstools-4.4.1.x # or master
+version_jbt=4.4.1.Final
 cd ~/tru # ~
 for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins versionwatch; do
   echo "====================================================================="
@@ -565,116 +580,12 @@ done
 
 ----
 
-=== Request bulk tag creation
-
-@since 4.3: bulk-tagging via script; email generated
-
-*To:* alkazako@redhat.com, jmaury@redhat.com +
-
-[source,bash]
-----
-version_jbt=4.4.1.AM3
-recipients="alkazako@redhat.com, jmaury@redhat.com"
-sender="nboldt@redhat.com"
-subject="Ready for JBT ${version_jbt} tag creation"
-qual="development"; if [[ ${version_jbt##*Final} == "" ]]; then qual="stable"; fi # **##
-echo "
-
-cd ~/tru # to your clone of jbosstools-build-ci # ~
-pushd jbosstools-build-ci/util >/dev/null
-
-# get CSV file & tag repos
-curl http://download.jboss.org/jbosstools/static/neon/${qual}/updates/core/${version_jbt}/buildinfo.json | python buildinfo2tags.py \
--n jbosstools-${version_jbt} | python tagrepos.py GITHUBUSER GITHUBPWD
-" > /tmp/mailbody.jbt.txt
-fi
-
-# use mail (with sendmail's -f flag), NOT mailx
-/bin/mail -s "$subject" $recipients -c $sender -- -f"$sender" < /tmp/mailbody.jbt.txt
-rm -f /tmp/mailbody.jbt.txt
-
-----
-
-
-== Smoke test the release
-
-Before notifying team of release, must check for obvious problems. Any failure there should be fixed with highest priority. In general, it could be wrong URLs in a composite site.
-
-=== Validate update site install
-
-1. Get a recent Eclipse (compatible with the target version of JBT)
-2. Install Abridged category from http://download.jboss.org/jbosstools/neon/development/updates/ and/or http://download.jboss.org/jbosstools/neon/stable/updates/
-3. Restart. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
-4. Check log, start an example project, check log again
-
 
 == Notify Alexey & Jeff
 
-Notifify Alexy & Jeff that the website is ready to be updated & blog ready to be posted.
+Notifify Alexy & Jeff that bulk tagging should be done, and the website is ready to be updated with a new blog post.
 
 If co-releasing JBT and JBDS, make sure that JBDS is released too!
 
-DO NOT send email notification until the above update to the website is done, and the new blog announcement is live, with image inclusion, spelling, & grammar checks done.
-
-____
-
-[source,bash]
-----
-
-version_jbt=4.4.1.AM3
-eclipseVersion="Eclipse 4.6.0 Neon.0"
-qual="development"; if [[ ${version_jbt##*Final} == "" ]]; then qual="stable"; fi # **##
-pullrequestURL=https://github.com/jbosstools/jbosstools-website/pull/615
-blogURL=/blog/am3-for-neon.html
-
-TOrecipients="alkazako@redhat.com, jmaury@redhat.com"
-CCrecipients="nboldt@redhat.com"
-sender="Nick Boldt <nboldt@redhat.com>"
-subject="Ready for JBT ${version_jbt} blog & announcement"
-echo "
-Here's a PR for adding ${version_jbt} to the JBoss Tools download page:
-
-${pullrequestURL}
-
-Suggested blog filename: ${blogURL}
-
-The complete list of projects in JBoss Tools, and the SHAs used to build those projects, can be seen here:
-
-http://download.jboss.org/jbosstools/static/neon/${qual}/updates/core/${version_jbt}/buildinfo.json
-
-From that list you can create all the jbosstools-${version_jbt} tags in Github, should you so desire.
-
-Below is a sample email you could send to the jbosstools-dev mailing list when the blog is live.
-
---
-
-Subject:
-
-JBoss Tools ${version_jbt} is now available
-
-Body:
-
-This is a ${qual} release aimed at ${eclipseVersion} users.
-
-Announcement Blog: http://tools.jboss.org/blog/
-
-Eclipse Marketplace: https://marketplace.eclipse.org/content/jboss-tools
-
-Update Site: http://download.jboss.org/jbosstools/neon/${qual}/updates/
-
-Zips: http://tools.jboss.org/downloads/jbosstools/neon/${version_jbt}.html#zips
-
-Installation instructions: http://tools.jboss.org/downloads/installation.html
-
-New + Noteworthy (subject to change): http://tools.jboss.org/documentation/whatsnew/jbosstools/${version_jbt}.html
-
-Schedule / Upcoming Releases: https://issues.jboss.org/browse/JBIDE?selectedTab=com.atlassian.jira.jira-projects-plugin:versions-panel
-" > /tmp/mailbody.jbt.txt
-
-# use mail (with sendmail's -f flag), NOT mailx
-/bin/mail -s "$subject" "$TOrecipients" -c "$CCrecipients" -- -f"$sender" < /tmp/mailbody.jbt.txt
-rm -f /tmp/mailbody.jbt.txt
-
-----
-____
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-push-to-dev-stable-07-notification-emails_4.4.neon/configure
 

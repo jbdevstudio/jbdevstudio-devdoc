@@ -23,11 +23,11 @@ See details in JBT_Staging_For_QE.adoc
 
 Here is a job that performs the copy (& rename) from /snapshots/ to /staging/:
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-push-to-staging-02-copy-builds-and-update-sites_master/
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites_master/
 
 Here's a job that verifies everything is published:
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-push-to-staging-03-verify-builds-update-sites_master/
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-03-verify-builds-update-sites_master/
 
 
 [source,bash]

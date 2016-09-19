@@ -23,11 +23,11 @@ You will need to enable the jobs:
 # kerberos login for the Jenkins server
 userpass=nboldt:PASSWORD
 stream_jbt=4.4.neon # or 4.4.neon
-for j in jbosstools-push-to-staging-07-notification-emails_${stream_jbt} \
-jbosstools-push-to-staging-03-verify-builds-update-sites_${stream_jbt} \
-jbosstools-push-to-staging-02-copy-builds-and-update-sites_${stream_jbt} \
-jbosstools-push-to-staging-01-check-versions-branches-root-poms_${stream_jbt} \
-jbosstools-push-to-staging-00-buildflow_${stream_jbt}; do
+for j in jbosstools-releng-push-to-staging-07-notification-emails_${stream_jbt} \
+jbosstools-releng-push-to-staging-03-verify-builds-update-sites_${stream_jbt} \
+jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites_${stream_jbt} \
+jbosstools-releng-push-to-staging-01-check-versions-branches-root-poms_${stream_jbt} \
+jbosstools-releng-push-to-staging-00-buildflow_${stream_jbt}; do
   curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/enable && echo -n ".E"
 done
 
@@ -37,7 +37,7 @@ done
 
 Run this job:
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-push-to-staging-01-check-versions-branches-root-poms_master
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-01-check-versions-branches-root-poms_master
 
 If any branches have not yet been created, you can either:
 * Ask Denis, Fred, or Max to get them created
@@ -121,11 +121,11 @@ cd ~/tmp; wget https://hudson.eclipse.org/packaging/job/neon.epp-tycho-build/388
 
 Here is a job that performs the copy (& rename) from /snapshots/ to /staging/:
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-push-to-staging-02-copy-builds-and-update-sites_master/
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites_master/
 
 Here's a job that verifies everything is published:
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-push-to-staging-03-verify-builds-update-sites_master/
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-03-verify-builds-update-sites_master/
 
 
 === Cleanup OLD builds
@@ -315,7 +315,7 @@ If the next build will NOT be a respin, you will also need to ALSO make these ch
 
 Run this build:
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-push-to-staging-07-notification-emails_master
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-07-notification-emails_master
 
 == Disable staging jobs
 
@@ -327,11 +327,11 @@ You will need to disable the jobs once the bits are staged, so that they won't r
 # kerberos login for the Jenkins server
 userpass=nboldt:PASSWORD
 stream_jbt=4.4.neon # or 4.4.neon
-for j in jbosstools-push-to-staging-07-notification-emails_${stream_jbt} \
-jbosstools-push-to-staging-03-verify-builds-update-sites_${stream_jbt} \
-jbosstools-push-to-staging-02-copy-builds-and-update-sites_${stream_jbt} \
-jbosstools-push-to-staging-01-check-versions-branches-root-poms_${stream_jbt} \
-jbosstools-push-to-staging-00-buildflow_${stream_jbt}; do
+for j in jbosstools-releng-push-to-staging-07-notification-emails_${stream_jbt} \
+jbosstools-releng-push-to-staging-03-verify-builds-update-sites_${stream_jbt} \
+jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites_${stream_jbt} \
+jbosstools-releng-push-to-staging-01-check-versions-branches-root-poms_${stream_jbt} \
+jbosstools-releng-push-to-staging-00-buildflow_${stream_jbt}; do
   curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/disable && echo -n ".D"
 done
 

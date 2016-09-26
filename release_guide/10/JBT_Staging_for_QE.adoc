@@ -324,7 +324,8 @@ git checkout FETCH_HEAD
 # vim ide-config.properties
 st ide-config.properties
 # TODO something like this?
-# sed -i "s/CR1b/CR1c/g" ide-config.properties
+# 1. swap  ^(jb.+(4.4.2|10.2.0).AM)(1)= for \12=
+# 2. swap ^#(jb.+(4.4.2|10.2.0).AM1=) for \1
 
 # verify these 6 URLs exist
 URLs="$(egrep -v "#" ide-config.properties | egrep "${version}|${versionWithRespin_jbt}|${version_ds}|${versionWithRespin_ds}" | sed -e "s#.\+|\([0-9.a-zA-Z]\+\)=\(.\+\)#\2#")"

@@ -15,19 +15,20 @@ Here is a script that performs the merge for the JBT and JBDS /staging/ sites.
 
 version_jbt=4.4.2.AM1
 versionWithRespin_jbt=4.4.2.AM1 # a, b, c...
-version_jbt_IS=4.4.0.Alpha1-SNAPSHOT
+version_jbt_IS=4.4.0.Alpha1
 version_ds=10.2.0.AM1 # no respin suffix here
 versionWithRespin_jbt_ds=10.2.0.AM1 # a, b, c...
-version_ds_IS=10.0.0.Alpha1-SNAPSHOT
+version_ds_IS=10.0.0.Alpha1
+qual_IS=development
 
 # If all IS content is currently Early Access (EA), make sure you use the /discovery/{version_jbt}/earlyaccess/ URLs which include BOTH GA and EA plugins.
 # If all IS content is released (GA), you can use the /discovery/{version_jbt}/ URLs here.
 pushd /tmp
   wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/mergeISdiscovery.sh -q -nc && chmod +x mergeISdiscovery.sh
   ./mergeISdiscovery.sh -v ${version_jbt} -vr ${versionWithRespin_jbt} \
-    -is http://download.jboss.org/jbosstools/neon/staging/updates/integration-stack/discovery/${version_jbt_IS}/earlyaccess/ -quiet
+    -is http://download.jboss.org/jbosstools/neon/${qual_IS}/updates/integration-stack/discovery/${version_jbt_IS}/earlyaccess/ -quiet
   ./mergeISdiscovery.sh -v ${version_ds} -vr ${versionWithRespin_jbt_ds} \
-    -is https://devstudio.redhat.com/10.0/staging/updates/integration-stack/discovery/${version_ds_IS}/earlyaccess/ -JBDS -quiet
+    -is https://devstudio.redhat.com/10.0/${qual_IS}/updates/integration-stack/discovery/${version_ds_IS}/earlyaccess/ -JBDS -quiet
   rm -f /tmp/mergeISdiscovery.sh
 popd
 

@@ -621,13 +621,13 @@ Then, back on your own machine...
 
 [source,bash]
 ----
-version_jbt=4.4.1.Final
-version_ds=10.1.0.GA
+version_jbt=4.4.2.AM1
+version_ds=10.2.0.AM1
 
 cd ~/tru # where you have jbosstools-website checked out
 
 pushd jbosstools-website/
-  t=release-4.4.1.Final-10.1.0.GA
+  t=release-4.4.2.AM1-10.2.0.AM1
   gw1m
   st _config/products.yml
 

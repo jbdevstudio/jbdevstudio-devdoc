@@ -657,8 +657,8 @@ git clone https://github.com/jbdevstudio/jbdevstudio-website
 git clone https://github.com/jbdevstudio/jbdevstudio-artwork
 git clone https://github.com/jbdevstudio/jbdevstudio-devdoc
 
-jbt_branch=jbosstools-4.4.1.x # or master
-version_ds=10.1.0.GA
+jbt_branch=master # or jbosstools-4.4.2.x
+version_ds=10.2.0.AM1
 cd ~/truu # ~
 for d in product ci website artwork devdoc; do
   echo "====================================================================="

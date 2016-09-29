@@ -52,7 +52,9 @@ These steps happens on filemgmt.jboss.org, in the jbosstools download area.
 
 Here is a job that performs the copy from /staging/ to /development/:
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-push-to-dev-stable-02-copy-builds-and-update-sites_4.4.neon/configure
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites_4.4.neon/configure
+or
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites_master/configure
 
 Or, if that fails:
 
@@ -78,8 +80,8 @@ red="\033[1;31m"
 
 ###################################################
 
-version_jbt=4.4.1.Final
-versionWithRespin_jbt=4.4.1.Final
+version_jbt=4.4.2.AM1
+versionWithRespin_jbt=4.4.2.AM1
 
 TOOLS="tools@filemgmt.jboss.org:/downloads_htdocs/tools"
 mkdir -p ${HOME}/TOOLS-ssh; sshfs $TOOLS ${HOME}/TOOLS-ssh
@@ -121,14 +123,15 @@ srcprefix=${TOOLS}/${eclipseReleaseName}/staging/builds/jbosstools-${versionWith
 
 ###################################################
 
-# wait until all background tasks (jbt: 8, ds: 11) are done
+# wait until all background tasks (jbt: 8) are done
 wait
 
 ----
 
 When the job is done, verify everything has been published:
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-push-to-dev-stable-03-verify-builds-update-sites_4.4.neon/build
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites_4.4.neon/build (check jbt + devstudio)
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites_master/build (check only jbt)
 
 Or, if that fails:
 
@@ -149,10 +152,16 @@ if [[ ! -x ${CHECK} ]]; then
   CHECK=/tmp/checkStagingURLs.sh
 fi
 
-version_jbt=4.4.1.Final
+version_jbt=4.4.2.AM1
 quals="development"
 if [[ ${version_jbt##*Final} == "" ]]; then quals="development stable"; fi # ** ##
 for qual in $quals; do time ${CHECK} -vrjbt ${version_jbt} -ern ${eclipseReleaseName} -qual $qual ${quiet}; echo ""; done
+
+# AM milestones are not released so nothing to verify
+#version_ds=10.2.0.AM1
+#quals="development"
+#if [[ ${version_ds##*GA} == "" ]]; then quals="development stable"; fi # ** ##
+#for qual in $quals; do time ${CHECK} -vrds ${version_ds} -dsrv ${devstudioReleaseVersion} -qual $qual; echo ""; done
 
 ----
 
@@ -177,8 +186,8 @@ pushd jbosstools-download.jboss.org/jbosstools/neon
 git fetch origin master
 git checkout FETCH_HEAD
 
-version_jbt=4.4.1.Final
-versionWithRespin_jbt=4.4.1.Final # a, b, c...
+version_jbt=4.4.2.AM1
+versionWithRespin_jbt=4.4.2.AM1 # a, b, c...
 quals="development"; if [[ ${version_jbt##*Final} == "" ]]; then quals="development stable"; fi # **##
 echo "
 - integration-stack/*
@@ -300,15 +309,15 @@ Open p2-browser and verify these sites load correctly:
 
 http://download.jboss.org/jbosstools/neon/development/updates/
 http://download.jboss.org/jbosstools/neon/development/updates/discovery.earlyaccess/
-http://download.jboss.org/jbosstools/neon/development/updates/discovery.earlyaccess/4.4.1.Final/
-http://download.jboss.org/jbosstools/static/neon/development/updates/coretests/4.4.1.Final/
+http://download.jboss.org/jbosstools/neon/development/updates/discovery.earlyaccess/4.4.2.AM1/
+http://download.jboss.org/jbosstools/static/neon/development/updates/coretests/4.4.2.AM1/
 
 (and, if this is a Final)
 
 http://download.jboss.org/jbosstools/neon/stable/updates/
 http://download.jboss.org/jbosstools/neon/stable/updates/discovery.earlyaccess/
-http://download.jboss.org/jbosstools/neon/stable/updates/discovery.earlyaccess/4.4.1.Final/
-http://download.jboss.org/jbosstools/static/neon/stable/updates/coretests/4.4.1.Final/
+http://download.jboss.org/jbosstools/neon/stable/updates/discovery.earlyaccess/4.4.2.AM1/
+http://download.jboss.org/jbosstools/static/neon/stable/updates/coretests/4.4.2.AM1/
 
 
 === WebTools
@@ -417,8 +426,8 @@ Update it so that the links for the latest milestone point to valid URLs. Commen
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru # ~
 pushd jbosstools-download.jboss.org/jbosstools/configuration
-version_jbt=4.4.1.Final
-versionWithRespin_jbt=4.4.1.Final # a, b, c...
+version_jbt=4.4.2.AM1
+versionWithRespin_jbt=4.4.2.AM1 # a, b, c...
 version_ds=10.1.0.GA # no respin suffix here
 versionWithRespin_ds=10.1.0.GA # a, b, c...
 
@@ -470,7 +479,7 @@ WARNING: Only applies to Beta and better versions.
 
 === If node does not yet exist
 
-For the first Beta, create a new node on Marketplace, using content from http://download.jboss.org/jbosstools/static/neon/stable/updates/core/4.4.1.Final/site.properties
+For the first Beta, create a new node on Marketplace, using content from http://download.jboss.org/jbosstools/static/neon/stable/updates/core/4.4.2.AM1/site.properties
 
 === If node already exists
 
@@ -478,14 +487,14 @@ Access it via +https://marketplace.eclipse.org/content/jboss-tools/edit+ and upd
 
 * Title to match new version
 * Description to match new version & dependencies
-* Update list of features, using content of http://download.jboss.org/jbosstools/static/neon/stable/updates/core/4.4.1.Final/site.properties
+* Update list of features, using content of http://download.jboss.org/jbosstools/static/neon/stable/updates/core/4.4.2.AM1/site.properties
 
 To diff if any new features have been added/removed:
 
 [source,bash]
 ----
 version_jbt_PREV=4.4.0.Final
-version_jbt=4.4.1.Final
+version_jbt=4.4.2.AM1
 
 cd /tmp
 wget -O ${version_jbt_PREV}.properties http://download.jboss.org/jbosstools/static/neon/development/updates/core/${version_jbt_PREV}/site.properties
@@ -562,8 +571,8 @@ git clone https://github.com/jbosstools/jbosstools-versionwatch
 # maven-plugins does not get released/branched the same as other projects, but tag it anyway
 # download.jboss.org tag might not be valid as tweaks to ide-config.properties happen frequently
 
-jbt_branch=jbosstools-4.4.1.x # or master
-version_jbt=4.4.1.Final
+jbt_branch=master # or jbosstools-4.4.2.x
+version_jbt=4.4.2.AM1
 cd ~/tru # ~
 for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins versionwatch; do
   echo "====================================================================="
@@ -587,5 +596,6 @@ Notifify Alexy & Jeff that bulk tagging should be done, and the website is ready
 
 If co-releasing JBT and JBDS, make sure that JBDS is released too!
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-push-to-dev-stable-07-notification-emails_4.4.neon/configure
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-releng-push-to-dev-stable-07-notification-emails_4.4.neon/configure
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-releng-push-to-dev-stable-07-notification-emails_master/configure
 

@@ -599,3 +599,26 @@ If co-releasing JBT and JBDS, make sure that JBDS is released too!
 https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-releng-push-to-dev-stable-07-notification-emails_4.4.neon/configure
 https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-releng-push-to-dev-stable-07-notification-emails_master/configure
 
+
+== Bump parent pom to newer BUILD_ALIAS value
+
+Once the current milestone is done, the BUILD_ALIAS in parent pom should be bumped to a new value.
+
+# adjust these steps to fit your own path location & git workflow
+cd ~/tru # ~
+pushd jbosstools-build/parent
+BUILD_ALIAS=AM1
+BUILD_ALIAS_NEXT=AM2
+
+git fetch origin master
+git checkout FETCH_HEAD
+
+sed -i -e "s#<BUILD_ALIAS>${BUILD_ALIAS}</BUILD_ALIAS>#<BUILD_ALIAS>${BUILD_ALIAS_NEXT}</BUILD_ALIAS>#" pom.xml
+
+ci "bump parent pom to BUILD_ALIAS = ${BUILD_ALIAS_NEXT}" pom.xml
+git push origin HEAD:master
+
+# rebuild parent pom in master branch
+# https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-build.parent_master/build
+jp-ppm
+

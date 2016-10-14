@@ -45,9 +45,9 @@ userpass=nboldt:PASSWORD
 stream_jbt=master # or 4.4.neon
 stream_ds=master # or 10.0.neon
 github_branch=master # or jbosstools-4.4.1.x or jbosstools-4.4.x
-version_parent=4.4.2.AM1-SNAPSHOT
-version_jbt=4.4.2.AM1
-version_ds=10.2.0.AM1
+version_parent=4.4.2.AM2-SNAPSHOT
+version_jbt=4.4.2.AM2
+version_ds=10.2.0.AM2
 
 # TODO migrate this to use jbosstools-build-ci/util/jenkinsPost.sh wrapper
 for j in jbosstools-releng-push-to-staging-01-check-versions-branches-root-poms_master; do
@@ -106,12 +106,12 @@ Then respin the job:
 # kerberos login for the Jenkins server
 userpass=nboldt:PASSWORD
 
-versionWithRespin_jbt=4.4.2.AM1 # a, b, c... (not SNAPSHOT!)
-versionWithRespin_ds=10.2.0.AM1
+versionWithRespin_jbt=4.4.2.AM2 # a, b, c... (not SNAPSHOT!)
+versionWithRespin_ds=10.2.0.AM2
 stream_jbt=master # or 4.4.neon
 stream_ds=master # or 10.0.neon
-TARGET_PLATFORM_VERSION_MAX=4.60.1.Final
-TARGET_PLATFORM_CENTRAL_MAX=4.60.1.Final-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.61.0.AM1-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.61.0.AM1-SNAPSHOT
 for j in jbosstools-discovery_${stream_jbt}; do
   curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/enable && echo -n ".E"
   curl -k -u ${userpass} --data "VERSION="${versionWithRespin_jbt##*.}"&version_jbt_base="${versionWithRespin_jbt%.*}"&version_ds_base="${versionWithRespin_ds%.*}"&\
@@ -133,7 +133,7 @@ You'll need this later for smoke testing. Start fetching it now to save time lat
 [source,bash]
 ----
 
-cd ~/tmp; wget https://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/neon/R/eclipse-jee-neon-R-linux-gtk-x86_64.tar.gz &
+cd ~/tmp; wget http://download.eclipse.org/technology/epp/downloads/release/neon/1a/eclipse-jee-neon-1a-linux-gtk-x86_64.tar.gz &
 # or
 cd ~/tmp; wget https://hudson.eclipse.org/packaging/job/neon.epp-tycho-build/437/artifact/org.eclipse.epp.packages/archive/20160913-0900_eclipse-jee-neon-1-linux.gtk.x86_64.tar.gz &
 
@@ -155,10 +155,10 @@ userpass=nboldt:PASSWORD
 
 stream_jbt=master # or 4.4.neon
 stream_ds=master # or 10.0.neon
-versionWithRespin_jbt=4.4.2.AM1
-versionWithRespin_ds=10.2.0.AM1
-TARGET_PLATFORM_VERSION_MAX=4.60.1.Final
-TARGET_PLATFORM_CENTRAL_MAX=4.60.1.Final-SNAPSHOT
+versionWithRespin_jbt=4.4.2.AM2
+versionWithRespin_ds=10.2.0.AM2
+TARGET_PLATFORM_VERSION_MAX=4.61.0.AM1-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.61.0.AM1-SNAPSHOT
 
 # TODO migrate this to use jbosstools-build-ci/util/jenkinsPost.sh wrapper
 for j in jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites_master; do
@@ -188,8 +188,8 @@ http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-st
 # kerberos login for the Jenkins server
 userpass=nboldt:PASSWORD
 
-versionWithRespin_jbt=4.4.2.AM1
-versionWithRespin_ds=10.2.0.AM1
+versionWithRespin_jbt=4.4.2.AM2
+versionWithRespin_ds=10.2.0.AM2
 
 # TODO migrate this to use jbosstools-build-ci/util/jenkinsPost.sh wrapper
 for j in jbosstools-releng-push-to-staging-03-verify-builds-update-sites_master; do
@@ -245,7 +245,7 @@ cd ~/tru
 RSYNC="rsync -aPrz --rsh=ssh --protocol=28"
 
 versionWithRespin_jbt_PREV=4.4.1.Final # a, b, c...
-versionWithRespin_jbt=4.4.2.AM1 # a, b, c...
+versionWithRespin_jbt=4.4.2.AM2 # a, b, c...
 DESTINATION=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 PROJECT_PATH=jbosstools-download.jboss.org/jbosstools
 DEST_URL="http://download.jboss.org/jbosstools"
@@ -312,10 +312,10 @@ Update it so that the links for the latest milestone point to valid URLs. Commen
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru
 pushd jbosstools-download.jboss.org/jbosstools/configuration
-version=4.4.2.AM1
-versionWithRespin_jbt=4.4.2.AM1 # a, b, c...
-version_ds=10.2.0.AM1 # no respin suffix here
-versionWithRespin_ds=10.2.0.AM1 # a, b, c...
+version=4.4.2.AM2
+versionWithRespin_jbt=4.4.2.AM2 # a, b, c...
+version_ds=10.2.0.AM2 # no respin suffix here
+versionWithRespin_ds=10.2.0.AM2 # a, b, c...
 
 git fetch origin master
 git checkout FETCH_HEAD
@@ -384,7 +384,7 @@ TODO: Important: if you switched the _master jobs to run from origin/jbosstools-
 
 If the next build will NOT be a respin, you will also need to ALSO make these changes to jobs, and upversion/release artifacts such as releng scripts or target platforms if you haven't done so already:
 
-* set correct github branch, eg., switch from 4.4.2.AM1x to 4.4.x
+* set correct github branch, eg., switch from 4.4.2.AM2x to 4.4.x
 * upversion dependencies, eg., releng scripts move from version CR1 to CR1 (if that's been released)
 * upversion target platforms / Central version (if those have been released)
 

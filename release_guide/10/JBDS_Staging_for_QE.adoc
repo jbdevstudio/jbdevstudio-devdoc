@@ -37,7 +37,7 @@ https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-s
 
 cd ~/tmp
 rm -f index.html
-versionWithRespin_ds=10.2.0.AM1 # a, b, c...
+versionWithRespin_ds=10.2.0.AM2 # a, b, c...
 wget https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
 installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 echo "Installer jar: ${installerJar}"
@@ -89,7 +89,7 @@ cd ~/truu
 RSYNC="rsync -aPrz --rsh=ssh --protocol=28"
 
 versionWithRespin_ds_PREV=10.1.0.GA # a, b, c...
-versionWithRespin_ds=10.2.0.AM1 # a, b, c...
+versionWithRespin_ds=10.2.0.AM2 # a, b, c...
 DESTINATION=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
 PROJECT_PATH=jbdevstudio-website/content
 DEST_URL="https://devstudio.redhat.com"
@@ -158,7 +158,7 @@ Before notifying team of staged release, must check for obvious problems.
 
 [source,bash]
 ----
-versionWithRespin_ds=10.2.0.AM1 # a, b, c...
+versionWithRespin_ds=10.2.0.AM2 # a, b, c...
 cd ~/tmp
 wget https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
 installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
@@ -232,7 +232,7 @@ Then:
 [source,bash]
 ----
 
-versionWithRespin_ds=10.2.0.AM1 # a, b, c...
+versionWithRespin_ds=10.2.0.AM2 # a, b, c...
 installerExe=development-suite-1.0.1-foo-fix-this-bundle-installer.exe
 installerDir=RHDS/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all
 wonkaDir=nboldt@wonka.mw.lab.eng.bos.redhat.com:/home/windup/apache2/www/html/
@@ -247,7 +247,7 @@ cat ${y}.sha256
 
 Review content here:
 
-http://www.qa.jboss.com/binaries/devstudio/10.0/staging/builds/devstudio-10.2.0.AM1-build-product/latest/all/
+http://www.qa.jboss.com/binaries/devstudio/10.0/staging/builds/devstudio-10.2.0.AM2-build-product/latest/all/
 
 == Notify the team (send 1 email)
 
@@ -255,9 +255,9 @@ Run this on dev01 so that we can use /bin/mail. Email should be generated automa
 
 [source,bash]
 ----
-version_ds=10.2.0.AM1
+version_ds=10.2.0.AM2
 version_devsuite=1.0.0-GA
-versionWithRespin_ds=10.2.0.AM1 # a, b, c...
+versionWithRespin_ds=10.2.0.AM2 # a, b, c...
 installerExe=development-suite-1.0.1-foo-fix-this-bundle-installer.exe
 installerDir=RHDS/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all
 respin="respin-"

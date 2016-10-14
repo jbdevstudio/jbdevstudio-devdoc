@@ -13,11 +13,11 @@ Here is a script that performs the merge for the JBT and JBDS /staging/ sites.
 [source,bash]
 ----
 
-version_jbt=4.4.2.AM1
-versionWithRespin_jbt=4.4.2.AM1 # a, b, c...
+version_jbt=4.4.2.AM2
+versionWithRespin_jbt=4.4.2.AM2 # a, b, c...
 version_jbt_IS=4.4.0.Alpha1
-version_ds=10.2.0.AM1 # no respin suffix here
-versionWithRespin_jbt_ds=10.2.0.AM1 # a, b, c...
+version_ds=10.2.0.AM2 # no respin suffix here
+versionWithRespin_jbt_ds=10.2.0.AM2 # a, b, c...
 version_ds_IS=10.0.0.Alpha1
 qual_IS=development
 

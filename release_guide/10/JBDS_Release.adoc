@@ -233,7 +233,8 @@ red="\033[1;31m"
 version_ds=10.1.0.GA
 versionWithRespin_ds=10.1.0.GA
 
-JBDS="devstudio@filemgmt.jboss.org:/www_htdocs/devstudio"
+# use filemgmt.jboss.org IP instead of 10.5.105.197 because it's 3x faster!
+JBDS="devstudio@10.5.105.197:/www_htdocs/devstudio"
 mkdir -p ${HOME}/JBDS-ssh; sshfs $JBDS ${HOME}/JBDS-ssh
 
 # 1. installers, update sites, central/earlyaccess, discovery (5 builds)
@@ -339,7 +340,7 @@ git fetch origin master
 git checkout FETCH_HEAD
 
 # mount an sshfs drive for $JBDS
-JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
+JBDS=devstudio@10.5.105.197:/www_htdocs/devstudio
 sshfs $JBDS $HOME/JBDS-ssh
 
 version_ds=10.1.0.GA
@@ -416,7 +417,7 @@ done
 # push updated files to server
 for qual in $quals; do
   pushd ${qual}/updates/ >/dev/null
-    JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
+    JBDS=devstudio@10.5.105.197:/www_htdocs/devstudio
     scpr *.*ml ${JBDS}/10.0/${qual}/updates/
     for d in discovery.central discovery.earlyaccess; do
       echo ${d}/
@@ -492,7 +493,7 @@ cd ~/truu # or where you have jbdevstudio-website checked out ~
 
 TARGET_PLATFORM_VERSION_MAX=4.60.1.Final
 now=`date +%s000`
-JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
+JBDS=devstudio@10.5.105.197:/www_htdocs/devstudio
 
 # for Final TPs only!
 pushd jbdevstudio-website/content/targetplatforms/

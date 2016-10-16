@@ -58,7 +58,8 @@ First, use sshfs to mount filemgmt file paths.
 [source,bash]
 ----
 
-JBDS=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
+# use filemgmt.jboss.org IP instead of 10.5.105.197 because it's 3x faster!
+JBDS=devstudio@10.5.105.197:/www_htdocs/devstudio
 sshfs $JBDS $HOME/JBDS-ssh
 
 ----
@@ -90,7 +91,8 @@ RSYNC="rsync -aPrz --rsh=ssh --protocol=28"
 
 versionWithRespin_ds_PREV=10.2.0.AM1 # a, b, c...
 versionWithRespin_ds=10.2.0.AM2 # a, b, c...
-DESTINATION=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
+# use filemgmt.jboss.org IP instead of 10.5.105.197 because it's 3x faster!
+DESTINATION=devstudio@10.5.105.197:/www_htdocs/devstudio
 PROJECT_PATH=jbdevstudio-website/content
 DEST_URL="https://devstudio.redhat.com"
 updatePath=10.0/staging/updates

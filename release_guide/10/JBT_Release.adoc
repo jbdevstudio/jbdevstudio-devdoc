@@ -83,7 +83,8 @@ red="\033[1;31m"
 version_jbt=4.4.2.AM1
 versionWithRespin_jbt=4.4.2.AM1
 
-TOOLS="tools@filemgmt.jboss.org:/downloads_htdocs/tools"
+# use filemgmt.jboss.org IP instead of 10.5.105.197 because it's 3x faster!
+TOOLS="tools@10.5.105.197:/downloads_htdocs/tools"
 mkdir -p ${HOME}/TOOLS-ssh; sshfs $TOOLS ${HOME}/TOOLS-ssh
 
 # 0. copy all 7 jbosstools builds/update sites
@@ -264,7 +265,7 @@ done
 # push updated files to server
 for qual in $quals; do
   pushd ${qual}/updates/ >/dev/null
-    TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
+    TOOLS=tools@10.5.105.197:/downloads_htdocs/tools
     scpr *.*ml ${TOOLS}/neon/${qual}/updates/
     for d in core coretests discovery.central discovery.earlyaccess; do
       echo ${d}/
@@ -369,7 +370,7 @@ cd ~/tru # or where you have jbosstools-download.jboss.org checked out ~
 
 TARGET_PLATFORM_VERSION_MAX=4.60.1.Final
 now=`date +%s000`
-TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
+TOOLS=tools@10.5.105.197:/downloads_htdocs/tools
 
 # for Final TPs only!
 pushd jbosstools-download.jboss.org/jbosstools/targetplatforms/
@@ -466,7 +467,7 @@ ci "release JBT ${version_jbt} (${versionWithRespin_jbt}) to public: link to lat
 git push origin HEAD:master
 
 # push updated file to server
-TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
+TOOLS=tools@10.5.105.197:/downloads_htdocs/tools
 rsync -Pzrlt --rsh=ssh --protocol=28 ide-config.properties $TOOLS/configuration/ide-config.properties
 popd
 

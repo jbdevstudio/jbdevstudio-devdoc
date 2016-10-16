@@ -7,7 +7,9 @@ TODO: use sshfs to do copies in a single step, instead of rsync-pull/rsync-push 
 
 [NOTE]
 ====
-Note that +sftp://tools@filemgmt.jboss.org/downloads_htdocs/tools/+ maps to +http://download.jboss.org/jbosstools/+ +
+Note that +sftp://tools@10.5.105.197/downloads_htdocs/tools/+ maps to +http://download.jboss.org/jbosstools/+ +
+
+(Use filemgmt.jboss.org IP instead of 10.5.105.197 because it's 3x faster!)
 
 If you do not need it urgently, you can push files there simply by pushing a change into the following location: https://github.com/jbosstools/jbosstools-download.jboss.org/tree/master/jbosstools .
 A Jenkins job can then be triggered to sync changes to download.jboss.org: https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-download.jboss.org-rsync-from-svn/
@@ -214,7 +216,8 @@ First, use sshfs to mount filemgmt file paths.
 [source,bash]
 ----
 
-TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
+# use filemgmt.jboss.org IP instead of 10.5.105.197 because it's 3x faster!
+TOOLS=tools@10.5.105.197:/downloads_htdocs/tools
 sshfs $TOOLS /media/TOOLS-ssh
 
 ----
@@ -245,7 +248,8 @@ cd ~/tru
 RSYNC="rsync -aPrz --rsh=ssh --protocol=28"
 
 versionWithRespin_jbt=4.4.2.AM2 # a, b, c...
-DESTINATION=tools@filemgmt.jboss.org:/downloads_htdocs/tools
+# use filemgmt.jboss.org IP instead of 10.5.105.197 because it's 3x faster!
+DESTINATION=tools@10.5.105.197:/downloads_htdocs/tools
 PROJECT_PATH=jbosstools-download.jboss.org/jbosstools
 DEST_URL="http://download.jboss.org/jbosstools"
 updatePath=neon/staging/updates
@@ -330,7 +334,8 @@ ci "release JBT ${version} (${versionWithRespin_jbt}) to staging: link to latest
 git push origin HEAD:master
 
 # push updated file to server
-TOOLS=tools@filemgmt.jboss.org:/downloads_htdocs/tools
+# use filemgmt.jboss.org IP instead of 10.5.105.197 because it's 3x faster!
+TOOLS=tools@10.5.105.197:/downloads_htdocs/tools
 RSYNC="rsync -aPrz --rsh=ssh --protocol=28"
 ${RSYNC} ide-config.properties $TOOLS/configuration/ide-config.properties
 

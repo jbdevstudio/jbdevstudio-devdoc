@@ -244,7 +244,6 @@ This should point to the latest staging bits. Just copy what's in discovery.cent
 cd ~/tru
 RSYNC="rsync -aPrz --rsh=ssh --protocol=28"
 
-versionWithRespin_jbt_PREV=4.4.1.Final # a, b, c...
 versionWithRespin_jbt=4.4.2.AM2 # a, b, c...
 DESTINATION=tools@filemgmt.jboss.org:/downloads_htdocs/tools
 PROJECT_PATH=jbosstools-download.jboss.org/jbosstools
@@ -263,12 +262,6 @@ for d in discovery.central discovery.earlyaccess; do
   popd
 done
 rsync discovery.central/${versionWithRespin_jbt}/composite*.xml ./
-
-# update index.html
-if [[ -f index.html ]]; then
-  sed -i "s#${versionWithRespin_jbt_PREV}#${versionWithRespin_jbt}#" index.html
-  cat index.html | egrep "${versionWithRespin_jbt_PREV}|${versionWithRespin_jbt}"
-fi
 
 ## wait here until all copies from snapshots -> staging is done
 
@@ -350,7 +343,10 @@ popd
 Before notifying team of staged release, must check for obvious problems.
 
 1. Get a recent Eclipse (compatible with the target version of JBT)
-2. Install Abridged category from http://download.jboss.org/jbosstools/neon/staging/updates/
+2. Install Abridged category from
+
+http://download.jboss.org/jbosstools/neon/staging/updates/
+
 3. Restart when prompted. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
 4. Check log, start an example project, check log again
 

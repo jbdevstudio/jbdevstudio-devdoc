@@ -88,7 +88,7 @@ This should point to the latest staging bits. Just copy what's in discovery.cent
 cd ~/truu
 RSYNC="rsync -aPrz --rsh=ssh --protocol=28"
 
-versionWithRespin_ds_PREV=10.1.0.GA # a, b, c...
+versionWithRespin_ds_PREV=10.2.0.AM1 # a, b, c...
 versionWithRespin_ds=10.2.0.AM2 # a, b, c...
 DESTINATION=devstudio@filemgmt.jboss.org:/www_htdocs/devstudio
 PROJECT_PATH=jbdevstudio-website/content
@@ -152,7 +152,10 @@ See details in JBT_Staging_For_QE.adoc
 Before notifying team of staged release, must check for obvious problems.
 
 1. Get a recent Eclipse (compatible with the target version of JBT)
-2. Install BYOE category from https://devstudio.redhat.com/10.0/staging/updates/
+2. Install BYOE category from
+
+https://devstudio.redhat.com/10.0/staging/updates/
+
 3. Restart when prompted. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
 4. Check log, start an example project, check log again
 

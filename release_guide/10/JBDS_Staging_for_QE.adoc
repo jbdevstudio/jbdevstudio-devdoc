@@ -53,29 +53,9 @@ You'll use this downloaded installer later, but since it takes a while to downlo
 
 Optional step.
 
-First, use sshfs to mount filemgmt file paths.
+Run this job to move any old builds into an OLD/ folder for later cleanup, or delete them immediately.
 
-[source,bash]
-----
-
-# use filemgmt.jboss.org IP instead of 10.5.105.197 because it's 3x faster!
-JBDS=devstudio@10.5.105.197:/www_htdocs/devstudio
-sshfs $JBDS $HOME/JBDS-ssh
-
-----
-
-Then move old builds into an OLD/ folder to they're less visible and ready for deletion later.
-
-[source,bash]
-----
-version_PREV=10.0.0.Alpha0 # a, b, c...
-for d in updates/core updates/central updates/earlyaccess updates/discovery.central updates/discovery.earlyaccess builds; do
-  if [[ -d $HOME/JBDS-ssh/10.0/staging/${d}/ ]]; then
-    echo "${d}/*${version_PREV}* ..."
-    mkdir -p $HOME/JBDS-ssh/10.0/staging/${d}/OLD/
-    mv $HOME/JBDS-ssh/10.0/staging/${d}/*${version_PREV}* $HOME/JBDS-ssh/10.0/staging/${d}/OLD/
-  fi
-done
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-08-delete-builds-and-update-sites_master
 
 ----
 

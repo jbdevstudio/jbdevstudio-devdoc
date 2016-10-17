@@ -108,6 +108,8 @@ Then respin the job:
 # kerberos login for the Jenkins server
 userpass=nboldt:PASSWORD
 
+# TODO VERIFY THIS WORKS (JBIDE-23093 refactoring)
+
 versionWithRespin_jbt=4.4.2.AM2 # a, b, c... (not SNAPSHOT!)
 versionWithRespin_ds=10.2.0.AM2
 stream_jbt=master # or 4.4.neon
@@ -116,8 +118,8 @@ TARGET_PLATFORM_VERSION_MAX=4.61.0.AM1-SNAPSHOT
 TARGET_PLATFORM_CENTRAL_MAX=4.61.0.AM1-SNAPSHOT
 for j in jbosstools-discovery_${stream_jbt}; do
   curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/enable && echo -n ".E"
-  curl -k -u ${userpass} --data "VERSION="${versionWithRespin_jbt##*.}"&version_jbt_base="${versionWithRespin_jbt%.*}"&version_ds_base="${versionWithRespin_ds%.*}"&\
-TARGET_PLATFORM_VERSION_MAXIMUM=${TARGET_PLATFORM_VERSION_MAX}&JBTCENTRALTARGET_VERSION=${TARGET_PLATFORM_CENTRAL_MAX}" \
+  curl -k -u ${userpass} --data "buildType=staging&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
+TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&TARGET_PLATFORM_CENTRAL_MAX=${TARGET_PLATFORM_CENTRAL_MAX}" \
 https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/buildWithParameters && echo -n ".B"
   sleep 15s
   # then disable the job

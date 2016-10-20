@@ -102,8 +102,8 @@ pushd jbosstools-download.jboss.org/jbosstools/neon
 git fetch origin master
 git checkout FETCH_HEAD
 
-version_jbt=4.4.2.AM2
-versionWithRespin_jbt=4.4.2.AM2 # a, b, c...
+versionWithRespin_jbt=4.4.2.AM3 # a, b, c...
+version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
 quals="development"; if [[ ${version_jbt##*Final} == "" ]]; then quals="development stable"; fi # **##
 echo "
 - integration-stack/*
@@ -225,15 +225,15 @@ Open p2-browser and verify these sites load correctly:
 
 http://download.jboss.org/jbosstools/neon/development/updates/
 http://download.jboss.org/jbosstools/neon/development/updates/discovery.earlyaccess/
-http://download.jboss.org/jbosstools/neon/development/updates/discovery.earlyaccess/4.4.2.AM2/
-http://download.jboss.org/jbosstools/static/neon/development/updates/coretests/4.4.2.AM2/
+http://download.jboss.org/jbosstools/neon/development/updates/discovery.earlyaccess/4.4.2.AM3/
+http://download.jboss.org/jbosstools/static/neon/development/updates/coretests/4.4.2.AM3/
 
 (and, if this is a Final)
 
 http://download.jboss.org/jbosstools/neon/stable/updates/
 http://download.jboss.org/jbosstools/neon/stable/updates/discovery.earlyaccess/
-http://download.jboss.org/jbosstools/neon/stable/updates/discovery.earlyaccess/4.4.2.AM2/
-http://download.jboss.org/jbosstools/static/neon/stable/updates/coretests/4.4.2.AM2/
+http://download.jboss.org/jbosstools/neon/stable/updates/discovery.earlyaccess/4.4.2.AM3/
+http://download.jboss.org/jbosstools/static/neon/stable/updates/coretests/4.4.2.AM3/
 
 
 === WebTools
@@ -343,10 +343,10 @@ Update it so that the links for the latest milestone point to valid URLs. Commen
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru # ~
 pushd jbosstools-download.jboss.org/jbosstools/configuration
-version_jbt=4.4.2.AM2
-versionWithRespin_jbt=4.4.2.AM2 # a, b, c...
-version_ds=10.1.0.GA # no respin suffix here
-versionWithRespin_ds=10.1.0.GA # a, b, c...
+versionWithRespin_jbt=4.4.2.AM3 # a, b, c...
+version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # **
+versionWithRespin_ds=10.2.0.AM3 # a, b, c...
+version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # **
 
 git fetch origin master
 git checkout FETCH_HEAD
@@ -396,7 +396,7 @@ WARNING: Only applies to Beta and better versions.
 
 === If node does not yet exist
 
-For the first Beta, create a new node on Marketplace, using content from http://download.jboss.org/jbosstools/static/neon/stable/updates/core/4.4.2.AM2/site.properties
+For the first Beta, create a new node on Marketplace, using content from http://download.jboss.org/jbosstools/static/neon/stable/updates/core/4.4.2.AM3/site.properties
 
 === If node already exists
 
@@ -404,14 +404,14 @@ Access it via +https://marketplace.eclipse.org/content/jboss-tools/edit+ and upd
 
 * Title to match new version
 * Description to match new version & dependencies
-* Update list of features, using content of http://download.jboss.org/jbosstools/static/neon/stable/updates/core/4.4.2.AM2/site.properties
+* Update list of features, using content of http://download.jboss.org/jbosstools/static/neon/stable/updates/core/4.4.2.AM3/site.properties
 
 To diff if any new features have been added/removed:
 
 [source,bash]
 ----
 version_jbt_PREV=4.4.1.Final
-version_jbt=4.4.2.AM2
+version_jbt=4.4.2.AM3
 
 # for Final releases only!
 if [[ ${version_jbt} == *"Final" ]]; then
@@ -492,7 +492,7 @@ git clone https://github.com/jbosstools/jbosstools-versionwatch
 # download.jboss.org tag might not be valid as tweaks to ide-config.properties happen frequently
 
 jbt_branch=master # or jbosstools-4.4.2.x
-version_jbt=4.4.2.AM2
+version_jbt=4.4.2.AM3
 cd ~/tru # ~
 for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins versionwatch; do
   echo "====================================================================="
@@ -527,8 +527,8 @@ Once the current milestone is done, the BUILD_ALIAS in parent pom should be bump
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru # ~
 pushd jbosstools-build/parent
-BUILD_ALIAS=AM2
-BUILD_ALIAS_NEXT=AM3
+BUILD_ALIAS=AM3
+BUILD_ALIAS_NEXT=Final
 
 git fetch origin master
 git checkout FETCH_HEAD

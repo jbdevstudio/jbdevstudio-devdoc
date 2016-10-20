@@ -37,7 +37,7 @@ https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-s
 
 cd ~/tmp
 rm -f index.html
-versionWithRespin_ds=10.2.0.AM2 # a, b, c...
+versionWithRespin_ds=10.2.0.AM3 # a, b, c...
 wget https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
 installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 echo "Installer jar: ${installerJar}"
@@ -69,8 +69,8 @@ This should point to the latest staging bits. Just copy what's in discovery.cent
 cd ~/truu
 RSYNC="rsync -aPrz --rsh=ssh --protocol=28"
 
-versionWithRespin_ds_PREV=10.2.0.AM1 # a, b, c...
-versionWithRespin_ds=10.2.0.AM2 # a, b, c...
+versionWithRespin_ds_PREV=10.2.0.AM2 # a, b, c...
+versionWithRespin_ds=10.2.0.AM3 # a, b, c...
 # use filemgmt.jboss.org IP instead of 10.5.105.197 because it's 3x faster!
 DESTINATION=devstudio@10.5.105.197:/www_htdocs/devstudio
 PROJECT_PATH=jbdevstudio-website/content
@@ -143,7 +143,7 @@ https://devstudio.redhat.com/10.0/staging/updates/
 
 [source,bash]
 ----
-versionWithRespin_ds=10.2.0.AM2 # a, b, c...
+versionWithRespin_ds=10.2.0.AM3 # a, b, c...
 cd ~/tmp
 wget https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
 installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
@@ -217,7 +217,7 @@ Then:
 [source,bash]
 ----
 
-versionWithRespin_ds=10.2.0.AM2 # a, b, c...
+versionWithRespin_ds=10.2.0.AM3 # a, b, c...
 installerExe=development-suite-1.0.1-foo-fix-this-bundle-installer.exe
 installerDir=RHDS/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all
 wonkaDir=nboldt@wonka.mw.lab.eng.bos.redhat.com:/home/windup/apache2/www/html/
@@ -232,7 +232,7 @@ cat ${y}.sha256
 
 Review content here:
 
-http://www.qa.jboss.com/binaries/devstudio/10.0/staging/builds/devstudio-10.2.0.AM2-build-product/latest/all/
+http://www.qa.jboss.com/binaries/devstudio/10.0/staging/builds/devstudio-10.2.0.AM3-build-product/latest/all/
 
 == Notify the team (send 1 email)
 
@@ -240,9 +240,9 @@ Run this on dev01 so that we can use /bin/mail. Email should be generated automa
 
 [source,bash]
 ----
-version_ds=10.2.0.AM2
-version_devsuite=1.0.0-GA
-versionWithRespin_ds=10.2.0.AM2 # a, b, c...
+version_devsuite=1.2.0-AM3
+versionWithRespin_ds=10.2.0.AM3 # a, b, c...
+version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
 installerExe=development-suite-1.0.1-foo-fix-this-bundle-installer.exe
 installerDir=RHDS/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all
 respin="respin-"

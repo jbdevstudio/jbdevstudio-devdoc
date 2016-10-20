@@ -13,11 +13,11 @@ Here is a script that performs the merge for the JBT and JBDS /staging/ sites.
 [source,bash]
 ----
 
-version_jbt=4.4.2.AM2
 versionWithRespin_jbt=4.4.2.AM2 # a, b, c...
+version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
 version_jbt_IS=4.4.0.Alpha1
-version_ds=10.2.0.AM2 # no respin suffix here
-versionWithRespin_jbt_ds=10.2.0.AM2 # a, b, c...
+versionWithRespin_ds=10.2.0.AM2 # a, b, c...
+version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # **
 version_ds_IS=10.0.0.Alpha1
 qual_IS=development
 
@@ -27,7 +27,7 @@ pushd /tmp
   wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/mergeISdiscovery.sh -q -nc && chmod +x mergeISdiscovery.sh
   ./mergeISdiscovery.sh -v ${version_jbt} -vr ${versionWithRespin_jbt} \
     -is http://download.jboss.org/jbosstools/neon/${qual_IS}/updates/integration-stack/discovery/${version_jbt_IS}/earlyaccess/ -quiet
-  ./mergeISdiscovery.sh -v ${version_ds} -vr ${versionWithRespin_jbt_ds} \
+  ./mergeISdiscovery.sh -v ${version_ds} -vr ${versionWithRespin_ds} \
     -is https://devstudio.redhat.com/10.0/${qual_IS}/updates/integration-stack/discovery/${version_ds_IS}/earlyaccess/ -JBDS -quiet
   rm -f /tmp/mergeISdiscovery.sh
 popd
@@ -37,10 +37,10 @@ http://download.jboss.org/jbosstools/neon/staging/updates/discovery.central/${ve
 http://download.jboss.org/jbosstools/neon/staging/updates/discovery.central/${versionWithRespin_jbt}/plugins/ \
 http://download.jboss.org/jbosstools/neon/staging/updates/discovery.earlyaccess/${versionWithRespin_jbt}/jbosstools-directory.xml \
 http://download.jboss.org/jbosstools/neon/staging/updates/discovery.earlyaccess/${versionWithRespin_jbt}/plugins/ \
-https://devstudio.redhat.com/10.0/staging/updates/discovery.central/${versionWithRespin_jbt_ds}/devstudio-directory.xml \
-https://devstudio.redhat.com/10.0/staging/updates/discovery.central/${versionWithRespin_jbt_ds}/plugins/ \
-https://devstudio.redhat.com/10.0/staging/updates/discovery.earlyaccess/${versionWithRespin_jbt_ds}/devstudio-directory.xml \
-https://devstudio.redhat.com/10.0/staging/updates/discovery.earlyaccess/${versionWithRespin_jbt_ds}/plugins/
+https://devstudio.redhat.com/10.0/staging/updates/discovery.central/${versionWithRespin_ds}/devstudio-directory.xml \
+https://devstudio.redhat.com/10.0/staging/updates/discovery.central/${versionWithRespin_ds}/plugins/ \
+https://devstudio.redhat.com/10.0/staging/updates/discovery.earlyaccess/${versionWithRespin_ds}/devstudio-directory.xml \
+https://devstudio.redhat.com/10.0/staging/updates/discovery.earlyaccess/${versionWithRespin_ds}/plugins/
 
 ----
 
@@ -54,7 +54,7 @@ url=http://download.jboss.org/jbosstools/neon/staging/updates/discovery.central/
 ./eclipse -vmargs -Djboss.discovery.directory.url=${url}jbosstools-directory.xml -Djboss.discovery.site.integration-stack.url=${url}
 
 # JBDS
-url=https://devstudio.redhat.com/10.0/staging/updates/discovery.earlyaccess/${versionWithRespin_jbt_ds}/
+url=https://devstudio.redhat.com/10.0/staging/updates/discovery.earlyaccess/${versionWithRespin_ds}/
 ./eclipse -vmargs -Djboss.discovery.directory.url=${url}devstudio-directory.xml -Djboss.discovery.site.integration-stack.url=${url}
 
 ----

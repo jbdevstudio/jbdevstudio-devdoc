@@ -44,6 +44,25 @@ Here are some generalities site promotion/release process. It's not an exhaustiv
 ... Interested parties are notified
 
 
+== Enable dev-stable jobs
+
+You will need to enable the jobs to perform the copy from staging to development (and/or stable).
+
+[source,bash]
+----
+
+# kerberos login for the Jenkins server
+userpass=nboldt:PASSWORD
+stream_jbt=master # or 4.4.neon
+for j in jbosstools-releng-push-to-dev-stable-07-notification-emails_${stream_jbt} \
+jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites_${stream_jbt} \
+jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites_${stream_jbt}; do
+  curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/enable && echo -n ".E"
+done
+
+----
+
+
 == Copy sites
 
 These steps happens on filemgmt.jboss.org, in the jbosstools download area.
@@ -52,120 +71,16 @@ These steps happens on filemgmt.jboss.org, in the jbosstools download area.
 
 Here is a job that performs the copy from /staging/ to /development/:
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites_4.4.neon/configure
-or
 https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites_master/configure
 
-Or, if that fails:
+or, for pushing to stable too, use:
 
-[source,bash]
-----
-# globals
-eclipseReleaseName=neon
-devstudioReleaseVersion=10.0
-quiet="-q" # "" for loud, or "-q" for quiet log
-STAGE=${WORKSPACE}/jbosstools-build-ci/publish/stage.sh
-
-if [[ ! -x ${STAGE} ]]; then
-  cd /tmp
-  if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
-  wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/stage.sh --no-check-certificate
-  chmod +x stage.sh
-  STAGE=/tmp/stage.sh
-fi
-
-norm="\033[0;39m"
-green="\033[1;32m"
-red="\033[1;31m"
-
-###################################################
-
-version_jbt=4.4.2.AM1
-versionWithRespin_jbt=4.4.2.AM1
-
-# use filemgmt.jboss.org IP instead of 10.5.105.197 because it's 3x faster!
-TOOLS="tools@10.5.105.197:/downloads_htdocs/tools"
-mkdir -p ${HOME}/TOOLS-ssh; sshfs $TOOLS ${HOME}/TOOLS-ssh
-
-# 0. copy all 7 jbosstools builds/update sites
-quals="development"
-if [[ ${version_jbt##*Final} == "" ]]; then quals="development stable"; fi # **##
-for qual in $quals; do
-  for site in core coretests central earlyaccess discovery.central discovery.earlyaccess browsersim-standalone; do
-    time ${STAGE} -sites $site -stream "${versionWithRespin_jbt}" -vr ${version_jbt} \
-      -sd ${eclipseReleaseName} -dd static/${eclipseReleaseName} -st staging -dt ${qual} \
-      -JOB_NAME jbosstools-${versionWithRespin_jbt}-build-\${site} ${quiet} &
-    sleep 5
-  done
-done
-
-# 1. JBT zips into http://download.jboss.org/jbosstools/static/${eclipseReleaseName}/${qual}/updates/core/
-quals="development"
-if [[ ${version_jbt##*Final} == "" ]]; then quals="development stable"; fi
-tmpdir=~/temp-stage/release_jbt_${version_jbt}_zips; mkdir -p ${tmpdir}; # ~
-# get src.zip & browsersim-standalone.zip
-srcprefix=${TOOLS}/${eclipseReleaseName}/staging/builds/jbosstools-${versionWithRespin_jbt}-build
-{
-  time rsync -aPrz --rsh=ssh ${quiet} --protocol=28 \
-  ${srcprefix}-core/latest/all/jbosstools-${version_jbt}-src.zip* \
-  ${srcprefix}-browsersim-standalone/latest/jbosstools-*-browsersim-standalone.zip* \
-  ${tmpdir}/ && \
-  for qual in $quals; do
-    echo "mkdir core" | sftp ${TOOLS}/static/${eclipseReleaseName}/${qual}/updates/ && \
-    destprefix=http://download.jboss.org/jbosstools/static/${eclipseReleaseName}/${qual}/updates/core && \
-    time rsync -aPrz --rsh=ssh ${quiet} --protocol=28 ${tmpdir}/*.zip* ${TOOLS}/static/${eclipseReleaseName}/${qual}/updates/core/
-  done && \
-  rm -fr $tmpdir && echo -e "
-[INFO] [zips] ${green}${destprefix}/${norm}
-[INFO] [zips] ${green}${destprefix}/jbosstools-${version_jbt}-src.zip${norm}
-[INFO] [zips] ${green}${destprefix}/jbosstools-${version_jbt}-browsersim-standalone.zip${norm}
-[INFO] [zips] ${green}DONE${norm}: ${green}jbosstools-*-src.zip + ${green}jbosstools-*-browsersim-standalone.zip${norm}" &
-}
-
-###################################################
-
-# wait until all background tasks (jbt: 8) are done
-wait
-
-----
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites_4.4.neon/configure
 
 When the job is done, verify everything has been published:
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites_4.4.neon/build (check jbt + devstudio)
 https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites_master/build (check only jbt)
-
-Or, if that fails:
-
-[source,bash]
-----
-
-# globals
-eclipseReleaseName=neon
-devstudioReleaseVersion=10.0
-quiet="-q" # "" for loud, or "-q" for quiet log
-CHECK=${WORKSPACE}/jbosstools-build-ci/publish/checkStagingURLs.sh
-
-if [[ ! -x ${CHECK} ]]; then
-  cd /tmp
-  if [[ -f /tmp/checkStagingURLs.sh ]]; then rm -f /tmp/checkStagingURLs.sh; fi
-  wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/checkStagingURLs.sh --no-check-certificate
-  chmod +x checkStagingURLs.sh
-  CHECK=/tmp/checkStagingURLs.sh
-fi
-
-version_jbt=4.4.2.AM1
-quals="development"
-if [[ ${version_jbt##*Final} == "" ]]; then quals="development stable"; fi # ** ##
-for qual in $quals; do time ${CHECK} -vrjbt ${version_jbt} -ern ${eclipseReleaseName} -qual $qual ${quiet}; echo ""; done
-
-# AM milestones are not released so nothing to verify
-#version_ds=10.2.0.AM1
-#quals="development"
-#if [[ ${version_ds##*GA} == "" ]]; then quals="development stable"; fi # ** ##
-#for qual in $quals; do time ${CHECK} -vrds ${version_ds} -dsrv ${devstudioReleaseVersion} -qual $qual; echo ""; done
-
-----
-
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites_4.4.neon/build (check jbt + devstudio)
 
 === Update composite site metadata for update
 
@@ -187,8 +102,8 @@ pushd jbosstools-download.jboss.org/jbosstools/neon
 git fetch origin master
 git checkout FETCH_HEAD
 
-version_jbt=4.4.2.AM1
-versionWithRespin_jbt=4.4.2.AM1 # a, b, c...
+version_jbt=4.4.2.AM2
+versionWithRespin_jbt=4.4.2.AM2 # a, b, c...
 quals="development"; if [[ ${version_jbt##*Final} == "" ]]; then quals="development stable"; fi # **##
 echo "
 - integration-stack/*
@@ -310,15 +225,15 @@ Open p2-browser and verify these sites load correctly:
 
 http://download.jboss.org/jbosstools/neon/development/updates/
 http://download.jboss.org/jbosstools/neon/development/updates/discovery.earlyaccess/
-http://download.jboss.org/jbosstools/neon/development/updates/discovery.earlyaccess/4.4.2.AM1/
-http://download.jboss.org/jbosstools/static/neon/development/updates/coretests/4.4.2.AM1/
+http://download.jboss.org/jbosstools/neon/development/updates/discovery.earlyaccess/4.4.2.AM2/
+http://download.jboss.org/jbosstools/static/neon/development/updates/coretests/4.4.2.AM2/
 
 (and, if this is a Final)
 
 http://download.jboss.org/jbosstools/neon/stable/updates/
 http://download.jboss.org/jbosstools/neon/stable/updates/discovery.earlyaccess/
-http://download.jboss.org/jbosstools/neon/stable/updates/discovery.earlyaccess/4.4.2.AM1/
-http://download.jboss.org/jbosstools/static/neon/stable/updates/coretests/4.4.2.AM1/
+http://download.jboss.org/jbosstools/neon/stable/updates/discovery.earlyaccess/4.4.2.AM2/
+http://download.jboss.org/jbosstools/static/neon/stable/updates/coretests/4.4.2.AM2/
 
 
 === WebTools
@@ -366,51 +281,52 @@ https://github.com/jbosstools/jbosstools-download.jboss.org/commit/d5306ce940814
 [source,bash]
 ----
 
-cd ~/tru # or where you have jbosstools-download.jboss.org checked out ~
-
-TARGET_PLATFORM_VERSION_MAX=4.60.1.Final
-now=`date +%s000`
-TOOLS=tools@10.5.105.197:/downloads_htdocs/tools
-
+TARGET_PLATFORM_VERSION_MAX=4.61.0.AM1-SNAPSHOT
 # for Final TPs only!
-pushd jbosstools-download.jboss.org/jbosstools/targetplatforms/
-  git fetch origin master
-  git checkout FETCH_HEAD
+if [[ ${TARGET_PLATFORM_VERSION_MAX} == *"Final" ]]; then
+  now=`date +%s000`
+  TOOLS=tools@10.5.105.197:/downloads_htdocs/tools
 
-  for f in jbosstools; do
-    tppath=${f}target/${TARGET_PLATFORM_VERSION_MAX}
-    # move actual TP to /static/ folder
-    echo "rename targetplatforms/${tppath} static/targetplatforms/${tppath}" | sftp ${TOOLS}/
-    # get contents from remote
-    rsync -Pzrlt --rsh=ssh --protocol=28 $TOOLS/static/targetplatforms/${tppath}/composite*.xml ${tppath}/
-    # change pointer to include /static/
-    for d in ${tppath}/composite*.xml; do
-      sed -i -e "s#[\'\"]REPO/[\'\"]#'http://download.jboss.org/jbosstools/static/targetplatforms/${tppath}/REPO/'#g" $d ##
+  cd ~/tru # or where you have jbosstools-download.jboss.org checked out ~
+  pushd jbosstools-download.jboss.org/jbosstools/targetplatforms/
+    git fetch origin master
+    git checkout FETCH_HEAD
+
+    for f in jbosstools; do
+      tppath=${f}target/${TARGET_PLATFORM_VERSION_MAX}
+      # move actual TP to /static/ folder
+      echo "rename targetplatforms/${tppath} static/targetplatforms/${tppath}" | sftp ${TOOLS}/
+      # get contents from remote
+      rsync -Pzrlt --rsh=ssh --protocol=28 $TOOLS/static/targetplatforms/${tppath}/composite*.xml ${tppath}/
+      # change pointer to include /static/
+      for d in ${tppath}/composite*.xml; do
+        sed -i -e "s#[\'\"]REPO/[\'\"]#'http://download.jboss.org/jbosstools/static/targetplatforms/${tppath}/REPO/'#g" $d ##
+      done
+      echo "version = 1
+  metadata.repository.factory.order = compositeContent.xml,\!
+  artifact.repository.factory.order = compositeArtifacts.xml,\!" > ${tppath}/p2.index
+      rsync -Przlt ${tppath}/composite*.xml ${tppath}/p2.index ${tppath}/REPO/
+      # create composite pointer
+      rsync -Pzrlt --rsh=ssh --protocol=28 ${tppath}/* $TOOLS/targetplatforms/${tppath}/
     done
-    echo "version = 1
-metadata.repository.factory.order = compositeContent.xml,\!
-artifact.repository.factory.order = compositeArtifacts.xml,\!" > ${tppath}/p2.index
-    rsync -Przlt ${tppath}/composite*.xml ${tppath}/p2.index ${tppath}/REPO/
-    # create composite pointer
-    rsync -Pzrlt --rsh=ssh --protocol=28 ${tppath}/* $TOOLS/targetplatforms/${tppath}/
-  done
-  # commit changes to github
-  git add ${f}target
-  git commit -m "move target platforms into /static/ and update composite pointers to latest => ${TARGET_PLATFORM_VERSION_MAX}" .
-  git push origin HEAD:master
-popd
+    # commit changes to github
+    git add ${f}target
+    git commit -m "move target platforms into /static/ and update composite pointers to latest => ${TARGET_PLATFORM_VERSION_MAX}" .
+    git push origin HEAD:master
+  popd
 
-# for Final TPs only!
-google-chrome && google-chrome \
-http://download.jboss.org/jbosstools/static/targetplatforms/${tppath}/REPO/ \
-http://download.jboss.org/jbosstools/static/targetplatforms/${tppath}/compositeContent.xml \
+  # for Final TPs only!
+  google-chrome && google-chrome \
+  http://download.jboss.org/jbosstools/static/targetplatforms/${tppath}/REPO/ \
+  http://download.jboss.org/jbosstools/static/targetplatforms/${tppath}/compositeContent.xml \
 
-# verify files are correct
-google-chrome && google-chrome \
-http://download.jboss.org/jbosstools/targetplatforms/${tppath}/REPO/compositeContent.xml \
-http://download.jboss.org/jbosstools/targetplatforms/${tppath}/REPO/p2.index \
-http://download.jboss.org/jbosstools/targetplatforms/${tppath}/compositeContent.xml \
-http://download.jboss.org/jbosstools/targetplatforms/${tppath}/p2.index
+  # verify files are correct
+  google-chrome && google-chrome \
+  http://download.jboss.org/jbosstools/targetplatforms/${tppath}/REPO/compositeContent.xml \
+  http://download.jboss.org/jbosstools/targetplatforms/${tppath}/REPO/p2.index \
+  http://download.jboss.org/jbosstools/targetplatforms/${tppath}/compositeContent.xml \
+  http://download.jboss.org/jbosstools/targetplatforms/${tppath}/p2.index
+fi
 
 ----
 
@@ -427,8 +343,8 @@ Update it so that the links for the latest milestone point to valid URLs. Commen
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru # ~
 pushd jbosstools-download.jboss.org/jbosstools/configuration
-version_jbt=4.4.2.AM1
-versionWithRespin_jbt=4.4.2.AM1 # a, b, c...
+version_jbt=4.4.2.AM2
+versionWithRespin_jbt=4.4.2.AM2 # a, b, c...
 version_ds=10.1.0.GA # no respin suffix here
 versionWithRespin_ds=10.1.0.GA # a, b, c...
 
@@ -480,7 +396,7 @@ WARNING: Only applies to Beta and better versions.
 
 === If node does not yet exist
 
-For the first Beta, create a new node on Marketplace, using content from http://download.jboss.org/jbosstools/static/neon/stable/updates/core/4.4.2.AM1/site.properties
+For the first Beta, create a new node on Marketplace, using content from http://download.jboss.org/jbosstools/static/neon/stable/updates/core/4.4.2.AM2/site.properties
 
 === If node already exists
 
@@ -488,24 +404,27 @@ Access it via +https://marketplace.eclipse.org/content/jboss-tools/edit+ and upd
 
 * Title to match new version
 * Description to match new version & dependencies
-* Update list of features, using content of http://download.jboss.org/jbosstools/static/neon/stable/updates/core/4.4.2.AM1/site.properties
+* Update list of features, using content of http://download.jboss.org/jbosstools/static/neon/stable/updates/core/4.4.2.AM2/site.properties
 
 To diff if any new features have been added/removed:
 
 [source,bash]
 ----
-version_jbt_PREV=4.4.0.Final
-version_jbt=4.4.2.AM1
+version_jbt_PREV=4.4.1.Final
+version_jbt=4.4.2.AM2
 
-cd /tmp
-wget -O ${version_jbt_PREV}.properties http://download.jboss.org/jbosstools/static/neon/development/updates/core/${version_jbt_PREV}/site.properties
-wget -O ${version_jbt}.properties http://download.jboss.org/jbosstools/static/neon/development/updates/core/${version_jbt}/site.properties
-diff -u ${version_jbt_PREV}.properties ${version_jbt}.properties
+# for Final releases only!
+if [[ ${version_jbt} == *"Final" ]]; then
+  cd /tmp
+  wget -O ${version_jbt_PREV}.properties http://download.jboss.org/jbosstools/static/neon/development/updates/core/${version_jbt_PREV}/site.properties
+  wget -O ${version_jbt}.properties http://download.jboss.org/jbosstools/static/neon/development/updates/core/${version_jbt}/site.properties
+  diff -u ${version_jbt_PREV}.properties ${version_jbt}.properties
 
-# then verify the the new feature(s) were added to the CoreTools category
-google-chrome && google-chrome https://marketplace.eclipse.org/content/jboss-tools/edit
+  # then verify the the new feature(s) were added to the CoreTools category
+  google-chrome && google-chrome https://marketplace.eclipse.org/content/jboss-tools/edit
 
-rm -f /tmp/${version_jbt_PREV}.properties /tmp/${version_jbt}.properties
+  rm -f /tmp/${version_jbt_PREV}.properties /tmp/${version_jbt}.properties
+fi
 
 ----
 
@@ -573,7 +492,7 @@ git clone https://github.com/jbosstools/jbosstools-versionwatch
 # download.jboss.org tag might not be valid as tweaks to ide-config.properties happen frequently
 
 jbt_branch=master # or jbosstools-4.4.2.x
-version_jbt=4.4.2.AM1
+version_jbt=4.4.2.AM2
 cd ~/tru # ~
 for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins versionwatch; do
   echo "====================================================================="
@@ -608,8 +527,8 @@ Once the current milestone is done, the BUILD_ALIAS in parent pom should be bump
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru # ~
 pushd jbosstools-build/parent
-BUILD_ALIAS=AM1
-BUILD_ALIAS_NEXT=AM2
+BUILD_ALIAS=AM2
+BUILD_ALIAS_NEXT=AM3
 
 git fetch origin master
 git checkout FETCH_HEAD
@@ -623,3 +542,21 @@ git push origin HEAD:master
 # https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-build.parent_master/build
 jp-ppm
 
+
+== Disable dev-stable jobs
+
+You will need to disable the jobs once the bits are released, so that they won't run accidentally.
+
+[source,bash]
+----
+
+# kerberos login for the Jenkins server
+userpass=nboldt:PASSWORD
+stream_jbt=master # or 4.4.neon
+for j in jbosstools-releng-push-to-dev-stable-07-notification-emails_${stream_jbt} \
+jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites_${stream_jbt} \
+jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites_${stream_jbt}; do
+  curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/disable && echo -n ".D"
+done
+
+----

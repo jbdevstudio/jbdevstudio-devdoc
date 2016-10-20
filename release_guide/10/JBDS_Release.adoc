@@ -622,19 +622,23 @@ Then, back on your own machine...
 
 [source,bash]
 ----
-version_jbt=4.4.2.AM1
-version_ds=10.2.0.AM1
+version_jbt=4.4.2.AM2
+version_ds=10.2.0.AM2
 
 cd ~/tru # where you have jbosstools-website checked out
 
 pushd jbosstools-website/
-  t=release-4.4.2.AM1-10.2.0.AM1
+  t=release-${version_jbt}
   gw1m
   st _config/products.yml
 
   # make changes, using the generated content above, then...
 
-  git commit -m "add ${version_ds} and ${version_jbt} to tools.jboss.org" .
+  if [[ ${version_jbt} == *"Final" ]]; then
+    git commit -m "add ${version_jbt} and ${version_ds} to tools.jboss.org" .
+  else
+    git commit -m "add ${version_jbt} to tools.jboss.org" .
+  fi
   gw2
 popd
 
@@ -659,7 +663,7 @@ git clone https://github.com/jbdevstudio/jbdevstudio-artwork
 git clone https://github.com/jbdevstudio/jbdevstudio-devdoc
 
 jbt_branch=master # or jbosstools-4.4.2.x
-version_ds=10.2.0.AM1
+version_ds=10.2.0.AM2
 cd ~/truu # ~
 for d in product ci website artwork devdoc; do
   echo "====================================================================="

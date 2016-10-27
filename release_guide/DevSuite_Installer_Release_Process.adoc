@@ -1,0 +1,3 @@
+= Red Hat Development Suite Installer Release Process - 1.x
+
+WIP

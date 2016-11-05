@@ -24,12 +24,13 @@ You will need to enable the jobs:
 
 # kerberos login for the Jenkins server
 userpass=nboldt:PASSWORD
+
 stream_jbt=master # or 4.4.neon
 for j in jbosstools-releng-push-to-staging-07-notification-emails_${stream_jbt} \
 jbosstools-releng-push-to-staging-03-verify-builds-update-sites_${stream_jbt} \
 jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites_${stream_jbt} \
 jbosstools-releng-push-to-staging-01-check-versions-branches-root-poms_${stream_jbt} \
-jbosstools-releng-push-to-staging-00-buildflow_${stream_jbt}; do
+jbosstools-releng-push-to-staging-buildflow_${stream_jbt}; do
   curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/enable && echo -n ".E"
 done
 
@@ -44,10 +45,11 @@ Configure, then run this job:
 
 # kerberos login for the Jenkins server
 userpass=nboldt:PASSWORD
+
 stream_jbt=master # or 4.4.neon
 stream_ds=master # or 10.0.neon
 github_branch=master # or jbosstools-4.4.1.x or jbosstools-4.4.x
-version_parent=4.4.2.AM3-SNAPSHOT
+version_parent=4.4.2.AM1-SNAPSHOT
 version_jbt=4.4.2.AM3
 version_ds=10.2.0.AM3
 
@@ -84,6 +86,7 @@ To prevent accidentally rebuilding something while you're copying it away, make 
 ----
 # kerberos login for the Jenkins server
 userpass=nboldt:PASSWORD
+
 stream_jbt=master # or 4.4.neon
 stream_ds=master # or 10.0.neon
 for j in jbosstools-build.parent_${stream_jbt} jbosstoolstargetplatforms-matrix jbosstools-buildflow_${stream_jbt} jbosstools-composite-install_${stream_jbt} jbosstools-browsersim-standalone_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstools-centraltarget_${stream_jbt} jbosstools-build-sites.aggregate.child-sites_${stream_jbt} devstudio.product_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} jbosstools-install-grinder.install-tests.matrix_${stream_jbt}; do
@@ -108,13 +111,11 @@ Then respin the job:
 # kerberos login for the Jenkins server
 userpass=nboldt:PASSWORD
 
-# TODO VERIFY THIS WORKS (JBIDE-23093 refactoring)
-
 versionWithRespin_jbt=4.4.2.AM3 # a, b, c... (not SNAPSHOT!)
 versionWithRespin_ds=10.2.0.AM3
 stream_jbt=master # or 4.4.neon
 stream_ds=master # or 10.0.neon
-TARGET_PLATFORM_VERSION_MAX=4.61.0.AM1-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.61.0.AM2-SNAPSHOT
 TARGET_PLATFORM_CENTRAL_MAX=4.61.0.AM1-SNAPSHOT
 for j in jbosstools-discovery_${stream_jbt}; do
   curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/enable && echo -n ".E"
@@ -161,7 +162,7 @@ stream_jbt=master # or 4.4.neon
 stream_ds=master # or 10.0.neon
 versionWithRespin_jbt=4.4.2.AM3
 versionWithRespin_ds=10.2.0.AM3
-TARGET_PLATFORM_VERSION_MAX=4.61.0.AM1-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.61.0.AM2-SNAPSHOT
 TARGET_PLATFORM_CENTRAL_MAX=4.61.0.AM1-SNAPSHOT
 
 # TODO migrate this to use jbosstools-build-ci/util/jenkinsPost.sh wrapper
@@ -351,6 +352,7 @@ If the next build WILL be a respin, you need to simply:
 
 # kerberos login for the Jenkins server
 userpass=nboldt:PASSWORD
+
 stream_jbt=master # or 4.4.neon
 stream_ds=master # or 10.0.neon
 for j in jbosstools-build.parent_${stream_jbt} jbosstoolstargetplatforms-matrix jbosstools-buildflow_${stream_jbt} jbosstools-composite-install_${stream_jbt} jbosstools-browsersim-standalone_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstools-centraltarget_${stream_jbt} jbosstools-build-sites.aggregate.child-sites_${stream_jbt} devstudio.product_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} jbosstools-install-grinder.install-tests.matrix_${stream_jbt}; do
@@ -378,6 +380,34 @@ Run this build:
 
 https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-07-notification-emails_master
 
+[source,bash]
+----
+
+# kerberos login for the Jenkins server
+userpass=nboldt:PASSWORD
+
+versionWithRespin_jbt=4.4.2.AM3
+versionWithRespin_ds=10.2.0.AM3
+TARGET_PLATFORM_VERSION_MIN=4.60.2.AM2-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.61.0.AM2-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.61.0.AM1-SNAPSHOT
+respinSuffix=""
+
+for j in jbosstools-releng-push-to-staging-07-notification-emails_${stream_jbt}; do
+  curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/enable && echo -n ".E"
+  curl -k -u ${userpass} --data "versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
+TARGET_PLATFORM_VERSION_MIN=${TARGET_PLATFORM_VERSION_MIN}&\
+TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&\
+TARGET_PLATFORM_CENTRAL_MAX=${TARGET_PLATFORM_CENTRAL_MAX}" \
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/buildWithParameters && echo -n ".B"
+  sleep 15s
+  # then disable the job
+  curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/disable && echo -n ".D"
+  curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/lastBuild/toggleLogKeep && echo -n ".K"
+done
+
+----
+
 == Disable staging jobs
 
 You will need to disable the jobs once the bits are staged, so that they won't run accidentally.
@@ -387,12 +417,13 @@ You will need to disable the jobs once the bits are staged, so that they won't r
 
 # kerberos login for the Jenkins server
 userpass=nboldt:PASSWORD
+
 stream_jbt=master # or 4.4.neon
 for j in jbosstools-releng-push-to-staging-07-notification-emails_${stream_jbt} \
 jbosstools-releng-push-to-staging-03-verify-builds-update-sites_${stream_jbt} \
 jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites_${stream_jbt} \
 jbosstools-releng-push-to-staging-01-check-versions-branches-root-poms_${stream_jbt} \
-jbosstools-releng-push-to-staging-00-buildflow_${stream_jbt}; do
+jbosstools-releng-push-to-staging-buildflow_${stream_jbt}; do
   curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/disable && echo -n ".D"
 done
 

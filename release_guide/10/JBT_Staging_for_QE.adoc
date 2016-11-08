@@ -220,65 +220,35 @@ https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-s
 
 ----
 
-=== Update http://download.jboss.org/jbosstools/neon/staging/updates/ site
+=== Update /staging/updates/ sites and merge in Integration Stack content
 
-This should point to the latest staging bits. Just copy what's in discovery.central/composite*.xml into this folder.
+Here's a job that verifies everything is updated & merged:
+
+http://wonka.mw.lab.eng.bos.redhat.com/jenkins/view/devstudio/job/jbosstools-releng-push-to-staging-04-update-merge-composites-html_master/
+
+Using the script below, you can trigger the job remotely.
+
+But if you need a login for Jenkins, please contact nboldt@redhat.com or jsightle@redhat.com.
 
 [source,bash]
 ----
 
-cd ~/tru
-RSYNC="rsync -aPrz --rsh=ssh --protocol=28"
-
-versionWithRespin_jbt=4.4.2.AM3 # a, b, c...
-# use filemgmt.jboss.org IP instead of 10.5.105.197 because it's 3x faster!
-DESTINATION=tools@10.5.105.197:/downloads_htdocs/tools
-PROJECT_PATH=jbosstools-download.jboss.org/jbosstools
-DEST_URL="http://download.jboss.org/jbosstools"
-updatePath=neon/staging/updates
-
-pushd ${PROJECT_PATH}/${updatePath}
-git fetch origin master
-git checkout FETCH_HEAD
-
-for d in discovery.central discovery.earlyaccess; do
-  mkdir -p ${d}/${versionWithRespin_jbt}/
-  pushd ${d}/${versionWithRespin_jbt}/
-    ${RSYNC} ${DESTINATION}/${updatePath}/${d}/${versionWithRespin_jbt}/composite*xml ./
-    cat compositeContent.xml | egrep "${versionWithRespin_jbt}|targetplatforms|REPO|updates|timestamp"
-  popd
+versionWithRespin_jbt=4.4.2.AM3
+versionWithRespin_ds=10.2.0.AM3
+versionWithRespin_ds_PREV=10.2.0.AM2
+earlyaccess_IS=earlyaccess/
+version_jbt_IS=4.4.0.Alpha1
+version_ds_IS=10.0.0.Alpha1
+for j in jbosstools-releng-push-to-staging-04-update-merge-composites-html_master; do
+  curl -k --data "token=RELENG&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&versionWithRespin_ds_PREV=${versionWithRespin_ds_PREV}\
+&earlyaccess_IS=${earlyaccess_IS}&version_jbt_IS=${version_jbt_IS}&version_ds_IS=${version_ds_IS}" \
+    http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job/${j}/buildWithParameters && echo -n ".B"
+  sleep 10s
+  google-chrome http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job/${j}/lastBuild/console &
 done
-rsync discovery.central/${versionWithRespin_jbt}/composite*.xml ./
-
-## wait here until all copies from snapshots -> staging is done
-
-# push changes to server
-${RSYNC} discovery.central/${versionWithRespin_jbt}/composite*xml ${DESTINATION}/${updatePath}/discovery.central/${versionWithRespin_jbt}/
-${RSYNC} discovery.earlyaccess/${versionWithRespin_jbt}/composite*xml ${DESTINATION}/${updatePath}/discovery.earlyaccess/${versionWithRespin_jbt}/
-${RSYNC} ./composite*xml *.html ${DESTINATION}/${updatePath}/
-
-# verify changes
-echo "Check 4 URLs:"
-google-chrome && google-chrome \
-${DEST_URL}/${updatePath}/discovery.central/${versionWithRespin_jbt}/compositeContent.xml \
-${DEST_URL}/${updatePath}/discovery.earlyaccess/${versionWithRespin_jbt}/compositeContent.xml \
-${DEST_URL}/${updatePath}/compositeContent.xml \
-${DEST_URL}/${updatePath}/
-
-rm -fr discovery.central/${versionWithRespin_jbt}/composite*.xml discovery.earlyaccess/${versionWithRespin_jbt}/composite*.xml
-
-# commit the change and push to master
-git commit -m "release ${versionWithRespin_jbt} to QE" .
-git push origin HEAD:master
-popd
 
 ----
 
-=== Merge in Integration Stack content
-
-If staging devstudio too, wait until you get to this step and merge in both at the same time.
-
-See details in Merge_IS_Discovery.adoc
 
 == Release the latest staging site to ide-config.properties
 

@@ -1,3 +1,13 @@
+== Deprecated
+
+This document is now incorporated into this job:
+
+http://wonka.mw.lab.eng.bos.redhat.com/jenkins/view/devstudio/job/jbosstools-releng-push-to-staging-04-update-merge-composites-html_master/
+
+To trigger the above job remotely, see JBT_Staging_for_QE.adoc - "Update /staging/updates/ sites and merge in Integration Stack content"
+
+== Manual approach
+
 The JBT/JBDS composite sites now include a composite pointer to the JBTIS/JBDSIS composite sites, so no changes are required there.
 
 HOWEVER, the IS jar still needs to copied over into the discovery site, and the XML file needs to be updated. Hence, this script.
@@ -26,9 +36,9 @@ qual_IS=development
 pushd /tmp
   wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/mergeISdiscovery.sh -q -nc && chmod +x mergeISdiscovery.sh
   ./mergeISdiscovery.sh -v ${version_jbt} -vr ${versionWithRespin_jbt} \
-    -is http://download.jboss.org/jbosstools/neon/${qual_IS}/updates/integration-stack/discovery/${version_jbt_IS}/earlyaccess/ -quiet
+    -is http://download.jboss.org/jbosstools/neon/${qual_IS}/updates/integration-stack/discovery/${version_jbt_IS}/earlyaccess/ -q
   ./mergeISdiscovery.sh -v ${version_ds} -vr ${versionWithRespin_ds} \
-    -is https://devstudio.redhat.com/10.0/${qual_IS}/updates/integration-stack/discovery/${version_ds_IS}/earlyaccess/ -JBDS -quiet
+    -is https://devstudio.redhat.com/10.0/${qual_IS}/updates/integration-stack/discovery/${version_ds_IS}/earlyaccess/ -JBDS -q
   rm -f /tmp/mergeISdiscovery.sh
 popd
 

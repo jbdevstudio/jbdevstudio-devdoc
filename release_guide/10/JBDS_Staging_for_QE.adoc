@@ -59,70 +59,11 @@ https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-s
 
 ----
 
-=== Update https://devstudio.jboss.com/10.0/staging/updates/
 
-This should point to the latest staging bits. Just copy what's in discovery.central/composite*.xml into this folder.
+=== Update /staging/updates/ sites and merge in Integration Stack content
 
-[source,bash]
-----
+See details in JBT_Staging_For_QE.adoc
 
-cd ~/truu
-RSYNC="rsync -aPrz --rsh=ssh --protocol=28"
-
-versionWithRespin_ds_PREV=10.2.0.AM2 # a, b, c...
-versionWithRespin_ds=10.2.0.AM3 # a, b, c...
-# use filemgmt.jboss.org IP instead of 10.5.105.197 because it's 3x faster!
-DESTINATION=devstudio@10.5.105.197:/www_htdocs/devstudio
-PROJECT_PATH=jbdevstudio-website/content
-DEST_URL="https://devstudio.redhat.com"
-updatePath=10.0/staging/updates
-
-pushd ${PROJECT_PATH}/${updatePath}
-git fetch origin master
-git checkout FETCH_HEAD
-
-for d in discovery.central discovery.earlyaccess; do
-  mkdir -p ${d}/${versionWithRespin_ds}/
-  pushd ${d}/${versionWithRespin_ds}/
-    ${RSYNC} ${DESTINATION}/${updatePath}/${d}/${versionWithRespin_ds}/composite*xml ./
-	# should not have and devstudio .Final stuff (except target platform versions)
-	for c in composite*.xml; do sed -i "s/${versionWithRespin_ds_PREV}/${versionWithRespin_ds}/g" $c; done
-    cat compositeContent.xml | egrep "${versionWithRespin_ds}|targetplatforms|REPO|updates|timestamp"
-  popd
-done
-rsync discovery.central/${versionWithRespin_ds}/composite*.xml ./
-
-# update index.html
-if [[ -f index.html ]]; then
-  sed -i "s#${versionWithRespin_ds_PREV}#${versionWithRespin_ds}#" index.html
-  cat index.html | egrep "${versionWithRespin_ds_PREV}|${versionWithRespin_ds}"
-fi
-
-# push changes to server
-${RSYNC} discovery.central/${versionWithRespin_ds}/composite*xml ${DESTINATION}/${updatePath}/discovery.central/${versionWithRespin_ds}/
-${RSYNC} discovery.earlyaccess/${versionWithRespin_ds}/composite*xml ${DESTINATION}/${updatePath}/discovery.earlyaccess/${versionWithRespin_ds}/
-${RSYNC} ./composite*xml *.html ${DESTINATION}/${updatePath}/
-
-# verify changes
-echo "Check 4 URLs:"
-google-chrome && google-chrome \
-${DEST_URL}/${updatePath}/discovery.central/${versionWithRespin_ds}/compositeContent.xml \
-${DEST_URL}/${updatePath}/discovery.earlyaccess/${versionWithRespin_ds}/compositeContent.xml \
-${DEST_URL}/${updatePath}/compositeContent.xml \
-${DEST_URL}/${updatePath}/
-
-rm -fr discovery.central/${versionWithRespin_ds}/composite*.xml discovery.earlyaccess/${versionWithRespin_ds}/composite*.xml
-
-# commit the change and push to master
-git commit -m "release ${versionWithRespin_ds} to QE" .
-git push origin HEAD:master
-popd
-
-----
-
-=== Merge in Integration Stack content
-
-See details in Merge_IS_Discovery.adoc
 
 == Release the latest staging site to ide-config.properties
 

@@ -233,18 +233,27 @@ But if you need a login for Jenkins, please contact nboldt@redhat.com or jsightl
 [source,bash]
 ----
 
+# Jenkins login for the Wonka server
+userpass=nboldt:PASSWORD
+
 versionWithRespin_jbt=4.4.2.AM3
 versionWithRespin_ds=10.2.0.AM3
 versionWithRespin_ds_PREV=10.2.0.AM2
 earlyaccess_IS=earlyaccess/
 version_jbt_IS=4.4.0.Alpha1
 version_ds_IS=10.0.0.Alpha1
+wonkajenkins=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job
 for j in jbosstools-releng-push-to-staging-04-update-merge-composites-html_master; do
-  curl -k --data "token=RELENG&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&versionWithRespin_ds_PREV=${versionWithRespin_ds_PREV}\
-&earlyaccess_IS=${earlyaccess_IS}&version_jbt_IS=${version_jbt_IS}&version_ds_IS=${version_ds_IS}" \
-    http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job/${j}/buildWithParameters && echo -n ".B"
-  sleep 10s
-  google-chrome http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job/${j}/lastBuild/console &
+  # enable and run the job
+  curl -k -X POST -u ${userpass} ${wonkajenkins}/${j}/enable && echo -n ".E"
+  curl -k -X POST -u ${userpass} --data "token=RELENG&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
+versionWithRespin_ds_PREV=${versionWithRespin_ds_PREV}&earlyaccess_IS=${earlyaccess_IS}&version_jbt_IS=${version_jbt_IS}&\
+version_ds_IS=${version_ds_IS}" ${wonkajenkins}/${j}/buildWithParameters && echo -n ".B"
+  sleep 15s
+  # then disable the job
+  curl -k -X POST -u ${userpass} ${wonkajenkins}/${j}/disable && echo -n ".D"
+  curl -k -X POST -u ${userpass} ${wonkajenkins}/${j}/lastBuild/toggleLogKeep && echo -n ".K"
+  google-chrome ${wonkajenkins}/${j}/lastBuild/console &
 done
 
 ----

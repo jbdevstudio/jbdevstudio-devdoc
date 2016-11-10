@@ -53,6 +53,7 @@ You will need to enable the jobs to perform the copy from staging to development
 
 # kerberos login for the Jenkins server
 userpass=nboldt:PASSWORD
+
 stream_jbt=master # or 4.4.neon
 for j in jbosstools-releng-push-to-dev-stable-07-notification-emails_${stream_jbt} \
 jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites_${stream_jbt} \
@@ -71,169 +72,84 @@ These steps happens on filemgmt.jboss.org, in the jbosstools download area.
 
 Here is a job that performs the copy from /staging/ to /development/:
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites_master/configure
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites_master
 
-or, for pushing to stable too, use:
+or, for pushing to /stable/ too (Final/GA builds only), use:
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites_4.4.neon/configure
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites_4.4.neon
 
-When the job is done, verify everything has been published:
-
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites_master/build (check only jbt)
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites_4.4.neon/build (check jbt + devstudio)
-
-=== Update composite site metadata for update
-
-Update files __http://download.jboss.org/jbosstools/neon/development/updates/composite*.xml__ , with SFTP/SCP via command-line or your
-favourite SFTP GUI client (such as Eclipse RSE).
-
-This site needs to contain:
-* The latest JBoss Tools core site
-* The latest matching target platform site
-* The latest matching JBoss Tools Central site
 
 [source,bash]
 ----
 
-cd ~/tru # or where you have jbosstools-download.jboss.org checked out
+# kerberos login for the Jenkins server
+userpass=nboldt:PASSWORD
 
-pushd jbosstools-download.jboss.org/jbosstools/neon
+stream_jbt=master # or 4.4.neon
+stream_ds=master # or 10.0.neon
+versionWithRespin_jbt=4.4.2.AM3
+versionWithRespin_ds=10.2.0.AM3
+TARGET_PLATFORM_VERSION_MAX=4.61.0.AM2-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.61.0.AM1-SNAPSHOT
 
-git fetch origin master
-git checkout FETCH_HEAD
-
-versionWithRespin_jbt=4.4.2.AM3 # a, b, c...
-version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
-quals="development"; if [[ ${version_jbt##*Final} == "" ]]; then quals="development stable"; fi # **##
-echo "
-- integration-stack/*
-- webtools/*
-- */OLD/
-- */reddeer/*
-+ core/${versionWithRespin_jbt}/
-+ core/composite*.xml
-- core/*
-+ coretests/${versionWithRespin_jbt}/
-+ coretests/composite*.xml
-- coretests/*
-+ central/${versionWithRespin_jbt}/
-+ central/composite*.xml
-- central/*
-+ earlyaccess/${versionWithRespin_jbt}/
-+ earlyaccess/composite*.xml
-- earlyaccess/*
-+ discovery.central/${versionWithRespin_jbt}/
-+ discovery.central/composite*.xml
-- discovery.central/*
-+ discovery.earlyaccess/${versionWithRespin_jbt}/
-+ discovery.earlyaccess/${versionWithRespin_jbt}/plugins/
-+ discovery.earlyaccess/${versionWithRespin_jbt}/plugins/*.jar
-+ discovery.earlyaccess/composite*.xml
-- discovery.earlyaccess/*
-- site.css
-- *.gz
-- *.jar
-- *.zip
-" > /tmp/filter-jbosstools
-scpr $TOOLS/neon/staging/updates/* staging/updates/ --include-from=/tmp/filter-jbosstools -q
-
-for qual in $quals; do
-  echo ":: $qual"
-  scpr staging/updates/* ${qual}/updates/ --include-from=/tmp/filter-jbosstools
-
-  pushd ${qual}/updates/
-  if [[ ${versionWithRespin_jbt} != ${version_jbt} ]]; then
-    # rename the staging folders to their final names (CR1c -> Final)
-    for d in core coretests central earlyaccess discovery.central discovery.earlyaccess; do
-      rm -fr ${d}/${version_jbt}
-      mv ${d}/${versionWithRespin_jbt} ${d}/${version_jbt}
-    done
-  fi
-
-  # fix composite sites to use the correct paths (not /staging, but /static)
-  now=`date +%s000`
-  for c in compositeContent.xml compositeArtifacts.xml */compositeContent.xml */compositeArtifacts.xml */${version_jbt}/compositeContent.xml */${version_jbt}/compositeArtifacts.xml; do
-    if [[ $c == ${c/integration-stack/} ]]; then
-      echo "$c ..."
-      sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#" $c
-      sed -i -e "s#jbosstools/neon/staging/updates/#jbosstools/static/neon/${qual}/updates/#" $c
-      sed -i -e "s#${versionWithRespin_jbt}#${version_jbt}#" $c
-    fi
-  done
-  popd
-done
-rm -f /tmp/filter-jbosstools
-
-# copy versioned composite site into parent folder
-for qual in $quals; do
-  echo ":: $qual"
-  pushd ${qual}/updates/ >/dev/null
-    for d in core coretests central earlyaccess discovery.central discovery.earlyaccess; do
-      if [[ -f ${d}/${version_jbt}/compositeContent.xml ]]; then
-        scpr ${d}/${version_jbt}/composite*.xml ${d}/
-      fi
-      ga -f ${d}/${version_jbt}/* ${d}/*.*ml
-    done
-  popd >/dev/null
-done
-
-# push updated files to server
-for qual in $quals; do
-  pushd ${qual}/updates/ >/dev/null
-    TOOLS=tools@10.5.105.197:/downloads_htdocs/tools
-    scpr *.*ml ${TOOLS}/neon/${qual}/updates/
-    for d in core coretests discovery.central discovery.earlyaccess; do
-      echo ${d}/
-      scpr ${d}/*.*ml ${TOOLS}/neon/${qual}/updates/${d}/
-      scpr ${d}/*.*ml ${TOOLS}/static/neon/${qual}/updates/${d}/
-    done
-    for d in discovery.central discovery.earlyaccess; do
-      echo ${d}/
-      scpr ${d}/${version_jbt}/* ${TOOLS}/neon/${qual}/updates/${d}/${version_jbt}/
-      scpr ${d}/${version_jbt}/* ${TOOLS}/static/neon/${qual}/updates/${d}/${version_jbt}/
-    done
-  popd >/dev/null
-done
-
-# commit the change and push to master
-for qual in $quals; do git add ${qual}/updates; done
-git commit -m "release JBT ${versionWithRespin_jbt} to public" .
-git push origin HEAD:master
-
-popd
-
-# verify site contents are shown
-quals="development"; if [[ ${version_jbt##*Final} == "" ]]; then quals="development stable"; fi # **##
-for qual in $quals; do
-  google-chrome && google-chrome \
-  http://download.jboss.org/jbosstools/neon/${qual}/updates \
-  http://download.jboss.org/jbosstools/neon/${qual}/updates/compositeContent.xml \
-  http://download.jboss.org/jbosstools/neon/${qual}/updates/core \
-  http://download.jboss.org/jbosstools/neon/${qual}/updates/core/compositeContent.xml \
-  http://download.jboss.org/jbosstools/static/neon/${qual}/updates/core \
-  http://download.jboss.org/jbosstools/static/neon/${qual}/updates/coretests \
-  http://download.jboss.org/jbosstools/neon/${qual}/updates/discovery.earlyaccess/ \
-  http://download.jboss.org/jbosstools/neon/${qual}/updates/discovery.earlyaccess/compositeContent.xml \
-  http://download.jboss.org/jbosstools/static/neon/${qual}/updates/central/ \
-  http://download.jboss.org/jbosstools/static/neon/${qual}/updates/earlyaccess/ \
-
+for j in jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites_${stream_jbt}; do
+  curl -k -u ${userpass} --data "stream_jbt=${stream_jbt}&stream_ds=${stream_ds}&\
+versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
+TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&TARGET_PLATFORM_CENTRAL_MAX=${TARGET_PLATFORM_CENTRAL_MAX}" \
+    https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/buildWithParameters && echo -n ".B"
+  sleep 10s
+  google-chrome http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/lastBuild/console &
 done
 
 ----
 
-Open p2-browser and verify these sites load correctly:
 
-http://download.jboss.org/jbosstools/neon/development/updates/
-http://download.jboss.org/jbosstools/neon/development/updates/discovery.earlyaccess/
-http://download.jboss.org/jbosstools/neon/development/updates/discovery.earlyaccess/4.4.2.AM3/
-http://download.jboss.org/jbosstools/static/neon/development/updates/coretests/4.4.2.AM3/
+When the job above is done, this verification job will trigger automatically:
 
-(and, if this is a Final)
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites_master/ (check only jbt)
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites_4.4.neon/ (check jbt + devstudio)
 
-http://download.jboss.org/jbosstools/neon/stable/updates/
-http://download.jboss.org/jbosstools/neon/stable/updates/discovery.earlyaccess/
-http://download.jboss.org/jbosstools/neon/stable/updates/discovery.earlyaccess/4.4.2.AM3/
-http://download.jboss.org/jbosstools/static/neon/stable/updates/coretests/4.4.2.AM3/
+[source,bash]
+----
+
+google-chrome http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites_${stream_jbt}/ &
+
+----
+
+
+=== Update /development/updates/ sites (and /stable/updates if Final)
+
+Here's a job that verifies everything is updated:
+
+http://wonka.mw.lab.eng.bos.redhat.com/jenkins/view/devstudio/job/jbosstools-releng-push-to-dev-stable-04-update-merge-composites-html_master/
+
+Using the script below, you can trigger the job remotely.
+
+But if you need a login for Jenkins, please contact nboldt@redhat.com or jsightle@redhat.com.
+
+[source,bash]
+----
+
+# Jenkins login for the Wonka server
+userpass=nboldt:PASSWORD
+
+stream_jbt=master # or 4.4.neon
+versionWithRespin_jbt=4.4.2.AM3
+versionWithRespin_ds=10.2.0.AM3
+wonkajenkins=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job
+for j in jbosstools-releng-push-to-dev-stable-04-update-merge-composites-html_${stream_jbt}; do
+  # enable and run the job
+  curl -k -X POST -u ${userpass} ${wonkajenkins}/${j}/enable && echo -n ".E"
+  curl -k -X POST -u ${userpass} --data "token=RELENG&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}" \
+${wonkajenkins}/${j}/buildWithParameters && echo -n ".B"
+  sleep 15s
+  # then disable the job
+  curl -k -X POST -u ${userpass} ${wonkajenkins}/${j}/disable && echo -n ".D"
+  curl -k -X POST -u ${userpass} ${wonkajenkins}/${j}/lastBuild/toggleLogKeep && echo -n ".K"
+  google-chrome ${wonkajenkins}/${j}/lastBuild/console &
+done
+
+----
 
 
 === WebTools
@@ -340,6 +256,8 @@ Update it so that the links for the latest milestone point to valid URLs. Commen
 [source,bash]
 ----
 
+# TODO: https://issues.jboss.org/browse/JBIDE-23475 generate updates to ide-config.properties via wonka job
+
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru # ~
 pushd jbosstools-download.jboss.org/jbosstools/configuration
@@ -411,7 +329,7 @@ To diff if any new features have been added/removed:
 [source,bash]
 ----
 version_jbt_PREV=4.4.1.Final
-version_jbt=4.4.2.AM3
+version_jbt=4.4.2.Final
 
 # for Final releases only!
 if [[ ${version_jbt} == *"Final" ]]; then
@@ -514,10 +432,13 @@ done
 
 Notifify Alexy & Jeff that bulk tagging should be done, and the website is ready to be updated with a new blog post.
 
-If co-releasing JBT and JBDS, make sure that JBDS is released too!
+For an AMx milestone (jbosstools only):
+
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-releng-push-to-dev-stable-07-notification-emails_master/configure
+
+For Final/GA (including devstudio):
 
 https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-releng-push-to-dev-stable-07-notification-emails_4.4.neon/configure
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-releng-push-to-dev-stable-07-notification-emails_master/configure
 
 
 == Bump parent pom to newer BUILD_ALIAS value

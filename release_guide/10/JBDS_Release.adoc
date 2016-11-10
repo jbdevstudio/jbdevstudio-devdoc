@@ -554,6 +554,7 @@ https://github.com/jbosstools/jbosstools-website/blob/master/_config/products.ym
 Examples:
 
 * https://github.com/jbosstools/jbosstools-website/pull/622 (JBT 4.4.1 / JBDS 10.1)
+* https://github.com/jbosstools/jbosstools-website/pull/651 (JBT 4.4.2.AM3)
 
 === SHA256 values
 
@@ -618,7 +619,7 @@ popd
 
 ----
 
-Commit changes and submit PR, eg., https://github.com/jbosstools/jbosstools-website/pull/622
+Commit changes and submit PR, eg., https://github.com/jbosstools/jbosstools-website/pull/651
 
 
 == Tag Git

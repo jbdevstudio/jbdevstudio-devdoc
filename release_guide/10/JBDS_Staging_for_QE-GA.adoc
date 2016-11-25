@@ -1,0 +1,118 @@
+= Publishing devstudio Installers & update sites for QE
+
+This document describe how to provide a valid JBoss Developer Studio build to QE so they can test us.
+
+TODO: use consistent instructions for fetching sources from git & pushing changes
+TODO: use sshfs to do copies in a single step, instead of rsync-pull/rsync-push (2 steps)
+
+== Update Discovery Sites and URLs
+
+See details in JBT_Staging_For_QE.adoc
+
+== Verify correct version set in com.jboss.devstudio.central.core
+
+See details in JBT_Staging_For_QE.adoc
+
+== Disable jobs
+
+See details in JBT_Staging_For_QE.adoc
+
+== Stage to devstudio.redhat.com and internal qa server
+
+=== Copy & rename builds & update sites from "snapshots" to "staging"
+
+Here is a job that performs the copy (& rename) from /snapshots/ to /staging/:
+
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites_master/
+
+Here's a job that verifies everything is published:
+
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-03-verify-builds-update-sites_master/
+
+
+[source,bash]
+----
+
+# TODO once the staging build folder exists, start fetching the devstudio installer (we'll need it later to do a smoke test)
+
+cd ~/tmp
+rm -f index.html
+versionWithRespin_ds=10.2.0.GA # a, b, c...
+wget https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
+installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
+echo "Installer jar: ${installerJar}"
+rm -f index.html
+wget https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/${installerJar}
+
+----
+
+You'll use this downloaded installer later, but since it takes a while to download, it's more efficient to start it now.
+
+
+=== Cleanup OLD builds
+
+Optional step.
+
+Run this job to move any old builds into an OLD/ folder for later cleanup, or delete them immediately.
+
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-08-delete-builds-and-update-sites_master
+
+----
+
+
+=== Update /staging/updates/ sites and merge in Integration Stack content
+
+See details in JBT_Staging_For_QE.adoc
+
+
+== Release the latest staging site to ide-config.properties
+
+See details in JBT_Staging_For_QE.adoc
+
+
+== Smoke test the release
+
+Before notifying team of staged release, must check for obvious problems.
+
+1. Get a recent Eclipse (compatible with the target version of JBT)
+2. Install BYOE category from
+
+https://devstudio.redhat.com/10.0/staging/updates/
+
+3. Restart when prompted. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
+4. Check log, start an example project, check log again
+
+[source,bash]
+----
+versionWithRespin_ds=10.2.0.GA # a, b, c...
+cd ~/tmp
+wget https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
+installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
+echo "Installer jar: ${installerJar}"
+rm -f index.html
+
+# should have already downloaded this above
+if [[ ! -f ${installerJar} ]]; then wget https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/${installerJar}; fi
+
+java -jar ~/tmp/${installerJar}
+
+----
+
+0. After downloading and installing devstudio from the step above...
+1. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
+2. Check log, start an example project, check log again
+
+If this fails, it is most likely due to a bug or a failure in a step above. If possible, fix it before notifying team below.
+
+
+== Enable jobs
+
+See details in JBT_Staging_For_QE.adoc
+
+TODO: Important: if you switched the _master jobs to run from origin/jbosstools-4.4.x or some other branch, make sure that the jobs are once again building from the correct branch.
+
+
+== Notify the team (send 1 email)
+
+See details in JBT_Staging_For_QE.adoc
+

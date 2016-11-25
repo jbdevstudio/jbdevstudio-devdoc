@@ -121,7 +121,7 @@ google-chrome http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-rel
 
 Here's a job that verifies everything is updated:
 
-http://wonka.mw.lab.eng.bos.redhat.com/jenkins/view/devstudio/job/jbosstools-releng-push-to-dev-stable-04-update-merge-composites-html_master/
+http://wonka.mw.lab.eng.bos.redhat.com/jenkins/view/devstudio/job/jbosstools-releng-push-to-dev-stable-04-update-merge-composites-html/
 
 Using the script below, you can trigger the job remotely.
 

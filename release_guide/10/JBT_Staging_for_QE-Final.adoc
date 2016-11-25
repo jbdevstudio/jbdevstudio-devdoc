@@ -48,7 +48,7 @@ userpass=nboldt:PASSWORD
 
 stream_jbt=4.4.neon # master
 stream_ds=10.0.neon # master
-github_branch=master # or jbosstools-4.4.1.x or jbosstools-4.4.x
+github_branch=master # or jbosstools-4.4.2.x or jbosstools-4.4.x
 version_parent=4.4.2.Final-SNAPSHOT
 version_jbt=4.4.2.Final
 version_ds=10.2.0.GA
@@ -70,9 +70,9 @@ If any branches have not yet been created, you can either:
 
 [source,bash]
 ----
-git checkout master; git pull origin master; git checkout -b jbosstools-4.4.1.x; git push origin jbosstools-4.4.1.x
+git checkout master; git pull origin master; git checkout -b jbosstools-4.4.2.x; git push origin jbosstools-4.4.2.x
 # or, for jbosstools-build-ci
-git checkout jbosstools-4.4.x; git pull origin jbosstools-4.4.x; git checkout -b jbosstools-4.4.1.x; git push origin jbosstools-4.4.1.x
+git checkout jbosstools-4.4.x; git pull origin jbosstools-4.4.x; git checkout -b jbosstools-4.4.2.x; git push origin jbosstools-4.4.2.x
 
 ----
 
@@ -126,6 +126,7 @@ https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/buildWithParameters &&
   # then disable the job
   curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/disable && echo -n ".D"
   curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/lastBuild/toggleLogKeep && echo -n ".K"
+  google-chrome http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/lastBuild/console &
 done
 
 ----
@@ -166,7 +167,7 @@ TARGET_PLATFORM_VERSION_MAX=4.61.0.Final
 TARGET_PLATFORM_CENTRAL_MAX=4.61.0.Final-SNAPSHOT
 
 # TODO migrate this to use jbosstools-build-ci/util/jenkinsPost.sh wrapper
-for j in jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites_master; do
+for j in jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites_${stream_jbt}; do
   curl -k -u ${userpass} --data "stream_jbt=${stream_jbt}&stream_ds=${stream_ds}&\
 versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
 TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&TARGET_PLATFORM_CENTRAL_MAX=${TARGET_PLATFORM_CENTRAL_MAX}" \
@@ -195,9 +196,10 @@ userpass=nboldt:PASSWORD
 
 versionWithRespin_jbt=4.4.2.Final
 versionWithRespin_ds=10.2.0.GA
+stream_jbt=4.4.neon # master
 
 # TODO migrate this to use jbosstools-build-ci/util/jenkinsPost.sh wrapper
-for j in jbosstools-releng-push-to-staging-03-verify-builds-update-sites_master; do
+for j in jbosstools-releng-push-to-staging-03-verify-builds-update-sites_${stream_jbt}; do
   curl -k -u ${userpass} --data "versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}" \
     https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/buildWithParameters && echo -n ".B"
   sleep 10s
@@ -281,12 +283,12 @@ version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\
 git fetch origin master
 git checkout FETCH_HEAD
 
-# then edit ide-config.properties
-# vim ide-config.properties
-st ide-config.properties
-# TODO something like this?
-# 1. swap  ^(jb.+(4.4.2|10.2.0).AM)(1)= for \12=
-# 2. swap ^#(jb.+(4.4.2|10.2.0).AM1=) for \1
+# then edit pom.xml to define correct to,from mappings
+st pom.xml
+# save changes and run the build
+mvn verify
+
+# TODO make these options commandline -D flags
 
 # verify these 6 URLs exist
 URLs="$(egrep -v "#" ide-config.properties | egrep "${version}|${versionWithRespin_jbt}|${version_ds}|${versionWithRespin_ds}" | sed -e "s#.\+|\([0-9.a-zA-Z]\+\)=\(.\+\)#\2#")"
@@ -369,10 +371,11 @@ userpass=nboldt:PASSWORD
 
 versionWithRespin_jbt=4.4.2.Final
 versionWithRespin_ds=10.2.0.GA
-TARGET_PLATFORM_VERSION_MIN=4.60.2.AM2-SNAPSHOT
-TARGET_PLATFORM_VERSION_MAX=4.61.0.AM2-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.61.0.AM1-SNAPSHOT
+TARGET_PLATFORM_VERSION_MIN=4.60.2.Final
+TARGET_PLATFORM_VERSION_MAX=4.61.0.Final
+TARGET_PLATFORM_CENTRAL_MAX=4.61.0.Final-SNAPSHOT
 respinSuffix=""
+stream_jbt=4.4.neon # master
 
 for j in jbosstools-releng-push-to-staging-07-notification-emails_${stream_jbt}; do
   curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/enable && echo -n ".E"

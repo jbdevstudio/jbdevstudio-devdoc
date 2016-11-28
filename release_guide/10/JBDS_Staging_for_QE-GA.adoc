@@ -55,7 +55,7 @@ Optional step.
 
 Run this job to move any old builds into an OLD/ folder for later cleanup, or delete them immediately.
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-08-delete-builds-and-update-sites
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-08-delete-builds-and-update-sites/
 
 ----
 

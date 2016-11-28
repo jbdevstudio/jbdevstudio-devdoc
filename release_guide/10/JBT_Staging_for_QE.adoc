@@ -26,7 +26,7 @@ You will need to enable the jobs:
 userpass=nboldt:PASSWORD
 
 stream_jbt=4.4.neon # master
-for j in jbosstools-releng-push-to-staging-07-notification-emails_${stream_jbt} \
+for j in jbosstools-releng-push-to-staging-07-notification-emails \
 jbosstools-releng-push-to-staging-03-verify-builds-update-sites \
 jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites \
 jbosstools-releng-push-to-staging-01-check-versions-branches-root-poms \
@@ -150,7 +150,7 @@ cd ~/tmp; wget https://hudson.eclipse.org/packaging/job/neon.epp-tycho-build/437
 
 Here is a job that performs the copy (& rename) from /snapshots/ to /staging/:
 
-http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites_master
+http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites/
 
 [source,bash]
 ----
@@ -166,7 +166,7 @@ TARGET_PLATFORM_VERSION_MAX=4.61.0.Final
 TARGET_PLATFORM_CENTRAL_MAX=4.61.0.Final-SNAPSHOT
 
 # TODO migrate this to use jbosstools-build-ci/util/jenkinsPost.sh wrapper
-for j in jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites_master; do
+for j in jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites; do
   curl -k -u ${userpass} --data "stream_jbt=${stream_jbt}&stream_ds=${stream_ds}&\
 versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
 TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&TARGET_PLATFORM_CENTRAL_MAX=${TARGET_PLATFORM_CENTRAL_MAX}" \
@@ -179,13 +179,13 @@ done
 
 If you can't get the job to run because dev01 slave is backlogged with a long queue, look in the job configuration and run the script manually on dev01 itself.
 
-http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites_master/configure-readonly/
+http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites/configure-readonly/
 
 === Verify builds and update sites correctly pushed
 
 Here's a job that verifies everything is published:
 
-http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-03-verify-builds-update-sites_master
+http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-03-verify-builds-update-sites/
 
 [source,bash]
 ----
@@ -197,7 +197,7 @@ versionWithRespin_jbt=4.4.2.Final
 versionWithRespin_ds=10.2.0.GA
 
 # TODO migrate this to use jbosstools-build-ci/util/jenkinsPost.sh wrapper
-for j in jbosstools-releng-push-to-staging-03-verify-builds-update-sites_master; do
+for j in jbosstools-releng-push-to-staging-03-verify-builds-update-sites; do
   curl -k -u ${userpass} --data "versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}" \
     https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/buildWithParameters && echo -n ".B"
   sleep 10s
@@ -208,7 +208,7 @@ done
 
 If you can't get the job to run because dev01 slave is backlogged with a long queue, look in the job configuration and run the script manually on dev01 itself.
 
-http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites_master/configure-readonly/
+http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites/configure-readonly/
 
 === Cleanup OLD builds
 
@@ -216,7 +216,7 @@ Optional step.
 
 Run this job to move any old builds into an OLD/ folder for later cleanup, or delete them immediately.
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-08-delete-builds-and-update-sites
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-08-delete-builds-and-update-sites/
 
 ----
 
@@ -359,7 +359,7 @@ If the next build will NOT be a respin, you will also need to ALSO make these ch
 
 Run this build:
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-07-notification-emails_master
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-07-notification-emails/
 
 [source,bash]
 ----
@@ -374,7 +374,7 @@ TARGET_PLATFORM_VERSION_MAX=4.61.0.AM2-SNAPSHOT
 TARGET_PLATFORM_CENTRAL_MAX=4.61.0.AM1-SNAPSHOT
 respinSuffix=""
 
-for j in jbosstools-releng-push-to-staging-07-notification-emails_${stream_jbt}; do
+for j in jbosstools-releng-push-to-staging-07-notification-emails; do
   curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/enable && echo -n ".E"
   curl -k -u ${userpass} --data "versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
 TARGET_PLATFORM_VERSION_MIN=${TARGET_PLATFORM_VERSION_MIN}&\
@@ -400,7 +400,7 @@ You will need to disable the jobs once the bits are staged, so that they won't r
 userpass=nboldt:PASSWORD
 
 stream_jbt=4.4.neon # master
-for j in jbosstools-releng-push-to-staging-07-notification-emails_${stream_jbt} \
+for j in jbosstools-releng-push-to-staging-07-notification-emails \
 jbosstools-releng-push-to-staging-03-verify-builds-update-sites \
 jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites \
 jbosstools-releng-push-to-staging-01-check-versions-branches-root-poms \

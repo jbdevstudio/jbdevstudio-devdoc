@@ -27,9 +27,9 @@ userpass=nboldt:PASSWORD
 
 stream_jbt=4.4.neon # master
 for j in jbosstools-releng-push-to-staging-07-notification-emails_${stream_jbt} \
-jbosstools-releng-push-to-staging-03-verify-builds-update-sites_${stream_jbt} \
-jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites_${stream_jbt} \
-jbosstools-releng-push-to-staging-01-check-versions-branches-root-poms_${stream_jbt} \
+jbosstools-releng-push-to-staging-03-verify-builds-update-sites \
+jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites \
+jbosstools-releng-push-to-staging-01-check-versions-branches-root-poms \
 jbosstools-releng-push-to-staging-buildflow_${stream_jbt}; do
   curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/enable && echo -n ".E"
 done
@@ -54,7 +54,7 @@ version_jbt=4.4.2.Final
 version_ds=10.2.0.GA
 
 # TODO migrate this to use jbosstools-build-ci/util/jenkinsPost.sh wrapper
-for j in jbosstools-releng-push-to-staging-01-check-versions-branches-root-poms_master; do
+for j in jbosstools-releng-push-to-staging-01-check-versions-branches-root-poms; do
   curl -k -u ${userpass} --data "stream_jbt=${stream_jbt}&github_branch=${github_branch}&version_parent=${version_parent}&version_jbt=${version_jbt}&version_ds=${version_ds}" \
     https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/buildWithParameters && echo -n ".B"
   sleep 10s
@@ -216,7 +216,7 @@ Optional step.
 
 Run this job to move any old builds into an OLD/ folder for later cleanup, or delete them immediately.
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-08-delete-builds-and-update-sites_master
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-08-delete-builds-and-update-sites
 
 ----
 
@@ -401,9 +401,9 @@ userpass=nboldt:PASSWORD
 
 stream_jbt=4.4.neon # master
 for j in jbosstools-releng-push-to-staging-07-notification-emails_${stream_jbt} \
-jbosstools-releng-push-to-staging-03-verify-builds-update-sites_${stream_jbt} \
-jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites_${stream_jbt} \
-jbosstools-releng-push-to-staging-01-check-versions-branches-root-poms_${stream_jbt} \
+jbosstools-releng-push-to-staging-03-verify-builds-update-sites \
+jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites \
+jbosstools-releng-push-to-staging-01-check-versions-branches-root-poms \
 jbosstools-releng-push-to-staging-buildflow_${stream_jbt}; do
   curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/disable && echo -n ".D"
 done

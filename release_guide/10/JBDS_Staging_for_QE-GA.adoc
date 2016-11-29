@@ -117,6 +117,7 @@ TODO: Important: if you switched the _master jobs to run from origin/jbosstools-
 See details in JBT_Staging_For_QE.adoc
 
 
-== Stage RPM
+== Sign RPM
 
-...?
+Process doc: https://engineering.redhat.com/docs/en-US/Policy/30.se/html/Security_Engineering/sect-Security_Engineering-Package_Signing_Server-Using_the_rpm_sign_client_to_sign_RPMs.html
+

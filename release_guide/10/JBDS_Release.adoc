@@ -28,7 +28,7 @@ google-chrome && google-chrome https://issues.jboss.org/plugins/servlet/project-
 == Rename artifacts to remove timestamp and buildID
 
 To comply with Goldengate URL rules, we need to rename artifacts before they go to the CSP. For example
-`devstudio-10.1.0.GA-v20151002-2235-B124-installer-eap.jar` must be renamed to `devstudio-10.1.0.GA-installer-eap.jar`.
+`devstudio-10.2.0.GA-v20151002-2235-B124-installer-eap.jar` must be renamed to `devstudio-10.2.0.GA-installer-eap.jar`.
 
 Connect to dev01.mw.lab.eng.bos.redhat.com as +hudson+ user (requires permissions).
 
@@ -43,8 +43,8 @@ Then:
 
 [source,bash]
 ----
-versionExe=1.1.0-GA # note the dash, not period after x.y.z
-versionWithRespin_ds=10.1.0.GA # a, b, c...
+versionExe=1.2.0-GA # note the dash, not period after x.y.z
+versionWithRespin_ds=10.2.0.GA # a, b, c...
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
 pushd /qa/services/http/binaries/RHDS/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
 for f in $(ls *latest*); do echo "rm $f"; rm -f $f; done
@@ -60,7 +60,7 @@ Now, move & symlink the ${versionWithRespin_ds} folder:
 
 [source,bash]
 ----
-versionWithRespin_ds=10.1.0.GA # a, b, c...
+versionWithRespin_ds=10.2.0.GA # a, b, c...
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
 buildType=stable # use /stable/ or /development/ as appropriate
 pushd /qa/services/http/binaries/RHDS/10.0/staging/builds/
@@ -115,18 +115,21 @@ First thing is to ask for availability of the binaries to CSP (Red Hat Customer 
 
 NOTE: As this takes some time and can be easily cancelled, this step can be anticipated a few days before release.
 
+Previous tickets:
+
+* https://projects.engineering.redhat.com/browse/RCM-6841
+* https://projects.engineering.redhat.com/browse/RCM-10069
+
 *To* release-engineering@redhat.com +
 and +
-*Cc* cobrien@redhat.com, ldimaggi@redhat.com, mhusnain@redhat.com, jpallich@redhat.com, nboldt@redhat.com, mistria@redhat.com, alkazako@redhat.com, jmaury@redhat.com, bsutter@redhat.com, pmuir@redhat.com, paul.robinson@redhat.com, dcoughli@redhat.com +
+*Cc* cobrien@redhat.com, ldimaggi@redhat.com, mhusnain@redhat.com, timoran@redhat.com, nboldt@redhat.com, mistria@redhat.com, alkazako@redhat.com, jmaury@redhat.com, bsutter@redhat.com, pmuir@redhat.com, paul.robinson@redhat.com, dcoughli@redhat.com +
 
 [source,bash]
 ----
-versionExe=1.1.0-GA # note the dash, not period after x.y.z
-versionWithRespin_ds=10.1.0.GA # a, b, c...
+versionWithRespin_ds=10.2.0.GA # a, b, c...
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 buildType=stable # use /stable/ or /development/ as appropriate
-GOLIVEDATE="Tuesday, June 22, 2016"
-JIRA="https://issues.jboss.org/browse/DEVELOPER-3207"
+GOLIVEDATE="Wed, Dec 07, 2016"
 
 if [[ ${version_ds} != ${versionWithRespin_ds} ]]; then
   versionFriendlyName="${version_ds} (to be renamed from ${versionWithRespin_ds})"
@@ -135,18 +138,14 @@ else
 fi
 
 TOrecipients="release-engineering@redhat.com"
-CCrecipients="cobrien@redhat.com, ldimaggi@redhat.com, mhusnain@redhat.com, nboldt@redhat.com, alkazako@redhat.com, jmaury@redhat.com, paul.robinson@redhat.com, dcoughli@redhat.com, dbhole@redhat.com, lmohanty@redhat.com"
+CCrecipients="cobrien@redhat.com, ldimaggi@redhat.com, mhusnain@redhat.com, nboldt@redhat.com, alkazako@redhat.com, jmaury@redhat.com, lmohanty@redhat.com"
 sender="Nick Boldt <nboldt@redhat.com>"
-subject="Red Hat JBoss Developer Studio ${versionFriendlyName} & Red Hat Development Suite ${versionExe} available for push to CSP staging server & CDN / Download Manager"
+subject="Red Hat JBoss Developer Studio ${versionFriendlyName} available for push to CSP, CDN, & Download Manager staging servers"
 
 echo "
-JBoss Developer Studio ${versionFriendlyName} & Red Hat Development Suite ${versionExe} are available to push to CSP staging server and to the CDN / Download Manager, for subsequent smoke test & review by QE.
+JBoss Developer Studio ${versionFriendlyName} is available to push to CSP, CDN, & Download Manager staging servers, for subsequent smoke test & review by QE.
 
 We hope to go live by ${GOLIVEDATE}.
-
-Here's a JIRA to update http://developers.redhat.com/products/devstudio/ and https://www.jboss.org/products/devstudio/
-
-${JIRA}
 
 Files to publish are available from here [0]:
 
@@ -158,19 +157,21 @@ There are 4 files for push to CSP:
 * devstudio-${version_ds}-installer-eap.jar
 * devstudio-${version_ds}-updatesite-core.zip
 * devstudio-${version_ds}-updatesite-central.zip
-* (exclude development-suite-*-installer.exe)
-* (exclude *-src.zip
 
 Please include the pre-generated the HTML and text content in the above folder when creating new CSP pages.
 
-There are 5 files for for push to CDN:
+There are 4 files for for push to CDN / download manager:
 
 * devstudio-${version_ds}-installer-standalone.jar
 * devstudio-${version_ds}-installer-eap.jar
 * devstudio-${version_ds}-updatesite-core.zip
 * devstudio-${version_ds}-updatesite-central.zip
-* development-suite-${versionExe}-bundle-installer.exe
-* (exclude *-src.zip)
+
+Note that the sources zip has been removed.
+
+If feasible, you could still publish the .txt and .html instructions, which will direct people to fetch sources from github and explain some gotchas when building.
+
+--
 
 When pushed, please reply so that QE can review the CSP pages & CDN files for push to production.
 
@@ -180,10 +181,9 @@ Note that in addition to the new CSP page, eg., [1] or [2], the CSP landing page
 [2] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=10.2.0
 [3] https://access.redhat.com/downloads/
 
-Only TWO of the artifacts above [4],[5] require sign in from CDN/Download Manager. The rest are No T&C.
+Only ONE of the artifacts above [4] requires sign-in from CDN/Download Manager. The rest are No T&C.
 
 [4] devstudio-*-installer-eap.jar (contains EAP)
-[5] development-suite-*-installer.jar (contains RHEL)
 
 " > /tmp/mailbody.jbds.txt
 
@@ -230,7 +230,7 @@ red="\033[1;31m"
 
 ####################################################
 
-versionWithRespin_ds=10.1.0.GA
+versionWithRespin_ds=10.2.0.GA
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
 
 # use filemgmt.jboss.org IP instead of 10.5.105.197 because it's 3x faster!
@@ -261,8 +261,8 @@ for qual in $quals; do
 done
 
 # copy 6 zips & SHAs
-# devstudio-10.1.0.GA-target-platform-central.zip           devstudio-10.1.0.GA-target-platform.zip          devstudio-10.1.0.GA-updatesite-core.zip
-# devstudio-10.1.0.GA-target-platform-earlyaccess.zip       devstudio-10.1.0.GA-updatesite-central.zip       devstudio-10.1.0.GA-updatesite-earlyaccess.zip
+# devstudio-10.2.0.GA-target-platform-central.zip           devstudio-10.2.0.GA-target-platform.zip          devstudio-10.2.0.GA-updatesite-core.zip
+# devstudio-10.2.0.GA-target-platform-earlyaccess.zip       devstudio-10.2.0.GA-updatesite-central.zip       devstudio-10.2.0.GA-updatesite-earlyaccess.zip
 tmpdir=~/temp-stage/release_ds_${version_ds}_zips # ~
 quals="development"; if [[ ${version_ds##*GA} == "" ]]; then quals="development stable"; fi # **##
 for site in core; do
@@ -430,11 +430,11 @@ Open p2-browser and verify these sites load correctly:
 
 https://devstudio.redhat.com/10.0/development/updates/
 https://devstudio.redhat.com/10.0/development/updates/discovery.earlyaccess/
-https://devstudio.redhat.com/10.0/development/updates/discovery.earlyaccess/10.1.0.GA/
+https://devstudio.redhat.com/10.0/development/updates/discovery.earlyaccess/10.2.0.GA/
 
 https://devstudio.redhat.com/10.0/stable/updates/
 https://devstudio.redhat.com/10.0/stable/updates/discovery.earlyaccess/
-https://devstudio.redhat.com/10.0/stable/updates/discovery.earlyaccess/10.1.0.GA/
+https://devstudio.redhat.com/10.0/stable/updates/discovery.earlyaccess/10.2.0.GA/
 
 ----
 

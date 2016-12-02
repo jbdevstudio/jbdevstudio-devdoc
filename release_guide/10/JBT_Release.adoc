@@ -103,6 +103,24 @@ done
 
 ----
 
+If any of the above fails, ssh to dev01, sudo to hudson, and do this. NOTE: will not work if run from within a screen session.
+
+[source,bash]
+----
+
+# get stage script
+WORKSPACE=/tmp
+cd ${WORKSPACE}
+if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
+wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/stage.sh --no-check-certificate
+chmod +x stage.sh
+STAGE=${WORKSPACE}/stage.sh
+
+# run stage script, eg., for the rpm
+${STAGE} -sites rpm -stream 10.2.0.GA -vr 10.2.0.GA -sd 10.0 -dd static/10.0 -st staging -dt stable -JOB_NAME 'devstudio-10.2.0.GA-build-${site}' -DESTINATION devstudio@10.5.105.197:/www_htdocs/devstudio -DEST_URL https://devstudio.redhat.com -suz -sus
+
+----
+
 
 When the job above is done, this verification job will trigger automatically:
 

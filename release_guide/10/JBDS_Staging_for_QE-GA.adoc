@@ -85,7 +85,7 @@ https://devstudio.redhat.com/10.0/staging/updates/
 [source,bash]
 ----
 versionWithRespin_ds=10.2.0.GA # a, b, c...
-cd ~/tmp
+cd ~/tmp # ~
 wget https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
 installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 echo "Installer jar: ${installerJar}"
@@ -94,7 +94,7 @@ rm -f index.html
 # should have already downloaded this above
 if [[ ! -f ${installerJar} ]]; then wget https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/${installerJar}; fi
 
-java -jar ~/tmp/${installerJar}
+java -jar ~/tmp/${installerJar} # ~
 
 ----
 

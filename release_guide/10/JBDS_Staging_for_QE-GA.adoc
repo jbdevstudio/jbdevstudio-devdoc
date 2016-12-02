@@ -119,7 +119,31 @@ See details in JBT_Staging_For_QE.adoc
 
 == Sign RPM
 
-1. give URL link to Chris via RCM ticket, eg., https://projects.engineering.redhat.com/browse/RCM-10070
+1. give URL link to Chris via RCM ticket, eg., https://projects.engineering.redhat.com/browse/RCM-10070, https://projects.engineering.redhat.com/browse/RCM-10215
+
+[source,bash]
+----
+
+# TODO make sure this works!
+
+# Jenkins login for the Wonka server
+userpass=nboldt:PASSWORD
+
+versionWithRespin_ds=10.2.0.GA
+for j in jbosstools-releng-push-to-staging-05-sign-rpm-email-request; do
+  url=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job/${j}
+  # enable and run the job
+  curl -k -X POST -u ${userpass} ${url}/enable && echo -n ".E"
+  curl -k -X POST -u ${userpass} --data "token=RELENG&versionWithRespin_ds=${versionWithRespin_ds}" \
+${url}/buildWithParameters && echo -n ".B"
+  sleep 15s
+  # then disable the job
+  curl -k -X POST -u ${userpass} ${url}/disable && echo -n ".D"
+  curl -k -X POST -u ${userpass} ${url}/lastBuild/toggleLogKeep && echo -n ".K"
+  google-chrome ${url}/lastBuild/console &
+done
+
+----
 
 2. Chris signs it, and gives back a URL,eg., http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/JBDS-10.2.0/rpms/signed/
 
@@ -128,38 +152,25 @@ See details in JBT_Staging_For_QE.adoc
 [source,bash]
 ----
 
-# path to where https://github.com/jbdevstudio/jbdevstudio-website/tree/master/content is checked out
-cd ~/truu/devstudio.redhat.com # ~
+# TODO make sure this works!
 
-# path to where siege has signed the rpms
-signedURL=http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/JBDS-10.2.0/rpms/signed
+# Jenkins login for the Wonka server
+userpass=nboldt:PASSWORD
 
-JBDS=devstudio@10.5.105.197:/www_htdocs/devstudio
-RHDS=hudson@10.16.88.146:/qa/services/http/binaries/devstudio
-versionWithRespin_ds=10.2.0.GA # a, b, c...
-
-# make dir if not existing already (should be)
-mkdir -p 10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-rpm/latest/x86_64
-pushd 10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-rpm/latest/x86_64
-
-wget ${signedURL}/
-rpm=$(cat index.html | grep x86_64.rpm\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
-srpm=$(cat index.html | grep src.rpm\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
-echo "rpm = $rpm, srpm = $srpm"
-rm -f index.html
-wget ${signedURL}/${rpm} &
-wget ${signedURL}/${srpm} &
-wait
-createrepo_c .
-rsync -aPrz --rsh=ssh --protocol=28 ${JBDS}/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-rpm/latest/x86_64/logs .
-rsync -aPrz --rsh=ssh --protocol=28 ${JBDS}/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-rpm/latest/x86_64/README.html .
-for z in $(find . -maxdepth 1 -type f -name "*.rpm"); do for shasum in $(sha256sum ${z}); do if [[ $shasum != ${z} ]]; then echo $shasum > ${z}.sha256; fi; done; done
-popd
-
-pushd 10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-rpm/latest/
-time rsync -aPrz --rsh=ssh --protocol=28 x86_64 ${JBDS}/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-rpm/latest/ --delete
-# then push changes to www.qa too
-time rsync -aPrz --rsh=ssh --protocol=28 x86_64 ${RHDS}/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-rpm/latest/ --delete
-popd
+versionWithRespin_ds=10.2.0.GA
+signedURL=http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/JBDS-10.2.0/rpms/signed/
+for j in jbosstools-releng-push-to-staging-06-sign-rpm-fetch; do
+  url=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job/${j}
+  # enable and run the job
+  curl -k -X POST -u ${userpass} ${url}/enable && echo -n ".E"
+  curl -k -X POST -u ${userpass} --data "token=RELENG&versionWithRespin_ds=${versionWithRespin_ds}&signedURL=${signedURL}" \
+${url}/buildWithParameters && echo -n ".B"
+  sleep 15s
+  # then disable the job
+  curl -k -X POST -u ${userpass} ${url}/disable && echo -n ".D"
+  curl -k -X POST -u ${userpass} ${url}/lastBuild/toggleLogKeep && echo -n ".K"
+  google-chrome ${url}/lastBuild/console &
+done
 
 ----
+

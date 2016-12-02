@@ -55,9 +55,9 @@ You will need to enable the jobs to perform the copy from staging to development
 userpass=nboldt:PASSWORD
 
 stream_jbt=master # or 4.4.neon
-for j in jbosstools-releng-push-to-dev-stable-07-notification-emails_${stream_jbt} \
-jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites_${stream_jbt} \
-jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites_${stream_jbt}; do
+for j in jbosstools-releng-push-to-dev-stable-07-notification-emails \
+jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites \
+jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites; do
   curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/enable && echo -n ".E"
 done
 
@@ -70,14 +70,9 @@ These steps happens on filemgmt.jboss.org, in the jbosstools download area.
 
 === Copy content to release directory
 
-Here is a job that performs the copy from /staging/ to /development/:
+Here is a job that performs the copy from /staging/ to /development/ and/or to /stable too:
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites_master
-
-or, for pushing to /stable/ too (Final/GA builds only), use:
-
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites_4.4.neon
-
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites
 
 [source,bash]
 ----
@@ -85,20 +80,25 @@ https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-d
 # kerberos login for the Jenkins server
 userpass=nboldt:PASSWORD
 
-stream_jbt=master # or 4.4.neon
-stream_ds=master # or 10.0.neon
-versionWithRespin_jbt=4.4.2.AM3
-versionWithRespin_ds=10.2.0.AM3
-TARGET_PLATFORM_VERSION_MAX=4.61.0.AM2-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.61.0.AM1-SNAPSHOT
+stream_jbt=4.4.neon # master
+stream_ds=10.0.neon # master
+versionWithRespin_jbt=4.4.2.Final
+versionWithRespin_ds=10.2.0.GA
+TARGET_PLATFORM_VERSION_MAX=4.61.0.Final
+TARGET_PLATFORM_CENTRAL_MAX=4.61.0.Final-SNAPSHOT
 
-for j in jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites_${stream_jbt}; do
+for j in jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites; do
+  url=https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}
+  curl -k -X POST -u ${userpass} ${url}/enable && echo -n ".E"
+  sleep 3s
   curl -k -u ${userpass} --data "stream_jbt=${stream_jbt}&stream_ds=${stream_ds}&\
 versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
 TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&TARGET_PLATFORM_CENTRAL_MAX=${TARGET_PLATFORM_CENTRAL_MAX}" \
-    https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/buildWithParameters && echo -n ".B"
+    ${url}/buildWithParameters && echo -n ".B"
   sleep 10s
-  google-chrome http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/lastBuild/console &
+  curl -k -X POST -u ${userpass} ${url}/disable && echo -n ".D"
+  curl -k -X POST -u ${userpass} ${url}/lastBuild/toggleLogKeep && echo -n ".K"
+  google-chrome ${url}/lastBuild/console &
 done
 
 ----
@@ -106,13 +106,25 @@ done
 
 When the job above is done, this verification job will trigger automatically:
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites_master/ (check only jbt)
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites_4.4.neon/ (check jbt + devstudio)
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites
+
+But you can run it again if you'd like:
 
 [source,bash]
 ----
 
-google-chrome http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites_${stream_jbt}/ &
+for j in jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites; do
+  url=https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}
+  curl -k -X POST -u ${userpass} ${url}/enable && echo -n ".E"
+  sleep 3s
+  curl -k -u ${userpass} --data "versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
+skipdiscovery=false&onlydiscovery=false&buildType=development" \
+    ${url}/buildWithParameters && echo -n ".B"
+  sleep 10s
+  curl -k -X POST -u ${userpass} ${url}/disable && echo -n ".D"
+  curl -k -X POST -u ${userpass} ${url}/lastBuild/toggleLogKeep && echo -n ".K"
+  google-chrome ${url}/lastBuild/console &
+done
 
 ----
 
@@ -133,20 +145,19 @@ But if you need a login for Jenkins, please contact nboldt@redhat.com or jsightl
 # Jenkins login for the Wonka server
 userpass=nboldt:PASSWORD
 
-stream_jbt=master # or 4.4.neon
-versionWithRespin_jbt=4.4.2.AM3
-versionWithRespin_ds=10.2.0.AM3
-wonkajenkins=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job
-for j in jbosstools-releng-push-to-dev-stable-04-update-merge-composites-html_${stream_jbt}; do
+versionWithRespin_jbt=4.4.2.Final
+versionWithRespin_ds=10.2.0.GA
+for j in jbosstools-releng-push-to-dev-stable-04-update-merge-composites-html; do
+  url=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job/${j}
   # enable and run the job
-  curl -k -X POST -u ${userpass} ${wonkajenkins}/${j}/enable && echo -n ".E"
+  curl -k -X POST -u ${userpass} ${url}/enable && echo -n ".E"
   curl -k -X POST -u ${userpass} --data "token=RELENG&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}" \
-${wonkajenkins}/${j}/buildWithParameters && echo -n ".B"
+${url}/buildWithParameters && echo -n ".B"
   sleep 15s
   # then disable the job
-  curl -k -X POST -u ${userpass} ${wonkajenkins}/${j}/disable && echo -n ".D"
-  curl -k -X POST -u ${userpass} ${wonkajenkins}/${j}/lastBuild/toggleLogKeep && echo -n ".K"
-  google-chrome ${wonkajenkins}/${j}/lastBuild/console &
+  curl -k -X POST -u ${userpass} ${url}/disable && echo -n ".D"
+  curl -k -X POST -u ${userpass} ${url}/lastBuild/toggleLogKeep && echo -n ".K"
+  google-chrome ${url}/lastBuild/console &
 done
 
 ----
@@ -474,9 +485,9 @@ You will need to disable the jobs once the bits are released, so that they won't
 # kerberos login for the Jenkins server
 userpass=nboldt:PASSWORD
 stream_jbt=master # or 4.4.neon
-for j in jbosstools-releng-push-to-dev-stable-07-notification-emails_${stream_jbt} \
-jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites_${stream_jbt} \
-jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites_${stream_jbt}; do
+for j in jbosstools-releng-push-to-dev-stable-07-notification-emails \
+jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites \
+jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites; do
   curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/disable && echo -n ".D"
 done
 

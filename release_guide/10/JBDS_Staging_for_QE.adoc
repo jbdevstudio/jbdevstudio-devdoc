@@ -57,8 +57,6 @@ Run this job to move any old builds into an OLD/ folder for later cleanup, or de
 
 https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-08-delete-builds-and-update-sites/
 
-----
-
 
 === Update /staging/updates/ sites and merge in Integration Stack content
 

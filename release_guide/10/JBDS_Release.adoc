@@ -204,101 +204,15 @@ Once QE has signed off, and bits are staged to CSP, you can proceed w/ the rest 
 
 Here is a job that performs the copy from /staging/ to /development/:
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-push-to-dev-stable-02-copy-builds-and-update-sites_4.4.neon/configure
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-push-to-dev-stable-02-copy-builds-and-update-sites
 
-Or, if that fails:
+You can also push just the RPMs with this job:
 
-[source,bash]
-----
-# globals
-eclipseReleaseName=neon
-devstudioReleaseVersion=10.0
-quiet="-q" # "" for loud, or "-q" for quiet log
-STAGE=${WORKSPACE}/jbosstools-build-ci/publish/stage.sh
-
-if [[ ! -x ${STAGE} ]]; then
-  cd /tmp
-  if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
-  wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/stage.sh --no-check-certificate
-  chmod +x stage.sh
-  STAGE=/tmp/stage.sh
-fi
-
-norm="\033[0;39m"
-green="\033[1;32m"
-red="\033[1;31m"
-
-####################################################
-
-versionWithRespin_ds=10.2.0.GA
-version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
-
-# use filemgmt.jboss.org IP instead of 10.5.105.197 because it's 3x faster!
-JBDS="devstudio@10.5.105.197:/www_htdocs/devstudio"
-mkdir -p ${HOME}/JBDS-ssh; sshfs $JBDS ${HOME}/JBDS-ssh
-
-# 1. installers, update sites, central/earlyaccess, discovery (5 builds)
-quals="development"; if [[ ${version_ds##*GA} == "" ]]; then quals="development stable"; fi # **##
-for qual in $quals; do
-  for site in product central earlyaccess discovery.central discovery.earlyaccess; do
-    time ${STAGE} -sites $site -stream "${versionWithRespin_ds}" -vr ${version_ds} -sd ${devstudioReleaseVersion} \
-      -dd static/${devstudioReleaseVersion} -st staging -dt ${qual} \
-      -JOB_NAME devstudio-${versionWithRespin_ds}-build-\${site} -DESTINATION ${JBDS} -DEST_URL https://devstudio.redhat.com ${quiet} &
-    sleep 5
-  done
-done
-
-# 2. copy 1 site: devstudio installers & update site [INTERNAL - includes EAP installer]
-quals="development"; if [[ ${version_ds##*GA} == "" ]]; then quals="development stable"; fi # **##
-for qual in $quals; do
-  for site in product; do
-    time ${STAGE} -sites $site -stream "${versionWithRespin_ds}" -vr ${version_ds} -sd ${devstudioReleaseVersion} \
-      -dd static/${devstudioReleaseVersion} -st staging -dt ${qual} \
-      -JOB_NAME devstudio-${versionWithRespin_ds}-build-\${site} \
-      -DESTINATION /qa/services/http/binaries/RHDS -DEST_URL http://www.qa.jboss.com/binaries/devstudio ${quiet} &
-    sleep 5
-  done
-done
-
-# copy 6 zips & SHAs
-# devstudio-10.2.0.GA-target-platform-central.zip           devstudio-10.2.0.GA-target-platform.zip          devstudio-10.2.0.GA-updatesite-core.zip
-# devstudio-10.2.0.GA-target-platform-earlyaccess.zip       devstudio-10.2.0.GA-updatesite-central.zip       devstudio-10.2.0.GA-updatesite-earlyaccess.zip
-tmpdir=~/temp-stage/release_ds_${version_ds}_zips # ~
-quals="development"; if [[ ${version_ds##*GA} == "" ]]; then quals="development stable"; fi # **##
-for site in core; do
-  mkdir -p ${tmpdir}/${devstudioReleaseVersion}/development/updates/${site}
-  # get zips
-  time rsync -aPrz --rsh=ssh --protocol=28 ${JBDS}/${devstudioReleaseVersion}/staging/updates/${site}/devstudio-${versionWithRespin_ds}*.zip* \
-    ${tmpdir}/${devstudioReleaseVersion}/development/updates/${site}/
-  for qual in $quals; do
-    echo "mkdir ${site}" | sftp ${JBDS}/${devstudioReleaseVersion}/${qual}/updates/
-    # rename from staging/*/versionWithRespin_ds/ to ${qual}/*/version/
-    for zip in ${tmpdir}/${devstudioReleaseVersion}/development/updates/${site}/devstudio-${versionWithRespin_ds}*.zip*; do
-      zipNew=${zip/${versionWithRespin_ds}/${version_ds}}
-      zipNew=${zipNew##*/}; # **##
-      {
-        destprefix=https://devstudio.redhat.com/static/${devstudioReleaseVersion}/${qual}/updates/${site}/ && \
-        time rsync -aPrz --rsh=ssh --protocol=28 ${zip} ${JBDS}/static/${devstudioReleaseVersion}/${qual}/updates/${site}/${zipNew} && \
-        echo -e "
-[INFO] [zips] ${green}${destprefix}/${norm}
-[INFO] [zips] ${green}${destprefix}/${zipNew}/${norm}
-[INFO] [zips] ${green}DONE${norm}: copy ${qual} devstudio zips & SHAs" &
-      }
-    done
-  done
-done
-rm -fr $tmpdir
-
-####################################################
-
-# wait until all background tasks (jbt: 8, ds: 11) are done
-wait
-
-----
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-push-to-dev-stable-02-copy-builds-and-rpms
 
 When the job is done, verify everything has been published:
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-push-to-dev-stable-03-verify-builds-update-sites_4.4.neon/build
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-push-to-dev-stable-03-verify-builds-update-sites
 
 == Update https://devstudio.redhat.com/10.0/development/updates/
 

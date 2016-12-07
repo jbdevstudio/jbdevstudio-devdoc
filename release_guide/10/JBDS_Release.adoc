@@ -145,7 +145,7 @@ subject="Red Hat JBoss Developer Studio ${versionFriendlyName} available for pus
 echo "
 JBoss Developer Studio ${versionFriendlyName} is available to push to CSP, CDN, & Download Manager staging servers, for subsequent smoke test & review by QE.
 
-We hope to go live by ${GOLIVEDATE}.
+We hope to promote the staged (or hidden) artifacts to production by the end of the day, Eastern Standard Time, on ${GOLIVEDATE}. If required, the end of the next day is also acceptable.
 
 Files to publish are available from here [0]:
 

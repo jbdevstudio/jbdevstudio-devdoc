@@ -131,6 +131,7 @@ But you can run it again if you'd like:
 [source,bash]
 ----
 
+# buildType=development will also check stable URLs if we're pushing out a GA/Final release
 for j in jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites; do
   url=https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}
   curl -k -X POST -u ${userpass} ${url}/enable && echo -n ".E"
@@ -276,63 +277,46 @@ fi
 ----
 
 
-== Release the latest milestone to ide-config.properties
+== Release the latest development and/or stable milestone to ide-config.properties
 
-Check out http://download.jboss.org/jbosstools/configuration/ide-config.properties
+Here's a job that verifies everything is updated:
 
-Update it so that the links for the latest milestone point to valid URLs. Comment out staging links as required.
+http://wonka.mw.lab.eng.bos.redhat.com/jenkins/view/devstudio/job/jbosstools-releng-push-to-dev-stable-04-update-ide-config.properties/
+
+Using the script below, you can trigger the job remotely.
+
+But if you need a login for Jenkins, please contact nboldt@redhat.com or jsightle@redhat.com.
 
 [source,bash]
 ----
 
-# TODO: https://issues.jboss.org/browse/JBIDE-23475 generate updates to ide-config.properties via wonka job
+# Jenkins login for the Wonka server
+userpass=nboldt:PASSWORD
 
-# adjust these steps to fit your own path location & git workflow
-cd ~/tru # ~
-pushd jbosstools-download.jboss.org/jbosstools/configuration
-versionWithRespin_jbt=4.4.2.AM3 # a, b, c...
-version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # **
-versionWithRespin_ds=10.2.0.AM3 # a, b, c...
-version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # **
+versionWithRespin_jbt=4.4.2.Final
+versionWithRespin_ds=10.2.0.GA
 
-git fetch origin master
-git checkout FETCH_HEAD
+versionWithRespin_jbt_PREV=4.4.2.AM3
+versionWithRespin_jbt_NEXT=4.4.3.AM1
+versionWithRespin_ds_PREV=10.2.0.AM3
+versionWithRespin_ds_NEXT=10.3.0.AM1
 
-# you'll want to use URLs like these
-google-chrome && google-chrome \
-http://download.jboss.org/jbosstools/neon/development/updates/discovery.central/${version_jbt}/jbosstools-directory.xml \
-http://download.jboss.org/jbosstools/neon/development/updates/ \
-http://download.jboss.org/jbosstools/neon/development/updates/compositeContent.xml \
-http://download.jboss.org/jbosstools/neon/development/updates/earlyaccess/ \
-http://download.jboss.org/jbosstools/neon/development/updates/earlyaccess/compositeContent.xml \
-http://download.jboss.org/jbosstools/neon/development/updates/discovery.earlyaccess/${version_jbt}/jbosstools-earlyaccess.properties \
+buildType="development"; if [[ ${version_jbt##*Final} == "" ]]; then buildType="stable"; fi # **##
 
-# verify
-google-chrome && google-chrome \
-https://devstudio.redhat.com/10.0/development/updates/discovery.central/${version_jbt}/devstudio-directory.xml \
-https://devstudio.redhat.com/10.0/development/updates/ \
-https://devstudio.redhat.com/10.0/development/updates/compositeContent.xml \
-https://devstudio.redhat.com/10.0/development/updates/earlyaccess/ \
-https://devstudio.redhat.com/10.0/development/updates/earlyaccess/compositeContent.xml \
-https://devstudio.redhat.com/10.0/development/updates/discovery.earlyaccess/${version_jbt}/devstudio-earlyaccess.properties
-
-# then edit ide-config.properties
-# vim ide-config.properties
-st ide-config.properties
-
-# verify these 4 to 6 URLs exist
-URLs="$(egrep -v "#" ide-config.properties | egrep "${version_jbt}|${versionWithRespin_jbt}|${version_ds}|${versionWithRespin_ds}" | sed -e "s#.\+|\([0-9.a-zA-Z]\+\)=\(.\+\)#\2#")"
-google-chrome && google-chrome $URLs
-for u in $URLs; do echo "$u"; done
-
-# commit the change and push to master
-ci "release JBT ${version_jbt} (${versionWithRespin_jbt}) to public: link to latest dev milestone discovery site" ide-config.properties
-git push origin HEAD:master
-
-# push updated file to server
-TOOLS=tools@10.5.105.197:/downloads_htdocs/tools
-rsync -Pzrlt --rsh=ssh --protocol=28 ide-config.properties $TOOLS/configuration/ide-config.properties
-popd
+for j in jbosstools-releng-push-to-dev-stable-04-update-ide-config.properties; do
+  url=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job/${j}
+  # enable and run the job
+  curl -k -X POST -u ${userpass} ${url}/enable && echo -n ".E"
+  curl -k -X POST -u ${userpass} --data "token=RELENG&buildType=${buildType}&\
+versionWithRespin_jbt_PREV=${versionWithRespin_jbt_PREV}&versionWithRespin_jbt_NEXT=${versionWithRespin_jbt_NEXT}&versionWithRespin_jbt=${versionWithRespin_jbt}&\
+versionWithRespin_ds_PREV=${versionWithRespin_ds_PREV}&versionWithRespin_ds_NEXT=${versionWithRespin_ds_NEXT}&versionWithRespin_ds=${versionWithRespin_ds}" \
+${url}/buildWithParameters && echo -n ".B"
+  sleep 15s
+  # then disable the job
+  curl -k -X POST -u ${userpass} ${url}/disable && echo -n ".D"
+  curl -k -X POST -u ${userpass} ${url}/lastBuild/toggleLogKeep && echo -n ".K"
+  google-chrome ${url}/lastBuild/console &
+done
 
 ----
 

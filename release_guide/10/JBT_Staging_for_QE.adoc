@@ -261,51 +261,47 @@ done
 
 == Release the latest staging site to ide-config.properties
 
-Check out http://download.jboss.org/jbosstools/configuration/ide-config.properties
+Here's a job that verifies everything is updated:
 
-Update it so that the links for the latest milestone point to valid URLs. Comment out staging links as required.
+http://wonka.mw.lab.eng.bos.redhat.com/jenkins/view/devstudio/job/jbosstools-releng-push-to-staging-04-update-ide-config.properties/
+
+Using the script below, you can trigger the job remotely.
+
+But if you need a login for Jenkins, please contact nboldt@redhat.com or jsightle@redhat.com.
 
 [source,bash]
 ----
 
-# TODO: https://issues.jboss.org/browse/JBIDE-23475 generate updates to ide-config.properties via wonka job
+# Jenkins login for the Wonka server
+userpass=nboldt:PASSWORD
 
-# adjust these steps to fit your own path location & git workflow
-cd ~/tru
-pushd jbosstools-download.jboss.org/jbosstools/configuration
-version=4.4.2.Final
-versionWithRespin_jbt=4.4.2.Final # a, b, c...
-versionWithRespin_ds=10.2.0.GA # a, b, c...
-version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # **
+versionWithRespin_jbt=4.4.2.Final
+versionWithRespin_ds=10.2.0.GA
 
-git fetch origin master
-git checkout FETCH_HEAD
+versionWithRespin_jbt_PREV=4.4.2.AM3
+versionWithRespin_jbt_NEXT=4.4.3.AM1
+versionWithRespin_ds_PREV=10.2.0.AM3
+versionWithRespin_ds_NEXT=10.3.0.AM1
 
-# then edit ide-config.properties
-# vim ide-config.properties
-st ide-config.properties
-# TODO something like this?
-# 1. swap  ^(jb.+(4.4.2|10.2.0).AM)(1)= for \12=
-# 2. swap ^#(jb.+(4.4.2|10.2.0).AM1=) for \1
+buildType="staging"
 
-# verify these 6 URLs exist
-URLs="$(egrep -v "#" ide-config.properties | egrep "${version}|${versionWithRespin_jbt}|${version_ds}|${versionWithRespin_ds}" | sed -e "s#.\+|\([0-9.a-zA-Z]\+\)=\(.\+\)#\2#")"
-google-chrome && google-chrome $URLs
-for u in $URLs; do echo "$u"; done
-
-# commit the change and push to master
-ci "release JBT ${version} (${versionWithRespin_jbt}) to staging: link to latest dev milestone discovery site" ide-config.properties
-git push origin HEAD:master
-
-# push updated file to server
-# use filemgmt.jboss.org IP instead of 10.5.105.197 because it's 3x faster!
-TOOLS=tools@10.5.105.197:/downloads_htdocs/tools
-RSYNC="rsync -aPrz --rsh=ssh --protocol=28"
-${RSYNC} ide-config.properties $TOOLS/configuration/ide-config.properties
-
-popd
+for j in jbosstools-releng-push-to-staging-04-update-ide-config.properties; do
+  url=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job/${j}
+  # enable and run the job
+  curl -k -X POST -u ${userpass} ${url}/enable && echo -n ".E"
+  curl -k -X POST -u ${userpass} --data "token=RELENG&buildType=${buildType}&\
+versionWithRespin_jbt_PREV=${versionWithRespin_jbt_PREV}&versionWithRespin_jbt_NEXT=${versionWithRespin_jbt_NEXT}&versionWithRespin_jbt=${versionWithRespin_jbt}&\
+versionWithRespin_ds_PREV=${versionWithRespin_ds_PREV}&versionWithRespin_ds_NEXT=${versionWithRespin_ds_NEXT}&versionWithRespin_ds=${versionWithRespin_ds}" \
+${url}/buildWithParameters && echo -n ".B"
+  sleep 15s
+  # then disable the job
+  curl -k -X POST -u ${userpass} ${url}/disable && echo -n ".D"
+  curl -k -X POST -u ${userpass} ${url}/lastBuild/toggleLogKeep && echo -n ".K"
+  google-chrome ${url}/lastBuild/console &
+done
 
 ----
+
 
 == Smoke test the release
 

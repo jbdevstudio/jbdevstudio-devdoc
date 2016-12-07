@@ -166,11 +166,17 @@ userpass=nboldt:PASSWORD
 
 versionWithRespin_jbt=4.4.2.Final
 versionWithRespin_ds=10.2.0.GA
+versionWithRespin_ds_PREV=10.2.0.AM3
+earlyaccess_IS=earlyaccess/
+version_jbt_IS=4.4.0.Final
+version_ds_IS=10.0.0.GA
+
 for j in jbosstools-releng-push-to-dev-stable-04-update-merge-composites-html; do
   url=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job/${j}
   # enable and run the job
   curl -k -X POST -u ${userpass} ${url}/enable && echo -n ".E"
-  curl -k -X POST -u ${userpass} --data "token=RELENG&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}" \
+  curl -k -X POST -u ${userpass} --data "token=RELENG&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
+versionWithRespin_ds_PREV=${versionWithRespin_ds_PREV}&earlyaccess_IS=${earlyaccess_IS}&version_jbt_IS=${version_jbt_IS}&version_ds_IS=${version_ds_IS}" \
 ${url}/buildWithParameters && echo -n ".B"
   sleep 15s
   # then disable the job
@@ -227,7 +233,7 @@ https://github.com/jbosstools/jbosstools-download.jboss.org/commit/d5306ce940814
 [source,bash]
 ----
 
-TARGET_PLATFORM_VERSION_MAX=4.61.0.AM1-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.61.0.Final
 # for Final TPs only!
 if [[ ${TARGET_PLATFORM_VERSION_MAX} == *"Final" ]]; then
   now=`date +%s000`

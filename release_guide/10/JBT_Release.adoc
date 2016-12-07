@@ -170,7 +170,6 @@ versionWithRespin_ds_PREV=10.2.0.AM3
 earlyaccess_IS=earlyaccess/
 version_jbt_IS=4.4.0.Final
 version_ds_IS=10.0.0.GA
-
 for j in jbosstools-releng-push-to-dev-stable-04-update-merge-composites-html; do
   url=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job/${j}
   # enable and run the job
@@ -233,12 +232,15 @@ https://github.com/jbosstools/jbosstools-download.jboss.org/commit/d5306ce940814
 [source,bash]
 ----
 
-TARGET_PLATFORM_VERSION_MAX=4.61.0.Final
 # for Final TPs only!
-if [[ ${TARGET_PLATFORM_VERSION_MAX} == *"Final" ]]; then
-  now=`date +%s000`
-  TOOLS=tools@10.5.105.197:/downloads_htdocs/tools
 
+TARGET_PLATFORM_VERSION_MAX=4.60.1.Final
+now=`date +%s000`
+TOOLS=tools@10.5.105.197:/downloads_htdocs/tools
+JBDS=devstudio@10.5.105.197:/www_htdocs/devstudio
+
+# jbosstools
+if [[ ${TARGET_PLATFORM_VERSION_MAX} == *"Final" ]]; then
   cd ~/tru # or where you have jbosstools-download.jboss.org checked out ~
   pushd jbosstools-download.jboss.org/jbosstools/targetplatforms/
     git fetch origin master
@@ -267,7 +269,6 @@ if [[ ${TARGET_PLATFORM_VERSION_MAX} == *"Final" ]]; then
     git push origin HEAD:master
   popd
 
-  # for Final TPs only!
   google-chrome && google-chrome \
   http://download.jboss.org/jbosstools/static/targetplatforms/${tppath}/REPO/ \
   http://download.jboss.org/jbosstools/static/targetplatforms/${tppath}/compositeContent.xml \
@@ -278,6 +279,48 @@ if [[ ${TARGET_PLATFORM_VERSION_MAX} == *"Final" ]]; then
   http://download.jboss.org/jbosstools/targetplatforms/${tppath}/REPO/p2.index \
   http://download.jboss.org/jbosstools/targetplatforms/${tppath}/compositeContent.xml \
   http://download.jboss.org/jbosstools/targetplatforms/${tppath}/p2.index
+fi
+
+# devstudio
+if [[ ${TARGET_PLATFORM_VERSION_MAX} == *"Final" ]]; then
+  cd ~/truu # or where you have jbdevstudio-website checked out ~
+  pushd jbdevstudio-website/content/targetplatforms/
+    git fetch origin master
+    git checkout FETCH_HEAD
+
+    for f in jbdevstudio; do
+      tppath=${f}target/${TARGET_PLATFORM_VERSION_MAX}
+      # move actual TP to /static/ folder
+      echo "rename targetplatforms/${tppath} static/targetplatforms/${tppath}" | sftp ${JBDS}/
+      # get contents from remote
+      rsync -Pzrlt --rsh=ssh --protocol=28 $JBDS/static/targetplatforms/${tppath}/composite*.xml ${tppath}/
+      # change pointer to include /static/
+      for d in ${tppath}/composite*.xml; do
+        sed -i -e "s#[\'\"]REPO/[\'\"]#'https://devstudio.redhat.com/static/targetplatforms/${tppath}/REPO/'#g" $d ##
+      done
+      echo "version = 1
+  metadata.repository.factory.order = compositeContent.xml,\!
+  artifact.repository.factory.order = compositeArtifacts.xml,\!" > ${tppath}/p2.index
+      rsync -Przlt ${tppath}/composite*.xml ${tppath}/p2.index ${tppath}/REPO/
+      # create composite pointer
+      rsync -Pzrlt --rsh=ssh --protocol=28 ${tppath}/* $JBDS/targetplatforms/${tppath}/
+    done
+    # commit changes to github
+    git add ${f}target
+    git commit -m "move target platforms into /static/ and update composite pointers to latest => ${TARGET_PLATFORM_VERSION_MAX}" .
+    git push origin HEAD:master
+  popd
+
+  google-chrome && google-chrome \
+  https://devstudio.redhat.com/static/targetplatforms/${tppath}/REPO/ \
+  https://devstudio.redhat.com/static/targetplatforms/${tppath}/compositeContent.xml \
+
+  # verify files are correct
+  google-chrome && google-chrome \
+  https://devstudio.redhat.com/targetplatforms/${tppath}/REPO/compositeContent.xml \
+  https://devstudio.redhat.com/targetplatforms/${tppath}/REPO/p2.index \
+  https://devstudio.redhat.com/targetplatforms/${tppath}/compositeContent.xml \
+  https://devstudio.redhat.com/targetplatforms/${tppath}/p2.index
 fi
 
 ----
@@ -333,7 +376,7 @@ WARNING: Only applies to Beta and better versions.
 
 === If node does not yet exist
 
-For the first Beta, create a new node on Marketplace, using content from http://download.jboss.org/jbosstools/static/neon/stable/updates/core/4.4.2.AM3/site.properties
+For the first Beta, create a new node on Marketplace, using content from http://download.jboss.org/jbosstools/static/neon/stable/updates/core/4.4.2.Final/site.properties
 
 === If node already exists
 
@@ -341,7 +384,7 @@ Access it via +https://marketplace.eclipse.org/content/jboss-tools/edit+ and upd
 
 * Title to match new version
 * Description to match new version & dependencies
-* Update list of features, using content of http://download.jboss.org/jbosstools/static/neon/stable/updates/core/4.4.2.AM3/site.properties
+* Update list of features, using content of http://download.jboss.org/jbosstools/static/neon/stable/updates/core/4.4.2.Final/site.properties
 
 To diff if any new features have been added/removed:
 
@@ -429,7 +472,7 @@ git clone https://github.com/jbosstools/jbosstools-versionwatch
 # download.jboss.org tag might not be valid as tweaks to ide-config.properties happen frequently
 
 jbt_branch=master # or jbosstools-4.4.2.x
-version_jbt=4.4.2.AM3
+version_jbt=4.4.2.Final
 cd ~/tru # ~
 for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins versionwatch; do
   echo "====================================================================="
@@ -467,8 +510,8 @@ Once the current milestone is done, the BUILD_ALIAS in parent pom should be bump
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru # ~
 pushd jbosstools-build/parent
-BUILD_ALIAS=AM3
-BUILD_ALIAS_NEXT=Final
+BUILD_ALIAS=Final
+BUILD_ALIAS_NEXT=AM1
 
 git fetch origin master
 git checkout FETCH_HEAD
@@ -492,7 +535,7 @@ You will need to disable the jobs once the bits are released, so that they won't
 
 # kerberos login for the Jenkins server
 userpass=nboldt:PASSWORD
-stream_jbt=master # or 4.4.neon
+
 for j in jbosstools-releng-push-to-dev-stable-07-notification-emails \
 jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites \
 jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites; do

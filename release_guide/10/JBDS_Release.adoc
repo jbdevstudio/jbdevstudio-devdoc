@@ -200,7 +200,7 @@ Communicate with Paul Robinson / Daniel Coughlin, Chris O'Brien, etc. to coordin
 
 Once QE has signed off, and bits are staged to CSP, you can proceed w/ the rest of the release.
 
-== Copy from /staging/ into /development/
+== Copy from /staging/ into /development/ (and /stable/)
 
 Here is a job that performs the copy from /staging/ to /development/:
 
@@ -214,215 +214,14 @@ When the job is done, verify everything has been published:
 
 https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-push-to-dev-stable-03-verify-builds-update-sites
 
-== Update https://devstudio.redhat.com/10.0/development/updates/
+=== Update /development/updates/ sites (and /stable/updates if Final)
 
-To update the content in https://devstudio.redhat.com/10.0/development/updates/ ...
+See JBT_Release.adoc
 
-[source,bash]
-----
-
-cd ~/truu # ~
-pushd jbdevstudio-website/content/10.0/
-git fetch origin master
-git checkout FETCH_HEAD
-
-# mount an sshfs drive for $JBDS
-JBDS=devstudio@10.5.105.197:/www_htdocs/devstudio
-sshfs $JBDS $HOME/JBDS-ssh
-
-versionWithRespin_ds=10.2.0.GA # a, b, c...
-version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # **
-quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi # **##
-echo "
-- integration-stack/*
-- */OLD/
-- */binary/
-+ core/${versionWithRespin_ds}/
-+ core/composite*.xml
-- core/*
-+ central/${versionWithRespin_ds}/
-+ central/composite*.xml
-- central/*
-+ earlyaccess/${versionWithRespin_ds}/
-+ earlyaccess/composite*.xml
-- earlyaccess/*
-+ discovery.central/${versionWithRespin_ds}/
-+ discovery.central/composite*.xml
-- discovery.central/*
-+ discovery.earlyaccess/${versionWithRespin_ds}/
-+ discovery.earlyaccess/${versionWithRespin_ds}/plugins/
-+ discovery.earlyaccess/${versionWithRespin_ds}/plugins/*.jar
-+ discovery.earlyaccess/composite*.xml
-- discovery.earlyaccess/*
-- site.css
-- *.gz
-- *.jar
-- *.zip
-" > /tmp/filter-devstudio
-scpr $JBDS/10.0/staging/updates/* staging/updates/ --include-from=/tmp/filter-devstudio
-
-for qual in $quals; do
-  echo ":: $qual"
-  scpr staging/updates/* ${qual}/updates/ --include-from=/tmp/filter-devstudio -q
-
-  pushd ${qual}/updates/
-  if [[ ${versionWithRespin_ds} != ${version_ds} ]]; then
-    # rename the staging folders to their final names (CR1c -> Final)
-    for d in core central earlyaccess discovery.central discovery.earlyaccess; do
-      rm -fr ${d}/${version_ds}
-      mv ${d}/${versionWithRespin_ds} ${d}/${version_ds}
-    done
-  fi
-
-  # fix composite sites to use the correct paths (not /staging, but /static)
-  now=`date +%s000`
-  for c in index.html compositeContent.xml compositeArtifacts.xml */compositeContent.xml */compositeArtifacts.xml */${version_ds}/compositeContent.xml */${version_ds}/compositeArtifacts.xml; do
-    if [[ $c == ${c/integration-stack/} ]]; then
-      echo "$c ..."
-      sed -i -e "s#<property name='p2.timestamp' value='[0-9]\+'/>#<property name='p2.timestamp' value='${now}'/>#" $c
-      sed -i -e "s#10.0/staging/updates/#static/10.0/${qual}/updates/#" $c
-      sed -i -e "s#${versionWithRespin_ds}#${version_ds}#" $c
-    fi
-  done
-  popd
-done
-rm -f /tmp/filter-devstudio
-
-# copy versioned composite site into parent folder
-for qual in $quals; do
-  echo ":: $qual"
-  pushd ${qual}/updates/ >/dev/null
-    for d in core central earlyaccess discovery.central discovery.earlyaccess; do
-      if [[ -f ${d}/${version_ds}/compositeContent.xml ]]; then
-        scpr ${d}/${version_ds}/composite*.xml ${d}/
-      fi
-      ga -f ${d}/${version_ds}/* ${d}/*.*ml
-    done
-  popd >/dev/null
-done
-
-# push updated files to server
-for qual in $quals; do
-  pushd ${qual}/updates/ >/dev/null
-    JBDS=devstudio@10.5.105.197:/www_htdocs/devstudio
-    scpr *.*ml ${JBDS}/10.0/${qual}/updates/
-    for d in discovery.central discovery.earlyaccess; do
-      echo ${d}/
-      scpr ${d}/*.*ml ${JBDS}/10.0/${qual}/updates/${d}/
-      scpr ${d}/*.*ml ${JBDS}/static/10.0/${qual}/updates/${d}/
-    done
-    for d in discovery.central discovery.earlyaccess; do
-      echo ${d}/
-      scpr ${d}/${version_ds}/* ${JBDS}/10.0/${qual}/updates/${d}/${version_ds}/
-      scpr ${d}/${version_ds}/* ${JBDS}/static/10.0/${qual}/updates/${d}/${version_ds}/
-    done
-  popd >/dev/null
-done
-
-# commit the change and push to master
-for qual in $quals; do git add ${qual}/updates; done
-git commit -m "release JBT ${versionWithRespin_ds} to public" .
-git push origin HEAD:master
-
-popd
-
-# verify site contents are shown
-quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi # **##
-for qual in $quals; do
-  google-chrome && google-chrome \
-  https://devstudio.redhat.com/10.0/${qual}/updates \
-  https://devstudio.redhat.com/10.0/${qual}/updates/compositeContent.xml \
-  https://devstudio.redhat.com/10.0/${qual}/updates/discovery.earlyaccess/ \
-  https://devstudio.redhat.com/10.0/${qual}/updates/discovery.earlyaccess/compositeContent.xml \
-  https://devstudio.redhat.com/10.0/${qual}/updates/earlyaccess/ \
-
-done
-
-----
-
-Open p2-browser and verify these sites load correctly:
-
-https://devstudio.redhat.com/10.0/development/updates/
-https://devstudio.redhat.com/10.0/development/updates/discovery.earlyaccess/
-https://devstudio.redhat.com/10.0/development/updates/discovery.earlyaccess/10.2.0.GA/
-
-https://devstudio.redhat.com/10.0/stable/updates/
-https://devstudio.redhat.com/10.0/stable/updates/discovery.earlyaccess/
-https://devstudio.redhat.com/10.0/stable/updates/discovery.earlyaccess/10.2.0.GA/
-
-----
-
-Ensure content exists (this is already done automatically above, but that's before making the above updates).
-
-[source,bash]
-----
-version_ds=10.2.0.GA
-# review changes
-quals="development"; if [[ ${version##*GA} == "" ]]; then quals="development stable"; fi # **##
-for qual in $quals; do
-  google-chrome && google-chrome \
-  https://devstudio.redhat.com/10.0/${qual}/updates/discovery.earlyaccess/${version_ds}/devstudio-directory.xml \
-  https://devstudio.redhat.com/10.0/${qual}/updates/discovery.earlyaccess/${version_ds}/devstudio-earlyaccess.properties \
-  https://devstudio.redhat.com/10.0/${qual}/updates/discovery.earlyaccess/${version_ds}/plugins/ \
-
-done
-
-----
 
 == Update Target Platforms
 
-If this new release includes a new Target Platform, you need to release the latest target platform. If not, there's nothing to do here.
-
-[source,bash]
-----
-
-cd ~/truu # or where you have jbdevstudio-website checked out ~
-
-TARGET_PLATFORM_VERSION_MAX=4.60.1.Final
-now=`date +%s000`
-JBDS=devstudio@10.5.105.197:/www_htdocs/devstudio
-
-# for Final TPs only!
-pushd jbdevstudio-website/content/targetplatforms/
-  git fetch origin master
-  git checkout FETCH_HEAD
-
-  for f in jbdevstudio; do
-    tppath=${f}target/${TARGET_PLATFORM_VERSION_MAX}
-    # move actual TP to /static/ folder
-    echo "rename targetplatforms/${tppath} static/targetplatforms/${tppath}" | sftp ${JBDS}/
-    # get contents from remote
-    rsync -Pzrlt --rsh=ssh --protocol=28 $JBDS/static/targetplatforms/${tppath}/composite*.xml ${tppath}/
-    # change pointer to include /static/
-    for d in ${tppath}/composite*.xml; do
-      sed -i -e "s#[\'\"]REPO/[\'\"]#'https://devstudio.redhat.com/static/targetplatforms/${tppath}/REPO/'#g" $d ##
-    done
-    echo "version = 1
-metadata.repository.factory.order = compositeContent.xml,\!
-artifact.repository.factory.order = compositeArtifacts.xml,\!" > ${tppath}/p2.index
-    rsync -Przlt ${tppath}/composite*.xml ${tppath}/p2.index ${tppath}/REPO/
-    # create composite pointer
-    rsync -Pzrlt --rsh=ssh --protocol=28 ${tppath}/* $JBDS/targetplatforms/${tppath}/
-  done
-  # commit changes to github
-  git add ${f}target
-  git commit -m "move target platforms into /static/ and update composite pointers to latest => ${TARGET_PLATFORM_VERSION_MAX}" .
-  git push origin HEAD:master
-popd
-
-# for Final TPs only!
-google-chrome && google-chrome \
-https://devstudio.redhat.com/static/targetplatforms/${tppath}/REPO/
-https://devstudio.redhat.com/static/targetplatforms/${tppath}/compositeContent.xml \
-
-# verify files are correct
-google-chrome && google-chrome \
-https://devstudio.redhat.com/targetplatforms/${tppath}/REPO/compositeContent.xml \
-https://devstudio.redhat.com/targetplatforms/${tppath}/REPO/p2.index \
-https://devstudio.redhat.com/targetplatforms/${tppath}/compositeContent.xml \
-https://devstudio.redhat.com/targetplatforms/${tppath}/p2.index
-
-----
+See JBT_Release.adoc
 
 
 == Release the latest milestone to ide-config.properties
@@ -433,6 +232,14 @@ See JBT_Release.adoc
 == Update Marketplace entry
 
 WARNING: Only applies to Beta and better versions.
+
+[source,bash]
+----
+
+google-chrome && google-chrome http://marketplace.eclipse.org/content/red-hat-jboss-developer-studio/edit
+
+----
+
 
 === If node doesn't exist yet
 
@@ -510,8 +317,8 @@ Then, back on your own machine...
 
 [source,bash]
 ----
-version_jbt=4.4.2.AM3
-version_ds=10.2.0.AM3
+version_jbt=4.4.2.Final
+version_ds=10.2.0.GA
 
 cd ~/tru # where you have jbosstools-website checked out
 
@@ -551,7 +358,7 @@ git clone https://github.com/jbdevstudio/jbdevstudio-artwork
 git clone https://github.com/jbdevstudio/jbdevstudio-devdoc
 
 jbt_branch=master # or jbosstools-4.4.2.x
-version_ds=10.2.0.AM3
+version_ds=10.2.0.GA
 cd ~/truu # ~
 for d in product ci website artwork devdoc; do
   echo "====================================================================="

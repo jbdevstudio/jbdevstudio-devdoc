@@ -415,7 +415,7 @@ java -jar ~/tmp/${installerJar} # ~
 
 Notifify Alexy & Jeff that the website is ready to be updated with a new blog post.
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-push-to-dev-stable-07-notification-emails_4.4.neon/configure
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-push-to-dev-stable-07-notification-emails/configure
 
 
 == Commit updates to release guide (including this document):

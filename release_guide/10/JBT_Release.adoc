@@ -494,13 +494,7 @@ done
 
 Notifify Alexy & Jeff that bulk tagging should be done, and the website is ready to be updated with a new blog post.
 
-For an AMx milestone (jbosstools only):
-
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-releng-push-to-dev-stable-07-notification-emails_master/configure
-
-For Final/GA (including devstudio):
-
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-releng-push-to-dev-stable-07-notification-emails_4.4.neon/configure
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-releng-push-to-dev-stable-07-notification-emails/configure
 
 
 == Bump parent pom to newer BUILD_ALIAS value

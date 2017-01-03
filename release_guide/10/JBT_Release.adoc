@@ -54,7 +54,6 @@ You will need to enable the jobs to perform the copy from staging to development
 # kerberos login for the Jenkins server
 userpass=nboldt:PASSWORD
 
-stream_jbt=master # or 4.4.neon
 for j in jbosstools-releng-push-to-dev-stable-07-notification-emails \
 jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites \
 jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites; do

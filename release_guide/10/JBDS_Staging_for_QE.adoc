@@ -145,7 +145,7 @@ done
 
 ----
 
-2. Chris signs it, and gives back a URL,eg., http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/JBDS-10.2.0/rpms/signed/
+2. Chris signs it, and gives back a URL,eg., http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/JBDS-10.3.0/rpms/signed/
 
 3. Fetch rpms, regen metadata
 
@@ -158,7 +158,7 @@ done
 userpass=nboldt:PASSWORD
 
 versionWithRespin_ds=10.3.0.AM1
-signedURL=http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/JBDS-10.2.0/rpms/signed/
+signedURL=http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/JBDS-10.3.0/rpms/signed/
 for j in jbosstools-releng-push-to-staging-06-sign-rpm-fetch; do
   url=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job/${j}
   # enable and run the job

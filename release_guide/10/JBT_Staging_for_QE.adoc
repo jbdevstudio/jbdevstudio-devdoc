@@ -84,9 +84,9 @@ If any branches have not yet been created, you can either:
 
 [source,bash]
 ----
-git checkout master; git pull origin master; git checkout -b jbosstools-4.4.2.x; git push origin jbosstools-4.4.2.x
+git checkout master; git pull origin master; git checkout -b jbosstools-4.4.3.x; git push origin jbosstools-4.4.3.x
 # or, for jbosstools-build-ci
-git checkout jbosstools-4.4.x; git pull origin jbosstools-4.4.x; git checkout -b jbosstools-4.4.2.x; git push origin jbosstools-4.4.2.x
+git checkout jbosstools-4.4.x; git pull origin jbosstools-4.4.x; git checkout -b jbosstools-4.4.3.x; git push origin jbosstools-4.4.3.x
 
 ----
 
@@ -273,7 +273,7 @@ userpass=nboldt:PASSWORD
 
 versionWithRespin_jbt=4.4.3.AM1
 versionWithRespin_ds=10.3.0.AM1
-versionWithRespin_ds_PREV=10.2.0.AM3
+versionWithRespin_ds_PREV=10.2.0.GA
 earlyaccess_IS=earlyaccess/
 version_jbt_IS=4.4.0.Final
 version_ds_IS=10.0.0.GA
@@ -313,10 +313,10 @@ userpass=nboldt:PASSWORD
 versionWithRespin_jbt=4.4.3.AM1
 versionWithRespin_ds=10.3.0.AM1
 
-versionWithRespin_jbt_PREV=4.4.2.AM3
-versionWithRespin_jbt_NEXT=4.4.3.AM1
-versionWithRespin_ds_PREV=10.2.0.AM3
-versionWithRespin_ds_NEXT=10.3.0.AM1
+versionWithRespin_jbt_PREV=4.4.2.Final
+versionWithRespin_jbt_NEXT=4.4.3.AM2
+versionWithRespin_ds_PREV=10.2.0.GA
+versionWithRespin_ds_NEXT=10.3.0.AM2
 
 buildType="staging"
 

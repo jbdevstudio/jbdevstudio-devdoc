@@ -37,7 +37,7 @@ https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-s
 
 cd ~/tmp
 rm -f index.html
-versionWithRespin_ds=10.2.0.GA # a, b, c...
+versionWithRespin_ds=10.3.0.AM1 # a, b, c...
 wget https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
 installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 echo "Installer jar: ${installerJar}"
@@ -82,7 +82,7 @@ https://devstudio.redhat.com/10.0/staging/updates/
 
 [source,bash]
 ----
-versionWithRespin_ds=10.2.0.GA # a, b, c...
+versionWithRespin_ds=10.3.0.AM1 # a, b, c...
 cd ~/tmp
 wget https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
 installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
@@ -129,7 +129,7 @@ See details in JBT_Staging_For_QE.adoc
 # Jenkins login for the Wonka server
 userpass=nboldt:PASSWORD
 
-versionWithRespin_ds=10.2.0.GA
+versionWithRespin_ds=10.3.0.AM1
 for j in jbosstools-releng-push-to-staging-05-sign-rpm-email-request; do
   url=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job/${j}
   # enable and run the job
@@ -157,7 +157,7 @@ done
 # Jenkins login for the Wonka server
 userpass=nboldt:PASSWORD
 
-versionWithRespin_ds=10.2.0.GA
+versionWithRespin_ds=10.3.0.AM1
 signedURL=http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/JBDS-10.2.0/rpms/signed/
 for j in jbosstools-releng-push-to-staging-06-sign-rpm-fetch; do
   url=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job/${j}

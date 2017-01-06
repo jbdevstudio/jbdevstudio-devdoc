@@ -34,12 +34,13 @@ if [[ ${version_jbt} == *".Final" ]]; then
 else
   stream_jbt=master
 fi
+JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-07-notification-emails \
-jbosstools-releng-push-to-staging-03-verify-builds-update-sites \
-jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites \
-jbosstools-releng-push-to-staging-01-check-versions-branches-root-poms \
-jbosstools-releng-push-to-staging-buildflow_${stream_jbt}; do
-  curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/enable && echo -n ".E"
+  jbosstools-releng-push-to-staging-03-verify-builds-update-sites \
+  jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites \
+  jbosstools-releng-push-to-staging-01-check-versions-branches-root-poms \
+  jbosstools-releng-push-to-staging-buildflow_${stream_jbt}; do
+  ${JP} -j ${j} -t enable
 done
 
 ----
@@ -67,12 +68,10 @@ else
   github_branch=master
 fi
 
-# TODO migrate this to use jbosstools-build-ci/util/jenkinsPost.sh wrapper
+JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-01-check-versions-branches-root-poms; do
-  curl -k -u ${userpass} --data "stream_jbt=${stream_jbt}&github_branch=${github_branch}&version_parent=${version_parent}&version_jbt=${version_jbt}&version_ds=${version_ds}" \
-    https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/buildWithParameters && echo -n ".B"
-  sleep 10s
-  google-chrome http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/lastBuild/console &
+  ${JP} -j ${j} -t buildWithParameters -d \
+    "stream_jbt=${stream_jbt}&github_branch=${github_branch}&version_parent=${version_parent}&version_jbt=${version_jbt}&version_ds=${version_ds}"
 done
 
 ----
@@ -112,9 +111,10 @@ else
   stream_jbt=master
   stream_ds=master
 fi
+JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-build.parent_${stream_jbt} jbosstoolstargetplatform-matrix jbosstools-buildflow-force-publish_${stream_jbt} jbosstools-buildflow_${stream_jbt} jbosstools-composite-install_${stream_jbt} jbosstools-browsersim-standalone_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstools-centraltarget_${stream_jbt} jbosstools-build-sites.aggregate.child-sites_${stream_jbt} devstudio.product_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} jbosstools-install-grinder.install-tests.matrix_${stream_jbt}; do
-  curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/disable && echo -n ".D"
-  curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/lastBuild/toggleLogKeep && echo -n ".K"
+  ${JP} -j ${j} -t disable
+  ${JP} -j ${j} -t lastBuild/toggleLogKeep
 done
 echo ""
 
@@ -145,16 +145,15 @@ else
 fi
 TARGET_PLATFORM_VERSION_MAX=4.62.0.AM1-SNAPSHOT
 TARGET_PLATFORM_CENTRAL_MAX=4.62.0.AM1-SNAPSHOT
+JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-discovery_${stream_jbt}; do
-  curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/enable && echo -n ".E"
-  curl -k -u ${userpass} --data "buildType=staging&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
-TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&TARGET_PLATFORM_CENTRAL_MAX=${TARGET_PLATFORM_CENTRAL_MAX}" \
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/buildWithParameters && echo -n ".B"
+  ${JP} -j ${j} -t enable
+  ${JP} -j ${j} -t buildWithParameters -d \
+    "buildType=staging&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
+TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&TARGET_PLATFORM_CENTRAL_MAX=${TARGET_PLATFORM_CENTRAL_MAX}"
   sleep 15s
-  # then disable the job
-  curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/disable && echo -n ".D"
-  curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/lastBuild/toggleLogKeep && echo -n ".K"
-  google-chrome http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/lastBuild/console &
+  ${JP} -j ${j} -t disable
+  ${JP} -j ${j} -t lastBuild/toggleLogKeep
 done
 
 ----
@@ -200,14 +199,11 @@ else
   stream_jbt=master
   stream_ds=master
 fi
-# TODO migrate this to use jbosstools-build-ci/util/jenkinsPost.sh wrapper
+JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites; do
-  curl -k -u ${userpass} --data "stream_jbt=${stream_jbt}&stream_ds=${stream_ds}&\
+  ${JP} -j ${j} -t buildWithParameters -d "stream_jbt=${stream_jbt}&stream_ds=${stream_ds}&\
 versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
-TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&TARGET_PLATFORM_CENTRAL_MAX=${TARGET_PLATFORM_CENTRAL_MAX}" \
-    https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/buildWithParameters && echo -n ".B"
-  sleep 10s
-  google-chrome http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/lastBuild/console &
+TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&TARGET_PLATFORM_CENTRAL_MAX=${TARGET_PLATFORM_CENTRAL_MAX}"
 done
 
 ----
@@ -241,12 +237,9 @@ userpass=nboldt:PASSWORD
 versionWithRespin_jbt=4.4.3.AM1
 versionWithRespin_ds=10.3.0.AM1
 
-# TODO migrate this to use jbosstools-build-ci/util/jenkinsPost.sh wrapper
+JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-03-verify-builds-update-sites; do
-  curl -k -u ${userpass} --data "versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}" \
-    https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/buildWithParameters && echo -n ".B"
-  sleep 10s
-  google-chrome http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/lastBuild/console &
+  ${JP} -j ${j} -t buildWithParameters -d "versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}"
 done
 
 ----
@@ -288,17 +281,15 @@ earlyaccess_IS=earlyaccess/
 version_jbt_IS=4.4.0.Final
 version_ds_IS=10.0.0.GA
 wonkajenkins=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job
+JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-04-update-merge-composites-html; do
-  # enable and run the job
-  curl -k -X POST -u ${userpass} ${wonkajenkins}/${j}/enable && echo -n ".E"
-  curl -k -X POST -u ${userpass} --data "token=RELENG&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
+  ${JP} -s ${wonkajenkins} -j ${j} -t enable
+  ${JP} -s ${wonkajenkins} -j ${j} -t buildWithParameters -d "token=RELENG&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
 versionWithRespin_ds_PREV=${versionWithRespin_ds_PREV}&earlyaccess_IS=${earlyaccess_IS}&version_jbt_IS=${version_jbt_IS}&\
-version_ds_IS=${version_ds_IS}" ${wonkajenkins}/${j}/buildWithParameters && echo -n ".B"
+version_ds_IS=${version_ds_IS}"
   sleep 15s
-  # then disable the job
-  curl -k -X POST -u ${userpass} ${wonkajenkins}/${j}/disable && echo -n ".D"
-  curl -k -X POST -u ${userpass} ${wonkajenkins}/${j}/lastBuild/toggleLogKeep && echo -n ".K"
-  google-chrome ${wonkajenkins}/${j}/lastBuild/console &
+  ${JP} -s ${wonkajenkins} -j ${j} -t disable
+  ${JP} -s ${wonkajenkins} -j ${j} -t lastBuild/toggleLogKeep
 done
 
 ----
@@ -322,27 +313,21 @@ userpass=nboldt:PASSWORD
 
 versionWithRespin_jbt=4.4.3.AM1
 versionWithRespin_ds=10.3.0.AM1
-
 versionWithRespin_jbt_PREV=4.4.2.Final
 versionWithRespin_jbt_NEXT=4.4.3.AM2
 versionWithRespin_ds_PREV=10.2.0.GA
 versionWithRespin_ds_NEXT=10.3.0.AM2
-
 buildType="staging"
-
+wonkajenkins=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job
+JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-04-update-ide-config.properties; do
-  url=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job/${j}
-  # enable and run the job
-  curl -k -X POST -u ${userpass} ${url}/enable && echo -n ".E"
-  curl -k -X POST -u ${userpass} --data "token=RELENG&buildType=${buildType}&\
+  ${JP} -s ${wonkajenkins} -j ${j} -t enable
+  ${JP} -s ${wonkajenkins} -j ${j} -t buildWithParameters -d "token=RELENG&buildType=${buildType}&\
 versionWithRespin_jbt_PREV=${versionWithRespin_jbt_PREV}&versionWithRespin_jbt_NEXT=${versionWithRespin_jbt_NEXT}&versionWithRespin_jbt=${versionWithRespin_jbt}&\
-versionWithRespin_ds_PREV=${versionWithRespin_ds_PREV}&versionWithRespin_ds_NEXT=${versionWithRespin_ds_NEXT}&versionWithRespin_ds=${versionWithRespin_ds}" \
-${url}/buildWithParameters && echo -n ".B"
+versionWithRespin_ds_PREV=${versionWithRespin_ds_PREV}&versionWithRespin_ds_NEXT=${versionWithRespin_ds_NEXT}&versionWithRespin_ds=${versionWithRespin_ds}"
   sleep 15s
-  # then disable the job
-  curl -k -X POST -u ${userpass} ${url}/disable && echo -n ".D"
-  curl -k -X POST -u ${userpass} ${url}/lastBuild/toggleLogKeep && echo -n ".K"
-  google-chrome ${url}/lastBuild/console &
+  ${JP} -s ${wonkajenkins} -j ${j} -t disable
+  ${JP} -s ${wonkajenkins} -j ${j} -t lastBuild/toggleLogKeep
 done
 
 ----
@@ -386,13 +371,13 @@ else
   stream_jbt=master
   stream_ds=master
 fi
-
+JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-build.parent_${stream_jbt} jbosstoolstargetplatform-matrix jbosstools-buildflow_${stream_jbt} jbosstools-composite-install_${stream_jbt} jbosstools-browsersim-standalone_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstools-centraltarget_${stream_jbt} jbosstools-build-sites.aggregate.child-sites_${stream_jbt} devstudio.product_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} jbosstools-install-grinder.install-tests.matrix_${stream_jbt}; do
-  curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/enable && echo -n ".E"
+  ${JP} -j ${j} -t enable
 done
 echo ""
 for j in jbosstools-discovery_${stream_jbt}; do
-  curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/enable && echo -n ".E"
+  ${JP} -j ${j} -t enable
 done
 
 -----
@@ -424,18 +409,15 @@ TARGET_PLATFORM_VERSION_MIN=4.60.2.Final
 TARGET_PLATFORM_VERSION_MAX=4.62.0.AM1-SNAPSHOT
 TARGET_PLATFORM_CENTRAL_MAX=4.62.0.AM1-SNAPSHOT
 respinSuffix=""
-
 for j in jbosstools-releng-push-to-staging-07-notification-emails; do
-  curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/enable && echo -n ".E"
-  curl -k -u ${userpass} --data "versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
+  ${JP} -j ${j} -t enable
+  ${JP} -j ${j} -t buildWithParameters -d "versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
 TARGET_PLATFORM_VERSION_MIN=${TARGET_PLATFORM_VERSION_MIN}&\
 TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&\
-TARGET_PLATFORM_CENTRAL_MAX=${TARGET_PLATFORM_CENTRAL_MAX}" \
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/buildWithParameters && echo -n ".B"
+TARGET_PLATFORM_CENTRAL_MAX=${TARGET_PLATFORM_CENTRAL_MAX}"
   sleep 15s
-  # then disable the job
-  curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/disable && echo -n ".D"
-  curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/lastBuild/toggleLogKeep && echo -n ".K"
+  ${JP} -j ${j} -t disable
+  ${JP} -j ${j} -t lastBuild/toggleLogKeep
 done
 
 ----
@@ -461,12 +443,13 @@ else
   stream_jbt=master
   stream_ds=master
 fi
+JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-07-notification-emails \
 jbosstools-releng-push-to-staging-03-verify-builds-update-sites \
 jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites \
 jbosstools-releng-push-to-staging-01-check-versions-branches-root-poms \
 jbosstools-releng-push-to-staging-buildflow_${stream_jbt}; do
-  curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/disable && echo -n ".D"
+  ${JP} -j ${j} -t disable
 done
 
 -----

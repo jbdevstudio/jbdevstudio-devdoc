@@ -48,7 +48,7 @@ userpass=nboldt:PASSWORD
 
 stream_jbt=4.4.neon # master
 stream_ds=10.0.neon # master
-github_branch=master # or jbosstools-4.4.1.x or jbosstools-4.4.x
+github_branch=master # or jbosstools-4.4.2.x or jbosstools-4.4.x
 version_parent=4.4.2.Final-SNAPSHOT
 version_jbt=4.4.2.Final
 version_ds=10.2.0.GA
@@ -70,9 +70,9 @@ If any branches have not yet been created, you can either:
 
 [source,bash]
 ----
-git checkout master; git pull origin master; git checkout -b jbosstools-4.4.1.x; git push origin jbosstools-4.4.1.x
+git checkout master; git pull origin master; git checkout -b jbosstools-4.4.2.x; git push origin jbosstools-4.4.2.x
 # or, for jbosstools-build-ci
-git checkout jbosstools-4.4.x; git pull origin jbosstools-4.4.x; git checkout -b jbosstools-4.4.1.x; git push origin jbosstools-4.4.1.x
+git checkout jbosstools-4.4.x; git pull origin jbosstools-4.4.x; git checkout -b jbosstools-4.4.2.x; git push origin jbosstools-4.4.2.x
 
 ----
 
@@ -126,6 +126,7 @@ https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/buildWithParameters &&
   # then disable the job
   curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/disable && echo -n ".D"
   curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/lastBuild/toggleLogKeep && echo -n ".K"
+  google-chrome http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/lastBuild/console &
 done
 
 ----
@@ -365,9 +366,9 @@ userpass=nboldt:PASSWORD
 
 versionWithRespin_jbt=4.4.2.Final
 versionWithRespin_ds=10.2.0.GA
-TARGET_PLATFORM_VERSION_MIN=4.60.2.AM2-SNAPSHOT
-TARGET_PLATFORM_VERSION_MAX=4.61.0.AM2-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.61.0.AM1-SNAPSHOT
+TARGET_PLATFORM_VERSION_MIN=4.60.2.Final
+TARGET_PLATFORM_VERSION_MAX=4.61.0.Final
+TARGET_PLATFORM_CENTRAL_MAX=4.61.0.Final-SNAPSHOT
 respinSuffix=""
 
 for j in jbosstools-releng-push-to-staging-07-notification-emails; do

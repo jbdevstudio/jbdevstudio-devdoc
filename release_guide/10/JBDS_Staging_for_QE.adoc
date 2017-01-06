@@ -37,7 +37,7 @@ https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-s
 
 cd ~/tmp
 rm -f index.html
-versionWithRespin_ds=10.2.0.AM3 # a, b, c...
+versionWithRespin_ds=10.2.0.GA # a, b, c...
 wget https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
 installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 echo "Installer jar: ${installerJar}"
@@ -82,7 +82,7 @@ https://devstudio.redhat.com/10.0/staging/updates/
 
 [source,bash]
 ----
-versionWithRespin_ds=10.2.0.AM3 # a, b, c...
+versionWithRespin_ds=10.2.0.GA # a, b, c...
 cd ~/tmp
 wget https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
 installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
@@ -113,4 +113,64 @@ TODO: Important: if you switched the _master jobs to run from origin/jbosstools-
 == Notify the team (send 1 email)
 
 See details in JBT_Staging_For_QE.adoc
+
+
+== Sign RPM
+
+0. This section only applies to GA builds. No need to sign AMx milestones!
+
+1. give URL link to Chris via RCM ticket, eg., https://projects.engineering.redhat.com/browse/RCM-10070, https://projects.engineering.redhat.com/browse/RCM-10215
+
+[source,bash]
+----
+
+# TODO make sure this works!
+
+# Jenkins login for the Wonka server
+userpass=nboldt:PASSWORD
+
+versionWithRespin_ds=10.2.0.GA
+for j in jbosstools-releng-push-to-staging-05-sign-rpm-email-request; do
+  url=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job/${j}
+  # enable and run the job
+  curl -k -X POST -u ${userpass} ${url}/enable && echo -n ".E"
+  curl -k -X POST -u ${userpass} --data "token=RELENG&versionWithRespin_ds=${versionWithRespin_ds}" \
+${url}/buildWithParameters && echo -n ".B"
+  sleep 15s
+  # then disable the job
+  curl -k -X POST -u ${userpass} ${url}/disable && echo -n ".D"
+  curl -k -X POST -u ${userpass} ${url}/lastBuild/toggleLogKeep && echo -n ".K"
+  google-chrome ${url}/lastBuild/console &
+done
+
+----
+
+2. Chris signs it, and gives back a URL,eg., http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/JBDS-10.2.0/rpms/signed/
+
+3. Fetch rpms, regen metadata
+
+[source,bash]
+----
+
+# TODO make sure this works!
+
+# Jenkins login for the Wonka server
+userpass=nboldt:PASSWORD
+
+versionWithRespin_ds=10.2.0.GA
+signedURL=http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/JBDS-10.2.0/rpms/signed/
+for j in jbosstools-releng-push-to-staging-06-sign-rpm-fetch; do
+  url=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job/${j}
+  # enable and run the job
+  curl -k -X POST -u ${userpass} ${url}/enable && echo -n ".E"
+  curl -k -X POST -u ${userpass} --data "token=RELENG&versionWithRespin_ds=${versionWithRespin_ds}&signedURL=${signedURL}" \
+${url}/buildWithParameters && echo -n ".B"
+  sleep 15s
+  # then disable the job
+  curl -k -X POST -u ${userpass} ${url}/disable && echo -n ".D"
+  curl -k -X POST -u ${userpass} ${url}/lastBuild/toggleLogKeep && echo -n ".K"
+  google-chrome ${url}/lastBuild/console &
+done
+
+----
 

@@ -29,7 +29,7 @@ versionWithRespin_jbt=4.4.3.AM1
 versionWithRespin_ds=10.3.0.AM1
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
-if [[ ${version_jbt/Final/} != ${version_jbt} ]]; then
+if [[ ${version_jbt} == *".Final" ]]; then
   stream_jbt=4.4.neon
 else
   stream_jbt=master
@@ -59,7 +59,7 @@ versionWithRespin_jbt=4.4.3.AM1
 versionWithRespin_ds=10.3.0.AM1
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
-if [[ ${version_jbt/Final/} != ${version_jbt} ]]; then
+if [[ ${version_jbt} == *".Final" ]]; then
   stream_jbt=4.4.neon
   github_branch=jbosstools-4.4.3.x # or jbosstools-4.4.x
 else
@@ -105,7 +105,7 @@ versionWithRespin_jbt=4.4.3.AM1
 versionWithRespin_ds=10.3.0.AM1
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
-if [[ ${version_jbt/Final/} != ${version_jbt} ]]; then
+if [[ ${version_jbt} == *".Final" ]]; then
   stream_jbt=4.4.neon
   stream_ds=10.0.neon
 else
@@ -138,7 +138,7 @@ versionWithRespin_jbt=4.4.3.AM1
 versionWithRespin_ds=10.3.0.AM1
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
-if [[ ${version_jbt/Final/} != ${version_jbt} ]]; then
+if [[ ${version_jbt} == *".Final" ]]; then
   stream_jbt=4.4.neon
 else
   stream_jbt=master
@@ -167,7 +167,7 @@ You'll need this later for smoke testing. Start fetching it now to save time lat
 [source,bash]
 ----
 
-cd ~/tmp; wget http://download.eclipse.org/technology/epp/downloads/release/neon/1a/eclipse-jee-neon-1a-linux-gtk-x86_64.tar.gz &
+cd ~/tmp; wget http://download.eclipse.org/technology/epp/downloads/release/neon/2/eclipse-jee-neon-2-linux-gtk-x86_64.tar.gz &
 # or
 cd ~/tmp; wget https://hudson.eclipse.org/packaging/job/neon.epp-tycho-build/437/artifact/org.eclipse.epp.packages/archive/20160913-0900_eclipse-jee-neon-1-linux.gtk.x86_64.tar.gz &
 
@@ -193,7 +193,7 @@ version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
 TARGET_PLATFORM_VERSION_MAX=4.62.0.AM1-SNAPSHOT
 TARGET_PLATFORM_CENTRAL_MAX=4.62.0.AM1-SNAPSHOT
-if [[ ${version_jbt/Final/} != ${version_jbt} ]]; then
+if [[ ${version_jbt} == *".Final" ]]; then
   stream_jbt=4.4.neon
   stream_ds=10.0.neon
 else
@@ -215,6 +215,16 @@ done
 If you can't get the job to run because dev01 slave is backlogged with a long queue, look in the job configuration and run the script manually on dev01 itself.
 
 http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites/configure-readonly/
+
+And now, we wait about 30-60 mins for the above job to complete.
+
+. ...
+. ...
+. ...
+
+When done, it's time to verify everything was pushed correctly.
+
+
 
 === Verify builds and update sites correctly pushed
 
@@ -369,7 +379,7 @@ versionWithRespin_jbt=4.4.3.AM1
 versionWithRespin_ds=10.3.0.AM1
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
-if [[ ${version_jbt/Final/} != ${version_jbt} ]]; then
+if [[ ${version_jbt} == *".Final" ]]; then
   stream_jbt=4.4.neon
   stream_ds=10.0.neon
 else
@@ -444,7 +454,7 @@ versionWithRespin_jbt=4.4.3.AM1
 versionWithRespin_ds=10.3.0.AM1
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
-if [[ ${version_jbt/Final/} != ${version_jbt} ]]; then
+if [[ ${version_jbt} == *".Final" ]]; then
   stream_jbt=4.4.neon
   stream_ds=10.0.neon
 else

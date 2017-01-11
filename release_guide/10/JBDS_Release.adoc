@@ -417,10 +417,11 @@ java -jar ~/tmp/${installerJar} # ~
 
 == Notify Team Lead(s)
 
-Notify Jeff that the website is ready to be updated with a new blog post.
+Here's a job that notifies Jeff that the website is ready to be updated with a new blog post:
 
 https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-07-notification-emails/configure
 
+Using the script below, you can trigger the job remotely.
 
 [source,bash]
 ----
@@ -430,7 +431,7 @@ userpass=nboldt:PASSWORD
 
 blogURL=/blog/am1-for-neon.2.html
 pullrequestNum=664
-eclipseVersion="Eclipse 4.6.2 Neon.2"
+eclipseVersionSuffix=".2" # for Eclipse 4.6.2 Neon.2
 
 versionWithRespin_jbt=4.4.3.AM1
 versionWithRespin_ds=10.3.0.AM1
@@ -442,8 +443,8 @@ for j in jbosstools-releng-push-to-dev-stable-07-notification-emails; do
   ${JP} -j ${j} -t enable
   sleep 3s
   ${JP} -j ${j} -t buildWithParameters -d "version_jbt=${version_jbt}&version_ds=${version_ds}&\
-blogURL=${blogURL}&pullrequestNum=${pullrequestNum}&eclipseVersion=${eclipseVersion}"
-  sleep 10s
+blogURL=${blogURL}&pullrequestNum=${pullrequestNum}&eclipseVersionSuffix=${eclipseVersionSuffix}"
+  sleep 15s
   ${JP} -j ${j} -t disable
   ${JP} -j ${j} -t lastBuild/toggleLogKeep
 done

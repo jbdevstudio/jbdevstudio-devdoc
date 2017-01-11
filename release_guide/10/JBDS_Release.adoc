@@ -45,7 +45,7 @@ Then:
 ----
 versionExe=1.2.0-GA # note the dash, not period after x.y.z
 versionWithRespin_ds=10.3.0.AM1 # a, b, c...
-version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
+version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 pushd /qa/services/http/binaries/RHDS/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
 for f in $(ls *latest*); do echo "rm $f"; rm -f $f; done
 for f in $(ls devstudio-${version_ds}-* | grep -v latest); do g=$(echo $f | sed s#-v[[:digit:]]*-[[:digit:]]*-B[[:digit:]]*##); echo "mv $f $g"; mv $f $g; done
@@ -61,7 +61,7 @@ Now, move & symlink the ${versionWithRespin_ds} folder:
 [source,bash]
 ----
 versionWithRespin_ds=10.3.0.AM1 # a, b, c...
-version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
+version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 buildType=stable # use /stable/ or /development/ as appropriate
 pushd /qa/services/http/binaries/RHDS/10.0/staging/builds/
 mkdir -p ../../${buildType}/builds/
@@ -340,7 +340,7 @@ popd
 
 ----
 
-Commit changes and submit PR, eg., https://github.com/jbosstools/jbosstools-website/pull/651
+Commit changes and submit PR, eg., https://github.com/jbosstools/jbosstools-website/pull/651 or https://github.com/jbosstools/jbosstools-website/pull/664
 
 
 == Tag Git
@@ -417,9 +417,38 @@ java -jar ~/tmp/${installerJar} # ~
 
 == Notify Team Lead(s)
 
-Notifify Alexy & Jeff that the website is ready to be updated with a new blog post.
+Notify Jeff that the website is ready to be updated with a new blog post.
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-push-to-dev-stable-07-notification-emails/configure
+https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-07-notification-emails/configure
+
+
+[source,bash]
+----
+
+# kerberos login for the Jenkins server
+userpass=nboldt:PASSWORD
+
+blogURL=/blog/am1-for-neon.2.html
+pullrequestNum=664
+eclipseVersion="Eclipse 4.6.2 Neon.2"
+
+versionWithRespin_jbt=4.4.3.AM1
+versionWithRespin_ds=10.3.0.AM1
+version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # \) # ***
+version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
+
+JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
+for j in jbosstools-releng-push-to-dev-stable-07-notification-emails; do
+  ${JP} -j ${j} -t enable
+  sleep 3s
+  ${JP} -j ${j} -t buildWithParameters -d "version_jbt=${version_jbt}&version_ds=${version_ds}&\
+blogURL=${blogURL}&pullrequestNum=${pullrequestNum}&eclipseVersion=${eclipseVersion}"
+  sleep 10s
+  ${JP} -j ${j} -t disable
+  ${JP} -j ${j} -t lastBuild/toggleLogKeep
+done
+
+----
 
 
 == Commit updates to release guide (including this document):

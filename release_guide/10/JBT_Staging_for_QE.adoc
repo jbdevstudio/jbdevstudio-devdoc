@@ -27,8 +27,8 @@ userpass=nboldt:PASSWORD
 
 versionWithRespin_jbt=4.4.3.AM1
 versionWithRespin_ds=10.3.0.AM1
-version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
-version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
+version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
+version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 if [[ ${version_jbt} == *".Final" ]]; then
   stream_jbt=4.4.neon
 else
@@ -58,8 +58,8 @@ userpass=nboldt:PASSWORD
 version_parent=4.4.3.AM1-SNAPSHOT
 versionWithRespin_jbt=4.4.3.AM1
 versionWithRespin_ds=10.3.0.AM1
-version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
-version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
+version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
+version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 if [[ ${version_jbt} == *".Final" ]]; then
   stream_jbt=4.4.neon
   github_branch=jbosstools-4.4.3.x # or jbosstools-4.4.x
@@ -102,8 +102,8 @@ userpass=nboldt:PASSWORD
 
 versionWithRespin_jbt=4.4.3.AM1
 versionWithRespin_ds=10.3.0.AM1
-version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
-version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
+version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
+version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 if [[ ${version_jbt} == *".Final" ]]; then
   stream_jbt=4.4.neon
   stream_ds=10.0.neon
@@ -136,8 +136,8 @@ userpass=nboldt:PASSWORD
 
 versionWithRespin_jbt=4.4.3.AM1
 versionWithRespin_ds=10.3.0.AM1
-version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
-version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
+version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
+version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 if [[ ${version_jbt} == *".Final" ]]; then
   stream_jbt=4.4.neon
 else
@@ -188,8 +188,8 @@ userpass=nboldt:PASSWORD
 
 versionWithRespin_jbt=4.4.3.AM1
 versionWithRespin_ds=10.3.0.AM1
-version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
-version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
+version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
+version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 TARGET_PLATFORM_VERSION_MAX=4.62.0.AM1-SNAPSHOT
 TARGET_PLATFORM_CENTRAL_MAX=4.62.0.AM1-SNAPSHOT
 if [[ ${version_jbt} == *".Final" ]]; then
@@ -239,7 +239,8 @@ versionWithRespin_ds=10.3.0.AM1
 
 JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-03-verify-builds-update-sites; do
-  ${JP} -j ${j} -t buildWithParameters -d "versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}"
+  ${JP} -j ${j} -t buildWithParameters -d "versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
+skipdiscovery=false&onlydiscovery=false&buildType=staging"
 done
 
 ----
@@ -355,15 +356,15 @@ If the next build WILL be a respin, you need to simply:
 * re-enable 15 jobs that were disabled above. If you committed a change to jbdevstudio-ci, you can simply revert that commit to re-enable the jobs!
 
 [source,bash]
------
+----
 
 # kerberos login for the Jenkins server
 userpass=nboldt:PASSWORD
 
 versionWithRespin_jbt=4.4.3.AM1
 versionWithRespin_ds=10.3.0.AM1
-version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
-version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
+version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
+version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 if [[ ${version_jbt} == *".Final" ]]; then
   stream_jbt=4.4.neon
   stream_ds=10.0.neon
@@ -380,7 +381,7 @@ for j in jbosstools-discovery_${stream_jbt}; do
   ${JP} -j ${j} -t enable
 done
 
------
+----
 
 TODO: Important: if you switched the _master jobs to run from origin/jbosstools-4.4.x or some other branch, make sure that the jobs are once again building from the correct branch.
 
@@ -428,15 +429,15 @@ done
 You will need to disable the jobs once the bits are staged, so that they won't run accidentally.
 
 [source,bash]
------
+----
 
 # kerberos login for the Jenkins server
 userpass=nboldt:PASSWORD
 
 versionWithRespin_jbt=4.4.3.AM1
 versionWithRespin_ds=10.3.0.AM1
-version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
-version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
+version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
+version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 if [[ ${version_jbt} == *".Final" ]]; then
   stream_jbt=4.4.neon
   stream_ds=10.0.neon
@@ -453,4 +454,4 @@ jbosstools-releng-push-to-staging-buildflow_${stream_jbt}; do
   ${JP} -j ${j} -t disable
 done
 
------
+----

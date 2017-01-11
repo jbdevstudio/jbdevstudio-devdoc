@@ -77,8 +77,8 @@ userpass=nboldt:PASSWORD
 
 versionWithRespin_jbt=4.4.3.AM1
 versionWithRespin_ds=10.3.0.AM1
-version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
-version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
+version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
+version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 if [[ ${version_jbt} == *".Final" ]]; then
   stream_jbt=4.4.neon
   stream_ds=10.0.neon
@@ -91,7 +91,6 @@ TARGET_PLATFORM_CENTRAL_MAX=4.62.0.AM1-SNAPSHOT
 
 JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites; do
-  url=https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}
   ${JP} -j ${j} -t enable
   sleep 3s
   ${JP} -j ${j} -t buildWithParameters -d "stream_jbt=${stream_jbt}&stream_ds=${stream_ds}&\
@@ -100,7 +99,6 @@ TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&TARGET_PLATFORM_CENTR
   sleep 10s
   ${JP} -j ${j} -t disable
   ${JP} -j ${j} -t lastBuild/toggleLogKeep
-  google-chrome ${url}/lastBuild/console &
 done
 
 ----
@@ -117,9 +115,18 @@ if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
 wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/stage.sh --no-check-certificate
 chmod +x stage.sh
 STAGE=${WORKSPACE}/stage.sh
+eclipseReleaseName=neon
+JBDS="devstudio@10.5.105.197:/www_htdocs/devstudio" # use filemgmt IP
+TOOLS="tools@10.5.105.197:/downloads_htdocs/tools"
+qual=development
+quiet="-q"
 
-# run stage script, eg., for the rpm
-${STAGE} -sites rpm -stream 10.3.0.AM1 -vr 10.3.0.AM1 -sd 10.0 -dd static/10.0 -st staging -dt stable -JOB_NAME 'devstudio-10.3.0.AM1-build-${site}' -DESTINATION devstudio@10.5.105.197:/www_htdocs/devstudio -DEST_URL https://devstudio.redhat.com -suz -sus
+# for example, run this for the JBT central discovery plugins:
+versionWithRespin_jbt=4.4.3.AM1
+version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
+${STAGE} -sites "discovery.central" -stream "${versionWithRespin_jbt}" -vr ${version_jbt} -DESTINATION "${TOOLS}" \
+    -sd ${eclipseReleaseName} -dd static/${eclipseReleaseName} -st staging -dt ${qual} \
+    -JOB_NAME jbosstools-${versionWithRespin_jbt}-build-\${site} ${quiet} -suz -sus &
 
 ----
 
@@ -135,8 +142,7 @@ But you can run it again if you'd like:
 
 # buildType=development will also check stable URLs if we're pushing out a GA/Final release
 JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
-for j in jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites; do
-  url=https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}
+for j in jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites; do
   ${JP} -j ${j} -t enable
   sleep 3s
   ${JP} -j ${j} -t buildWithParameters -d "versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
@@ -144,7 +150,6 @@ skipdiscovery=false&onlydiscovery=false&buildType=development"
   sleep 10s
   ${JP} -j ${j} -t disable
   ${JP} -j ${j} -t lastBuild/toggleLogKeep
-  google-chrome ${url}/lastBuild/console &
 done
 
 ----
@@ -176,12 +181,12 @@ wonkajenkins=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job
 JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-04-update-merge-composites-html; do
   ${JP} -s ${wonkajenkins} -j ${j} -t enable
+  sleep 3
   ${JP} -s ${wonkajenkins} -j ${j} -t buildWithParameters -d "token=RELENG&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
 versionWithRespin_ds_PREV=${versionWithRespin_ds_PREV}&earlyaccess_IS=${earlyaccess_IS}&version_jbt_IS=${version_jbt_IS}&version_ds_IS=${version_ds_IS}"
   sleep 15s
   ${JP} -s ${wonkajenkins} -j ${j} -t disable
   ${JP} -s ${wonkajenkins} -j ${j} -t lastBuild/toggleLogKeep
-  google-chrome ${url}/lastBuild/console &
 done
 
 ----
@@ -234,7 +239,7 @@ https://github.com/jbosstools/jbosstools-download.jboss.org/commit/d5306ce940814
 
 # for Final TPs only!
 
-TARGET_PLATFORM_VERSION_MAX=4.60.1.Final
+TARGET_PLATFORM_VERSION_MAX=4.62.0.AM1-SNAPSHOT
 now=`date +%s000`
 TOOLS=tools@10.5.105.197:/downloads_htdocs/tools
 JBDS=devstudio@10.5.105.197:/www_htdocs/devstudio
@@ -350,18 +355,20 @@ versionWithRespin_jbt_NEXT=4.4.3.AM1
 versionWithRespin_ds_PREV=10.2.0.GA
 versionWithRespin_ds_NEXT=10.3.0.AM1
 
-buildType="development"; if [[ ${version_jbt##*Final} == "" ]]; then buildType="stable"; fi # **##
+version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
+version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
+buildType="development"; if [[ ${version_jbt} == *".Final" ]]; then buildType="stable"; fi
 wonkajenkins=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job
 JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-04-update-ide-config.properties; do
   ${JP} -s ${wonkajenkins} -j ${j} -t enable
+  sleep 3s
   ${JP} -s ${wonkajenkins} -j ${j} -t buildWithParameters -d "token=RELENG&buildType=${buildType}&\
 versionWithRespin_jbt_PREV=${versionWithRespin_jbt_PREV}&versionWithRespin_jbt_NEXT=${versionWithRespin_jbt_NEXT}&versionWithRespin_jbt=${versionWithRespin_jbt}&\
 versionWithRespin_ds_PREV=${versionWithRespin_ds_PREV}&versionWithRespin_ds_NEXT=${versionWithRespin_ds_NEXT}&versionWithRespin_ds=${versionWithRespin_ds}"
   sleep 15s
   ${JP} -s ${wonkajenkins} -j ${j} -t disable
   ${JP} -s ${wonkajenkins} -j ${j} -t lastBuild/toggleLogKeep
-  google-chrome ${url}/lastBuild/console &
 done
 
 ----
@@ -493,9 +500,7 @@ done
 
 == Notify Team Lead(s)
 
-Notifify Alexy & Jeff that bulk tagging should be done, and the website is ready to be updated with a new blog post.
-
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-releng-push-to-dev-stable-07-notification-emails/configure
+See JBDS_Release.adoc
 
 
 == Bump parent pom to newer BUILD_ALIAS value

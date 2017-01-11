@@ -28,12 +28,7 @@ Here are some generalities site promotion/release process. It's not an exhaustiv
 
 . CI build output is published the 'builds/staging' folder, while aggregated update-sites goes to 'updates/nightly' folder
 . After branching, component repository are rebuilt from branch (instead of 'master') and new aggregated updatesites are created as well.  A site is promoted from nightly to staging for QE, and moves from 'updates/nightly' to 'updates/staging', including a respin suffix if required.
-.. If QE finds a blocker issue, a respin is requested
-... On Jira, add a 'respin-a' or 'respin-b' or 'respin-x' label to bugs that needs for be fixed for the respin
-... Edit CI jobs to the next respin label (eg CR2b)
-... Re-run necessary jobs
-... Go To 1
-.. If QE approves, release is accepted and promoted
+.. When QE approves, release is accepted and promoted
 ... JIRA is checked to ensure all JIRAs for this milestone are resolved
 ... Site moves from 'updates/staging' with respin label to 'static/releases' without respin label
 ... Links to 'updates/neon' are replaced to link to new version
@@ -54,10 +49,11 @@ You will need to enable the jobs to perform the copy from staging to development
 # kerberos login for the Jenkins server
 userpass=nboldt:PASSWORD
 
+JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-07-notification-emails \
 jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites \
 jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites; do
-  curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/enable && echo -n ".E"
+  ${JP} -j ${j} -t enable
 done
 
 ----
@@ -79,24 +75,31 @@ https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-d
 # kerberos login for the Jenkins server
 userpass=nboldt:PASSWORD
 
-stream_jbt=4.4.neon # master
-stream_ds=10.0.neon # master
-versionWithRespin_jbt=4.4.2.Final
-versionWithRespin_ds=10.2.0.GA
-TARGET_PLATFORM_VERSION_MAX=4.61.0.Final
-TARGET_PLATFORM_CENTRAL_MAX=4.61.0.Final-SNAPSHOT
+versionWithRespin_jbt=4.4.3.AM1
+versionWithRespin_ds=10.3.0.AM1
+version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
+version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
+if [[ ${version_jbt} == *".Final" ]]; then
+  stream_jbt=4.4.neon
+  stream_ds=10.0.neon
+else
+  stream_jbt=master
+  stream_ds=master
+fi
+TARGET_PLATFORM_VERSION_MAX=4.62.0.AM1-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.62.0.AM1-SNAPSHOT
 
+JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites; do
   url=https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}
-  curl -k -X POST -u ${userpass} ${url}/enable && echo -n ".E"
+  ${JP} -j ${j} -t enable
   sleep 3s
-  curl -k -u ${userpass} --data "stream_jbt=${stream_jbt}&stream_ds=${stream_ds}&\
+  ${JP} -j ${j} -t buildWithParameters -d "stream_jbt=${stream_jbt}&stream_ds=${stream_ds}&\
 versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
-TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&TARGET_PLATFORM_CENTRAL_MAX=${TARGET_PLATFORM_CENTRAL_MAX}" \
-    ${url}/buildWithParameters && echo -n ".B"
+TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&TARGET_PLATFORM_CENTRAL_MAX=${TARGET_PLATFORM_CENTRAL_MAX}"
   sleep 10s
-  curl -k -X POST -u ${userpass} ${url}/disable && echo -n ".D"
-  curl -k -X POST -u ${userpass} ${url}/lastBuild/toggleLogKeep && echo -n ".K"
+  ${JP} -j ${j} -t disable
+  ${JP} -j ${j} -t lastBuild/toggleLogKeep
   google-chrome ${url}/lastBuild/console &
 done
 
@@ -116,7 +119,7 @@ chmod +x stage.sh
 STAGE=${WORKSPACE}/stage.sh
 
 # run stage script, eg., for the rpm
-${STAGE} -sites rpm -stream 10.2.0.GA -vr 10.2.0.GA -sd 10.0 -dd static/10.0 -st staging -dt stable -JOB_NAME 'devstudio-10.2.0.GA-build-${site}' -DESTINATION devstudio@10.5.105.197:/www_htdocs/devstudio -DEST_URL https://devstudio.redhat.com -suz -sus
+${STAGE} -sites rpm -stream 10.3.0.AM1 -vr 10.3.0.AM1 -sd 10.0 -dd static/10.0 -st staging -dt stable -JOB_NAME 'devstudio-10.3.0.AM1-build-${site}' -DESTINATION devstudio@10.5.105.197:/www_htdocs/devstudio -DEST_URL https://devstudio.redhat.com -suz -sus
 
 ----
 
@@ -131,16 +134,16 @@ But you can run it again if you'd like:
 ----
 
 # buildType=development will also check stable URLs if we're pushing out a GA/Final release
+JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites; do
   url=https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}
-  curl -k -X POST -u ${userpass} ${url}/enable && echo -n ".E"
+  ${JP} -j ${j} -t enable
   sleep 3s
-  curl -k -u ${userpass} --data "versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
-skipdiscovery=false&onlydiscovery=false&buildType=development" \
-    ${url}/buildWithParameters && echo -n ".B"
+  ${JP} -j ${j} -t buildWithParameters -d "versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
+skipdiscovery=false&onlydiscovery=false&buildType=development"
   sleep 10s
-  curl -k -X POST -u ${userpass} ${url}/disable && echo -n ".D"
-  curl -k -X POST -u ${userpass} ${url}/lastBuild/toggleLogKeep && echo -n ".K"
+  ${JP} -j ${j} -t disable
+  ${JP} -j ${j} -t lastBuild/toggleLogKeep
   google-chrome ${url}/lastBuild/console &
 done
 
@@ -163,23 +166,21 @@ But if you need a login for Jenkins, please contact nboldt@redhat.com or jsightl
 # Jenkins login for the Wonka server
 userpass=nboldt:PASSWORD
 
-versionWithRespin_jbt=4.4.2.Final
-versionWithRespin_ds=10.2.0.GA
-versionWithRespin_ds_PREV=10.2.0.AM3
+versionWithRespin_jbt=4.4.3.AM1
+versionWithRespin_ds=10.3.0.AM1
+versionWithRespin_ds_PREV=10.2.0.GA
 earlyaccess_IS=earlyaccess/
 version_jbt_IS=4.4.0.Final
 version_ds_IS=10.0.0.GA
+wonkajenkins=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job
+JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-04-update-merge-composites-html; do
-  url=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job/${j}
-  # enable and run the job
-  curl -k -X POST -u ${userpass} ${url}/enable && echo -n ".E"
-  curl -k -X POST -u ${userpass} --data "token=RELENG&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
-versionWithRespin_ds_PREV=${versionWithRespin_ds_PREV}&earlyaccess_IS=${earlyaccess_IS}&version_jbt_IS=${version_jbt_IS}&version_ds_IS=${version_ds_IS}" \
-${url}/buildWithParameters && echo -n ".B"
+  ${JP} -s ${wonkajenkins} -j ${j} -t enable
+  ${JP} -s ${wonkajenkins} -j ${j} -t buildWithParameters -d "token=RELENG&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
+versionWithRespin_ds_PREV=${versionWithRespin_ds_PREV}&earlyaccess_IS=${earlyaccess_IS}&version_jbt_IS=${version_jbt_IS}&version_ds_IS=${version_ds_IS}"
   sleep 15s
-  # then disable the job
-  curl -k -X POST -u ${userpass} ${url}/disable && echo -n ".D"
-  curl -k -X POST -u ${userpass} ${url}/lastBuild/toggleLogKeep && echo -n ".K"
+  ${JP} -s ${wonkajenkins} -j ${j} -t disable
+  ${JP} -s ${wonkajenkins} -j ${j} -t lastBuild/toggleLogKeep
   google-chrome ${url}/lastBuild/console &
 done
 
@@ -341,28 +342,25 @@ But if you need a login for Jenkins, please contact nboldt@redhat.com or jsightl
 # Jenkins login for the Wonka server
 userpass=nboldt:PASSWORD
 
-versionWithRespin_jbt=4.4.2.Final
-versionWithRespin_ds=10.2.0.GA
+versionWithRespin_jbt=4.4.3.AM1
+versionWithRespin_ds=10.3.0.AM1
 
-versionWithRespin_jbt_PREV=4.4.2.AM3
+versionWithRespin_jbt_PREV=4.4.2.Final
 versionWithRespin_jbt_NEXT=4.4.3.AM1
-versionWithRespin_ds_PREV=10.2.0.AM3
+versionWithRespin_ds_PREV=10.2.0.GA
 versionWithRespin_ds_NEXT=10.3.0.AM1
 
 buildType="development"; if [[ ${version_jbt##*Final} == "" ]]; then buildType="stable"; fi # **##
-
+wonkajenkins=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job
+JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-04-update-ide-config.properties; do
-  url=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job/${j}
-  # enable and run the job
-  curl -k -X POST -u ${userpass} ${url}/enable && echo -n ".E"
-  curl -k -X POST -u ${userpass} --data "token=RELENG&buildType=${buildType}&\
+  ${JP} -s ${wonkajenkins} -j ${j} -t enable
+  ${JP} -s ${wonkajenkins} -j ${j} -t buildWithParameters -d "token=RELENG&buildType=${buildType}&\
 versionWithRespin_jbt_PREV=${versionWithRespin_jbt_PREV}&versionWithRespin_jbt_NEXT=${versionWithRespin_jbt_NEXT}&versionWithRespin_jbt=${versionWithRespin_jbt}&\
-versionWithRespin_ds_PREV=${versionWithRespin_ds_PREV}&versionWithRespin_ds_NEXT=${versionWithRespin_ds_NEXT}&versionWithRespin_ds=${versionWithRespin_ds}" \
-${url}/buildWithParameters && echo -n ".B"
+versionWithRespin_ds_PREV=${versionWithRespin_ds_PREV}&versionWithRespin_ds_NEXT=${versionWithRespin_ds_NEXT}&versionWithRespin_ds=${versionWithRespin_ds}"
   sleep 15s
-  # then disable the job
-  curl -k -X POST -u ${userpass} ${url}/disable && echo -n ".D"
-  curl -k -X POST -u ${userpass} ${url}/lastBuild/toggleLogKeep && echo -n ".K"
+  ${JP} -s ${wonkajenkins} -j ${j} -t disable
+  ${JP} -s ${wonkajenkins} -j ${j} -t lastBuild/toggleLogKeep
   google-chrome ${url}/lastBuild/console &
 done
 
@@ -375,7 +373,7 @@ WARNING: Only applies to Beta and better versions.
 
 === If node does not yet exist
 
-For the first Beta, create a new node on Marketplace, using content from http://download.jboss.org/jbosstools/static/neon/stable/updates/core/4.4.2.Final/site.properties
+For the first Beta, create a new node on Marketplace, using content from http://download.jboss.org/jbosstools/static/neon/stable/updates/core/4.4.3.AM1/site.properties
 
 === If node already exists
 
@@ -383,14 +381,14 @@ Access it via +https://marketplace.eclipse.org/content/jboss-tools/edit+ and upd
 
 * Title to match new version
 * Description to match new version & dependencies
-* Update list of features, using content of http://download.jboss.org/jbosstools/static/neon/stable/updates/core/4.4.2.Final/site.properties
+* Update list of features, using content of http://download.jboss.org/jbosstools/static/neon/stable/updates/core/4.4.3.AM1/site.properties
 
 To diff if any new features have been added/removed:
 
 [source,bash]
 ----
-version_jbt_PREV=4.4.1.Final
-version_jbt=4.4.2.Final
+version_jbt_PREV=4.4.2.Final
+version_jbt=4.4.3.AM1
 
 # for Final releases only!
 if [[ ${version_jbt} == *"Final" ]]; then
@@ -470,8 +468,12 @@ git clone https://github.com/jbosstools/jbosstools-versionwatch
 # maven-plugins does not get released/branched the same as other projects, but tag it anyway
 # download.jboss.org tag might not be valid as tweaks to ide-config.properties happen frequently
 
-jbt_branch=master # or jbosstools-4.4.2.x
-version_jbt=4.4.2.Final
+version_jbt=4.4.3.AM1
+if [[ ${version_jbt} == *".Final" ]]; then
+  jbt_branch=jbosstools-4.4.3.x
+else
+  jbt_branch=master
+fi
 cd ~/tru # ~
 for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins versionwatch; do
   echo "====================================================================="
@@ -529,10 +531,11 @@ You will need to disable the jobs once the bits are released, so that they won't
 # kerberos login for the Jenkins server
 userpass=nboldt:PASSWORD
 
+JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-07-notification-emails \
 jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites \
 jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites; do
-  curl -k -X POST -u ${userpass} https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/${j}/disable && echo -n ".D"
+  ${JP} -j ${j} -t disable
 done
 
 ----

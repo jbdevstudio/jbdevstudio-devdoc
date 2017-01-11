@@ -28,7 +28,7 @@ google-chrome && google-chrome https://issues.jboss.org/plugins/servlet/project-
 == Rename artifacts to remove timestamp and buildID
 
 To comply with Goldengate URL rules, we need to rename artifacts before they go to the CSP. For example
-`devstudio-10.2.0.GA-v20151002-2235-B124-installer-eap.jar` must be renamed to `devstudio-10.2.0.GA-installer-eap.jar`.
+`devstudio-10.3.0.AM1-v20151002-2235-B124-installer-eap.jar` must be renamed to `devstudio-10.3.0.AM1-installer-eap.jar`.
 
 Connect to dev01.mw.lab.eng.bos.redhat.com as +hudson+ user (requires permissions).
 
@@ -44,7 +44,7 @@ Then:
 [source,bash]
 ----
 versionExe=1.2.0-GA # note the dash, not period after x.y.z
-versionWithRespin_ds=10.2.0.GA # a, b, c...
+versionWithRespin_ds=10.3.0.AM1 # a, b, c...
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
 pushd /qa/services/http/binaries/RHDS/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
 for f in $(ls *latest*); do echo "rm $f"; rm -f $f; done
@@ -60,7 +60,7 @@ Now, move & symlink the ${versionWithRespin_ds} folder:
 
 [source,bash]
 ----
-versionWithRespin_ds=10.2.0.GA # a, b, c...
+versionWithRespin_ds=10.3.0.AM1 # a, b, c...
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/')
 buildType=stable # use /stable/ or /development/ as appropriate
 pushd /qa/services/http/binaries/RHDS/10.0/staging/builds/
@@ -126,7 +126,7 @@ and +
 
 [source,bash]
 ----
-versionWithRespin_ds=10.2.0.GA # a, b, c...
+versionWithRespin_ds=10.3.0.AM1 # a, b, c...
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 buildType=stable # use /stable/ or /development/ as appropriate
 GOLIVEDATE="Wed, Dec 07, 2016"
@@ -178,7 +178,7 @@ When pushed, please reply so that QE can review the CSP pages & CDN files for pu
 Note that in addition to the new CSP page, eg., [1] or [2], the CSP landing page [3] should also be updated to point to the latest release.
 
 [1] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=${version_ds}
-[2] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=10.2.0
+[2] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=10.3.0
 [3] https://access.redhat.com/downloads/
 
 Only ONE of the artifacts above [4] requires sign-in from CDN/Download Manager. The rest are No T&C.
@@ -292,7 +292,7 @@ Then run this:
 
 [source,bash]
 ----
-versionWithRespin_ds=10.2.0.GA # a, b, c...
+versionWithRespin_ds=10.3.0.AM1 # a, b, c...
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # **
 
 cd ~/RHDS/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ # ~
@@ -317,10 +317,10 @@ Then, back on your own machine...
 
 [source,bash]
 ----
-version_jbt=4.4.2.Final
-version_ds=10.2.0.GA
+version_jbt=4.4.3.AM1
+version_ds=10.3.0.AM1
 
-cd ~/tru # where you have jbosstools-website checked out
+cd ~/tru # where you have jbosstools-website checked out ~
 
 pushd jbosstools-website/
   t=release-${version_jbt}
@@ -357,8 +357,12 @@ git clone https://github.com/jbdevstudio/jbdevstudio-website
 git clone https://github.com/jbdevstudio/jbdevstudio-artwork
 git clone https://github.com/jbdevstudio/jbdevstudio-devdoc
 
-jbt_branch=master # or jbosstools-4.4.2.x
-version_ds=10.2.0.GA
+version_ds=10.3.0.AM1
+if [[ ${version_ds} == *".GA" ]]; then
+  jbt_branch=jbosstools-4.4.3.x
+else
+  jbt_branch=master
+fi
 cd ~/truu # ~
 for d in product ci website artwork devdoc; do
   echo "====================================================================="
@@ -397,7 +401,7 @@ Before notifying team of release, must check for obvious problems. Any failure t
 [source,bash]
 ----
 
-version_ds=10.2.0.GA
+version_ds=10.3.0.AM1
 qual="development"; if [[ ${version##*GA} == "" ]]; then qual="stable"; fi # **##
 cd ~/tmp # ~
 wget https://devstudio.redhat.com/static/10.0/${qual}/builds/devstudio-${version_ds}-build-product/latest/all/
@@ -423,8 +427,8 @@ https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_M
 [source,bash]
 ----
 
-version_jbt=4.4.2.Final
-version_ds=10.2.0.GA
+version_jbt=4.4.3.AM1
+version_ds=10.3.0.AM1
 cd ~/truu # ~
 cd jbdevstudio-devdoc/release_guide/
 git commit -m "update release guide for ${version_jbt} and ${version_ds}" .

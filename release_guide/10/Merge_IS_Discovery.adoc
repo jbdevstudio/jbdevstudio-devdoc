@@ -79,7 +79,14 @@ Without a defined value, you will see an error like this in the Eclipse log:
 org.eclipse.mylyn.internal.discovery.core.model.ValidationException: Must specify connectorDescriptor/@siteUrl
 ```
 
-TODO https://issues.jboss.org/browse/JBIDE-20664 could we pull the URLs directly from those declared in http://download.jboss.org/jbosstools/configuration/ide-config.properties ?
+[NOTE]
+====
+Should we pull the URLs directly from those declared in http://download.jboss.org/jbosstools/configuration/ide-config.properties ?
+
+[source,bash]
+----
 jboss.discovery.site.integration-stack.url|jbosstools|4.4.0.Final=http://download.jboss.org/jbosstools/neon/staging/updates/integration-stack/discovery/4.4.0.Alpha1-SNAPSHOT/
 jboss.discovery.site.integration-stack.url|devstudio|10.0.0.GA=https://devstudio.redhat.com/10.0/staging/updates/integration-stack/discovery/10.0.0.Alpha1-SNAPSHOT/
+----
 
+====

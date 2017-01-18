@@ -2,9 +2,6 @@
 
 This document describe how to provide a valid JBoss Developer Studio build to QE so they can test us.
 
-TODO: use consistent instructions for fetching sources from git & pushing changes
-TODO: use sshfs to do copies in a single step, instead of rsync-pull/rsync-push (2 steps)
-
 == Update Discovery Sites and URLs
 
 See details in JBT_Staging_For_QE.adoc
@@ -30,10 +27,10 @@ Here's a job that verifies everything is published:
 https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-03-verify-builds-update-sites/
 
 
+TIP: Once the staging build folder exists, start fetching the devstudio installer (we'll need it later to do a smoke test)
+
 [source,bash]
 ----
-
-# TODO once the staging build folder exists, start fetching the devstudio installer (we'll need it later to do a smoke test)
 
 cd ~/tmp
 rm -f index.html
@@ -107,8 +104,6 @@ If this fails, it is most likely due to a bug or a failure in a step above. If p
 
 See details in JBT_Staging_For_QE.adoc
 
-TODO: Important: if you switched the _master jobs to run from origin/jbosstools-4.4.x or some other branch, make sure that the jobs are once again building from the correct branch.
-
 
 == Notify the team (send 1 email)
 
@@ -121,10 +116,11 @@ See details in JBT_Staging_For_QE.adoc
 
 1. give URL link to Chris via RCM ticket, eg., https://projects.engineering.redhat.com/browse/RCM-10070, https://projects.engineering.redhat.com/browse/RCM-10215
 
+WARNING: TODO: make sure this works (untested - was done by hand last time).
+
 [source,bash]
 ----
 
-# TODO make sure this works!
 
 # Jenkins login for the Wonka server
 userpass=nboldt:PASSWORD
@@ -147,10 +143,10 @@ done
 
 3. Fetch rpms, regen metadata
 
+WARNING: TODO: make sure this works (untested - was done by hand last time).
+
 [source,bash]
 ----
-
-# TODO make sure this works!
 
 # Jenkins login for the Wonka server
 userpass=nboldt:PASSWORD

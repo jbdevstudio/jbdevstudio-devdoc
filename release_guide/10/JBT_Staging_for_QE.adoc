@@ -2,9 +2,6 @@
 
 This document describe how to provide a valid JBoss Tools build to QE so they can test us.
 
-TODO: use consistent instructions for fetching sources from git & pushing changes
-TODO: use sshfs to do copies in a single step, instead of rsync-pull/rsync-push (2 steps)
-
 [NOTE]
 ====
 Note that +sftp://tools@10.5.105.197/downloads_htdocs/tools/+ maps to +http://download.jboss.org/jbosstools/+ +
@@ -214,9 +211,9 @@ http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-st
 
 And now, we wait about 30-60 mins for the above job to complete.
 
-. ...
-. ...
-. ...
+```
+Time passes...
+```
 
 When done, it's time to verify everything was pushed correctly.
 
@@ -257,7 +254,6 @@ Run this job to move any old builds into an OLD/ folder for later cleanup, or de
 
 https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-08-delete-builds-and-update-sites/
 
-----
 
 === Update /staging/updates/ sites and merge in Integration Stack content
 
@@ -383,7 +379,7 @@ done
 
 ----
 
-TODO: Important: if you switched the _master jobs to run from origin/jbosstools-4.4.x or some other branch, make sure that the jobs are once again building from the correct branch.
+IMPORTANT: TODO: if you switched the _master jobs to run from origin/jbosstools-4.4.x or some other branch, make sure that the jobs are once again building from the correct branch.
 
 If the next build will NOT be a respin, you will also need to ALSO make these changes to jobs, and upversion/release artifacts such as releng scripts or target platforms if you haven't done so already:
 

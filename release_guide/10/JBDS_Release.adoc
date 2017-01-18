@@ -104,7 +104,7 @@ Past example:
 
 Once you have the JIRA, you can link to it when sending the note to release-engineering@ below.
 
-TODO: add EAP 7 zip / installer to list of devstudio artifacts on both developers.redhat.com and www.jboss.org. Explicit listing of files used to be done like this:
+NOTE: If we ever decide to drop the EAP-bundled installer, or there's a newer version of EAP than is bundled, we could add the EAP 7 zip / installer to list of devstudio artifacts on both developers.redhat.com and www.jboss.org. Explicit listing of files used to be done like this:
 * https://github.com/redhat-developer/developers.redhat.com/blob/25640af93a8d7d219c189d37c528534acda17483/products/devstudio/_common/product.yml and
 * https://github.com/redhat-developer/developers.redhat.com/blob/25640af93a8d7d219c189d37c528534acda17483/products/eap/_common/product.yml
 
@@ -113,7 +113,7 @@ TODO: add EAP 7 zip / installer to list of devstudio artifacts on both developer
 
 First thing is to ask for availability of the binaries to CSP (Red Hat Customer Portal) and Golden Gate (JBoss products portal).
 
-NOTE: As this takes some time and can be easily cancelled, this step can be anticipated a few days before release.
+IMPORTANT: As this takes some time and requires coordination with other teams, this step should be initiated a few days before release to allow processing time.
 
 Previous tickets:
 

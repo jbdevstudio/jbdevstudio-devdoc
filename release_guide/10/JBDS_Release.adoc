@@ -111,89 +111,21 @@ NOTE: If we ever decide to drop the EAP-bundled installer, or there's a newer ve
 
 == Announce internally for push to CSP staging site
 
-First thing is to ask for availability of the binaries to CSP (Red Hat Customer Portal) and Golden Gate (JBoss products portal).
+Submit an RCM ticket to release-engineering@redhat.com to requet that the binaries be uploaded to the CSP (Red Hat Customer Portal) and Download Manager.
 
 IMPORTANT: As this takes some time and requires coordination with other teams, this step should be initiated a few days before release to allow processing time.
 
-Previous tickets:
+Previous ticket:
 
-* https://projects.engineering.redhat.com/browse/RCM-6841
 * https://projects.engineering.redhat.com/browse/RCM-10069
 
-*To* release-engineering@redhat.com +
-and +
-*Cc* cobrien@redhat.com, ldimaggi@redhat.com, mhusnain@redhat.com, timoran@redhat.com, nboldt@redhat.com, mistria@redhat.com, alkazako@redhat.com, jmaury@redhat.com, bsutter@redhat.com, pmuir@redhat.com, paul.robinson@redhat.com, dcoughli@redhat.com +
+Communicate with Chris O'Brien (internal IRC: siege) to coordinate the release. All the above can happen in parallel / before the updates below.
 
-[source,bash]
-----
-versionWithRespin_ds=10.3.0.AM1 # a, b, c...
-version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
-buildType=stable # use /stable/ or /development/ as appropriate
-GOLIVEDATE="Wed, Dec 07, 2016"
+Here is a job that creates the RCM ticket:
 
-if [[ ${version_ds} != ${versionWithRespin_ds} ]]; then
-  versionFriendlyName="${version_ds} (to be renamed from ${versionWithRespin_ds})"
-else
-  versionFriendlyName="${version_ds}"
-fi
+WARNING: TODO: make sure this works (untested - was done by hand last time).
 
-TOrecipients="release-engineering@redhat.com"
-CCrecipients="cobrien@redhat.com, ldimaggi@redhat.com, mhusnain@redhat.com, nboldt@redhat.com, alkazako@redhat.com, jmaury@redhat.com, lmohanty@redhat.com"
-sender="Nick Boldt <nboldt@redhat.com>"
-subject="Red Hat JBoss Developer Studio ${versionFriendlyName} available for push to CSP, CDN, & Download Manager staging servers"
-
-echo "
-JBoss Developer Studio ${versionFriendlyName} is available to push to CSP, CDN, & Download Manager staging servers, for subsequent smoke test & review by QE.
-
-We hope to promote the staged (or hidden) artifacts to production by the end of the day, Eastern Standard Time, on ${GOLIVEDATE}. If required, the end of the next day is also acceptable.
-
-Files to publish are available from here [0]:
-
-[0] http://www.qa.jboss.com/binaries/devstudio/10.0/${buildType}/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
-
-There are 4 files for push to CSP:
-
-* devstudio-${version_ds}-installer-standalone.jar
-* devstudio-${version_ds}-installer-eap.jar
-* devstudio-${version_ds}-updatesite-core.zip
-* devstudio-${version_ds}-updatesite-central.zip
-
-Please include the pre-generated the HTML and text content in the above folder when creating new CSP pages.
-
-There are 4 files for for push to CDN / download manager:
-
-* devstudio-${version_ds}-installer-standalone.jar
-* devstudio-${version_ds}-installer-eap.jar
-* devstudio-${version_ds}-updatesite-core.zip
-* devstudio-${version_ds}-updatesite-central.zip
-
-Note that the sources zip has been removed.
-
-If feasible, you could still publish the .txt and .html instructions, which will direct people to fetch sources from github and explain some gotchas when building.
-
---
-
-When pushed, please reply so that QE can review the CSP pages & CDN files for push to production.
-
-Note that in addition to the new CSP page, eg., [1] or [2], the CSP landing page [3] should also be updated to point to the latest release.
-
-[1] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=${version_ds}
-[2] https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=10.3.0
-[3] https://access.redhat.com/downloads/
-
-Only ONE of the artifacts above [4] requires sign-in from CDN/Download Manager. The rest are No T&C.
-
-[4] devstudio-*-installer-eap.jar (contains EAP)
-
-" > /tmp/mailbody.jbds.txt
-
-# use mail (with sendmail's -f flag), NOT mailx
-/bin/mail -s "$subject" "$TOrecipients" -c "$CCrecipients" -- -f"$sender" < /tmp/mailbody.jbds.txt
-rm -f /tmp/mailbody.jbds.txt
-
-----
-
-Communicate with Paul Robinson / Daniel Coughlin, Chris O'Brien, etc. to coordinate the release. All the above can happen in parallel / before the updates below.
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-dev-stable-00-releng-request-email
 
 
 = Release steps

@@ -125,7 +125,31 @@ Here is a job that creates the RCM ticket:
 
 WARNING: TODO: make sure this works (untested - was done by hand last time).
 
-https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-dev-stable-00-releng-request-email
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-dev-stable-00-releng-request-email/configure
+
+[source,bash]
+----
+
+# kerberos login for the Jenkins server
+userpass=nboldt:PASSWORD
+
+versionWithRespin_ds=10.3.0.GA
+GOLIVEDATE="Foo, Feb 30, 2017"
+TOrecipients="release-engineering@redhat.com"
+CCrecipients="cobrien@redhat.com, mhusnain@redhat.com, nboldt@redhat.com, jmaury@redhat.com, timoran@redhat.com"
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
+for j in jbosstools-releng-push-to-dev-stable-00-releng-request-email; do
+  ${JP} -s ${ccijenkins} -j ${j} -t enable
+  sleep 3s
+  ${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -d "token=RELENG&versionWithRespin_ds=${versionWithRespin_ds}&\
+GOLIVEDATE=${GOLIVEDATE}&TOrecipients=${TOrecipients}&CCrecipients=${CCrecipients}"
+  sleep 15s
+  ${JP} -s ${ccijenkins} -j ${j} -t disable
+  ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+done
+
+----
 
 
 = Release steps

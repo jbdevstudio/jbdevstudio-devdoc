@@ -32,8 +32,7 @@ else
   stream_jbt=master
 fi
 JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
-for j in jbosstools-releng-push-to-staging-07-notification-emails \
-  jbosstools-releng-push-to-staging-03-verify-builds-update-sites \
+for j in jbosstools-releng-push-to-staging-03-verify-builds-update-sites \
   jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites \
   jbosstools-releng-push-to-staging-01-check-versions-branches-root-poms \
   jbosstools-releng-push-to-staging-buildflow_${stream_jbt}; do
@@ -392,7 +391,7 @@ If the next build will NOT be a respin, you will also need to ALSO make these ch
 
 Run this build:
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-07-notification-emails/
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-07-notification-emails/
 
 [source,bash]
 ----
@@ -406,16 +405,17 @@ TARGET_PLATFORM_VERSION_MIN=4.60.2.Final
 TARGET_PLATFORM_VERSION_MAX=4.62.0.AM1-SNAPSHOT
 TARGET_PLATFORM_CENTRAL_MAX=4.62.0.AM1-SNAPSHOT
 respinSuffix=""
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-07-notification-emails; do
-  ${JP} -j ${j} -t enable
-  ${JP} -j ${j} -t buildWithParameters -d "versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
+  ${JP} -s ${ccijenkins} -j ${j} -t enable
+  ${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -d "versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
 TARGET_PLATFORM_VERSION_MIN=${TARGET_PLATFORM_VERSION_MIN}&\
 TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&\
 TARGET_PLATFORM_CENTRAL_MAX=${TARGET_PLATFORM_CENTRAL_MAX}"
   sleep 15s
-  ${JP} -j ${j} -t disable
-  ${JP} -j ${j} -t lastBuild/toggleLogKeep
+  ${JP} -s ${ccijenkins} -j ${j} -t disable
+  ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
 done
 
 ----
@@ -442,8 +442,7 @@ else
   stream_ds=master
 fi
 JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
-for j in jbosstools-releng-push-to-staging-07-notification-emails \
-jbosstools-releng-push-to-staging-03-verify-builds-update-sites \
+for j in jbosstools-releng-push-to-staging-03-verify-builds-update-sites \
 jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites \
 jbosstools-releng-push-to-staging-01-check-versions-branches-root-poms \
 jbosstools-releng-push-to-staging-buildflow_${stream_jbt}; do

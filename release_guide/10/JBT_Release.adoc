@@ -50,9 +50,8 @@ You will need to enable the jobs to perform the copy from staging to development
 userpass=nboldt:PASSWORD
 
 JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
-for j in jbosstools-releng-push-to-dev-stable-07-notification-emails \
-jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites \
-jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites; do
+for j in jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites \
+  jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites; do
   ${JP} -j ${j} -t enable
 done
 
@@ -537,9 +536,8 @@ You will need to disable the jobs once the bits are released, so that they won't
 userpass=nboldt:PASSWORD
 
 JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
-for j in jbosstools-releng-push-to-dev-stable-07-notification-emails \
-jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites \
-jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites; do
+for j in jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites \
+  jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites; do
   ${JP} -j ${j} -t disable
 done
 

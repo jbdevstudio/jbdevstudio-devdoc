@@ -6,17 +6,22 @@
 
 This document describes the task of updating, building and publishing the community and production versions of the *JBoss Tools Integration Stack*.
 
-The _Integration Stack_ (IS) for JBoss Developer Studio is a set of features and plugins for Eclipse that further enhances the IDE development functionality provided by JBoss Developer Studio. It’s where the Fuse Tooling, DataVirt Tooling and BRMS tooling is aggregated.  It is formed by three Maven projects which produce Eclipse p2 update sites, JBoss Central discovery update mechanisms and an aggregation of associated component target dependencies and JBoss Core tooling target dependencies.  The p2 update sites are comprised of Final/GA and early-access repositories as well as offline zips files.  The target dependencies take the form of generated `.target` files (tycho mojo) and target p2 update repositories split along Final/early-access and community/production lines.  This site also produces stand-alone installers containing all of JBossTools core, the IS components and an optional supplemental runtime server.
+The _Integration Stack_ (IS) for JBoss Developer Studio is a set of features and plugins for Eclipse that further enhances the IDE development functionality provided by JBoss Developer Studio. It’s where Fuse Tooling, Data Virtualization Tooling and Business Rules tooling (BRMS) is aggregated.  It is formed by three Maven projects which produce Eclipse p2 update sites, JBoss Central discovery sites and aggregated target dependencies in the form of target platforms.  The p2 update sites are comprised of Final/GA and early-access repositories as well as offline zips files and stand-alone installers.  The target dependencies take the form of generated `.target` files (tycho mojo) and target p2 update repositories split along Final/early-access and community/production lines.  The production devstudio build also provides the ability to build a RHEL RPM for Fuse Tooling.
 
 In terms of build artifacts, the _Integration Stack_ is:
 
-* an aggregation of several projects which produce released or Early Access update sites, offline zip files and stand-alone installers, 
-* a discovery site which exposes that content from within JBoss Central
-* IS target platform dependencies, also available as an update site & zip. The target platforms are available as +.target files+, published to JBoss Nexus.
+* an aggregation of several projects which produce community/ production, released/Early Access update sites and offline zip files
+* stand-alone installers (production only)
+** Integration Stack full
+** Fuse Tooling only
+** Fuse Tooling and supplemental Fuse Runtime server
+* a discovery site which exposes that content from within JBoss Central - community/ production
+* IS target platform dependencies, also available as an update site & zip. The target platforms are available as +.target files+, published to JBoss Nexus as well as community and production repositories.
+* RPMs (source and tooling) for DNF installation of Fuse Tooling
 
 [NOTE]
 ----
-Note:  Many steps in this release process require privileged access to JBoss servers, Developer Studio servers and the JBoss Nexus servers and push rights to JBoss git repos.
+Note:  Many steps in this release process require privileged access to JBoss servers, Developer Studio servers and the JBoss Nexus servers and push rights to JBoss and Devstudio git repos.
 ----
 
 == Update Process Overview
@@ -25,12 +30,12 @@ The Integration Stack project is open source (naturally) and can be found here:
 
 https://github.com/jbosstools/jbosstools-integration-stack
 
-Typical updates most frequently occur to the aggregate site composite files.  These would change if a new version of Teiid Designer needed to be included for example.
+Typical updates most frequently occur to the aggregate site composite files.  These would change if a new version of Teiid Designer needed to be included.  For example:
 
 https://github.com/jbosstools/jbosstools-integration-stack/blob/master/jbosstools/site-final/compositeArtifacts.xml
 https://github.com/jbosstools/jbosstools-integration-stack/blob/master/jbosstools/site-final/compositeContent.xml
 
-These files define the IS component update sites.  Note that with rare exceptions these component update sites must be in .Final form for a .Final/.GA IS build.
+These files define the IS component content.  Note that with rare exceptions these component update sites must be in .Final form for a .Final/.GA IS build.
 
 The second most frequent update occurs in the tycho mojo target platform definition files:
 
@@ -39,10 +44,11 @@ The second most frequent update occurs in the tycho mojo target platform definit
 * https://github.com/jbosstools/jbosstools-integration-stack/blob/master/target-platform/core-base.target
 * https://github.com/jbosstools/jbosstools-integration-stack/blob/master/target-platform/community.target
 
+Use the following branches for the specified target platforms:
 [NOTE]
 ----
  Github source branch master should be used for JBTIS 4.4.x (Neon) builds.
- Github source branch jbosstools-4.2.x should be used for JBTIS 4.3.x (Mars) builds.
+ Github source branch jbosstools-4.3.x should be used for JBTIS 4.3.x (Mars) builds.
  Github source branch jbosstools-4.2.x should be used for JBTIS 4.2.x (Luna) builds.
  Github source branch jbosstools-4.1.x should be used for JBTIS 4.1.x (Kepler) builds.
 ----
@@ -61,25 +67,25 @@ The build/ publish process is a sequential set of tasks that must be executed in
 * link:http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/DevstudioIS-aggregate-discovery/[*DevstudioIS aggregate discovery*]
 * link:https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/DevstudioIS-aggregate-publish/[*DevstudioIS Publish*]
 
-Not all jobs are required to be run however.
+*Not all jobs are required to be run however...*
 
 * If building a staging build for QE, the publish jobs should *not* be used.  Only use the publish jobs for publishing after QE is done.
-* For previous years' jobs, job name will have a suffix such as -4.1.x, -4.2.x, -4.3.x. 
-* For 4.2.x and earlier, the discovery job name contains suffix of *disc*, not *discovery*, eg., JBTIS-aggregate-disc-4.2.x.
+* For previous years' Jenkins jobs, the job name will have a suffix such as -4.1.x, -4.2.x, -4.3.x. 
+* For 4.2.x and earlier, the discovery job name contains the suffix *disc*, not *discovery*, eg., JBTIS-aggregate-disc-4.2.x.
 * For a detailed description of the Integration Stack release process pre-Neon, see: link:https://github.com/jbdevstudio/jbdevstudio-devdoc/blob/master/release_guide/9.x/IS_release_process_9.adoc[IS Release Process Mars]
 * For a detailed description of the Integration Stack release process pre-Mars, see: link:https://github.com/jbdevstudio/jbdevstudio-devdoc/blob/master/release_guide/8.x/IS_release_process_luna.adoc[IS Release Process Luna]
 * If the target platform has not changed since the previous build, the community and production aggregate builds can use the most recent target platform without needing to rebuild it.
 
-* JBTIS can be released while DevstudioIS is still kept internal; however, every DevstudioIS release should have a matching concurrent JBTIS release). This is the same rule in JBT and Devstudio releases.
+* JBTIS can be released while DevstudioIS is still kept internal; however, every DevstudioIS release should have a matching concurrent JBTIS release). This is the same rule in JBT and Devstudio releases.  In other words it's okay to have independent community releases of the Integration Stack.
 
-* It is strongly recommended that ALL integration stack components' POMs build with the latest JBTIS TP. This should be enforced as a requirement for participation in the JBTIS/DevstudioIS aggregate to ensure all components use the same compatible dependencies and don't introduce incompatible install-time or run-time requirements.
+* It is strongly recommended that ALL integration stack components' POMs build with the latest JBTIS TP. This should be enforced as a requirement for participation of all newly built plugins in the JBTIS/DevstudioIS aggregate to ensure all components use the same compatible dependencies and don't introduce incompatible install-time or run-time requirements.  It is permissible to carry legacy plugins which are not rebuilt but which pass QE valiation.
 
-There exists Jenkins build jobs for each Eclipse-based revision of JBDS/Devstudio (Kepler, Luna, Mars, Neon, etc).  Examples will be referenced explicitly in the build procedure instructions.
+There exists Jenkins build jobs for each Eclipse-based revision of the IS (Luna, Mars, Neon, etc).  Examples will be referenced explicitly in the build procedure instructions.
 
 == Community JBTIS Build
 [.lead]
 
-There are community versions of the IS target platform, aggregate update sites and JBoss Central/ discovery update site.  *The target platforms and aggregate sites are required for the production build*.  There are no stand-alone installers for the community JBoss Tools releases.
+There are community versions of the IS target platform, aggregate update sites, offline zip files and JBoss Central/ discovery update sites.  *The target platforms and aggregate sites are required for the production build*.  There are no stand-alone installers for the community JBoss Tools releases.
 
 === *JBTIS Target Platform Build/ Release Process*
 
@@ -98,7 +104,7 @@ The link:https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBTIS-target-platf
    aggregate-full.target
    aggregate-full-ea.target
 ----
-* An aggregate of the JBoss Tools Core target dependencies and JBoss Tools multiple dependencies + released Integration Stack base target dependencies (base).
+* An aggregate of the JBoss Tools Core target dependencies and JBoss Tools multiple dependencies + released Integration Stack base target dependencies (`base` classifier).
 
 [source,bash]
 ----
@@ -108,9 +114,9 @@ The link:https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBTIS-target-platf
                                                                  -----------------------------
       to generate an aggregate base target dependencies file:    aggregate-base.target
 ----
-e.g.  http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.0.CR1/aggregate-base.target
+e.g.  http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.0.CR2/aggregate-base.target
 
-* An aggregate of the JBoss Tools Core target dependencies and JBoss Tools multiple dependencies + early access Integration Stack base target dependencies (base-ea).
+* An aggregate of the JBoss Tools Core target dependencies and JBoss Tools multiple dependencies + early access Integration Stack base target dependencies (`base-ea` classifier).
 
 [source,bash]
 ----
@@ -120,9 +126,9 @@ e.g.  http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.0.CR1
                                                                  --------------------------------
       to generate an aggregate base target dependencies file:    aggregate-base-ea.target
 ----
-e.g.   http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.0.CR1/aggregate-base-ea.target
+e.g.   http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.1.CR2/aggregate-base-ea.target
 
-* An aggregate of the JBoss Tools Core target dependencies + Integration Stack base target dependencies + any other community dependencies (full).
+* An aggregate of the JBoss Tools Core target dependencies + Integration Stack base target dependencies + any other community dependencies (`full` classifier).
 
 [source,bash]
 ----
@@ -131,9 +137,9 @@ e.g.   http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.0.CR
                                                                  ---------------------
       to generate the full community target dependencies file:   aggregate-full.target
 ----
-e.g.   http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.0.CR1/aggregate-full.target
+e.g.   http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.0.CR2/aggregate-full.target
 
-* An aggregate of the JBoss Tools Core target dependencies + early access Integration Stack base target dependencies + any other community dependencies (full-ea).
+* An aggregate of the JBoss Tools Core target dependencies + early access Integration Stack base target dependencies + any other community dependencies (`full-ea` classifier).
 
 [source,bash]
 ----
@@ -142,35 +148,35 @@ e.g.   http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.0.CR
                                                                  ------------------------
       to generate the full community target dependencies file:   aggregate-full-ea.target
 ----
-e.g.   http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.0.CR1/aggregate-full-ea.target
+e.g.   http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.1.CR2/aggregate-full-ea.target
 
 ==== Integration Stack Target Platform Release
 
-The IS Target Platform project also creates four repositories and corresponding zip files for the community repositories needed for offline use.  There is no target platform publish job.  These repositories are pushed to the server manually.
+The IS Target Platform project also creates four repositories and corresponding zip files for the community repositories needed for offline use.  There is no target platform publish job.
 
-* http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.0.CR1/jbtis/REPO/
-  http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.0.CR1/jbtis/target-platform-4.4.0.CR1.zip (MD5)
+* http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.1.CR2/jbtis/REPO/
+  http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.1.CR2/jbtis/target-platform-4.4.1.CR2.zip (MD5)
 
-* http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.0.CR1/jbtis/earlyaccess/REPO/
-  http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.0.CR1/jbtis/earlyaccess/target-platform-4.4.0.CR1-earlyaccess.zip (MD5)
+* http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.1.CR2/jbtis/earlyaccess/REPO/
+  http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.1.CR2/jbtis/earlyaccess/target-platform-4.4.1.CR2-earlyaccess.zip (MD5)
 
-* http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.0.CR1/devstudiois/REPO/
+* http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.1.CR2/devstudiois/REPO/
 
-* http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.0.CR1/devstudiois/earlyaccess/REPO/
+* http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.1.CR2/devstudiois/earlyaccess/REPO/
 
 The DevstudioIS repositories are built separately so as to avoid pulling in any community bits.  There is no need to capture them as zip files since they are mirrored into the DevstudioIS update sites.
 
-The IS tycho target dependency +(`.target`)+ files are deployed to the JBoss nexus releases repository for use by the integration stack component projects.  If you are an integration stack component developer or potentially a QE test developer, your maven POM target-platform-configuration should reference one of these as your target-platform artifact.
+The IS tycho target dependency +(`.target`)+ files are deployed to the JBoss nexus releases repository for use by the integration stack component projects.  If you are an integration stack component developer or potentially a QE test developer, your maven POM target-platform-configuration should reference one of these in your POM as your target-platform artifact.
 
-* https://repository.jboss.org/nexus/content/repositories/releases/org/jboss/tools/integration-stack/target-platform/4.4.0.CR1/           # Released
-* https://repository.jboss.org/nexus/content/repositories/snapshots/org/jboss/tools/integration-stack/target-platform/4.4.0.CR1-SNAPSHOT  # Snapshot
+* https://repository.jboss.org/nexus/content/repositories/releases/org/jboss/tools/integration-stack/target-platform/4.4.1.CR2/           # Released
+* https://repository.jboss.org/nexus/content/repositories/snapshots/org/jboss/tools/integration-stack/target-platform/4.4.1.CR2-SNAPSHOT  # Snapshot
 
 [source,bash]
 ----
-target-platform-4.4.0.CR1-base.target     - classifier base
-target-platform-4.4.0.CR1-base-ea.target  - classifier base-ea
-target-platform-4.4.0.CR1-full.target     - classifier full
-target-platform-4.4.0.CR1-full-ea.target  - classifier full-ea
+target-platform-4.4.1.CR2-base.target     - classifier base
+target-platform-4.4.1.CR2-base-ea.target  - classifier base-ea
+target-platform-4.4.1.CR2-full.target     - classifier full
+target-platform-4.4.1.CR2-full-ea.target  - classifier full-ea
 ----
 
 Target artifacts drawn from `org.jboss.tools.targetplatforms`:
@@ -189,7 +195,7 @@ Git ref:
 
 ==== JBTIS Target Platform Dependency Update:
 
-As an example, the Devstudio core target dependencies need to be updated from 4.4.0.CR1 to 4.4.0.Final.  Many if not all of the IUs need to be updated in the core-base.target file.  This update can be performed automatically by performing the following steps:
+As an example, the Devstudio core target dependencies need to be updated from 4.4.1.CR2 to 4.4.1.Final.  Many if not all of the IUs need to be updated in the core-base.target file.  This update can be performed automatically by performing the following steps:
 
 * Download and install Eclipse Neon.
 * Clone the jbosstools-integration-stack locally.
@@ -203,7 +209,7 @@ As an example, the Devstudio core target dependencies need to be updated from 4.
 ~/bin/verifyTarget.sh -x -b ~/git-clone/jbosstools-integration-stack/target-platform -p target-platform -z ~/install/eclipse-jee-neon-R-linux-gtk-x86_64.tar.gz -V 0.26.0
 ----
 
-* diff the generated IS released target platform p2 repos - i.e.:
+* You may diff the generated IS released target platform p2 repos.  This is done automatically as part of the target platform build. - i.e.:
 
 [source,bash]
 ----
@@ -218,29 +224,27 @@ p2diff \
 
 Git diff the `core-base.target` file.  Update the Jira with the p2 diff output.  Commit and issue a PR.
 
-A PR should be sent out for public review.  e.g.
+A PR should be sent out for public review.  Something similar to the following will be automatically generated and emailed.  e.g.
 
 [source,bash]
 ----
-  Greetings -
-      A proposal to change the JBTIS target platform is described here:
+   An updated target platform is now available - JBTIS TP 4.4.1.CR2, DEVSTUDIOIS TP 10.0.1.CR2
 
-   https://issues.jboss.org/browse/JBTIS-xxx
+   https://repository.jboss.org/nexus/content/repositories/releases/org/jboss/tools/integration-stack/target-platform/4.4.1.CR2/
+   http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.1.CR2/
 
-   PR:  https://github.com/jbosstools/jbosstools-integration-stack/pull/yyy
+   https://devstudio.redhat.com/targetplatforms/devstudioistarget/10.0.1.CR2.devstudio-is-target-platform
 
-   Synopsis:
+   See Jira discusion:
+https://issues.jboss.org/projects/JBTIS/issues/JBTIS-1008
 
-   1. Pick up the org.eclipse.birt.feature.group for use in Teiid
-   2. Update to latest Neon release
-   3. Update JBoss Tools core target dependencies to CR1
-   4. Update orbit requirements 
-      http://download.jboss.org/jbosstools/updates/requirements/orbit/R20140525021250
+   Modifications:
++ <unit id="org.jboss.tools.openshift.cdk.feature.feature.group" version="3.3.1.v20161025-0131"/>
++ <unit id="org.jboss.tools.openshift.feature.feature.group" version="3.3.1.v20161125-0956"/>
++ <unit id="org.jboss.tools.openshift.js.feature.feature.group" version="1.0.0.v20161116-1518"/>
 
-   Please respond by COB on Thursday, Sept 25 to the specified Jira if there are any issues.
+   Please use the 'base' classifier.
 
-   Thanks,
-         --paull
 ----
 
 [NOTE]
@@ -253,23 +257,13 @@ Note:  A non-API-change dependant update (micro-release update) may be done with
 As an example, let's build a community target platform for Neon using the specific link:https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBTIS-target-platform/[JBTIS target platform] Jenkins job.
 
 * Tag a label onto the GIT target platform sources associated with any target platform build committed to nexus.
-* Label the Jenkins build and set 'keep forever'.
+* Label the Jenkins build and set `keep forever`.
 
 The staging checkbox simply controls whether the generated artifacts are published to the staging area.  The POM action can be used to deploy a release by selecting `deploy`.
 
 ==== Publish the Community IS Target Platform Components
 
-Given a successful build from the previous step, make the JBTIS TP public.  This example uses a 4.4.0.CR1 based target platform for Neon.
-
-[source,bash]
-----
-# Copy the TP locally from staging  
-cd ~/temp; mkdir -p tp; cd tp  
-scp -r tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/staging/JBTIS-target-platform/4.4.0.CR1 .  
- 
-# Now copy the TP files onto jbosstools   
-scp -r 4.4.0.CR1 tools@filemgmt.jboss.org:/downloads_htdocs/tools/targetplatforms/jbtistarget/ 
-----
+Given a successful build from the previous step, make the JBTIS TP public.  This example uses a 4.4.1.CR2 based target platform for Neon.
 
 Update the jbosstools target platform composites.
 ----
@@ -301,16 +295,16 @@ bye
 
 Verify:
 
-http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.0.CR1/
-http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.0.CR1/jbtis/REPO
-http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.0.CR1/jbtis/\*.zip
-http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.0.CR1/jbtis/\*.target
+http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.1.CR2/
+http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.1.CR2/jbtis/REPO
+http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.1.CR2/jbtis/\*.zip
+http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.1.CR2/jbtis/\*.target
 
-http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.0.CR1/jbtis/earlyaccess/REPO
-http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.0.CR1/jbtis/earlyaccess/\*.zip
+http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.1.CR2/jbtis/earlyaccess/REPO
+http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.1.CR2/jbtis/earlyaccess/\*.zip
 
-http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.0.CR1/devstudiois/REPO
-http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.0.CR1/devstudiois/earlyaccess/REPO
+http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.1.CR2/devstudiois/REPO
+http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.1.CR2/devstudiois/earlyaccess/REPO
 
 http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/neon/
 
@@ -337,15 +331,19 @@ Clear out your local maven repository and build/ deploy enabling the jboss-relea
 ----
 rm -rf ~/.m2/repository
 cd ./jbosstools-integration-stack/target-platform
-mvn -U -DuseReleaseProfile=true -Pmirror
+mvn -U -DuseReleaseProfile=true -Pmirror -Dp2diff.skip -U clean deploy
 ----
-Git ref: https://github.com/jbosstools/jbosstools-fuse-extras/tree/master/jboss-fuse-sap-tool-suite
+Git ref: https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBTIS-target-platform/
 
+[NOTE]
+----
+Note that once you have your target platform built, try building the Fuse Tooling target platform - it's a good test.
+----
 [big]*This completes the JBTIS Target Platform Build/ Release Process*
 
 === Jenkins SAP Build
 
-The SAP plugins are *not* part of the IS.  They are however released in syncronization with Fuse Tooling.
+The SAP plugins are *not* part of the IS.  They are however released in syncronization with Fuse Tooling and the IS.
 
 As an example, lets build link:https://10.8.63.16/view/Fuse%20Tooling/job/SAP-Tooling-9.1.x-Update-Site/[SAP 9.0.0.Final for Neon] using the Jenkins job
 
@@ -360,16 +358,51 @@ http://download.jboss.org/jbosstools/neon/stable/updates/integration-stack/extra
 This effectively publishes the community SAP tooling bits.  The production devstudio bits require that the tooling update site is rsync'd to the devstudio.redhat.com server.  See the
 `jboss.discovery.site.integration-stack-sap.url` in link:http://download.jboss.org/jbosstools/configuration/ide-config.properties[ide-config.properties].
 
+==== Publish the SAP Components
+
+Given a successful build from the previous step, make the SAP update site public.  This example uses the 9.0.0.Final based SAP update site for Neon.
+
+----
+http://download.jboss.org/jbosstools/neon/staging/updates/integration-stack/extras/jboss-fuse-sap-tool-suite/compositeArtifacts.xml
+http://download.jboss.org/jbosstools/neon/staging/updates/integration-stack/extras/jboss-fuse-sap-tool-suite/compositeContents.xml
+----
+Remember to update the timestamps (`vim :call ReplaceTimestamp()`):
+
+* Clone https://github.com/jbosstools/jbosstools-download.jboss.org  
+* Edit `composite*.xml` - update version and also change timestamp.
+
+[source,bash]
+----
+cd /home/pleacu/git-clone/jbosstools-download.jboss.org/jbosstools/neon/stable/updates/integration-stack/extras/jboss-fuse-sap-tool-suite
+vi compositeArtifacts.xml (compositeContent.xml)
+<esc> :call ReplaceTimestamp()  
+<esc> :wq!  
+----
+Once the PR has been issued and merged to https://github.com/jbosstools/jbosstools-download.jboss.org, push the changes to the +download.jboss.org server+. (_Applying the PR is only the first half of getting these live._)
+
+[source,bash]
+----
+# Push committed changes to the JBoss tools server.
+sftp tools@filemgmt.jboss.org:/downloads_htdocs/tools/neon/stable/updates/integration-stack/extras/
+put compositeArtifacts.xml  
+put compositeContent.xml  
+bye 
+----
+
 Verify
 
 * http://download.jboss.org/jbosstools/neon/stable/updates/integration-stack/extras/jboss-fuse-sap-tool-suite/9.0.0.Final/
-
+* http://download.jboss.org/jbosstools/neon/stable/updates/integration-stack/extras/jboss-fuse-sap-tool-suite/
 * http://download.jboss.org/jbosstools/neon/stable/updates/integration-stack/extras/
 
+----
+Git ref: https://10.8.63.16/view/Fuse%20Tooling/job/SAP-Tooling-9.1.x-Update-Site/
+         https://10.8.63.16/view/Fuse%20Tooling/job/SAP-Tooling-9.1.x-Update-Site-Publish
+----
 [big]*This completes the SAP Tooling release process.*
 
 === *JBTIS Aggregate/ Central Discovery Build/ Release Process*
-This section describes the process of building and releasing the JBTIS aggregate update site and the JBoss Central discovery site.  The project architecture is as follows:
+This section describes the process of building and releasing the JBTIS aggregate update site and the JBoss Central discovery site community bits.  The project architecture is as follows:
 
 [source,bash]
 ----
@@ -426,7 +459,7 @@ The build type is selectable.  Use `integration` for builds that are continuous 
 
 * Tag a label onto the GIT sources associated with any build committed to a milestone or release.  (i.e. JBTIS-4.4.0.Final)
 
-* Label the Jenkins build and set 'keep forever' for released builds.
+* Label the Jenkins build and set `keep forever` for released builds.
 
 ==== Publish the JBoss Tools (Community) Integration Stack Components
 
@@ -851,7 +884,7 @@ Note the community JBTIS aggregate composite site from which this build draws it
 * http://www.qa.jboss.com/binaries/RHDS/10.0/staging/updates/integration-stack/discovery/${VERSION}/earlyaccess
 
 * Tag a label onto the GIT sources associated with any build committed to a milestone or release.  It is a required parameter to the configuration.  (i.e. DevstudioIS-10.0.0.CR1)
-* Label the Jenkins build and set 'keep forever".
+* Label the Jenkins build and set `keep forever`.
 
 ==== Publish the Production Integration Stack Components
 

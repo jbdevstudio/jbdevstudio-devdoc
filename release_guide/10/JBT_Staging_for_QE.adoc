@@ -329,7 +329,7 @@ done
 ----
 
 
-== Smoke test the release
+== Smoke test the release (manually)
 
 Before notifying team of staged release, must check for obvious problems.
 
@@ -341,6 +341,36 @@ http://download.jboss.org/jbosstools/neon/staging/updates/
 3. Restart when prompted. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
 4. Check log, start an example project, check log again
 
+
+== Trigger QE Smoke tests (automated)
+
+Trigger the QE smoke tests in https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio_integration_tests/
+
+WARNING: TODO: make sure this works (untested - just wrote it in prep for AM2 release). See https://issues.jboss.org/browse/JBIDE-23733
+
+
+[source,bash]
+----
+
+# kerberos login for the Jenkins server
+userpass=nboldt:PASSWORD
+
+cd ~/tmp
+rm -f index.html
+wget https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio_integration_tests/
+jobs=$(cat index.html  | egrep "\.smoke/build" | sed -e "s#.\+href=\"job/\(.\+\.smoke\)/build\([^\"]\+\)\".\+#\1#g")
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
+for j in ${jobs}; do
+  # ${JP} -s ${ccijenkins} -j ${j} -t enable
+  ${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters
+  sleep 15s
+  ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+  # ${JP} -s ${ccijenkins} -j ${j} -t disable
+done
+rm -f index.html
+
+----
 
 == Enable jobs
 

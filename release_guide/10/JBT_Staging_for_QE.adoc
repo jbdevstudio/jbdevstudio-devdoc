@@ -346,8 +346,7 @@ http://download.jboss.org/jbosstools/neon/staging/updates/
 
 Trigger the QE smoke tests in https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio_integration_tests/
 
-WARNING: TODO: make sure this works (untested - just wrote it in prep for AM2 release). See https://issues.jboss.org/browse/JBIDE-23733
-
+WARNING: TODO: make sure this works - could also wrap this inside a Jenkins job so it's easier to trigger? See https://issues.jboss.org/browse/JBIDE-23733
 
 [source,bash]
 ----

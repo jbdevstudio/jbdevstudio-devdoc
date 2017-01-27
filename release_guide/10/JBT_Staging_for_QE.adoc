@@ -134,7 +134,7 @@ else
   stream_ds=master
 fi
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for j in jbosstools-build.parent_${stream_jbt} jbosstoolstargetplatform-matrix jbosstools-buildflow-force-publish_${stream_jbt} jbosstools-buildflow_${stream_jbt} jbosstools-composite-install_${stream_jbt} jbosstools-browsersim-standalone_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstools-centraltarget_${stream_jbt} jbosstools-build-sites.aggregate.child-sites_${stream_jbt} devstudio.product_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} jbosstools-install-grinder.install-tests.matrix_${stream_jbt}; do
+for j in jbosstools-build.parent_${stream_jbt} jbosstoolstargetplatform-matrix jbosstools-buildflow-force-publish_${stream_jbt} jbosstools-buildflow_${stream_jbt} jbosstools-composite-install_${stream_jbt} jbosstools-browsersim-standalone_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstoolstargetplatforms-central jbosstools-build-sites.aggregate.child-sites_${stream_jbt} devstudio.product_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} jbosstools-install-grinder.install-tests.matrix_${stream_jbt}; do
   ${JP} -j ${j} -t disable
   ${JP} -j ${j} -t lastBuild/toggleLogKeep
 done
@@ -423,7 +423,7 @@ else
   stream_ds=master
 fi
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for j in jbosstools-build.parent_${stream_jbt} jbosstoolstargetplatform-matrix jbosstools-buildflow_${stream_jbt} jbosstools-composite-install_${stream_jbt} jbosstools-browsersim-standalone_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstools-centraltarget_${stream_jbt} jbosstools-build-sites.aggregate.child-sites_${stream_jbt} devstudio.product_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} jbosstools-install-grinder.install-tests.matrix_${stream_jbt}; do
+for j in jbosstools-build.parent_${stream_jbt} jbosstoolstargetplatform-matrix jbosstools-buildflow_${stream_jbt} jbosstools-composite-install_${stream_jbt} jbosstools-browsersim-standalone_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstoolstargetplatforms-central jbosstools-build-sites.aggregate.child-sites_${stream_jbt} devstudio.product_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} jbosstools-install-grinder.install-tests.matrix_${stream_jbt}; do
   ${JP} -j ${j} -t enable
 done
 echo ""

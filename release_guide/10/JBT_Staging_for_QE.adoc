@@ -12,6 +12,19 @@ If you do not need it urgently, you can push files there simply by pushing a cha
 A Jenkins job can then be triggered to sync changes to download.jboss.org: https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-download.jboss.org-rsync-from-svn/
 ====
 
+[IMPORTANT]
+====
+
+Before running any of the jobs or scripts below, make sure to set the correct versions to the values for the release you're staging or releasing.
+
+* look for versionWithRespin, update to version you're staging
+* look for PREV and NEXT variables; set to previous / next milestone (AM1, AM2, AM3, Final/GA)
+* look for NEXT, set to next milestone
+* check target platform versions are current w/ latest versions
+* check parent pom version, version_parent, is current
+
+====
+
 == Enable staging jobs
 
 You will need to enable the jobs:

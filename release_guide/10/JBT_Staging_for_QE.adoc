@@ -457,6 +457,13 @@ export userpass=KERBUSER:PASSWORD
 
 versionWithRespin_jbt=4.4.3.AM2
 versionWithRespin_ds=10.3.0.AM2
+if [[ ${version_jbt} == *".Final" ]]; then
+  stream_jbt=4.4.neon
+  github_branch=jbosstools-4.4.3.x # or jbosstools-4.4.x
+else
+  stream_jbt=master
+  github_branch=master
+fi
 TARGET_PLATFORM_VERSION_MIN=4.60.2.Final
 TARGET_PLATFORM_VERSION_MAX=4.62.0.AM1-SNAPSHOT
 TARGET_PLATFORM_CENTRAL_MAX=4.62.0.AM2-SNAPSHOT
@@ -465,7 +472,7 @@ ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-07-notification-emails; do
   ${JP} -s ${ccijenkins} -j ${j} -t enable
-  ${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -d "versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
+  ${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -d "github_branch=${github_branch}&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
 TARGET_PLATFORM_VERSION_MIN=${TARGET_PLATFORM_VERSION_MIN}&\
 TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&\
 TARGET_PLATFORM_CENTRAL_MAX=${TARGET_PLATFORM_CENTRAL_MAX}"

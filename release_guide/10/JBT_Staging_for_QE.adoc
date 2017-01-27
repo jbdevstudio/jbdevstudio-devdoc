@@ -21,6 +21,7 @@ Before running any of the jobs or scripts below, make sure to set the correct ve
 * look for PREV and NEXT variables; set to previous / next milestone (AM1, AM2, AM3, Final/GA)
 * check target platform versions are current w/ latest versions
 * check parent pom version, version_parent, is current
+* check Integration Stack variables like earlyaccess_IS, version_jbt_IS, version_ds_IS are correct. Double-check best values with Paul Leacu (pleacu).
 
 ====
 

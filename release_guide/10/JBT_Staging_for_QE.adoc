@@ -383,7 +383,7 @@ export userpass=KERBUSER:PASSWORD
 
 cd ~/tmp
 rm -f index.html
-wget https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio_integration_tests/
+wget https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/devstudio_integration_tests/
 jobs=$(cat index.html  | egrep "\.smoke/build" | sed -e "s#.\+href=\"job/\(.\+\.smoke\)/build\([^\"]\+\)\".\+#\1#g")
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
@@ -412,8 +412,8 @@ If the next build WILL be a respin, you need to simply:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.4.3.AM1
-versionWithRespin_ds=10.3.0.AM1
+versionWithRespin_jbt=4.4.3.AM2
+versionWithRespin_ds=10.3.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 if [[ ${version_jbt} == *".Final" ]]; then
@@ -455,11 +455,11 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-rele
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.4.3.AM1
-versionWithRespin_ds=10.3.0.AM1
+versionWithRespin_jbt=4.4.3.AM2
+versionWithRespin_ds=10.3.0.AM2
 TARGET_PLATFORM_VERSION_MIN=4.60.2.Final
 TARGET_PLATFORM_VERSION_MAX=4.62.0.AM1-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.62.0.AM1-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.62.0.AM2-SNAPSHOT
 respinSuffix=""
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
@@ -486,8 +486,8 @@ You will need to disable the jobs once the bits are staged, so that they won't r
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.4.3.AM1
-versionWithRespin_ds=10.3.0.AM1
+versionWithRespin_jbt=4.4.3.AM2
+versionWithRespin_ds=10.3.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 if [[ ${version_jbt} == *".Final" ]]; then

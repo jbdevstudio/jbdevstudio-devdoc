@@ -51,7 +51,7 @@ TIP: Once the staging build folder exists, start fetching the devstudio installe
 
 cd ~/tmp
 rm -f index.html
-versionWithRespin_ds=10.3.0.AM1 # a, b, c...
+versionWithRespin_ds=10.3.0.AM2 # a, b, c...
 wget https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
 installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 echo "Installer jar: ${installerJar}"
@@ -87,7 +87,7 @@ See details in JBT_Staging_For_QE.adoc
 Before notifying team of staged release, must check for obvious problems.
 
 1. Get a recent Eclipse (compatible with the target version of JBT)
-2. Install BYOE category from
+2. Install Bring Your Own Eclipse category from
 
 https://devstudio.redhat.com/10.0/staging/updates/
 
@@ -96,7 +96,7 @@ https://devstudio.redhat.com/10.0/staging/updates/
 
 [source,bash]
 ----
-versionWithRespin_ds=10.3.0.AM1 # a, b, c...
+versionWithRespin_ds=10.3.0.AM2 # a, b, c...
 cd ~/tmp
 wget https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
 installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
@@ -142,7 +142,7 @@ WARNING: TODO: make sure this works (untested - was done by hand last time).
 # Jenkins login for the Wonka server
 export userpass=WONKAUSER:PASSWORD
 
-versionWithRespin_ds=10.3.0.AM1
+versionWithRespin_ds=10.3.0.AM2
 wonkajenkins=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-05-sign-rpm-email-request; do
@@ -168,7 +168,7 @@ WARNING: TODO: make sure this works (untested - was done by hand last time).
 # Jenkins login for the Wonka server
 export userpass=WONKAUSER:PASSWORD
 
-versionWithRespin_ds=10.3.0.AM1
+versionWithRespin_ds=10.3.0.AM2
 signedURL=http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/JBDS-10.3.0/rpms/signed/
 wonkajenkins=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh

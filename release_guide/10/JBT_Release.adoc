@@ -38,6 +38,32 @@ Here are some generalities site promotion/release process. It's not an exhaustiv
 ... JIRA version can be released
 ... Interested parties are notified
 
+[IMPORTANT]
+====
+
+Before running any of the jobs or scripts below, make sure to set the correct versions to the values for the release you're staging or releasing.
+
+* look for versionWithRespin, update to version you're staging
+* look for PREV and NEXT variables; set to previous / next milestone (AM1, AM2, AM3, Final/GA)
+* look for NEXT, set to next milestone
+* check target platform versions are current w/ latest versions
+* check parent pom version, version_parent, is current
+
+====
+
+== Clone jbosstools-build-ci repo
+
+[source,bash]
+----
+
+mkdir -p /tmp/jbt.github
+cd /tmp/jbt.github
+if [[ ! -d jbosstools-build-ci ]]; then git clone git@github.com:jbosstools/jbosstools-build-ci.git; fi
+cd jbosstools-build-ci
+git checkout jbosstools-4.4.x
+chmod +x -R */*.sh */*/*.sh
+
+----
 
 == Enable dev-stable jobs
 
@@ -49,7 +75,7 @@ You will need to enable the jobs to perform the copy from staging to development
 # kerberos login for the Jenkins server
 userpass=nboldt:PASSWORD
 
-JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites \
   jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites; do
   ${JP} -j ${j} -t enable
@@ -88,7 +114,7 @@ fi
 TARGET_PLATFORM_VERSION_MAX=4.62.0.AM1-SNAPSHOT
 TARGET_PLATFORM_CENTRAL_MAX=4.62.0.AM1-SNAPSHOT
 
-JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites; do
   ${JP} -j ${j} -t enable
   sleep 3s
@@ -140,7 +166,7 @@ But you can run it again if you'd like:
 ----
 
 # buildType=development will also check stable URLs if we're pushing out a GA/Final release
-JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites; do
   ${JP} -j ${j} -t enable
   sleep 3s
@@ -177,7 +203,7 @@ earlyaccess_IS=earlyaccess/
 version_jbt_IS=4.4.0.Final
 version_ds_IS=10.0.0.GA
 wonkajenkins=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job
-JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-04-update-merge-composites-html; do
   ${JP} -s ${wonkajenkins} -j ${j} -t enable
   sleep 3
@@ -358,7 +384,7 @@ version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 buildType="development"; if [[ ${version_jbt} == *".Final" ]]; then buildType="stable"; fi
 wonkajenkins=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job
-JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-04-update-ide-config.properties; do
   ${JP} -s ${wonkajenkins} -j ${j} -t enable
   sleep 3s
@@ -535,7 +561,7 @@ You will need to disable the jobs once the bits are released, so that they won't
 # kerberos login for the Jenkins server
 userpass=nboldt:PASSWORD
 
-JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites \
   jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites; do
   ${JP} -j ${j} -t disable

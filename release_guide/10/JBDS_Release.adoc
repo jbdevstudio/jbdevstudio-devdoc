@@ -108,6 +108,9 @@ NOTE: If we ever decide to drop the EAP-bundled installer, or there's a newer ve
 * https://github.com/redhat-developer/developers.redhat.com/blob/25640af93a8d7d219c189d37c528534acda17483/products/devstudio/_common/product.yml and
 * https://github.com/redhat-developer/developers.redhat.com/blob/25640af93a8d7d219c189d37c528534acda17483/products/eap/_common/product.yml
 
+== Clone jbosstools-build-ci repo
+
+See details in JBT_Staging_For_QE.adoc
 
 == Announce internally for push to CSP staging site
 
@@ -138,7 +141,7 @@ GOLIVEDATE="Foo, Feb 30, 2017"
 TOrecipients="release-engineering@redhat.com"
 CCrecipients="cobrien@redhat.com, mhusnain@redhat.com, nboldt@redhat.com, jmaury@redhat.com, timoran@redhat.com"
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-00-releng-request-email; do
   ${JP} -s ${ccijenkins} -j ${j} -t enable
   sleep 3s
@@ -395,7 +398,7 @@ version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-07-notification-emails; do
   ${JP} -s ${ccijenkins} -j ${j} -t enable
   sleep 3s

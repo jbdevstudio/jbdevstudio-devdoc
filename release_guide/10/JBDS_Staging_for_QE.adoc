@@ -15,6 +15,10 @@ Before running any of the jobs or scripts below, make sure to set the correct ve
 
 ====
 
+== Clone jbosstools-build-ci repo
+
+See details in JBT_Staging_For_QE.adoc
+
 == Update Discovery Sites and URLs
 
 See details in JBT_Staging_For_QE.adoc
@@ -140,7 +144,7 @@ userpass=nboldt:PASSWORD
 
 versionWithRespin_ds=10.3.0.AM1
 wonkajenkins=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job
-JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-05-sign-rpm-email-request; do
   ${JP} -s ${wonkajenkins} -j ${j} -t enable
   ${JP} -s ${wonkajenkins} -j ${j} -t buildWithParameters -d "token=RELENG&versionWithRespin_ds=${versionWithRespin_ds}"
@@ -167,7 +171,7 @@ userpass=nboldt:PASSWORD
 versionWithRespin_ds=10.3.0.AM1
 signedURL=http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/JBDS-10.3.0/rpms/signed/
 wonkajenkins=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job
-JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-06-sign-rpm-fetch; do
   ${JP} -s ${wonkajenkins} -j ${j} -t enable
   ${JP} -s ${wonkajenkins} -j ${j} -t buildWithParameters -d "token=RELENG&versionWithRespin_ds=${versionWithRespin_ds}&signedURL=${signedURL}"

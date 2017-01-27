@@ -25,6 +25,20 @@ Before running any of the jobs or scripts below, make sure to set the correct ve
 
 ====
 
+== Clone jbosstools-build-ci repo
+
+[source,bash]
+----
+
+mkdir -p /tmp/jbt.github
+cd /tmp/jbt.github
+if [[ ! -d jbosstools-build-ci ]]; then git clone git@github.com:jbosstools/jbosstools-build-ci.git; fi
+cd jbosstools-build-ci
+git checkout jbosstools-4.4.x
+chmod +x -R */*.sh */*/*.sh
+
+----
+
 == Enable staging jobs
 
 You will need to enable the jobs:
@@ -44,7 +58,7 @@ if [[ ${version_jbt} == *".Final" ]]; then
 else
   stream_jbt=master
 fi
-JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-03-verify-builds-update-sites \
   jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites \
   jbosstools-releng-push-to-staging-01-check-versions-branches-root-poms \
@@ -77,7 +91,7 @@ else
   github_branch=master
 fi
 
-JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-01-check-versions-branches-root-poms; do
   ${JP} -j ${j} -t buildWithParameters -d \
     "stream_jbt=${stream_jbt}&github_branch=${github_branch}&version_parent=${version_parent}&version_jbt=${version_jbt}&version_ds=${version_ds}"
@@ -120,7 +134,7 @@ else
   stream_jbt=master
   stream_ds=master
 fi
-JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-build.parent_${stream_jbt} jbosstoolstargetplatform-matrix jbosstools-buildflow-force-publish_${stream_jbt} jbosstools-buildflow_${stream_jbt} jbosstools-composite-install_${stream_jbt} jbosstools-browsersim-standalone_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstools-centraltarget_${stream_jbt} jbosstools-build-sites.aggregate.child-sites_${stream_jbt} devstudio.product_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} jbosstools-install-grinder.install-tests.matrix_${stream_jbt}; do
   ${JP} -j ${j} -t disable
   ${JP} -j ${j} -t lastBuild/toggleLogKeep
@@ -154,7 +168,7 @@ else
 fi
 TARGET_PLATFORM_VERSION_MAX=4.62.0.AM1-SNAPSHOT
 TARGET_PLATFORM_CENTRAL_MAX=4.62.0.AM1-SNAPSHOT
-JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-discovery_${stream_jbt}; do
   ${JP} -j ${j} -t enable
   ${JP} -j ${j} -t buildWithParameters -d \
@@ -208,7 +222,7 @@ else
   stream_jbt=master
   stream_ds=master
 fi
-JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites; do
   ${JP} -j ${j} -t buildWithParameters -d "stream_jbt=${stream_jbt}&stream_ds=${stream_ds}&\
 versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
@@ -246,7 +260,7 @@ userpass=nboldt:PASSWORD
 versionWithRespin_jbt=4.4.3.AM1
 versionWithRespin_ds=10.3.0.AM1
 
-JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-03-verify-builds-update-sites; do
   ${JP} -j ${j} -t buildWithParameters -d "versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
 skipdiscovery=false&onlydiscovery=false&buildType=staging"
@@ -290,7 +304,7 @@ earlyaccess_IS=earlyaccess/
 version_jbt_IS=4.4.0.Final
 version_ds_IS=10.0.0.GA
 wonkajenkins=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job
-JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-04-update-merge-composites-html; do
   ${JP} -s ${wonkajenkins} -j ${j} -t enable
   ${JP} -s ${wonkajenkins} -j ${j} -t buildWithParameters -d "token=RELENG&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
@@ -328,7 +342,7 @@ versionWithRespin_ds_PREV=10.2.0.GA
 versionWithRespin_ds_NEXT=10.3.0.AM2
 buildType="staging"
 wonkajenkins=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job
-JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-04-update-ide-config.properties; do
   ${JP} -s ${wonkajenkins} -j ${j} -t enable
   ${JP} -s ${wonkajenkins} -j ${j} -t buildWithParameters -d "token=RELENG&buildType=${buildType}&\
@@ -372,7 +386,7 @@ rm -f index.html
 wget https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio_integration_tests/
 jobs=$(cat index.html  | egrep "\.smoke/build" | sed -e "s#.\+href=\"job/\(.\+\.smoke\)/build\([^\"]\+\)\".\+#\1#g")
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in ${jobs}; do
   # ${JP} -s ${ccijenkins} -j ${j} -t enable
   ${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters
@@ -409,7 +423,7 @@ else
   stream_jbt=master
   stream_ds=master
 fi
-JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-build.parent_${stream_jbt} jbosstoolstargetplatform-matrix jbosstools-buildflow_${stream_jbt} jbosstools-composite-install_${stream_jbt} jbosstools-browsersim-standalone_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstools-centraltarget_${stream_jbt} jbosstools-build-sites.aggregate.child-sites_${stream_jbt} devstudio.product_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} jbosstools-install-grinder.install-tests.matrix_${stream_jbt}; do
   ${JP} -j ${j} -t enable
 done
@@ -448,7 +462,7 @@ TARGET_PLATFORM_VERSION_MAX=4.62.0.AM1-SNAPSHOT
 TARGET_PLATFORM_CENTRAL_MAX=4.62.0.AM1-SNAPSHOT
 respinSuffix=""
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-07-notification-emails; do
   ${JP} -s ${ccijenkins} -j ${j} -t enable
   ${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -d "versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
@@ -483,7 +497,7 @@ else
   stream_jbt=master
   stream_ds=master
 fi
-JP=/home/nboldt/tru/jbosstools-build-ci/util/jenkinsPost.sh
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-03-verify-builds-update-sites \
 jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites \
 jbosstools-releng-push-to-staging-01-check-versions-branches-root-poms \

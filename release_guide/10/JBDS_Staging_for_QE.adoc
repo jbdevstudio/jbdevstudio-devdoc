@@ -140,7 +140,7 @@ WARNING: TODO: make sure this works (untested - was done by hand last time).
 
 
 # Jenkins login for the Wonka server
-userpass=nboldt:PASSWORD
+export userpass=WONKAUSER:PASSWORD
 
 versionWithRespin_ds=10.3.0.AM1
 wonkajenkins=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job
@@ -166,7 +166,7 @@ WARNING: TODO: make sure this works (untested - was done by hand last time).
 ----
 
 # Jenkins login for the Wonka server
-userpass=nboldt:PASSWORD
+export userpass=WONKAUSER:PASSWORD
 
 versionWithRespin_ds=10.3.0.AM1
 signedURL=http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/JBDS-10.3.0/rpms/signed/

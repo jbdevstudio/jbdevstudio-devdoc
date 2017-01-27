@@ -47,7 +47,7 @@ You will need to enable the jobs:
 ----
 
 # kerberos login for the Jenkins server
-export userpass=nboldt:PASSWORD
+export userpass=KERBUSER:PASSWORD
 
 versionWithRespin_jbt=4.4.3.AM2
 versionWithRespin_ds=10.3.0.AM2
@@ -76,7 +76,7 @@ Configure, then run this job:
 ----
 
 # kerberos login for the Jenkins server
-export userpass=nboldt:PASSWORD
+export userpass=KERBUSER:PASSWORD
 
 version_parent=4.4.3.AM2-SNAPSHOT
 versionWithRespin_jbt=4.4.3.AM2
@@ -121,7 +121,7 @@ To prevent accidentally rebuilding something while you're copying it away, make 
 [source,bash]
 ----
 # kerberos login for the Jenkins server
-export userpass=nboldt:PASSWORD
+export userpass=KERBUSER:PASSWORD
 
 versionWithRespin_jbt=4.4.3.AM2
 versionWithRespin_ds=10.3.0.AM2
@@ -155,7 +155,7 @@ Then respin the job:
 ----
 
 # kerberos login for the Jenkins server
-export userpass=nboldt:PASSWORD
+export userpass=KERBUSER:PASSWORD
 
 versionWithRespin_jbt=4.4.3.AM2
 versionWithRespin_ds=10.3.0.AM2
@@ -207,7 +207,7 @@ http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-st
 ----
 
 # kerberos login for the Jenkins server
-export userpass=nboldt:PASSWORD
+export userpass=KERBUSER:PASSWORD
 
 versionWithRespin_jbt=4.4.3.AM2
 versionWithRespin_ds=10.3.0.AM2
@@ -255,7 +255,7 @@ http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-st
 ----
 
 # kerberos login for the Jenkins server
-export userpass=nboldt:PASSWORD
+export userpass=KERBUSER:PASSWORD
 
 versionWithRespin_jbt=4.4.3.AM2
 versionWithRespin_ds=10.3.0.AM2
@@ -295,7 +295,7 @@ But if you need a login for Jenkins, please contact nboldt@redhat.com or jsightl
 ----
 
 # Jenkins login for the Wonka server
-export userpass=nboldt:PASSWORD
+export userpass=WONKAUSER:PASSWORD
 
 versionWithRespin_jbt=4.4.3.AM2
 versionWithRespin_ds=10.3.0.AM2
@@ -332,7 +332,7 @@ But if you need a login for Jenkins, please contact nboldt@redhat.com or jsightl
 ----
 
 # Jenkins login for the Wonka server
-export userpass=nboldt:PASSWORD
+export userpass=WONKAUSER:PASSWORD
 
 versionWithRespin_jbt=4.4.3.AM2
 versionWithRespin_ds=10.3.0.AM2
@@ -379,7 +379,7 @@ WARNING: TODO: make sure this works - could also wrap this inside a Jenkins job 
 ----
 
 # kerberos login for the Jenkins server
-userpass=nboldt:PASSWORD
+export userpass=KERBUSER:PASSWORD
 
 cd ~/tmp
 rm -f index.html
@@ -410,7 +410,7 @@ If the next build WILL be a respin, you need to simply:
 ----
 
 # kerberos login for the Jenkins server
-userpass=nboldt:PASSWORD
+export userpass=KERBUSER:PASSWORD
 
 versionWithRespin_jbt=4.4.3.AM1
 versionWithRespin_ds=10.3.0.AM1
@@ -453,7 +453,7 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-rele
 ----
 
 # kerberos login for the Jenkins server
-userpass=nboldt:PASSWORD
+export userpass=KERBUSER:PASSWORD
 
 versionWithRespin_jbt=4.4.3.AM1
 versionWithRespin_ds=10.3.0.AM1
@@ -484,7 +484,7 @@ You will need to disable the jobs once the bits are staged, so that they won't r
 ----
 
 # kerberos login for the Jenkins server
-userpass=nboldt:PASSWORD
+export userpass=KERBUSER:PASSWORD
 
 versionWithRespin_jbt=4.4.3.AM1
 versionWithRespin_ds=10.3.0.AM1

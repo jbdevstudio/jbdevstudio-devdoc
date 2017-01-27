@@ -134,7 +134,7 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-rele
 ----
 
 # kerberos login for the Jenkins server
-userpass=nboldt:PASSWORD
+export userpass=KERBUSER:PASSWORD
 
 versionWithRespin_ds=10.3.0.GA
 GOLIVEDATE="Foo, Feb 30, 2017"
@@ -386,7 +386,7 @@ Using the script below, you can trigger the job remotely.
 ----
 
 # kerberos login for the Jenkins server
-userpass=nboldt:PASSWORD
+export userpass=KERBUSER:PASSWORD
 
 blogURL=/blog/am1-for-neon.2.html
 pullrequestNum=664

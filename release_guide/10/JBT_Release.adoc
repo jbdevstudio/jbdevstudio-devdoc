@@ -73,7 +73,7 @@ You will need to enable the jobs to perform the copy from staging to development
 ----
 
 # kerberos login for the Jenkins server
-userpass=nboldt:PASSWORD
+export userpass=KERBUSER:PASSWORD
 
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites \
@@ -98,7 +98,7 @@ https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-d
 ----
 
 # kerberos login for the Jenkins server
-userpass=nboldt:PASSWORD
+export userpass=KERBUSER:PASSWORD
 
 versionWithRespin_jbt=4.4.3.AM1
 versionWithRespin_ds=10.3.0.AM1
@@ -194,7 +194,7 @@ But if you need a login for Jenkins, please contact nboldt@redhat.com or jsightl
 ----
 
 # Jenkins login for the Wonka server
-userpass=nboldt:PASSWORD
+export userpass=WONKAUSER:PASSWORD
 
 versionWithRespin_jbt=4.4.3.AM1
 versionWithRespin_ds=10.3.0.AM1
@@ -370,7 +370,7 @@ But if you need a login for Jenkins, please contact nboldt@redhat.com or jsightl
 ----
 
 # Jenkins login for the Wonka server
-userpass=nboldt:PASSWORD
+export userpass=WONKAUSER:PASSWORD
 
 versionWithRespin_jbt=4.4.3.AM1
 versionWithRespin_ds=10.3.0.AM1
@@ -559,7 +559,7 @@ You will need to disable the jobs once the bits are released, so that they won't
 ----
 
 # kerberos login for the Jenkins server
-userpass=nboldt:PASSWORD
+export userpass=KERBUSER:PASSWORD
 
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites \

@@ -47,10 +47,10 @@ You will need to enable the jobs:
 ----
 
 # kerberos login for the Jenkins server
-userpass=nboldt:PASSWORD
+export userpass=nboldt:PASSWORD
 
-versionWithRespin_jbt=4.4.3.AM1
-versionWithRespin_ds=10.3.0.AM1
+versionWithRespin_jbt=4.4.3.AM2
+versionWithRespin_ds=10.3.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 if [[ ${version_jbt} == *".Final" ]]; then
@@ -76,11 +76,11 @@ Configure, then run this job:
 ----
 
 # kerberos login for the Jenkins server
-userpass=nboldt:PASSWORD
+export userpass=nboldt:PASSWORD
 
-version_parent=4.4.3.AM1-SNAPSHOT
-versionWithRespin_jbt=4.4.3.AM1
-versionWithRespin_ds=10.3.0.AM1
+version_parent=4.4.3.AM2-SNAPSHOT
+versionWithRespin_jbt=4.4.3.AM2
+versionWithRespin_ds=10.3.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 if [[ ${version_jbt} == *".Final" ]]; then
@@ -121,10 +121,10 @@ To prevent accidentally rebuilding something while you're copying it away, make 
 [source,bash]
 ----
 # kerberos login for the Jenkins server
-userpass=nboldt:PASSWORD
+export userpass=nboldt:PASSWORD
 
-versionWithRespin_jbt=4.4.3.AM1
-versionWithRespin_ds=10.3.0.AM1
+versionWithRespin_jbt=4.4.3.AM2
+versionWithRespin_ds=10.3.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 if [[ ${version_jbt} == *".Final" ]]; then
@@ -155,10 +155,10 @@ Then respin the job:
 ----
 
 # kerberos login for the Jenkins server
-userpass=nboldt:PASSWORD
+export userpass=nboldt:PASSWORD
 
-versionWithRespin_jbt=4.4.3.AM1
-versionWithRespin_ds=10.3.0.AM1
+versionWithRespin_jbt=4.4.3.AM2
+versionWithRespin_ds=10.3.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 if [[ ${version_jbt} == *".Final" ]]; then
@@ -167,7 +167,7 @@ else
   stream_jbt=master
 fi
 TARGET_PLATFORM_VERSION_MAX=4.62.0.AM1-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.62.0.AM1-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.62.0.AM2-SNAPSHOT
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-discovery_${stream_jbt}; do
   ${JP} -j ${j} -t enable
@@ -207,14 +207,14 @@ http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-st
 ----
 
 # kerberos login for the Jenkins server
-userpass=nboldt:PASSWORD
+export userpass=nboldt:PASSWORD
 
-versionWithRespin_jbt=4.4.3.AM1
-versionWithRespin_ds=10.3.0.AM1
+versionWithRespin_jbt=4.4.3.AM2
+versionWithRespin_ds=10.3.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 TARGET_PLATFORM_VERSION_MAX=4.62.0.AM1-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.62.0.AM1-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.62.0.AM2-SNAPSHOT
 if [[ ${version_jbt} == *".Final" ]]; then
   stream_jbt=4.4.neon
   stream_ds=10.0.neon
@@ -255,10 +255,10 @@ http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-st
 ----
 
 # kerberos login for the Jenkins server
-userpass=nboldt:PASSWORD
+export userpass=nboldt:PASSWORD
 
-versionWithRespin_jbt=4.4.3.AM1
-versionWithRespin_ds=10.3.0.AM1
+versionWithRespin_jbt=4.4.3.AM2
+versionWithRespin_ds=10.3.0.AM2
 
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-03-verify-builds-update-sites; do
@@ -295,11 +295,11 @@ But if you need a login for Jenkins, please contact nboldt@redhat.com or jsightl
 ----
 
 # Jenkins login for the Wonka server
-userpass=nboldt:PASSWORD
+export userpass=nboldt:PASSWORD
 
-versionWithRespin_jbt=4.4.3.AM1
-versionWithRespin_ds=10.3.0.AM1
-versionWithRespin_ds_PREV=10.2.0.GA
+versionWithRespin_jbt=4.4.3.AM2
+versionWithRespin_ds=10.3.0.AM2
+versionWithRespin_ds_PREV=10.3.0.AM1
 earlyaccess_IS=earlyaccess/
 version_jbt_IS=4.4.0.Final
 version_ds_IS=10.0.0.GA
@@ -332,14 +332,14 @@ But if you need a login for Jenkins, please contact nboldt@redhat.com or jsightl
 ----
 
 # Jenkins login for the Wonka server
-userpass=nboldt:PASSWORD
+export userpass=nboldt:PASSWORD
 
-versionWithRespin_jbt=4.4.3.AM1
-versionWithRespin_ds=10.3.0.AM1
-versionWithRespin_jbt_PREV=4.4.2.Final
-versionWithRespin_jbt_NEXT=4.4.3.AM2
-versionWithRespin_ds_PREV=10.2.0.GA
-versionWithRespin_ds_NEXT=10.3.0.AM2
+versionWithRespin_jbt=4.4.3.AM2
+versionWithRespin_ds=10.3.0.AM2
+versionWithRespin_jbt_PREV=4.4.3.AM1
+versionWithRespin_jbt_NEXT=4.4.3.Final
+versionWithRespin_ds_PREV=10.3.0.AM1
+versionWithRespin_ds_NEXT=10.3.0.GA
 buildType="staging"
 wonkajenkins=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh

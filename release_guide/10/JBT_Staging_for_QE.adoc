@@ -487,7 +487,7 @@ done
 
 == Trigger QE Smoke tests (automated)
 
-Trigger the QE smoke tests in https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio_integration_tests/
+Trigger the QE smoke tests in https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/devstudio_integration_tests/
 
 WARNING: TODO: make sure this works - could also wrap this inside a Jenkins job so it's easier to trigger? See https://issues.jboss.org/browse/JBIDE-23733
 

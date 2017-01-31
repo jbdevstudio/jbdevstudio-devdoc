@@ -17,7 +17,19 @@ Before running any of the jobs or scripts below, make sure to set the correct ve
 
 == Clone jbosstools-build-ci repo
 
-See details in JBT_Staging_For_QE.adoc
+== Clone jbosstools-build-ci repo
+
+[source,bash]
+----
+
+mkdir -p /tmp/jbt.github
+cd /tmp/jbt.github
+if [[ ! -d jbosstools-build-ci ]]; then git clone git@github.com:jbosstools/jbosstools-build-ci.git; fi
+cd jbosstools-build-ci
+git checkout jbosstools-4.4.x
+chmod +x -R */*.sh */*/*.sh
+
+----
 
 == Update Discovery Sites and URLs
 
@@ -82,7 +94,7 @@ See details in JBT_Staging_For_QE.adoc
 See details in JBT_Staging_For_QE.adoc
 
 
-== Smoke test the release
+== Smoke test the release (manually)
 
 Before notifying team of staged release, must check for obvious problems.
 
@@ -125,6 +137,50 @@ See details in JBT_Staging_For_QE.adoc
 == Notify the team (send 1 email)
 
 See details in JBT_Staging_For_QE.adoc
+
+
+== Trigger QE Smoke tests (automated)
+
+Trigger the QE smoke tests in https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/devstudio_integration_tests/
+
+WARNING: TODO: make sure this works - could also wrap this inside a Jenkins job so it's easier to trigger? See https://issues.jboss.org/browse/JBIDE-23733
+
+[source,bash]
+----
+
+# kerberos login for the Jenkins server
+export userpass=KERBUSER:PASSWORD
+
+versionWithRespin_ds=10.3.0.AM2 # a, b, c...
+cd ~/tmp
+wget https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
+installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
+rm -f index.html
+
+version_ds_INST=${installerJar#devstudio-}
+version_ds_INST=${version_ds_INST%-installer*}
+echo "Devstudio installer version: ${version_ds_INST}"
+
+# run all the .smoke jobs
+# cd ~/tmp # ~
+# rm -f index.html
+# wget https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/devstudio_integration_tests/
+# jobs=$(cat index.html  | egrep "\.smoke/build" | sed -e "s#.\+href=\"job/\(.\+\.smoke\)/build\([^\"]\+\)\".\+#\1#g") ##
+# rm -f index.html
+
+# or, just run the one buildflow job
+jobs=devstudio.buildflow.it.smoke
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+for j in ${jobs}; do
+  # ${JP} -s ${ccijenkins} -j ${j} -t enable
+  ${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -d "DEVSTUDIO_VERSION=${version_ds_INST}"
+  sleep 15s
+  ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+  # ${JP} -s ${ccijenkins} -j ${j} -t disable
+done
+
+----
 
 
 == Sign RPM

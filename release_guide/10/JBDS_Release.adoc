@@ -229,9 +229,9 @@ See JBT_Release.adoc
 
 Provide a PR to add the latest JBDS milestones to this listing:
 
-https://github.com/jbosstools/jbosstools-website/blob/master/_config/products.yml_
+https://github.com/jbosstools/jbosstools-website/blob/master/_config/products.yml
 
-Examples:
+For non-Final/GA releases, only JBT should be added. Examples:
 
 * https://github.com/jbosstools/jbosstools-website/pull/622 (JBT 4.4.1 / JBDS 10.1)
 * https://github.com/jbosstools/jbosstools-website/pull/651 (JBT 4.4.2.AM3)
@@ -302,7 +302,7 @@ popd
 Commit changes and submit PR, eg., https://github.com/jbosstools/jbosstools-website/pull/651 or https://github.com/jbosstools/jbosstools-website/pull/664
 
 
-== Tag Git
+== Tag JBDS Git
 
 Once cloned to disk, this script will create the tags if run from the location with your git clones. If tags exist, no new tag will be created.
 
@@ -316,7 +316,7 @@ git clone https://github.com/jbdevstudio/jbdevstudio-website
 git clone https://github.com/jbdevstudio/jbdevstudio-artwork
 git clone https://github.com/jbdevstudio/jbdevstudio-devdoc
 
-version_ds=10.3.0.AM1
+version_ds=10.3.0.AM2
 if [[ ${version_ds} == *".GA" ]]; then
   jbt_branch=jbosstools-4.4.3.x
 else
@@ -388,12 +388,12 @@ Using the script below, you can trigger the job remotely.
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-blogURL=/blog/am1-for-neon.2.html
-pullrequestNum=664
+blogURL=/blog/am2-for-neon.2.html
+pullrequestNum=674
 eclipseVersionSuffix=".2" # for Eclipse 4.6.2 Neon.2
 
-versionWithRespin_jbt=4.4.3.AM1
-versionWithRespin_ds=10.3.0.AM1
+versionWithRespin_jbt=4.4.3.AM2
+versionWithRespin_ds=10.3.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # \) # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 
@@ -417,8 +417,8 @@ done
 [source,bash]
 ----
 
-version_jbt=4.4.3.AM1
-version_ds=10.3.0.AM1
+version_jbt=4.4.3.AM2
+version_ds=10.3.0.AM2
 cd ~/truu # ~
 cd jbdevstudio-devdoc/release_guide/
 git commit -m "update release guide for ${version_jbt} and ${version_ds}" .

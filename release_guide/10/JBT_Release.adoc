@@ -4,6 +4,21 @@ This document describe how to publish a valid JBoss Tools build to production af
 
 With distractions (email, IRC), this process took 90 mins for the Beta release.
 
+== Clone jbosstools-build-ci repo
+
+[source,bash]
+----
+
+mkdir -p /tmp/jbt.github
+cd /tmp/jbt.github
+if [[ ! -d jbosstools-build-ci ]]; then git clone git@github.com:jbosstools/jbosstools-build-ci.git; fi
+cd jbosstools-build-ci
+git checkout jbosstools-4.4.x
+chmod +x -R */*.sh */*/*.sh
+
+----
+
+
 == Verify that all JIRAs assigned to the current milestone are resolved
 
 Launch the config pages for JBIDE and JBDS and using the gear icons, release the milestone version in JIRA.
@@ -14,13 +29,31 @@ Send an email to jbosstools-dev@ and jboss-devstudio-list@  reminding people to 
 
 Sample email: http://lists.jboss.org/pipermail/jbosstools-dev/2014-April/008799.html
 
-Should NOT proceed with the release if there are any unresolved issues. Only JIRAs allowed before release should be bookeping JIRAs or issues that cannot be closed until the push is complete. But in practice, this happens every time.
+Should NOT proceed with the release if there are many unresolved issues. Only JIRAs allowed before release should be bookkeping or release process JIRAs.
 
 [source,bash]
 ----
+
 google-chrome && google-chrome https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
   https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
+
 ----
+
+Note that in practice, there are almost ALWAYS unresolved issues at release time.
+
+So, instead of closing out the release, you can kick this job to send reminder emails to the team:
+
+[source,bash]
+----
+
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+for j in jbosstools-jiralint-weekly; do
+  ${JP} -s ${ccijenkins} -j ${j} -t build
+done
+
+----
+
 
 == Summary
 
@@ -50,20 +83,6 @@ Before running any of the jobs or scripts below, make sure to set the correct ve
 * check Integration Stack variables like earlyaccess_IS, version_jbt_IS, version_ds_IS are correct. Double-check best values with Paul Leacu (pleacu).
 
 ====
-
-== Clone jbosstools-build-ci repo
-
-[source,bash]
-----
-
-mkdir -p /tmp/jbt.github
-cd /tmp/jbt.github
-if [[ ! -d jbosstools-build-ci ]]; then git clone git@github.com:jbosstools/jbosstools-build-ci.git; fi
-cd jbosstools-build-ci
-git checkout jbosstools-4.4.x
-chmod +x -R */*.sh */*/*.sh
-
-----
 
 == Enable dev-stable jobs
 

@@ -100,8 +100,8 @@ https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-d
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.4.3.AM1
-versionWithRespin_ds=10.3.0.AM1
+versionWithRespin_jbt=4.4.3.AM2
+versionWithRespin_ds=10.3.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 if [[ ${version_jbt} == *".Final" ]]; then
@@ -112,7 +112,7 @@ else
   stream_ds=master
 fi
 TARGET_PLATFORM_VERSION_MAX=4.62.0.AM1-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.62.0.AM1-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.62.0.AM2-SNAPSHOT
 
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites; do
@@ -196,9 +196,9 @@ But if you need a login for Jenkins, please contact nboldt@redhat.com or jsightl
 # Jenkins login for the Wonka server
 export userpass=WONKAUSER:PASSWORD
 
-versionWithRespin_jbt=4.4.3.AM1
-versionWithRespin_ds=10.3.0.AM1
-versionWithRespin_ds_PREV=10.2.0.GA
+versionWithRespin_jbt=4.4.3.AM2
+versionWithRespin_ds=10.3.0.AM2
+versionWithRespin_ds_PREV=10.3.0.AM1
 earlyaccess_IS=earlyaccess/
 version_jbt_IS=4.4.0.Final
 version_ds_IS=10.0.0.GA
@@ -225,6 +225,8 @@ Webtools site is expected to be found in +http://download.jboss.org/tools/update
 create a symlink from +/updates/webtools/neon+ to http://download.jboss.org/jbosstools/neon/stable/updates/ (or /development/updates/ if we're
 before first Final release).
 
+[source,bash]
+----
 # verify site contents are shown
 google-chrome && google-chrome http://download.jboss.org/jbosstools/updates/webtools/neon http://download.jboss.org/jbosstools/updates/webtools/
 
@@ -372,13 +374,13 @@ But if you need a login for Jenkins, please contact nboldt@redhat.com or jsightl
 # Jenkins login for the Wonka server
 export userpass=WONKAUSER:PASSWORD
 
-versionWithRespin_jbt=4.4.3.AM1
-versionWithRespin_ds=10.3.0.AM1
+versionWithRespin_jbt=4.4.3.AM2
+versionWithRespin_ds=10.3.0.AM2
 
-versionWithRespin_jbt_PREV=4.4.2.Final
-versionWithRespin_jbt_NEXT=4.4.3.AM1
-versionWithRespin_ds_PREV=10.2.0.GA
-versionWithRespin_ds_NEXT=10.3.0.AM1
+versionWithRespin_jbt_PREV=4.4.3.AM1
+versionWithRespin_jbt_NEXT=4.4.3.Final
+versionWithRespin_ds_PREV=10.3.0.AM1
+versionWithRespin_ds_NEXT=10.3.0.GA
 
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
@@ -401,7 +403,7 @@ done
 
 == Update Eclipse Marketplace (add/remove features)
 
-WARNING: Only applies to Beta and better versions.
+WARNING: Only applies to the milestone release before an x.y.0.Final and all .Final releases. (For example, do for x.y.0.AM1 but not x.y.z.AM1.)
 
 === If node does not yet exist
 
@@ -476,9 +478,10 @@ Before notifying team of release, must check for obvious problems. Any failure t
 1. Get a recent Eclipse (compatible with the target version of JBT)
 2. Install Abridged category from http://download.jboss.org/jbosstools/neon/development/updates/ and/or http://download.jboss.org/jbosstools/neon/stable/updates/
 3. Restart. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
-4. Check log, start an example project, check log again
+4. Check log for errors, start an example project or run a quickstart, check log again
+5. Check to make sure "Windows > Prefs > Install/Update > Available Software Sites" shows you what you expect to see
 
-== Tag Git
+== Tag JBT Git
 
 === Create tags for build-related repositories
 
@@ -500,7 +503,7 @@ git clone https://github.com/jbosstools/jbosstools-versionwatch
 # maven-plugins does not get released/branched the same as other projects, but tag it anyway
 # download.jboss.org tag might not be valid as tweaks to ide-config.properties happen frequently
 
-version_jbt=4.4.3.AM1
+version_jbt=4.4.3.AM2
 if [[ ${version_jbt} == *".Final" ]]; then
   jbt_branch=jbosstools-4.4.3.x
 else
@@ -521,6 +524,10 @@ for d in build build-ci build-sites devdoc discovery download.jboss.org maven-pl
 done
 
 ----
+
+== Tag JBDS Git
+
+See JBDS_Release.adoc
 
 
 == Notify Team Lead(s)

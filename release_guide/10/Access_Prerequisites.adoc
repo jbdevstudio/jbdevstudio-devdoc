@@ -48,3 +48,12 @@ There are at least three mailing lists to which you should be subscribed.
 
 * public mailing list subscription to jbosstools-dev@lists.jboss.org from https://lists.jboss.org/mailman/listinfo/jbosstools-dev
 * private mailing list subscription to jboss-devstudio-list@redhat.com and devtools-program@redhat.com from https://www.redhat.com/mailman/listinfo
+
+== Eclipse.org
+
+To be able to publish a new version of JBoss Tools or Devstudio to the Eclipse Marketplace, you'll need to log in as the jbosstools user (or have your own @eclipse.org user added to the Marketplace listings' ACLs.)
+
+IMPORTANT: Ask Nick Boldt or Jeff Maury for access to these pages.
+
+* https://marketplace.eclipse.org/content/jboss-tools/edit
+* https://marketplace.eclipse.org/content/red-hat-jboss-developer-studio/edit

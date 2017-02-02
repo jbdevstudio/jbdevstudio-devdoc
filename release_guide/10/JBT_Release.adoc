@@ -558,6 +558,9 @@ See JBDS_Release.adoc
 
 Once the current milestone is done, the BUILD_ALIAS in parent pom should be bumped to a new value.
 
+[source,bash]
+----
+
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru # ~
 pushd jbosstools-build/parent
@@ -575,6 +578,8 @@ git push origin HEAD:master
 # rebuild parent pom in master branch
 # https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-build.parent_master/build
 jp-ppm
+
+----
 
 
 == Disable dev-stable jobs

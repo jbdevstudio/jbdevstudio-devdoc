@@ -291,6 +291,10 @@ Using the script below, you can trigger the job remotely.
 
 But if you need a login for Jenkins, please contact nboldt@redhat.com or jsightle@redhat.com.
 
+NOTE: This job is migrating to CCI jenkins. See https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-staging-04-update-merge-composites-html/
+
+TODO: migrate this job and its siblings, jbosstools-releng-push-to-*-04-update-*, to CCI.
+
 [source,bash]
 ----
 

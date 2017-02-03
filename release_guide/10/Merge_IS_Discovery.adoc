@@ -2,7 +2,7 @@
 
 This document is now incorporated into this job:
 
-http://wonka.mw.lab.eng.bos.redhat.com/jenkins/view/devstudio/job/jbosstools-releng-push-to-staging-04-update-merge-composites-html_master/
+http://wonka.mw.lab.eng.bos.redhat.com/jenkins/view/devstudio/job/jbosstools-releng-push-to-staging-04-update-merge-composites-html/
 
 To trigger the above job remotely, see JBT_Staging_for_QE.adoc - "Update /staging/updates/ sites and merge in Integration Stack content"
 

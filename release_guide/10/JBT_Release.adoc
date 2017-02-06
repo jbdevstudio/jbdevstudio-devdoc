@@ -46,6 +46,9 @@ So, instead of closing out the release, you can kick this job to send reminder e
 [source,bash]
 ----
 
+# kerberos login for the Jenkins server
+export userpass=KERBUSER:PASSWORD
+
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-jiralint-weekly; do
@@ -515,6 +518,24 @@ See Branching_and_Tagging.adoc
 See JBDS_Release.adoc
 
 
+== Disable dev-stable jobs
+
+You will need to disable the jobs once the bits are released, so that they won't run accidentally.
+
+[source,bash]
+----
+
+# kerberos login for the Jenkins server
+export userpass=KERBUSER:PASSWORD
+
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+for j in jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites \
+  jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites; do
+  ${JP} -j ${j} -t disable
+done
+
+----
+
 == Bump parent pom to newer BUILD_ALIAS value
 
 Once the current milestone is done, the BUILD_ALIAS in parent pom should be bumped to a new value.
@@ -542,21 +563,12 @@ jp-ppm
 
 ----
 
+== Prepare for next milestone
 
-== Disable dev-stable jobs
+Depending on what's coming next, you will want to run one of these two jobs:
 
-You will need to disable the jobs once the bits are released, so that they won't run accidentally.
+* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-staging-00-parent-pom-update-and-branch-task-jiras/
+* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-staging-00-parent-pom-update-task-jiras/
 
-[source,bash]
-----
+Open the appropriate job, edit its parameters, and kick the job.
 
-# kerberos login for the Jenkins server
-export userpass=KERBUSER:PASSWORD
-
-JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for j in jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites \
-  jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites; do
-  ${JP} -j ${j} -t disable
-done
-
-----

@@ -135,9 +135,15 @@ else
   stream_ds=master
 fi
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for j in jbosstools-build.parent_${stream_jbt} jbosstoolstargetplatform-matrix jbosstools-buildflow-force-publish_${stream_jbt} jbosstools-buildflow_${stream_jbt} jbosstools-composite-install_${stream_jbt} jbosstools-browsersim-standalone_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstoolstargetplatform-central jbosstools-build-sites.aggregate.child-sites_${stream_jbt} devstudio.product_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} jbosstools-install-grinder.install-tests.matrix_${stream_jbt}; do
+for j in jbosstools-buildflow-force-publish_${stream_jbt} jbosstools-buildflow_${stream_jbt} jbosstools-composite-install_${stream_jbt} jbosstools-browsersim-standalone_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstoolstargetplatform-central jbosstools-build-sites.aggregate.child-sites_${stream_jbt} devstudio.product_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} jbosstools-install-grinder.install-tests.matrix_${stream_jbt}; do
   ${JP} -j ${j} -t disable
   ${JP} -j ${j} -t lastBuild/toggleLogKeep
+done
+echo ""
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+for j in jbosstools-build.parent_${stream_jbt} jbosstoolstargetplatform-matrix; do
+  ${JP} -s ${ccijenkins} -j ${j} -t disable
+  ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
 done
 echo ""
 
@@ -399,8 +405,14 @@ else
   stream_ds=master
 fi
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for j in jbosstools-build.parent_${stream_jbt} jbosstoolstargetplatform-matrix jbosstools-buildflow_${stream_jbt} jbosstools-composite-install_${stream_jbt} jbosstools-browsersim-standalone_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstoolstargetplatform-central jbosstools-build-sites.aggregate.child-sites_${stream_jbt} devstudio.product_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} jbosstools-install-grinder.install-tests.matrix_${stream_jbt}; do
+for j in jbosstools-buildflow_${stream_jbt} jbosstools-composite-install_${stream_jbt} jbosstools-browsersim-standalone_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstoolstargetplatform-central jbosstools-build-sites.aggregate.child-sites_${stream_jbt} devstudio.product_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} jbosstools-install-grinder.install-tests.matrix_${stream_jbt}; do
   ${JP} -j ${j} -t enable
+done
+echo ""
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+for j in jbosstools-build.parent_${stream_jbt} jbosstoolstargetplatform-matrix; do
+  ${JP} -s ${ccijenkins} -j ${j} -t disable
+  ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
 done
 echo ""
 for j in jbosstools-discovery_${stream_jbt}; do

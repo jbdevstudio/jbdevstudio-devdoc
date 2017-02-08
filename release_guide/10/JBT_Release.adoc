@@ -558,7 +558,7 @@ ci "bump parent pom to BUILD_ALIAS = ${BUILD_ALIAS_NEXT}" pom.xml
 git push origin HEAD:master
 
 # rebuild parent pom in master branch
-# https://jenkins.mw.lab.eng.bos.redhat.com/hudson/view/DevStudio/view/DevStudio_Master/job/jbosstools-build.parent_master/build
+# https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/devstudio_master/job/jbosstools-build.parent_master/build
 jp-ppm
 
 ----

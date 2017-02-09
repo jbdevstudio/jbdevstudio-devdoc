@@ -1,8 +1,9 @@
 == Deprecated
 
-This document is now incorporated into this job:
+This document is now incorporated into these jobs:
 
-http://wonka.mw.lab.eng.bos.redhat.com/jenkins/view/devstudio/job/jbosstools-releng-push-to-staging-04-update-merge-composites-html/
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-staging-04-update-merge-composites-html/
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-04-update-merge-composites-html/
 
 To trigger the above job remotely, see JBT_Staging_for_QE.adoc - "Update /staging/updates/ sites and merge in Integration Stack content"
 

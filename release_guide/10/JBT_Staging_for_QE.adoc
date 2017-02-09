@@ -291,21 +291,17 @@ https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-s
 
 Here's a job that verifies everything is updated & merged:
 
-http://wonka.mw.lab.eng.bos.redhat.com/jenkins/view/devstudio/job/jbosstools-releng-push-to-staging-04-update-merge-composites-html/
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-staging-04-update-merge-composites-html/
 
 Using the script below, you can trigger the job remotely.
 
 But if you need a login for Jenkins, please contact nboldt@redhat.com or jsightle@redhat.com.
 
-NOTE: This job is migrating to CCI jenkins. See https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-staging-04-update-merge-composites-html/
-
-TODO: migrate this job and its siblings, jbosstools-releng-push-to-*-04-update-*, to CCI.
-
 [source,bash]
 ----
 
-# Jenkins login for the Wonka server
-export userpass=WONKAUSER:PASSWORD
+# kerberos login for the Jenkins server
+export userpass=KERBUSER:PASSWORD
 
 versionWithRespin_jbt=4.4.3.AM2
 versionWithRespin_ds=10.3.0.AM2
@@ -313,16 +309,16 @@ versionWithRespin_ds_PREV=10.3.0.AM1
 earlyaccess_IS=earlyaccess/
 version_jbt_IS=4.4.0.Final
 version_ds_IS=10.0.0.GA
-wonkajenkins=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-04-update-merge-composites-html; do
-  ${JP} -s ${wonkajenkins} -j ${j} -t enable
-  ${JP} -s ${wonkajenkins} -j ${j} -t buildWithParameters -d "token=RELENG&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
+  ${JP} -s ${ccijenkins} -j ${j} -t enable
+  ${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -d "token=RELENG&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
 versionWithRespin_ds_PREV=${versionWithRespin_ds_PREV}&earlyaccess_IS=${earlyaccess_IS}&version_jbt_IS=${version_jbt_IS}&\
 version_ds_IS=${version_ds_IS}"
   sleep 15s
-  ${JP} -s ${wonkajenkins} -j ${j} -t disable
-  ${JP} -s ${wonkajenkins} -j ${j} -t lastBuild/toggleLogKeep
+  ${JP} -s ${ccijenkins} -j ${j} -t disable
+  ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
 done
 
 ----
@@ -332,7 +328,7 @@ done
 
 Here's a job that verifies everything is updated:
 
-http://wonka.mw.lab.eng.bos.redhat.com/jenkins/view/devstudio/job/jbosstools-releng-push-to-staging-04-update-ide-config.properties/
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-staging-04-update-ide-config.properties/
 
 Using the script below, you can trigger the job remotely.
 
@@ -341,8 +337,8 @@ But if you need a login for Jenkins, please contact nboldt@redhat.com or jsightl
 [source,bash]
 ----
 
-# Jenkins login for the Wonka server
-export userpass=WONKAUSER:PASSWORD
+# kerberos login for the Jenkins server
+export userpass=KERBUSER:PASSWORD
 
 versionWithRespin_jbt=4.4.3.AM2
 versionWithRespin_ds=10.3.0.AM2
@@ -351,16 +347,16 @@ versionWithRespin_jbt_NEXT=4.4.3.Final
 versionWithRespin_ds_PREV=10.3.0.AM1
 versionWithRespin_ds_NEXT=10.3.0.GA
 buildType="staging"
-wonkajenkins=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-04-update-ide-config.properties; do
-  ${JP} -s ${wonkajenkins} -j ${j} -t enable
-  ${JP} -s ${wonkajenkins} -j ${j} -t buildWithParameters -d "token=RELENG&buildType=${buildType}&\
+  ${JP} -s ${ccijenkins} -j ${j} -t enable
+  ${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -d "token=RELENG&buildType=${buildType}&\
 versionWithRespin_jbt_PREV=${versionWithRespin_jbt_PREV}&versionWithRespin_jbt_NEXT=${versionWithRespin_jbt_NEXT}&versionWithRespin_jbt=${versionWithRespin_jbt}&\
 versionWithRespin_ds_PREV=${versionWithRespin_ds_PREV}&versionWithRespin_ds_NEXT=${versionWithRespin_ds_NEXT}&versionWithRespin_ds=${versionWithRespin_ds}"
   sleep 15s
-  ${JP} -s ${wonkajenkins} -j ${j} -t disable
-  ${JP} -s ${wonkajenkins} -j ${j} -t lastBuild/toggleLogKeep
+  ${JP} -s ${ccijenkins} -j ${j} -t disable
+  ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
 done
 
 ----

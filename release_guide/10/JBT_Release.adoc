@@ -87,25 +87,6 @@ Before running any of the jobs or scripts below, make sure to set the correct ve
 
 ====
 
-== Enable dev-stable jobs
-
-You will need to enable the jobs to perform the copy from staging to development (and/or stable).
-
-[source,bash]
-----
-
-# kerberos login for the Jenkins server
-export userpass=KERBUSER:PASSWORD
-
-JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for j in jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites \
-  jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites; do
-  ${JP} -j ${j} -t enable
-done
-
-----
-
-
 == Copy sites
 
 These steps happens on filemgmt.jboss.org, in the jbosstools download area.
@@ -136,16 +117,25 @@ fi
 TARGET_PLATFORM_VERSION_MAX=4.62.0.AM1-SNAPSHOT
 TARGET_PLATFORM_CENTRAL_MAX=4.62.0.AM2-SNAPSHOT
 
+bosmwjenkins=https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites; do
-  ${JP} -j ${j} -t enable
+  prevJob=$(${JP} -s ${bosmwjenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${bosmwjenkins}/${j} enable"
   sleep 3s
-  ${JP} -j ${j} -t buildWithParameters -d "stream_jbt=${stream_jbt}&stream_ds=${stream_ds}&\
+
+  data="stream_jbt=${stream_jbt}&stream_ds=${stream_ds}&\
 versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
 TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&TARGET_PLATFORM_CENTRAL_MAX=${TARGET_PLATFORM_CENTRAL_MAX}"
-  sleep 10s
-  ${JP} -j ${j} -t disable
-  ${JP} -j ${j} -t lastBuild/toggleLogKeep
+  nextJob=$(${JP} -s ${bosmwjenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${bosmwjenkins}/${j} buildWithParameters ${data}"
+  sleep 15s
+
+  if [[ "${prevJob}" == "${nextJob}" ]]; then
+    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
+    echo "[WARN] ${bosmwjenkins}/${j}"
+  else
+    ${JP} -s ${bosmwjenkins} -j ${j} -t disable
+    ${JP} -s ${bosmwjenkins} -j ${j} -t lastBuild/toggleLogKeep
+  fi
 done
 
 ----
@@ -188,15 +178,23 @@ But you can run it again if you'd like:
 ----
 
 # buildType=development will also check stable URLs if we're pushing out a GA/Final release
+bosmwjenkins=https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites; do
-  ${JP} -j ${j} -t enable
+  prevJob=$(${JP} -s ${bosmwjenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${bosmwjenkins}/${j} enable"
   sleep 3s
-  ${JP} -j ${j} -t buildWithParameters -d "versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
+  data="versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
 skipdiscovery=false&onlydiscovery=false&buildType=development"
-  sleep 10s
-  ${JP} -j ${j} -t disable
-  ${JP} -j ${j} -t lastBuild/toggleLogKeep
+  nextJob=$(${JP} -s ${bosmwjenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${bosmwjenkins}/${j} buildWithParameters ${data}"
+  sleep 15s
+
+  if [[ "${prevJob}" == "${nextJob}" ]]; then
+    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
+    echo "[WARN] ${bosmwjenkins}/${j}"
+  else
+    ${JP} -s ${bosmwjenkins} -j ${j} -t disable
+    ${JP} -s ${bosmwjenkins} -j ${j} -t lastBuild/toggleLogKeep
+  fi
 done
 
 ----
@@ -207,10 +205,6 @@ done
 Here's a job that verifies everything is updated:
 
 https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-04-update-merge-composites-html/
-
-Using the script below, you can trigger the job remotely.
-
-But if you need a login for Jenkins, please contact nboldt@redhat.com or jsightle@redhat.com.
 
 [source,bash]
 ----
@@ -227,13 +221,20 @@ version_ds_IS=10.0.0.GA
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-04-update-merge-composites-html; do
-  ${JP} -s ${ccijenkins} -j ${j} -t enable
-  sleep 3
-  ${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -d "token=RELENG&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  sleep 3s
+  data="token=RELENG&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
 versionWithRespin_ds_PREV=${versionWithRespin_ds_PREV}&earlyaccess_IS=${earlyaccess_IS}&version_jbt_IS=${version_jbt_IS}&version_ds_IS=${version_ds_IS}"
+  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
   sleep 15s
-  ${JP} -s ${ccijenkins} -j ${j} -t disable
-  ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+
+  if [[ "${prevJob}" == "${nextJob}" ]]; then
+    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
+    echo "[WARN] ${ccijenkins}/${j}"
+  else
+    ${JP} -s ${ccijenkins} -j ${j} -t disable
+    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+  fi
 done
 
 ----
@@ -265,8 +266,6 @@ If this is the first milestone release (ie if you had to create the 'updates/web
 
 If this new release includes a new Target Platform, you need to release the latest target platform. If not, there's nothing to do here.
 
-=== Final/GA releases
-
 For Final or GA releases, the target platform folders should be moved to /static/ and composited back.
 
 Thus for example,
@@ -281,101 +280,36 @@ http://download.jboss.org/jbosstools/static/targetplatforms/jbdevstudiotarget/4.
 
 Then you can create composites in the old locations pointing to the new one, like this:
 
-https://github.com/jbosstools/jbosstools-download.jboss.org/commit/d5306ce9408144ef681627ad8f5bd1e6c491bcf4
+Here's a job that moves the target platform, then creates the symlinks to the /static/ location from the non-static ones.
+
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-05-release-target-platforms/
+
+IMPORTANT: This job also verifies that -SNAPSHOT content is properly populated on the servers, so it should be run for .Final and -SNAPSHOT target platforms alike.
 
 [source,bash]
 ----
 
-# for Final TPs only!
+# kerberos login for the Jenkins server
+export userpass=KERBUSER:PASSWORD
 
-TARGET_PLATFORM_VERSION_MAX=4.62.0.AM1-SNAPSHOT
-now=`date +%s000`
-TOOLS=tools@10.5.105.197:/downloads_htdocs/tools
-JBDS=devstudio@10.5.105.197:/www_htdocs/devstudio
+TARGET_PLATFORM_VERSION_MAX=4.61.0.Final
 
-# jbosstools
-if [[ ${TARGET_PLATFORM_VERSION_MAX} == *"Final" ]]; then
-  cd ~/tru # or where you have jbosstools-download.jboss.org checked out ~
-  pushd jbosstools-download.jboss.org/jbosstools/targetplatforms/
-    git fetch origin master
-    git checkout FETCH_HEAD
-
-    for f in jbosstools; do
-      tppath=${f}target/${TARGET_PLATFORM_VERSION_MAX}
-      # move actual TP to /static/ folder
-      echo "rename targetplatforms/${tppath} static/targetplatforms/${tppath}" | sftp ${TOOLS}/
-      # get contents from remote
-      rsync -Pzrlt --rsh=ssh --protocol=28 $TOOLS/static/targetplatforms/${tppath}/composite*.xml ${tppath}/
-      # change pointer to include /static/
-      for d in ${tppath}/composite*.xml; do
-        sed -i -e "s#[\'\"]REPO/[\'\"]#'http://download.jboss.org/jbosstools/static/targetplatforms/${tppath}/REPO/'#g" $d ##
-      done
-      echo "version = 1
-  metadata.repository.factory.order = compositeContent.xml,\!
-  artifact.repository.factory.order = compositeArtifacts.xml,\!" > ${tppath}/p2.index
-      rsync -Przlt ${tppath}/composite*.xml ${tppath}/p2.index ${tppath}/REPO/
-      # create composite pointer
-      rsync -Pzrlt --rsh=ssh --protocol=28 ${tppath}/* $TOOLS/targetplatforms/${tppath}/
-    done
-    # commit changes to github
-    git add ${f}target
-    git commit -m "move target platforms into /static/ and update composite pointers to latest => ${TARGET_PLATFORM_VERSION_MAX}" .
-    git push origin HEAD:master
-  popd
-
-  google-chrome && google-chrome \
-  http://download.jboss.org/jbosstools/static/targetplatforms/${tppath}/REPO/ \
-  http://download.jboss.org/jbosstools/static/targetplatforms/${tppath}/compositeContent.xml \
-
-  # verify files are correct
-  google-chrome && google-chrome \
-  http://download.jboss.org/jbosstools/targetplatforms/${tppath}/REPO/compositeContent.xml \
-  http://download.jboss.org/jbosstools/targetplatforms/${tppath}/REPO/p2.index \
-  http://download.jboss.org/jbosstools/targetplatforms/${tppath}/compositeContent.xml \
-  http://download.jboss.org/jbosstools/targetplatforms/${tppath}/p2.index
-fi
-
-# devstudio
-if [[ ${TARGET_PLATFORM_VERSION_MAX} == *"Final" ]]; then
-  cd ~/truu # or where you have jbdevstudio-website checked out ~
-  pushd jbdevstudio-website/content/targetplatforms/
-    git fetch origin master
-    git checkout FETCH_HEAD
-
-    for f in jbdevstudio; do
-      tppath=${f}target/${TARGET_PLATFORM_VERSION_MAX}
-      # move actual TP to /static/ folder
-      echo "rename targetplatforms/${tppath} static/targetplatforms/${tppath}" | sftp ${JBDS}/
-      # get contents from remote
-      rsync -Pzrlt --rsh=ssh --protocol=28 $JBDS/static/targetplatforms/${tppath}/composite*.xml ${tppath}/
-      # change pointer to include /static/
-      for d in ${tppath}/composite*.xml; do
-        sed -i -e "s#[\'\"]REPO/[\'\"]#'https://devstudio.redhat.com/static/targetplatforms/${tppath}/REPO/'#g" $d ##
-      done
-      echo "version = 1
-  metadata.repository.factory.order = compositeContent.xml,\!
-  artifact.repository.factory.order = compositeArtifacts.xml,\!" > ${tppath}/p2.index
-      rsync -Przlt ${tppath}/composite*.xml ${tppath}/p2.index ${tppath}/REPO/
-      # create composite pointer
-      rsync -Pzrlt --rsh=ssh --protocol=28 ${tppath}/* $JBDS/targetplatforms/${tppath}/
-    done
-    # commit changes to github
-    git add ${f}target
-    git commit -m "move target platforms into /static/ and update composite pointers to latest => ${TARGET_PLATFORM_VERSION_MAX}" .
-    git push origin HEAD:master
-  popd
-
-  google-chrome && google-chrome \
-  https://devstudio.redhat.com/static/targetplatforms/${tppath}/REPO/ \
-  https://devstudio.redhat.com/static/targetplatforms/${tppath}/compositeContent.xml \
-
-  # verify files are correct
-  google-chrome && google-chrome \
-  https://devstudio.redhat.com/targetplatforms/${tppath}/REPO/compositeContent.xml \
-  https://devstudio.redhat.com/targetplatforms/${tppath}/REPO/p2.index \
-  https://devstudio.redhat.com/targetplatforms/${tppath}/compositeContent.xml \
-  https://devstudio.redhat.com/targetplatforms/${tppath}/p2.index
-fi
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+for j in jbosstools-releng-push-to-dev-stable-05-release-target-platforms; do
+  prevJob=$(prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable" -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  sleep 3s
+  data="token=RELENG&TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}"
+  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+  sleep 15s
+  if [[ "${prevJob}" == "${nextJob}" ]]; then
+    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
+    echo "[WARN] ${ccijenkins}/${j}"
+  else
+    ${JP} -s ${ccijenkins} -j ${j} -t disable
+    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+  fi
+done
 
 ----
 
@@ -385,10 +319,6 @@ fi
 Here's a job that verifies everything is updated:
 
 https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-04-update-ide-config.properties/
-
-Using the script below, you can trigger the job remotely.
-
-But if you need a login for Jenkins, please contact nboldt@redhat.com or jsightle@redhat.com.
 
 [source,bash]
 ----
@@ -410,14 +340,22 @@ buildType="development"; if [[ ${version_jbt} == *".Final" ]]; then buildType="s
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-04-update-ide-config.properties; do
-  ${JP} -s ${ccijenkins} -j ${j} -t enable
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
   sleep 3s
-  ${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -d "token=RELENG&buildType=${buildType}&\
+
+  data="token=RELENG&buildType=${buildType}&\
 versionWithRespin_jbt_PREV=${versionWithRespin_jbt_PREV}&versionWithRespin_jbt_NEXT=${versionWithRespin_jbt_NEXT}&versionWithRespin_jbt=${versionWithRespin_jbt}&\
 versionWithRespin_ds_PREV=${versionWithRespin_ds_PREV}&versionWithRespin_ds_NEXT=${versionWithRespin_ds_NEXT}&versionWithRespin_ds=${versionWithRespin_ds}"
+  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
   sleep 15s
-  ${JP} -s ${ccijenkins} -j ${j} -t disable
-  ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+
+  if [[ "${prevJob}" == "${nextJob}" ]]; then
+    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
+    echo "[WARN] ${ccijenkins}/${j}"
+  else
+    ${JP} -s ${ccijenkins} -j ${j} -t disable
+    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+  fi
 done
 
 ----
@@ -528,10 +466,11 @@ You will need to disable the jobs once the bits are released, so that they won't
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
+bosmwjenkins=https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites \
   jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites; do
-  ${JP} -j ${j} -t disable
+  ${JP} -s ${bosmwjenkins} -j ${j} -t disable
 done
 
 ----
@@ -559,7 +498,13 @@ git push origin HEAD:master
 
 # rebuild parent pom in master branch
 # https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/devstudio_master/job/jbosstools-build.parent_master/build
-jp-ppm
+
+# kerberos login for the Jenkins server
+export userpass=KERBUSER:PASSWORD
+
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+${JP} -s ${ccijenkins} -j jbosstools-build.parent_master -t build
 
 ----
 

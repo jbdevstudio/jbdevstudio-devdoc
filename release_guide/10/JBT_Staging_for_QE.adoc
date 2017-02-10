@@ -58,13 +58,10 @@ if [[ ${version_jbt} == *".Final" ]]; then
 else
   stream_jbt=master
 fi
+bosmwjenkins=https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for j in jbosstools-releng-push-to-staging-03-verify-builds-update-sites \
-  jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites \
-  jbosstools-releng-push-to-staging-01-check-versions-branches-root-poms \
-  jbosstools-releng-push-to-staging-buildflow_${stream_jbt}; do
-  ${JP} -j ${j} -t enable
-done
+# TODO: enable this buildflow job -- currently not useful
+# ${JP} -s ${bosmwjenkins} -j jbosstools-releng-push-to-staging-buildflow_${stream_jbt} -t enable
 
 ----
 
@@ -91,10 +88,23 @@ else
   github_branch=master
 fi
 
+bosmwjenkins=https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-01-check-versions-branches-root-poms; do
-  ${JP} -j ${j} -t buildWithParameters -d \
-    "stream_jbt=${stream_jbt}&github_branch=${github_branch}&version_parent=${version_parent}&version_jbt=${version_jbt}&version_ds=${version_ds}"
+  prevJob=$(${JP} -s ${bosmwjenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${bosmwjenkins}/${j} enable"
+  sleep 3s
+
+  data="stream_jbt=${stream_jbt}&github_branch=${github_branch}&version_parent=${version_parent}&version_jbt=${version_jbt}&version_ds=${version_ds}"
+  nextJob=$(${JP} -s ${bosmwjenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${bosmwjenkins}/${j} buildWithParameters ${data}"
+  sleep 15s
+
+  if [[ "${prevJob}" == "${nextJob}" ]]; then
+    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
+    echo "[WARN] ${bosmwjenkins}/${j}"
+  else
+    ${JP} -s ${bosmwjenkins} -j ${j} -t disable
+    ${JP} -s ${bosmwjenkins} -j ${j} -t lastBuild/toggleLogKeep
+  fi
 done
 
 ----
@@ -134,10 +144,11 @@ else
   stream_jbt=master
   stream_ds=master
 fi
+bosmwjenkins=https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-buildflow-force-publish_${stream_jbt} jbosstools-buildflow_${stream_jbt} jbosstools-composite-install_${stream_jbt} jbosstools-browsersim-standalone_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstoolstargetplatform-central jbosstools-build-sites.aggregate.child-sites_${stream_jbt} devstudio.product_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} jbosstools-install-grinder.install-tests.matrix_${stream_jbt}; do
-  ${JP} -j ${j} -t disable
-  ${JP} -j ${j} -t lastBuild/toggleLogKeep
+  ${JP} -s ${bosmwjenkins} -j ${j} -t disable
+  ${JP} -s ${bosmwjenkins} -j ${j} -t lastBuild/toggleLogKeep
 done
 echo ""
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
@@ -174,15 +185,25 @@ else
 fi
 TARGET_PLATFORM_VERSION_MAX=4.62.0.AM1-SNAPSHOT
 TARGET_PLATFORM_CENTRAL_MAX=4.62.0.AM2-SNAPSHOT
+
+bosmwjenkins=https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-discovery_${stream_jbt}; do
-  ${JP} -j ${j} -t enable
-  ${JP} -j ${j} -t buildWithParameters -d \
-    "buildType=staging&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
+  prevJob=$(${JP} -s ${bosmwjenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${bosmwjenkins}/${j} enable"
+  sleep 3
+
+  data="buildType=staging&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
 TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&TARGET_PLATFORM_CENTRAL_MAX=${TARGET_PLATFORM_CENTRAL_MAX}"
+  nextJob=$(${JP} -s ${bosmwjenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${bosmwjenkins}/${j} buildWithParameters ${data}"
   sleep 15s
-  ${JP} -j ${j} -t disable
-  ${JP} -j ${j} -t lastBuild/toggleLogKeep
+
+  if [[ "${prevJob}" == "${nextJob}" ]]; then
+    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
+    echo "[WARN] ${bosmwjenkins}/${j}"
+  else
+    ${JP} -s ${bosmwjenkins} -j ${j} -t disable
+    ${JP} -s ${bosmwjenkins} -j ${j} -t lastBuild/toggleLogKeep
+  fi
 done
 
 ----
@@ -228,11 +249,26 @@ else
   stream_jbt=master
   stream_ds=master
 fi
+
+bosmwjenkins=https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites; do
-  ${JP} -j ${j} -t buildWithParameters -d "stream_jbt=${stream_jbt}&stream_ds=${stream_ds}&\
+  prevJob=$(${JP} -s ${bosmwjenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${bosmwjenkins}/${j} enable"
+  sleep 3s
+
+  data="stream_jbt=${stream_jbt}&stream_ds=${stream_ds}&\
 versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
 TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&TARGET_PLATFORM_CENTRAL_MAX=${TARGET_PLATFORM_CENTRAL_MAX}"
+  nextJob=$(${JP} -s ${bosmwjenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${bosmwjenkins}/${j} buildWithParameters ${data}"
+  sleep 15s
+
+  if [[ "${prevJob}" == "${nextJob}" ]]; then
+    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
+    echo "[WARN] ${bosmwjenkins}/${j}"
+  else
+    ${JP} -s ${bosmwjenkins} -j ${j} -t disable
+    ${JP} -s ${bosmwjenkins} -j ${j} -t lastBuild/toggleLogKeep
+  fi
 done
 
 ----
@@ -266,10 +302,24 @@ export userpass=KERBUSER:PASSWORD
 versionWithRespin_jbt=4.4.3.AM2
 versionWithRespin_ds=10.3.0.AM2
 
+bosmwjenkins=https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-03-verify-builds-update-sites; do
-  ${JP} -j ${j} -t buildWithParameters -d "versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
+  prevJob=$(${JP} -s ${bosmwjenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${bosmwjenkins}/${j} enable"
+  sleep 3s
+
+  data="versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
 skipdiscovery=false&onlydiscovery=false&buildType=staging"
+  nextJob=$(${JP} -s ${bosmwjenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${bosmwjenkins}/${j} buildWithParameters ${data}"
+  sleep 15s
+
+  if [[ "${prevJob}" == "${nextJob}" ]]; then
+    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
+    echo "[WARN] ${bosmwjenkins}/${j}"
+  else
+    ${JP} -s ${bosmwjenkins} -j ${j} -t disable
+    ${JP} -s ${bosmwjenkins} -j ${j} -t lastBuild/toggleLogKeep
+  fi
 done
 
 ----
@@ -293,10 +343,6 @@ Here's a job that verifies everything is updated & merged:
 
 https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-staging-04-update-merge-composites-html/
 
-Using the script below, you can trigger the job remotely.
-
-But if you need a login for Jenkins, please contact nboldt@redhat.com or jsightle@redhat.com.
-
 [source,bash]
 ----
 
@@ -312,13 +358,21 @@ version_ds_IS=10.0.0.GA
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-04-update-merge-composites-html; do
-  ${JP} -s ${ccijenkins} -j ${j} -t enable
-  ${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -d "token=RELENG&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  data="token=RELENG&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
 versionWithRespin_ds_PREV=${versionWithRespin_ds_PREV}&earlyaccess_IS=${earlyaccess_IS}&version_jbt_IS=${version_jbt_IS}&\
 version_ds_IS=${version_ds_IS}"
+  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+
   sleep 15s
-  ${JP} -s ${ccijenkins} -j ${j} -t disable
-  ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+
+  if [[ "${prevJob}" == "${nextJob}" ]]; then
+    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
+    echo "[WARN] ${ccijenkins}/${j}"
+  else
+    ${JP} -s ${ccijenkins} -j ${j} -t disable
+    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+  fi
 done
 
 ----
@@ -329,10 +383,6 @@ done
 Here's a job that verifies everything is updated:
 
 https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-staging-04-update-ide-config.properties/
-
-Using the script below, you can trigger the job remotely.
-
-But if you need a login for Jenkins, please contact nboldt@redhat.com or jsightle@redhat.com.
 
 [source,bash]
 ----
@@ -350,13 +400,21 @@ buildType="staging"
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-04-update-ide-config.properties; do
-  ${JP} -s ${ccijenkins} -j ${j} -t enable
-  ${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -d "token=RELENG&buildType=${buildType}&\
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+sleep 3s
+  data="token=RELENG&buildType=${buildType}&\
 versionWithRespin_jbt_PREV=${versionWithRespin_jbt_PREV}&versionWithRespin_jbt_NEXT=${versionWithRespin_jbt_NEXT}&versionWithRespin_jbt=${versionWithRespin_jbt}&\
 versionWithRespin_ds_PREV=${versionWithRespin_ds_PREV}&versionWithRespin_ds_NEXT=${versionWithRespin_ds_NEXT}&versionWithRespin_ds=${versionWithRespin_ds}"
+  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
   sleep 15s
-  ${JP} -s ${ccijenkins} -j ${j} -t disable
-  ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+
+  if [[ "${prevJob}" == "${nextJob}" ]]; then
+    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
+    echo "[WARN] ${ccijenkins}/${j}"
+  else
+    ${JP} -s ${ccijenkins} -j ${j} -t disable
+    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+  fi
 done
 
 ----
@@ -400,19 +458,19 @@ else
   stream_jbt=master
   stream_ds=master
 fi
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+bosmwjenkins=https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for j in jbosstools-buildflow_${stream_jbt} jbosstools-composite-install_${stream_jbt} jbosstools-browsersim-standalone_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstoolstargetplatform-central jbosstools-build-sites.aggregate.child-sites_${stream_jbt} devstudio.product_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} jbosstools-install-grinder.install-tests.matrix_${stream_jbt}; do
-  ${JP} -j ${j} -t enable
+for j in jbosstools-build.parent_${stream_jbt} jbosstoolstargetplatform-matrix; do
+  ${JP} -s ${ccijenkins} -j ${j} -t enable
 done
 echo ""
-ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-for j in jbosstools-build.parent_${stream_jbt} jbosstoolstargetplatform-matrix; do
-  ${JP} -s ${ccijenkins} -j ${j} -t disable
-  ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+for j in jbosstools-buildflow_${stream_jbt} jbosstools-composite-install_${stream_jbt} jbosstools-browsersim-standalone_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstoolstargetplatform-central jbosstools-build-sites.aggregate.child-sites_${stream_jbt} devstudio.product_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} jbosstools-install-grinder.install-tests.matrix_${stream_jbt}; do
+  ${JP} -s ${bosmwjenkins} -j ${j} -t enable
 done
 echo ""
 for j in jbosstools-discovery_${stream_jbt}; do
-  ${JP} -j ${j} -t enable
+  ${JP} -s ${bosmwjenkins} -j ${j} -t enable
 done
 
 ----
@@ -454,14 +512,21 @@ respinSuffix=""
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-07-notification-emails; do
-  ${JP} -s ${ccijenkins} -j ${j} -t enable
-  ${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -d "github_branch=${github_branch}&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
-TARGET_PLATFORM_VERSION_MIN=${TARGET_PLATFORM_VERSION_MIN}&\
-TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&\
-TARGET_PLATFORM_CENTRAL_MAX=${TARGET_PLATFORM_CENTRAL_MAX}"
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  sleep 3s
+
+  data="github_branch=${github_branch}&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
+TARGET_PLATFORM_VERSION_MIN=${TARGET_PLATFORM_VERSION_MIN}&TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&TARGET_PLATFORM_CENTRAL_MAX=${TARGET_PLATFORM_CENTRAL_MAX}"
+  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
   sleep 15s
-  ${JP} -s ${ccijenkins} -j ${j} -t disable
-  ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+
+  if [[ "${prevJob}" == "${nextJob}" ]]; then
+    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
+    echo "[WARN] ${ccijenkins}/${j}"
+  else
+    ${JP} -s ${ccijenkins} -j ${j} -t disable
+    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+  fi
 done
 
 ----

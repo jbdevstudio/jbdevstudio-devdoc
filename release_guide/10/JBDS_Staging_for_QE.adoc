@@ -161,23 +161,16 @@ version_ds_INST=${installerJar#devstudio-}
 version_ds_INST=${version_ds_INST%-installer*}
 echo "Devstudio installer version: ${version_ds_INST}"
 
-# run all the .smoke jobs
-# cd ~/tmp # ~
-# rm -f index.html
-# wget https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/devstudio_integration_tests/
-# jobs=$(cat index.html  | egrep "\.smoke/build" | sed -e "s#.\+href=\"job/\(.\+\.smoke\)/build\([^\"]\+\)\".\+#\1#g") ##
-# rm -f index.html
-
-# or, just run the one buildflow job
-jobs=devstudio.buildflow.it.smoke
+# run the one buildflow job
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for j in ${jobs}; do
-  # ${JP} -s ${ccijenkins} -j ${j} -t enable
-  ${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -d "DEVSTUDIO_VERSION=${version_ds_INST}"
+for j in devstudio.buildflow.it.smoke; do
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  sleep 3s
+
+  data="DEVSTUDIO_VERSION=${version_ds_INST}"
+  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
   sleep 15s
-  ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
-  # ${JP} -s ${ccijenkins} -j ${j} -t disable
 done
 
 ----
@@ -202,12 +195,20 @@ versionWithRespin_ds=10.3.0.AM2
 wonkajenkins=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-05-sign-rpm-email-request; do
-  ${JP} -s ${wonkajenkins} -j ${j} -t enable
-  ${JP} -s ${wonkajenkins} -j ${j} -t buildWithParameters -d "token=RELENG&versionWithRespin_ds=${versionWithRespin_ds}"
+  prevJob=$(${JP} -s ${wonkajenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${wonkajenkins}/${j} enable"
+  sleep 3s
+
+  data="token=RELENG&versionWithRespin_ds=${versionWithRespin_ds}"
+  nextJob=$(${JP} -s ${wonkajenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${wonkajenkins}/${j} buildWithParameters ${data}"
   sleep 15s
-  ${JP} -s ${wonkajenkins} -j ${j} -t disable
-  ${JP} -s ${wonkajenkins} -j ${j} -t lastBuild/toggleLogKeep
-  google-chrome ${url}/lastBuild/console &
+
+  if [[ "${prevJob}" == "${nextJob}" ]]; then
+    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
+    echo "[WARN] ${wonkajenkins}/${j}"
+  else
+    ${JP} -s ${wonkajenkins} -j ${j} -t disable
+    ${JP} -s ${wonkajenkins} -j ${j} -t lastBuild/toggleLogKeep
+  fi
 done
 
 ----
@@ -229,12 +230,20 @@ signedURL=http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devs
 wonkajenkins=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-06-sign-rpm-fetch; do
-  ${JP} -s ${wonkajenkins} -j ${j} -t enable
-  ${JP} -s ${wonkajenkins} -j ${j} -t buildWithParameters -d "token=RELENG&versionWithRespin_ds=${versionWithRespin_ds}&signedURL=${signedURL}"
+  prevJob=$(${JP} -s ${wonkajenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${wonkajenkins}/${j} enable"
+  sleep 3s
+
+  data="token=RELENG&versionWithRespin_ds=${versionWithRespin_ds}&signedURL=${signedURL}"
+  nextJob=$(${JP} -s ${wonkajenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${wonkajenkins}/${j} buildWithParameters ${data}"
   sleep 15s
-  ${JP} -s ${wonkajenkins} -j ${j} -t disable
-  ${JP} -s ${wonkajenkins} -j ${j} -t lastBuild/toggleLogKeep
-  google-chrome ${url}/lastBuild/console &
+
+  if [[ "${prevJob}" == "${nextJob}" ]]; then
+    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
+    echo "[WARN] ${wonkajenkins}/${j}"
+  else
+    ${JP} -s ${wonkajenkins} -j ${j} -t disable
+    ${JP} -s ${wonkajenkins} -j ${j} -t lastBuild/toggleLogKeep
+  fi
 done
 
 ----

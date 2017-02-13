@@ -95,7 +95,7 @@ These steps happens on filemgmt.jboss.org, in the jbosstools download area.
 
 Here is a job that performs the copy from /staging/ to /development/ and/or to /stable too:
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites
+https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites
 
 [source,bash]
 ----
@@ -117,7 +117,7 @@ fi
 TARGET_PLATFORM_VERSION_MAX=4.62.0.AM1-SNAPSHOT
 TARGET_PLATFORM_CENTRAL_MAX=4.62.0.AM2-SNAPSHOT
 
-bosmwjenkins=https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job
+bosmwjenkins=https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites; do
   prevJob=$(${JP} -s ${bosmwjenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${bosmwjenkins}/${j} enable"
@@ -170,7 +170,7 @@ ${STAGE} -sites "discovery.central" -stream "${versionWithRespin_jbt}" -vr ${ver
 
 When the job above is done, this verification job will trigger automatically:
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites
+https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites
 
 But you can run it again if you'd like:
 
@@ -178,7 +178,7 @@ But you can run it again if you'd like:
 ----
 
 # buildType=development will also check stable URLs if we're pushing out a GA/Final release
-bosmwjenkins=https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job
+bosmwjenkins=https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites; do
   prevJob=$(${JP} -s ${bosmwjenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${bosmwjenkins}/${j} enable"
@@ -466,7 +466,7 @@ You will need to disable the jobs once the bits are released, so that they won't
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-bosmwjenkins=https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job
+bosmwjenkins=https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites \
   jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites; do

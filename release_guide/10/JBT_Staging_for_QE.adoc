@@ -9,7 +9,7 @@ Note that +sftp://tools@10.5.105.197/downloads_htdocs/tools/+ maps to +http://do
 (Use filemgmt.jboss.org IP instead of 10.5.105.197 because it's 3x faster!)
 
 If you do not need it urgently, you can push files there simply by pushing a change into the following location: https://github.com/jbosstools/jbosstools-download.jboss.org/tree/master/jbosstools .
-A Jenkins job can then be triggered to sync changes to download.jboss.org: https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-download.jboss.org-rsync-from-svn/
+A Jenkins job can then be triggered to sync changes to download.jboss.org: https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-download.jboss.org-rsync-from-svn/
 ====
 
 [IMPORTANT]
@@ -58,7 +58,7 @@ if [[ ${version_jbt} == *".Final" ]]; then
 else
   stream_jbt=master
 fi
-bosmwjenkins=https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job
+bosmwjenkins=https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 # TODO: enable this buildflow job -- currently not useful
 # ${JP} -s ${bosmwjenkins} -j jbosstools-releng-push-to-staging-buildflow_${stream_jbt} -t enable
@@ -88,7 +88,7 @@ else
   github_branch=master
 fi
 
-bosmwjenkins=https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job
+bosmwjenkins=https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-01-check-versions-branches-root-poms; do
   prevJob=$(${JP} -s ${bosmwjenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${bosmwjenkins}/${j} enable"
@@ -144,7 +144,7 @@ else
   stream_jbt=master
   stream_ds=master
 fi
-bosmwjenkins=https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job
+bosmwjenkins=https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-buildflow-force-publish_${stream_jbt} jbosstools-buildflow_${stream_jbt} jbosstools-composite-install_${stream_jbt} jbosstools-browsersim-standalone_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstoolstargetplatform-central jbosstools-build-sites.aggregate.child-sites_${stream_jbt} devstudio.product_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} jbosstools-install-grinder.install-tests.matrix_${stream_jbt}; do
   ${JP} -s ${bosmwjenkins} -j ${j} -t disable
@@ -163,7 +163,7 @@ echo ""
 == Update Discovery Sites and URLs
 
 [[update-discovery-urls]]
-Update the *stable branch* (or master) discovery job ( https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-discovery_4.4.neon/configure (or jbosstools-discovery_master)) to use the correct source URLs and versions +
+Update the *stable branch* (or master) discovery job ( https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-discovery_4.4.neon/configure (or jbosstools-discovery_master)) to use the correct source URLs and versions +
 
 
 Then respin the job:
@@ -186,7 +186,7 @@ fi
 TARGET_PLATFORM_VERSION_MAX=4.62.0.AM1-SNAPSHOT
 TARGET_PLATFORM_CENTRAL_MAX=4.62.0.AM2-SNAPSHOT
 
-bosmwjenkins=https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job
+bosmwjenkins=https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-discovery_${stream_jbt}; do
   prevJob=$(${JP} -s ${bosmwjenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${bosmwjenkins}/${j} enable"
@@ -228,7 +228,7 @@ cd ~/tmp; wget https://hudson.eclipse.org/packaging/job/neon.epp-tycho-build/437
 
 Here is a job that performs the copy (& rename) from /snapshots/ to /staging/:
 
-http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites/
+http://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites/
 
 [source,bash]
 ----
@@ -250,7 +250,7 @@ else
   stream_ds=master
 fi
 
-bosmwjenkins=https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job
+bosmwjenkins=https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites; do
   prevJob=$(${JP} -s ${bosmwjenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${bosmwjenkins}/${j} enable"
@@ -275,7 +275,7 @@ done
 
 If you can't get the job to run because dev01 slave is backlogged with a long queue, look in the job configuration and run the script manually on dev01 itself.
 
-http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites/configure-readonly/
+http://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites/configure-readonly/
 
 And now, we wait about 30-60 mins for the above job to complete.
 
@@ -291,7 +291,7 @@ When done, it's time to verify everything was pushed correctly.
 
 Here's a job that verifies everything is published:
 
-http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-03-verify-builds-update-sites/
+http://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-03-verify-builds-update-sites/
 
 [source,bash]
 ----
@@ -302,7 +302,7 @@ export userpass=KERBUSER:PASSWORD
 versionWithRespin_jbt=4.4.3.AM2
 versionWithRespin_ds=10.3.0.AM2
 
-bosmwjenkins=https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job
+bosmwjenkins=https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-03-verify-builds-update-sites; do
   prevJob=$(${JP} -s ${bosmwjenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${bosmwjenkins}/${j} enable"
@@ -326,7 +326,7 @@ done
 
 If you can't get the job to run because dev01 slave is backlogged with a long queue, look in the job configuration and run the script manually on dev01 itself.
 
-http://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites/configure-readonly/
+http://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites/configure-readonly/
 
 === Cleanup OLD builds
 
@@ -334,7 +334,7 @@ Optional step.
 
 Run this job to move any old builds into an OLD/ folder for later cleanup, or delete them immediately.
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-08-delete-builds-and-update-sites/
+https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-08-delete-builds-and-update-sites/
 
 
 === Update /staging/updates/ sites and merge in Integration Stack content
@@ -459,7 +459,7 @@ else
   stream_ds=master
 fi
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-bosmwjenkins=https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job
+bosmwjenkins=https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-build.parent_${stream_jbt} jbosstoolstargetplatform-matrix; do
   ${JP} -s ${ccijenkins} -j ${j} -t enable

@@ -171,15 +171,15 @@ Once QE has signed off, and bits are staged to CSP, you can proceed w/ the rest 
 
 Here is a job that performs the copy from /staging/ to /development/:
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-push-to-dev-stable-02-copy-builds-and-update-sites
+https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-push-to-dev-stable-02-copy-builds-and-update-sites
 
 You can also push just the RPMs with this job:
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-push-to-dev-stable-02-copy-builds-and-rpms
+https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-push-to-dev-stable-02-copy-builds-and-rpms
 
 When the job is done, verify everything has been published:
 
-https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/jbosstools-push-to-dev-stable-03-verify-builds-update-sites
+https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-push-to-dev-stable-03-verify-builds-update-sites
 
 === Update /development/updates/ sites (and /stable/updates if Final)
 

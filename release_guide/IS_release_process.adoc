@@ -457,6 +457,8 @@ As a second example, let's build JBTIS 4.4.0.Final for Neon using the Jenkins jo
 
 The build type is selectable.  Use `integration` for builds that are continuous integration/ snapshot but not quite milestone, `development` for milestones (i.e. Beta and CR builds) and `stable` for final release builds.  In this case use `stable`.  Also note the upstream jbosstools site references.
 
+*Note:* Verify that the SNAPSHOT version of JBTIS from JBoss Central works with the latest stable JBossTools - link:https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-install-p2director.install-tests.integration-stack.matrix_4.4.x[jbosstools-install-p2director.install-tests.integration-stack.matrix_4.4.x].  The Jenkins job is invoked automatically when the JBTIS build job completes.
+
 * Tag a label onto the GIT sources associated with any build committed to a milestone or release.  (i.e. JBTIS-4.4.0.Final)
 
 * Label the Jenkins build and set `keep forever` for released builds.
@@ -886,11 +888,13 @@ Note the community JBTIS aggregate composite site from which this build draws it
 * Tag a label onto the GIT sources associated with any build committed to a milestone or release.  It is a required parameter to the configuration.  (i.e. DevstudioIS-10.0.0.CR1)
 * Label the Jenkins build and set `keep forever`.
 
+*Note:* Verify that the SNAPSHOT version of DevstudioIS from JBoss Central works with the latest stable Devstudio and Eclipse Neon - link:https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-install-p2director.install-tests.integration-stack.matrix_master/[jbosstools-install-p2director.install-tests.integration-stack.matrix_master].  The Jenkins job is invoked automatically when the DevstudioIS build job completes.
+
 ==== Publish the Production Integration Stack Components
 
 There exists a separate Jenkins job to move the build artifacts out of the JBoss tools staging area into a JBoss tools update area (link:https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/DevstudioIS-aggregate-publish/[DevstudioIS Publish 10.x]).  This is only run when the staging build is released.  Match the build type to the aggregate build type from the previous section.  Match the target folder to the aggregate build version string.
 
-Note that the `BUILD_INSTALLER` option should match the DevstudioIS aggregate build setting so that the installer gets pushed.
+Note that the `BUILD_INSTALLER` option should match the DevstudioIS aggregate build setting so that the installers get pushed.
 
 Verify:
 
@@ -1047,16 +1051,19 @@ Install Devstudio into ~/offline, then simnply
 ----
 Stand-alone Installers:
 
-With the Neon release there exists two installers.  A skinny installer contains Devstudio core + IS and a full installer containing Devstudio core + IS + a supplemental runtime.  This is enabled for Fuse.
+With the 10.1.0 Neon release there exists three installers.  A standard IS installer contains Devstudio core + IS.  A Fuse Tooling installer containing Devstudio core + IS + a supplemental runtime.  A 'skinny' Fuse Tooling installer containing just Fuse Tooling + Devstudio core.
 
-* https://devstudio.redhat.com/10.0/staging/updates/integration-stack/10.0.0.CR1/devstudio-integration-stack-10.0.0.CR1-standalone-installer.jar (MD5)
-* https://devstudio.redhat.com/10.0/staging/updates/integration-stack/10.0.0.CR1/devstudio-integration-stack-rt-10.0.0.CR1-standalone-installer.jar (MD5)
+*  https://devstudio.redhat.com/10.0/staging/updates/integration-stack/10.1.0.CR2/devstudio-integration-stack-10.1.0.CR2-standalone-installer.jar (MD5)
+*  https://devstudio.redhat.com/10.0/staging/updates/integration-stack/10.1.0.CR2/devstudio-integration-stack-10.1.0.CR2-fuse-tooling-installer.jar (MD5)
+*  https://devstudio.redhat.com/10.0/staging/updates/integration-stack/10.1.0.CR2/devstudio-integration-stack-10.1.0.CR2-fuse-installer-runtime.jar (MD5)
 
 [source,bash]
 ----
-java -jar devstudio-integration-stack-10.0.0.CR1-standalone-installer.jar
+java -jar devstudio-integration-stack-10.1.0.CR2-standalone-installer.jar
 
-java -jar devstudio-integration-stack-rt-10.0.0.CR1-standalone-installer.jar
+java -jar devstudio-integration-stack-10.1.0.CR2-fuse-tooling-installer.jar
+
+java -jar devstudio-integration-stack-10.1.0.CR2-fuse-installer-runtime.jar
 ----
 
 ==== Update the Red Hat Customer Support Portal (CSP)

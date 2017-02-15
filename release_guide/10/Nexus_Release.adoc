@@ -2,17 +2,17 @@
 
 For GA releases, there are a number of artifacts that need to be released to Nexus.
 
-Once in Nexus, Jenkkins jobs can then be updated to use the released versions rather than -SNAPSHOT versions.
+Once in Nexus, Jenkkins jobs can then be updated to use the released versions rather than SNAPSHOT versions.
 
 
-[cols="3a,3a,3a,3a,3a", options="header"]
+[cols="3a,3a,3a,3a,3a,2a", options="header"]
 |===
 |Artifact
 |Github Project
 |GAV(s)
 |Jenkins Job
 |link:https://developer.jboss.org/wiki/MavenDeployingARelease[Nexus Staging]
-
+|Latest Version
 
 | ###### *Target Platforms*
 |
@@ -28,7 +28,8 @@ org.jboss.tools.targetplatforms
 * http://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstoolstargetplatform-matrix/[jbosstoolstargetplatform-matrix] (BMW)
 |
 * https://repository.jboss.org/nexus/#stagingRepositories[Close then release]
-
+|
+4.62.0.Final
 
 | ###### *Tycho Plugins & Rules*
 |
@@ -48,6 +49,8 @@ org.jboss.tools.releng
 * https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-maven-plugins.tycho-plugins_master/[jbosstools-maven-plugins.tycho-plugins_master] (CCI)
 |
 * https://repository.jboss.org/nexus/#stagingRepositories[Close then release]
+|
+0.26.1
 
 | ###### *Releng Scripts & Tools*
 |
@@ -60,7 +63,8 @@ org.jboss.tools.releng
 * http://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-build-ci_4.4.neon/[jbosstools-build-ci_4.4.neon] (BMW)
 |
 * https://repository.jboss.org/nexus/#stagingRepositories[Close then release]
-
+|
+4.4.3.Final
 
 | ###### *Parent Pom*
 |
@@ -74,6 +78,15 @@ org.jboss.tools
 * https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-build.parent_4.4.neon/[jbosstools-build.parent_4.4.neon] (CCI)
 |
 * https://repository.jboss.org/nexus/#stagingRepositories[Close then release]
-
+|
+4.4.3.Final-SNAPSHOT (not currently released - waiting until 4.4.x branch is created)
 |===
 
+
+[NOTE]
+====
+Over time, all jobs should move to CCI from BMW.
+
+* CCI = https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/[Central CI Jenkins]
+* BMW = https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/[Boston MW Jenkins]
+====

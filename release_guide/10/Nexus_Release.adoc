@@ -1,0 +1,79 @@
+= Nexus Releases
+
+For GA releases, there are a number of artifacts that need to be released to Nexus.
+
+Once in Nexus, Jenkkins jobs can then be updated to use the released versions rather than -SNAPSHOT versions.
+
+
+[cols="3a,3a,3a,3a,3a", options="header"]
+|===
+|Artifact
+|Github Project
+|GAV(s)
+|Jenkins Job
+|link:https://developer.jboss.org/wiki/MavenDeployingARelease[Nexus Staging]
+
+
+| ###### *Target Platforms*
+|
+* https://github.com/jbosstools/jbosstools-target-platforms[jbosstools-target-platforms]
+|
+org.jboss.tools.targetplatforms
+
+* https://repository.jboss.org/nexus/#nexus-search;gav%7Eorg.jboss.tools.targetplatforms%7Ejbosstools-multiple%7E4.6*%7E%7E[jbosstools-multiple]
+* https://repository.jboss.org/nexus/#nexus-search;gav%7Eorg.jboss.tools.targetplatforms%7Ejbosstools-unified%7E4.6*%7E%7E[jbosstools-unified]
+* https://repository.jboss.org/nexus/#nexus-search;gav%7Eorg.jboss.tools.targetplatforms%7Ejbdevstudio-multiple%7E4.6*%7E%7E[jbdevstudio-multiple]
+* https://repository.jboss.org/nexus/#nexus-search;gav%7Eorg.jboss.tools.targetplatforms%7Ejbdevstudio-unified%7E4.6*%7E%7E[jbdevstudio-unified]
+|
+* http://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstoolstargetplatform-matrix/[jbosstoolstargetplatform-matrix] (BMW)
+|
+* https://repository.jboss.org/nexus/#stagingRepositories[Close then release]
+
+
+| ###### *Tycho Plugins & Rules*
+|
+* https://github.com/jbosstools/jbosstools-maven-plugins[jbosstools-maven-plugins]
+|
+org.jboss.tools.tycho-plugins
+
+* https://repository.jboss.org/nexus/#nexus-search;gav%7Eorg.jboss.tools.tycho-plugins%7Etycho-dependency-plugin%7E0.26*%7E%7E[tycho-dependency-plugin]
+* https://repository.jboss.org/nexus/#nexus-search;gav%7Eorg.jboss.tools.tycho-plugins%7Etarget-platform-utils%7E0.26*%7E%7E[target-platform-utils]
+* https://repository.jboss.org/nexus/#nexus-search;gav%7Eorg.jboss.tools.tycho-plugins%7Erepository-utils%7E0.26*%7E%7E[repository-utils]
+* https://repository.jboss.org/nexus/#nexus-search;gav%7Eorg.jboss.tools.tycho-plugins%7Ediscovery-utils%7E0.26*%7E%7E[discovery-utils]
+
+org.jboss.tools.releng
+
+* https://repository.jboss.org/nexus/#nexus-search;gav%7Eorg.jboss.tools.releng%7Eenforcer-rules%7E0.26*%7E%7E[enforcer-rules]
+|
+* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-maven-plugins.tycho-plugins_master/[jbosstools-maven-plugins.tycho-plugins_master] (CCI)
+|
+* https://repository.jboss.org/nexus/#stagingRepositories[Close then release]
+
+| ###### *Releng Scripts & Tools*
+|
+* https://github.com/jbosstools/jbosstools-build-ci[jbosstools-build-ci]
+|
+org.jboss.tools.releng
+
+* https://repository.jboss.org/nexus/#nexus-search;gav%7Eorg.jboss.tools.releng%7Ejbosstools-releng-publish%7E4.4.*%7E%7E[jbosstools-releng-publish]
+|
+* http://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-build-ci_4.4.neon/[jbosstools-build-ci_4.4.neon] (BMW)
+|
+* https://repository.jboss.org/nexus/#stagingRepositories[Close then release]
+
+
+| ###### *Parent Pom*
+|
+* https://github.com/jbosstools/jbosstools-build[jbosstools-build]
+|
+org.jboss.tools
+
+* https://repository.jboss.org/nexus/#nexus-search;gav%7Eorg.jboss.tools%7Eparent%7E4.4.*%7E%7E[parent]
+|
+* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-build.parent_master/[jbosstools-build.parent_master] (CCI)
+* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-build.parent_4.4.neon/[jbosstools-build.parent_4.4.neon] (CCI)
+|
+* https://repository.jboss.org/nexus/#stagingRepositories[Close then release]
+
+|===
+

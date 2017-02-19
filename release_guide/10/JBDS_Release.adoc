@@ -43,8 +43,8 @@ Then:
 
 [source,bash]
 ----
-versionExe=1.2.0-GA # note the dash, not period after x.y.z
-versionWithRespin_ds=10.3.0.AM1 # a, b, c...
+versionExe=1.3.0-GA # note the dash, not period after x.y.z
+versionWithRespin_ds=10.3.0.GA # a, b, c...
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 pushd /qa/services/http/binaries/RHDS/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
 for f in $(ls *latest*); do echo "rm $f"; rm -f $f; done
@@ -60,7 +60,7 @@ Now, move & symlink the ${versionWithRespin_ds} folder:
 
 [source,bash]
 ----
-versionWithRespin_ds=10.3.0.AM1 # a, b, c...
+versionWithRespin_ds=10.3.0.GA # a, b, c...
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 buildType=stable # use /stable/ or /development/ as appropriate
 pushd /qa/services/http/binaries/RHDS/10.0/staging/builds/

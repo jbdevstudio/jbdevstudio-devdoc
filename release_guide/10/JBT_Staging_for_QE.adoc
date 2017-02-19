@@ -230,6 +230,8 @@ Here is a job that performs the copy (& rename) from /snapshots/ to /staging/:
 
 http://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites/
 
+NOTE: To save time, you can run this in parallel with the above step to create the Red Hat Central discovery site.
+
 [source,bash]
 ----
 

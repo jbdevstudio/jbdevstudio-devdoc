@@ -63,7 +63,7 @@ TIP: Once the staging build folder exists, start fetching the devstudio installe
 
 cd ~/tmp
 rm -f index.html
-versionWithRespin_ds=10.3.0.AM2 # a, b, c...
+versionWithRespin_ds=10.3.0.GA # a, b, c...
 wget https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
 installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 echo "Installer jar: ${installerJar}"
@@ -108,7 +108,7 @@ https://devstudio.redhat.com/10.0/staging/updates/
 
 [source,bash]
 ----
-versionWithRespin_ds=10.3.0.AM2 # a, b, c...
+versionWithRespin_ds=10.3.0.GA # a, b, c...
 cd ~/tmp
 wget https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
 installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
@@ -151,7 +151,7 @@ WARNING: TODO: make sure this works - could also wrap this inside a Jenkins job 
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_ds=10.3.0.AM2 # a, b, c...
+versionWithRespin_ds=10.3.0.GA # a, b, c...
 cd ~/tmp
 wget https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
 installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
@@ -188,26 +188,26 @@ WARNING: TODO: make sure this works (untested - was done by hand last time).
 ----
 
 
-# Jenkins login for the Wonka server
-export userpass=WONKAUSER:PASSWORD
+# kerberos login for the Jenkins server
+export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_ds=10.3.0.AM2
-wonkajenkins=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job
+versionWithRespin_ds=10.3.0.GA
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-05-sign-rpm-email-request; do
-  prevJob=$(${JP} -s ${wonkajenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${wonkajenkins}/${j} enable"
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
   sleep 3s
 
   data="token=RELENG&versionWithRespin_ds=${versionWithRespin_ds}"
-  nextJob=$(${JP} -s ${wonkajenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${wonkajenkins}/${j} buildWithParameters ${data}"
+  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
   sleep 15s
 
   if [[ "${prevJob}" == "${nextJob}" ]]; then
     echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
-    echo "[WARN] ${wonkajenkins}/${j}"
+    echo "[WARN] ${ccijenkins}/${j}"
   else
-    ${JP} -s ${wonkajenkins} -j ${j} -t disable
-    ${JP} -s ${wonkajenkins} -j ${j} -t lastBuild/toggleLogKeep
+    ${JP} -s ${ccijenkins} -j ${j} -t disable
+    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
   fi
 done
 
@@ -225,7 +225,7 @@ WARNING: TODO: make sure this works (untested - was done by hand last time).
 # Jenkins login for the Wonka server
 export userpass=WONKAUSER:PASSWORD
 
-versionWithRespin_ds=10.3.0.AM2
+versionWithRespin_ds=10.3.0.GA
 signedURL=http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/JBDS-10.3.0/rpms/signed/
 wonkajenkins=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh

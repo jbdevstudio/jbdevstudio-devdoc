@@ -143,8 +143,6 @@ See details in JBT_Staging_For_QE.adoc
 
 Trigger the QE smoke tests in https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/devstudio_integration_tests/
 
-WARNING: TODO: make sure this works - could also wrap this inside a Jenkins job so it's easier to trigger? See https://issues.jboss.org/browse/JBIDE-23733
-
 [source,bash]
 ----
 
@@ -180,9 +178,7 @@ done
 
 0. This section only applies to GA builds. No need to sign AMx milestones!
 
-1. give URL link to Chris via RCM ticket, eg., https://projects.engineering.redhat.com/browse/RCM-10070, https://projects.engineering.redhat.com/browse/RCM-10215
-
-WARNING: TODO: make sure this works (untested - was done by hand last time).
+1. give URL link to Chris via RCM ticket, eg., https://projects.engineering.redhat.com/browse/RCM-12825
 
 [source,bash]
 ----
@@ -217,34 +213,78 @@ done
 
 3. Fetch rpms, regen metadata
 
-WARNING: TODO: make sure this works (untested - was done by hand last time).
-
 [source,bash]
 ----
 
-# Jenkins login for the Wonka server
-export userpass=WONKAUSER:PASSWORD
+# kerberos login for the Jenkins server
+export userpass=KERBUSER:PASSWORD
 
 versionWithRespin_ds=10.3.0.GA
-signedURL=http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/JBDS-10.3.0/rpms/signed/
-wonkajenkins=http://wonka.mw.lab.eng.bos.redhat.com/jenkins/job
+# NOTE: do not use http://download-node-02.eng.bos.redhat.com as it may not resolve from within Jenkins
+signedURL=http://download.devel.redhat.com/devel/candidates/jboss/devstudio/devstudio-10.3.0.GA/rpms/signed
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-06-sign-rpm-fetch; do
-  prevJob=$(${JP} -s ${wonkajenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${wonkajenkins}/${j} enable"
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
   sleep 3s
 
   data="token=RELENG&versionWithRespin_ds=${versionWithRespin_ds}&signedURL=${signedURL}"
-  nextJob=$(${JP} -s ${wonkajenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${wonkajenkins}/${j} buildWithParameters ${data}"
+  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
   sleep 15s
 
   if [[ "${prevJob}" == "${nextJob}" ]]; then
     echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
-    echo "[WARN] ${wonkajenkins}/${j}"
-  else
-    ${JP} -s ${wonkajenkins} -j ${j} -t disable
-    ${JP} -s ${wonkajenkins} -j ${j} -t lastBuild/toggleLogKeep
+    echo "[WARN] ${ccijenkins}/${j}"
+  Eclipse
+    ${JP} -s ${ccijenkins} -j ${j} -t disable
+    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
   fi
 done
 
 ----
+
+Next, update your /etc/yum.repos.d/rh-eclipse46-devstudio.repo file like this:
+
+NOTE: Run the following commands as root user:
+
+[source,bash]
+----
+
+cat <<EOF > /etc/yum.repos.d/rh-eclipse46-devstudio.repo
+
+[rh-eclipse46-devstudio-staging-10.3]
+name=rh-eclipse46-devstudio-staging-10.3
+baseurl=https://devstudio.redhat.com/10.0/staging/builds/devstudio-10.3.0.GA-build-rpm/latest/x86_64/
+enabled=1
+gpgcheck=1
+upgrade_requirements_on_install=1
+metadata_expire=2m
+
+[rh-eclipse46-devstudio-snapshots-10.3]
+name=rh-eclipse46-devstudio-snapshots-10.3
+baseurl=https://devstudio.redhat.com/10.0/snapshots/rpms/10.3.0/x86_64/
+enabled=0
+gpgcheck=0
+upgrade_requirements_on_install=1
+metadata_expire=120m
+
+EOF
+
+# If you already have rh-eclipse46-devstudio installed:
+yum update rh-eclipse46-devstudio -y --best
+
+# Or, if not already installed
+yum install rh-eclipse46-devstudio -y --best
+
+----
+
+[WARNING]
+====
+Installation should complete without any problems. Should NOT see an error like this:
+[source,bash]
+----
+Error: Package rh-eclipse46-devstudio-10.3-0.20170218.1756.el7.x86_64.rpm is not signed
+----
+====
+
 

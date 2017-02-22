@@ -280,6 +280,13 @@ cat /tmp/yml.txt; rm -f /tmp/yml.txt
 
 ----
 
+[IMPORTANT]
+====
+You will need hub installed to generate a PR via commandline script below. You can get it here:
+
+https://hub.github.com/
+====
+
 Then, back on your own machine...
 
 [source,bash]
@@ -287,11 +294,24 @@ Then, back on your own machine...
 version_jbt=4.4.3.AM1
 version_ds=10.3.0.AM1
 
-cd ~/tru # where you have jbosstools-website checked out ~
+topic=release-${version_jbt}
+branch=master
+gituser=${GITUSER} # your github username
 
+# where you have https://github.com/jbosstools/jbosstools-website checked out
+cd ${HOME}/tru
 pushd jbosstools-website/
-  t=release-${version_jbt}
-  gw1m
+
+  git stash
+  git checkout ${branch}
+  git pull origin ${branch}
+  git pull origin
+  git checkout origin/${branch} -b ${topic}
+  git checkout ${topic}
+  git stash pop
+
+  # using your text editor of choice, vim, sublime, etc.
+  vim _config/products.yml
   st _config/products.yml
 
   # make changes, using the generated content above, then...
@@ -301,7 +321,42 @@ pushd jbosstools-website/
   else
     git commit -m "add ${version_jbt} to tools.jboss.org" .
   fi
-  gw2
+
+  numCommits=$(git status | egrep "by [0-9]+ commit" | sed "s/.\+by \([0-9]\+\) commit.*/\1/")
+  if [[ $numCommits -gt 1 ]]; then
+    #squash commits ##
+    echo ""
+    echo "Squash commits:"
+    echo "  git rebase -i HEAD~$numCommits" # ~
+    echo ""
+    git rebase -i HEAD~$numCommits # ~
+    if [[ "$?" != "0" ]]; then break 2; fi
+  fi
+  git pull --rebase origin ${branch}
+  git push ${gituser} ${topic}
+  parentProject=$(git remote -v | grep origin | grep push | sed "s/.\+github.com\(:\|\/\)\(.\+\)\/.\+/\2/")
+  thisProject=$(git remote -v | grep origin | grep push | sed "s/.\+github.com\(:\|\/\)\(.\+\)\/\(.\+\)\.git.\+/\3/")
+  # to do a 'hub pull-request' you must install hub first: https://github.com/defunkt/hub#readme
+  # alternatively, you can do a pull request in your browser from https://github.com/${gituser}/devstudio-<component>
+  lastCommitComment="$(git log -1 --pretty=%B)"
+  if [[ ${lastCommitComment:45} ]]; then
+    msgTitle=${lastCommitComment:0:45} # first 45 chars
+    msgTitle=${msgTitle% *} # no partial words
+    hub pull-request -o -f -m "${msgTitle}...
+
+${lastCommitComment}" -b ${parentProject}:${branch} -h ${gituser}:${topic}
+  else
+    hub pull-request -o -f -m "${lastCommitComment}
+
+${lastCommitComment}" -b ${parentProject}:${branch} -h ${gituser}:${topic}
+  fi
+  echo ""
+  echo "  >> Pull Request: https://github.com/${parentProject}/${thisProject}/pulls/${gituser}"
+  echo "  >> Topic Branch: https://github.com/${gituser}/${thisProject}/commits/${topic}"
+  echo "  >> Origin Branch: https://github.com/${parentProject}/${thisProject}/commits/${branch}"
+  echo "  >> JIRA / Topic: https://issues.jboss.org/browse/${topic}"
+  echo ""
+
 popd
 
 

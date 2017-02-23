@@ -181,13 +181,14 @@ versionWithRespin_jbt=4.4.3.Final
 versionWithRespin_ds=10.3.0.GA
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
-if [[ ${version_jbt} == *".Final" ]]; then
+# since we are now forking from 4.4.x all jobs will run from 4.4.neon stream
+# if [[ ${version_jbt} == *".Final" ]]; then
   stream_jbt=4.4.neon
   stream_ds=10.0.neon
-else
-  stream_jbt=master
-  stream_ds=master
-fi
+# else
+#  stream_jbt=master
+#  stream_ds=master
+# fi
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
@@ -321,11 +322,15 @@ Then, back on your own machine...
 
 [source,bash]
 ----
-version_jbt=4.4.3.AM1
-version_ds=10.3.0.AM1
+version_jbt=4.4.3.Final
+version_ds=10.3.0.GA
 
 topic=release-${version_jbt}
-branch=master
+if [[ ${version_jbt} == *".Final" ]]; then
+  github_branch=jbosstools-4.4.4.x
+else
+  github_branch=jbosstools-4.4.x
+fi
 gituser=${GITUSER} # your github username
 
 # where you have https://github.com/jbosstools/jbosstools-website checked out
@@ -333,10 +338,10 @@ cd ${HOME}/tru
 pushd jbosstools-website/
 
   git stash
-  git checkout ${branch}
-  git pull origin ${branch}
+  git checkout ${github_branch}
+  git pull origin ${github_branch}
   git pull origin
-  git checkout origin/${branch} -b ${topic}
+  git checkout origin/${github_branch} -b ${topic}
   git checkout ${topic}
   git stash pop
 
@@ -362,7 +367,7 @@ pushd jbosstools-website/
     git rebase -i HEAD~$numCommits # ~
     if [[ "$?" != "0" ]]; then break 2; fi
   fi
-  git pull --rebase origin ${branch}
+  git pull --rebase origin ${github_branch}
   git push ${gituser} ${topic}
   parentProject=$(git remote -v | grep origin | grep push | sed "s/.\+github.com\(:\|\/\)\(.\+\)\/.\+/\2/")
   thisProject=$(git remote -v | grep origin | grep push | sed "s/.\+github.com\(:\|\/\)\(.\+\)\/\(.\+\)\.git.\+/\3/")
@@ -374,16 +379,16 @@ pushd jbosstools-website/
     msgTitle=${msgTitle% *} # no partial words
     hub pull-request -o -f -m "${msgTitle}...
 
-${lastCommitComment}" -b ${parentProject}:${branch} -h ${gituser}:${topic}
+${lastCommitComment}" -b ${parentProject}:${github_branch} -h ${gituser}:${topic}
   else
     hub pull-request -o -f -m "${lastCommitComment}
 
-${lastCommitComment}" -b ${parentProject}:${branch} -h ${gituser}:${topic}
+${lastCommitComment}" -b ${parentProject}:${github_branch} -h ${gituser}:${topic}
   fi
   echo ""
   echo "  >> Pull Request: https://github.com/${parentProject}/${thisProject}/pulls/${gituser}"
   echo "  >> Topic Branch: https://github.com/${gituser}/${thisProject}/commits/${topic}"
-  echo "  >> Origin Branch: https://github.com/${parentProject}/${thisProject}/commits/${branch}"
+  echo "  >> Origin Branch: https://github.com/${parentProject}/${thisProject}/commits/${github_branch}"
   echo "  >> JIRA / Topic: https://issues.jboss.org/browse/${topic}"
   echo ""
 

@@ -53,11 +53,11 @@ versionWithRespin_jbt=4.4.3.Final
 versionWithRespin_ds=10.3.0.GA
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
-if [[ ${version_jbt} == *".Final" ]]; then
+# if [[ ${version_jbt} == *".Final" ]]; then
   stream_jbt=4.4.neon
-else
-  stream_jbt=master
-fi
+# else
+#   stream_jbt=master
+# fi
 bosmwjenkins=https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 # TODO: enable this buildflow job -- currently not useful
@@ -84,7 +84,7 @@ if [[ ${version_jbt} == *".Final" ]]; then
   stream_jbt=4.4.neon
   github_branch=jbosstools-4.4.4.x
 else
-  stream_jbt=jbosstools-4.4.x
+  stream_jbt=4.4.neon
   github_branch=jbosstools-4.4.x
 fi
 
@@ -138,13 +138,13 @@ versionWithRespin_jbt=4.4.3.Final
 versionWithRespin_ds=10.3.0.GA
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
-if [[ ${version_jbt} == *".Final" ]]; then
+# if [[ ${version_jbt} == *".Final" ]]; then
   stream_jbt=4.4.neon
   stream_ds=10.0.neon
-else
-  stream_jbt=master
-  stream_ds=master
-fi
+# else
+#   stream_jbt=master
+#   stream_ds=master
+# fi
 bosmwjenkins=https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-buildflow-force-publish_${stream_jbt} jbosstools-buildflow_${stream_jbt} jbosstools-composite-install_${stream_jbt} jbosstools-browsersim-standalone_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstoolstargetplatform-central jbosstools-build-sites.aggregate.child-sites_${stream_jbt} devstudio.product_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} jbosstools-install-grinder.install-tests.matrix_${stream_jbt}; do
@@ -179,11 +179,11 @@ versionWithRespin_jbt=4.4.3.Final
 versionWithRespin_ds=10.3.0.GA
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
-if [[ ${version_jbt} == *".Final" ]]; then
+# if [[ ${version_jbt} == *".Final" ]]; then
   stream_jbt=4.4.neon
-else
-  stream_jbt=master
-fi
+# else
+#   stream_jbt=master
+# fi
 TARGET_PLATFORM_VERSION_MAX=4.62.0.Final
 TARGET_PLATFORM_CENTRAL_MAX=4.62.0.Final-SNAPSHOT
 
@@ -258,13 +258,13 @@ version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 TARGET_PLATFORM_VERSION_MAX=4.62.0.Final
 TARGET_PLATFORM_CENTRAL_MAX=4.62.0.Final-SNAPSHOT
-if [[ ${version_jbt} == *".Final" ]]; then
+# if [[ ${version_jbt} == *".Final" ]]; then
   stream_jbt=4.4.neon
   stream_ds=10.0.neon
-else
-  stream_jbt=master
-  stream_ds=master
-fi
+# else
+#   stream_jbt=master
+#   stream_ds=master
+# fi
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
@@ -467,13 +467,13 @@ versionWithRespin_jbt=4.4.3.Final
 versionWithRespin_ds=10.3.0.GA
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
-if [[ ${version_jbt} == *".Final" ]]; then
+# if [[ ${version_jbt} == *".Final" ]]; then
   stream_jbt=4.4.neon
   stream_ds=10.0.neon
-else
-  stream_jbt=master
-  stream_ds=master
-fi
+# else
+#   stream_jbt=master
+#   stream_ds=master
+# fi
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 bosmwjenkins=https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
@@ -516,10 +516,10 @@ versionWithRespin_jbt=4.4.3.Final
 versionWithRespin_ds=10.3.0.GA
 if [[ ${version_jbt} == *".Final" ]]; then
   stream_jbt=4.4.neon
-  github_branch=jbosstools-4.4.3.x # or jbosstools-4.4.x
+  github_branch=jbosstools-4.4.x
 else
-  stream_jbt=master
-  github_branch=master
+  stream_jbt=4.4.neon
+  github_branch=jbosstools-4.4.4.x
 fi
 TARGET_PLATFORM_VERSION_MIN=4.60.2.Final
 TARGET_PLATFORM_VERSION_MAX=4.62.0.Final
@@ -561,13 +561,13 @@ versionWithRespin_jbt=4.4.3.Final
 versionWithRespin_ds=10.3.0.GA
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
-if [[ ${version_jbt} == *".Final" ]]; then
+# if [[ ${version_jbt} == *".Final" ]]; then
   stream_jbt=4.4.neon
   stream_ds=10.0.neon
-else
-  stream_jbt=master
-  stream_ds=master
-fi
+# else
+#   stream_jbt=master
+#   stream_ds=master
+# fi
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-03-verify-builds-update-sites \
 jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites \

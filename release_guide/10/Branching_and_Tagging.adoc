@@ -20,16 +20,16 @@ git clone https://github.com/jbosstools/jbosstools-download.jboss.org
 git clone https://github.com/jbosstools/jbosstools-maven-plugins
 git clone https://github.com/jbosstools/jbosstools-versionwatch
 
-jbt_branch=master
+github_branch=jbosstools-4.4.4.x
 for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins versionwatch; do
   echo "====================================================================="
-  echo "Branching jbosstools-${d} from branch ${jbt_branch}..."
+  echo "Branching jbosstools-${d} from branch ${github_branch}..."
   pushd jbosstools-${d}
-  git checkout master
-  git pull origin master
-  git checkout -b ${jbt_branch}
-  git push origin ${jbt_branch}
-  echo ">>> https://github.com/jbosstools/jbosstools-${d}/tree/${jbt_branch}"
+  git checkout jbosstools-4.4.x # not master
+  git pull origin jbosstools-4.4.x # not master
+  git checkout -b ${github_branch}
+  git push origin ${github_branch}
+  echo ">>> https://github.com/jbosstools/jbosstools-${d}/tree/${github_branch}"
   popd >/dev/null
   echo "====================================================================="
   echo ""
@@ -47,7 +47,7 @@ ls -l com*
 # lrwxrwxrwx  compositeArtifacts.xml -> discovery.central/master/compositeArtifacts.xml
 # lrwxrwxrwx  compositeContent.xml -> discovery.central/master/compositeContent.xml
 rm -f compositeArtifacts.xml compositeContent.xml
-stream=master # not master
+stream_jbt=4.4.neon # not master
 ln -s discovery.central/${stream}/compositeArtifacts.xml
 ln -s discovery.central/${stream}/compositeContent.xml
 popd
@@ -87,16 +87,16 @@ git clone https://github.com/jbdevstudio/jbdevstudio-website
 git clone https://github.com/jbdevstudio/jbdevstudio-artwork
 git clone https://github.com/jbdevstudio/jbdevstudio-devdoc
 
-jbt_branch=master
+github_branch=jbosstools-4.4.4.x
 for d in product ci website artwork devdoc; do
   echo "====================================================================="
-  echo "Branching jbdevstudio-${d} from branch ${jbt_branch}..."
+  echo "Branching jbdevstudio-${d} from branch ${github_branch}..."
   pushd jbdevstudio-${d}
-  git checkout master
-  git pull origin master
-  git checkout -b ${jbt_branch}
-  git push origin ${jbt_branch}
-  echo ">>> https://github.com/jbosstools/jbosstools-${d}/tree/${jbt_branch}"
+  git checkout jbosstools-4.4.x # not master
+  git pull origin jbosstools-4.4.x # not master
+  git checkout -b ${github_branch}
+  git push origin ${github_branch}
+  echo ">>> https://github.com/jbosstools/jbosstools-${d}/tree/${github_branch}"
   popd >/dev/null
   echo "====================================================================="
   echo ""
@@ -114,7 +114,7 @@ ls -l com*
 # lrwxrwxrwx  compositeArtifacts.xml -> discovery.central/master/compositeArtifacts.xml
 # lrwxrwxrwx  compositeContent.xml -> discovery.central/master/compositeContent.xml
 rm -f compositeArtifacts.xml compositeContent.xml
-stream=master # not master
+stream_jbt=4.4.neon # not master
 ln -s discovery.central/${stream}/compositeArtifacts.xml
 ln -s discovery.central/${stream}/compositeContent.xml
 popd
@@ -169,16 +169,16 @@ git clone git@github.com:jbosstools/jbosstools-versionwatch.git
 
 version_jbt=4.4.3.Final
 if [[ ${version_jbt} == *".Final" ]]; then
-  jbt_branch=jbosstools-4.4.4.x
+  github_branch=jbosstools-4.4.4.x
 else
-  jbt_branch=jbosstools-4.4.x
+  github_branch=jbosstools-4.4.x
 fi
 cd ~/tru # ~
 for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins versionwatch; do
   echo "====================================================================="
-  echo "Tagging jbosstools-${d} from branch ${jbt_branch} as tag ${version_jbt}..."
+  echo "Tagging jbosstools-${d} from branch ${github_branch} as tag ${version_jbt}..."
   pushd jbosstools-${d}
-  git fetch origin ${jbt_branch}
+  git fetch origin ${github_branch}
   git tag jbosstools-${version_jbt} FETCH_HEAD
   git push origin jbosstools-${version_jbt}
   echo ">>> https://github.com/jbosstools/jbosstools-${d}/tree/jbosstools-${version_jbt}"
@@ -205,16 +205,16 @@ git clone git@github.com:jbdevstudio/jbdevstudio-ci.git
 
 version_ds=10.3.0.GA
 if [[ ${version_ds} == *".GA" ]]; then
-  jbt_branch=jbosstools-4.4.4.x
+  github_branch=jbosstools-4.4.4.x
 else
-  jbt_branch=jbosstools-4.4.x
+  github_branch=jbosstools-4.4.x
 fi
 cd ~/truu # ~
 for d in product website artwork devdoc ci; do # note: ci repo is private
   echo "====================================================================="
-  echo "Tagging jbdevstudio-${d} from branch ${jbt_branch} as tag ${version_ds}..."
+  echo "Tagging jbdevstudio-${d} from branch ${github_branch} as tag ${version_ds}..."
   pushd jbdevstudio-${d}
-  git fetch origin ${jbt_branch}
+  git fetch origin ${github_branch}
   git tag jbdevstudio-${version_ds} FETCH_HEAD
   git push origin jbdevstudio-${version_ds}
   echo ">>> https://github.com/jbdevstudio/jbdevstudio-${d}/tree/jbdevstudio-${version_ds}"

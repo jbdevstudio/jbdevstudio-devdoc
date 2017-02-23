@@ -123,13 +123,13 @@ versionWithRespin_jbt=4.4.3.Final
 versionWithRespin_ds=10.3.0.GA
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
-if [[ ${version_jbt} == *".Final" ]]; then
+# if [[ ${version_jbt} == *".Final" ]]; then
   stream_jbt=4.4.neon
   stream_ds=10.0.neon
-else
-  stream_jbt=master
-  stream_ds=master
-fi
+# else
+#   stream_jbt=master
+#   stream_ds=master
+# fi
 TARGET_PLATFORM_VERSION_MAX=4.62.0.Final
 TARGET_PLATFORM_CENTRAL_MAX=4.62.0.Final-SNAPSHOT
 

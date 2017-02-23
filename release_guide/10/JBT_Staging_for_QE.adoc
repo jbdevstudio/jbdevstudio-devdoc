@@ -232,6 +232,19 @@ http://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-t
 
 NOTE: To save time, you can run this in parallel with the above step to create the Red Hat Central discovery site.
 
+[IMPORTANT]
+====
+
+Currently, the steps that require access to hudson@10.16.89.17 or /qa/services/http/binaries/RHDS/targetplatforms/ are
+disabled as they appears to be timing out (or don't work).
+
+When run on Bos MW, this job was able to do a local copy using NFS mounted drive.
+
+*TODO*: re-enable this step to run with SSHFS once https://issues.jboss.org/browse/JBQA-13424 is fixed?
+
+====
+
+
 [source,bash]
 ----
 

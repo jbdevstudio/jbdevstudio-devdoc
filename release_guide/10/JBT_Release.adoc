@@ -97,6 +97,22 @@ Here is a job that performs the copy from /staging/ to /development/ and/or to /
 
 https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites/
 
+[IMPORTANT]
+====
+
+Currently, the step "copy 1 site: devstudio installers & update site [INTERNAL - includes EAP installer]" is
+disabled as it appears to be timing out. When run on Bos MW, this job was able to do a local copy using NFS mounted drive.
+
+*TODO*: re-enable this step to run with SSHFS once https://issues.jboss.org/browse/JBQA-13424 is fixed?
+
+    time ${STAGE} -sites "product" -stream "${versionWithRespin_ds}" -vr ${version_ds} -sd ${devstudioReleaseVersion} \
+      -dd static/${devstudioReleaseVersion} -st staging -dt ${qual} \
+      -JOB_NAME devstudio-${versionWithRespin_ds}-build-\${site} \
+      -DESTINATION ${RHDS} -DEST_URL http://www.qa.jboss.com/binaries/devstudio ${quiet} &
+
+====
+
+
 [source,bash]
 ----
 

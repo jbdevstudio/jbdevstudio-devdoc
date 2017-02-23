@@ -82,25 +82,19 @@ If anything is wrong, fix it by hand, then also commit your changes to the templ
 https://github.com/jbdevstudio/jbdevstudio-product/commit/3827045dca85e73c5ae339cc13f514591e3c1835
 https://github.com/jbdevstudio/jbdevstudio-product/commit/e6c2954207d1db7451f7adfd2d89c7ceccd6adbe
 
-== Submit PRs to update https://www.jboss.org/products/devstudio/ and http://developers.redhat.com/products/devstudio/
+== File bug to update http://developers.redhat.com/products/devstudio/
 
 Goal is to update the following pages to include links to guides and to set the correct latest GA release version:
 
-* https://www.jboss.org/products/devstudio/download/
-* https://www.jboss.org/products/devstudio/overview/
-* http://developers.redhat.com/products/devstudio/overview/
 * http://developers.redhat.com/products/devstudio/download/
-
-by updating these lines:
-
-* https://github.com/jboss-developer/www.jboss.org/blob/master/products/devstudio/_common/product.yml#L3
-* https://github.com/redhat-developer/developers.redhat.com/blob/master/products/devstudio/_common/product.yml#L4
+* http://developers.redhat.com/products/devstudio/hello-world/
+* http://developers.redhat.com/products/devstudio/docs-and-apis/
 
 Past example:
 
-* https://issues.jboss.org/browse/DEVELOPER-2900
-* https://github.com/jboss-developer/www.jboss.org/pull/1032
-* https://github.com/redhat-developer/developers.redhat.com/pull/1021
+* https://issues.jboss.org/browse/DEVELOPER-3908
+
+Later, the necessary changes should be made in Drupal, where this website is managed, by someone who has the necessary permissions.
 
 Once you have the JIRA, you can link to it when sending the note to release-engineering@ below.
 
@@ -120,7 +114,7 @@ IMPORTANT: As this takes some time and requires coordination with other teams, t
 
 Previous ticket:
 
-* https://projects.engineering.redhat.com/browse/RCM-10069
+* https://projects.engineering.redhat.com/browse/RCM-12959
 
 Communicate with Chris O'Brien (internal IRC: siege) to coordinate the release. All the above can happen in parallel / before the updates below.
 
@@ -167,19 +161,56 @@ done
 
 Once QE has signed off, and bits are staged to CSP, you can proceed w/ the rest of the release.
 
-== Copy from /staging/ into /development/ (and /stable/)
+=== Copy content to release directory
 
-Here is a job that performs the copy from /staging/ to /development/:
+See JBT_Release.adoc
 
-https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-push-to-dev-stable-02-copy-builds-and-update-sites
+=== Copy RPM content to release directory
 
-You can also push just the RPMs with this job:
+If and only if we are releasing at the same the RPM version of Devstudio that is designed to work on RHSCL, then this job should also be run:
 
-https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-push-to-dev-stable-02-copy-builds-and-rpms
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-02-copy-builds-and-rpms/
 
-When the job is done, verify everything has been published:
+[source,bash]
+----
 
-https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-push-to-dev-stable-03-verify-builds-update-sites
+# kerberos login for the Jenkins server
+export userpass=KERBUSER:PASSWORD
+
+versionWithRespin_jbt=4.4.3.Final
+versionWithRespin_ds=10.3.0.GA
+version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
+version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
+if [[ ${version_jbt} == *".Final" ]]; then
+  stream_jbt=4.4.neon
+  stream_ds=10.0.neon
+else
+  stream_jbt=master
+  stream_ds=master
+fi
+
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+for j in jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites; do
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  sleep 3s
+
+  data="stream_jbt=${stream_jbt}&stream_ds=${stream_ds}&\
+versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}"
+  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+  sleep 15s
+
+  if [[ "${prevJob}" == "${nextJob}" ]]; then
+    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
+    echo "[WARN] ${ccijenkins}/${j}"
+  else
+    ${JP} -s ${ccijenkins} -j ${j} -t disable
+    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+  fi
+done
+
+----
+
 
 === Update /development/updates/ sites (and /stable/updates if Final)
 
@@ -216,7 +247,7 @@ For the first Beta, create a new node on Marketplace, using single feature, com.
 
 Access it via +http://marketplace.eclipse.org/content/red-hat-jboss-developer-studio/edit+ and update the following things:
 
-* Title to match new version
+* Solution version number to match new version
 * Description to match new version & dependencies
 * Notes / warnings (if applicable, eg., JDK issues)
 
@@ -259,7 +290,7 @@ Then run this:
 
 [source,bash]
 ----
-versionWithRespin_ds=10.3.0.AM1 # a, b, c...
+versionWithRespin_ds=10.3.0.GA
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # **
 
 cd ~/RHDS/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ # ~
@@ -275,7 +306,6 @@ size=$(wget https://devstudio.redhat.com/10.0/development/updates/core/ --no-che
 # sha=$(wget https://devstudio.redhat.com/10.0/development/updates/core/${f}.sha256 --no-check-certificate -q -O -); sh=${sha:0:2}
 echo "            url: https://devstudio.redhat.com/10.0/development/updates/core/${f}" >> /tmp/yml.txt
 echo "            file_size: ${size}B" >> /tmp/yml.txt
-done
 cat /tmp/yml.txt; rm -f /tmp/yml.txt
 
 ----
@@ -392,7 +422,7 @@ Before notifying team of release, must check for obvious problems. Any failure t
 [source,bash]
 ----
 
-version_ds=10.3.0.AM1
+version_ds=10.3.0.GA
 qual="development"; if [[ ${version##*GA} == "" ]]; then qual="stable"; fi # **##
 cd ~/tmp # ~
 wget https://devstudio.redhat.com/static/10.0/${qual}/builds/devstudio-${version_ds}-build-product/latest/all/
@@ -420,12 +450,12 @@ Using the script below, you can trigger the job remotely.
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-blogURL=/blog/am2-for-neon.2.html
-pullrequestNum=674
+blogURL=/blog/10.3.0.ga-for-neon.2.html
+pullrequestNum=682
 eclipseVersionSuffix=".2" # for Eclipse 4.6.2 Neon.2
 
-versionWithRespin_jbt=4.4.3.AM2
-versionWithRespin_ds=10.3.0.AM2
+versionWithRespin_jbt=4.4.3.Final
+versionWithRespin_ds=10.3.0.GA
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # \) # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 
@@ -457,9 +487,8 @@ done
 [source,bash]
 ----
 
-version_jbt=4.4.3.AM2
-version_ds=10.3.0.AM2
-cd ~/truu # ~
+version_jbt=4.4.3.Final
+version_ds=10.3.0.GA
 cd jbdevstudio-devdoc/release_guide/
 git commit -m "update release guide for ${version_jbt} and ${version_ds}" .
 git push origin HEAD:master

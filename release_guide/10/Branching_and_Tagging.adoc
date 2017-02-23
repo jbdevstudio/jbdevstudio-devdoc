@@ -155,19 +155,19 @@ Once cloned to disk, this script will create the tags if run from the location w
 ----
 
 # if not already cloned, the do this:
-git clone https://github.com/jbosstools/jbosstools-build
-git clone https://github.com/jbosstools/jbosstools-build-ci
-git clone https://github.com/jbosstools/jbosstools-build-sites
-git clone https://github.com/jbosstools/jbosstools-devdoc
-git clone https://github.com/jbosstools/jbosstools-discovery
-git clone https://github.com/jbosstools/jbosstools-download.jboss.org
-git clone https://github.com/jbosstools/jbosstools-maven-plugins
-git clone https://github.com/jbosstools/jbosstools-versionwatch
+git clone git@github.com:jbosstools/jbosstools-build.git
+git clone git@github.com:jbosstools/jbosstools-build-ci.git
+git clone git@github.com:jbosstools/jbosstools-build-sites.git
+git clone git@github.com:jbosstools/jbosstools-devdoc.git
+git clone git@github.com:jbosstools/jbosstools-discovery.git
+git clone git@github.com:jbosstools/jbosstools-download.jboss.org.git
+git clone git@github.com:jbosstools/jbosstools-maven-plugins.git
+git clone git@github.com:jbosstools/jbosstools-versionwatch.git
 
 # maven-plugins does not get released/branched the same as other projects, but tag it anyway
 # download.jboss.org tag might not be valid as tweaks to ide-config.properties happen frequently
 
-version_jbt=4.4.3.AM2
+version_jbt=4.4.3.Final
 if [[ ${version_jbt} == *".Final" ]]; then
   jbt_branch=jbosstools-4.4.3.x
 else
@@ -197,20 +197,19 @@ Once cloned to disk, this script will create the tags if run from the location w
 ----
 
 # if not already cloned, the do this:
-git clone https://github.com/jbdevstudio/jbdevstudio-product
-git clone https://github.com/jbdevstudio/jbdevstudio-ci
-git clone https://github.com/jbdevstudio/jbdevstudio-website
-git clone https://github.com/jbdevstudio/jbdevstudio-artwork
-git clone https://github.com/jbdevstudio/jbdevstudio-devdoc
+git clone git@github.com:jbdevstudio/jbdevstudio-product.git
+git clone git@github.com:jbdevstudio/jbdevstudio-website.git
+git clone git@github.com:jbdevstudio/jbdevstudio-artwork.git
+git clone git@github.com:jbdevstudio/jbdevstudio-devdoc.git
 
-version_ds=10.3.0.AM2
+version_ds=10.3.0.GA
 if [[ ${version_ds} == *".GA" ]]; then
   jbt_branch=jbosstools-4.4.3.x
 else
   jbt_branch=master
 fi
 cd ~/truu # ~
-for d in product ci website artwork devdoc; do
+for d in product website artwork devdoc; do
   echo "====================================================================="
   echo "Tagging jbdevstudio-${d} from branch ${jbt_branch} as tag ${version_ds}..."
   pushd jbdevstudio-${d}

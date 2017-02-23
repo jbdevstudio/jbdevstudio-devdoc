@@ -209,7 +209,7 @@ else
   jbt_branch=master
 fi
 cd ~/truu # ~
-for d in product website artwork devdoc; do
+for d in product website artwork devdoc ci; do # note: ci repo is private
   echo "====================================================================="
   echo "Tagging jbdevstudio-${d} from branch ${jbt_branch} as tag ${version_ds}..."
   pushd jbdevstudio-${d}

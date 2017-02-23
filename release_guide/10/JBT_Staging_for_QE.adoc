@@ -82,10 +82,10 @@ version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 if [[ ${version_jbt} == *".Final" ]]; then
   stream_jbt=4.4.neon
-  github_branch=jbosstools-4.4.3.x # or jbosstools-4.4.x
+  github_branch=jbosstools-4.4.4.x
 else
-  stream_jbt=master
-  github_branch=master
+  stream_jbt=jbosstools-4.4.x
+  github_branch=jbosstools-4.4.x
 fi
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
@@ -116,9 +116,10 @@ If any branches have not yet been created, you can either:
 
 [source,bash]
 ----
-git checkout master; git pull origin master; git checkout -b jbosstools-4.4.3.x; git push origin jbosstools-4.4.3.x
-# or, for jbosstools-build-ci
-git checkout jbosstools-4.4.x; git pull origin jbosstools-4.4.x; git checkout -b jbosstools-4.4.3.x; git push origin jbosstools-4.4.3.x
+# for master branch
+git checkout master; git pull origin master; git checkout -b jbosstools-4.4.x; git push origin jbosstools-4.4.x
+# or, 4.4.x branch
+git checkout jbosstools-4.4.x; git pull origin jbosstools-4.4.x; git checkout -b jbosstools-4.4.4.x; git push origin jbosstools-4.4.4.x
 
 ----
 

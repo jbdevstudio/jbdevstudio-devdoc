@@ -169,9 +169,9 @@ git clone git@github.com:jbosstools/jbosstools-versionwatch.git
 
 version_jbt=4.4.3.Final
 if [[ ${version_jbt} == *".Final" ]]; then
-  jbt_branch=jbosstools-4.4.3.x
+  jbt_branch=jbosstools-4.4.4.x
 else
-  jbt_branch=master
+  jbt_branch=jbosstools-4.4.x
 fi
 cd ~/tru # ~
 for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins versionwatch; do
@@ -201,12 +201,13 @@ git clone git@github.com:jbdevstudio/jbdevstudio-product.git
 git clone git@github.com:jbdevstudio/jbdevstudio-website.git
 git clone git@github.com:jbdevstudio/jbdevstudio-artwork.git
 git clone git@github.com:jbdevstudio/jbdevstudio-devdoc.git
+git clone git@github.com:jbdevstudio/jbdevstudio-ci.git
 
 version_ds=10.3.0.GA
 if [[ ${version_ds} == *".GA" ]]; then
-  jbt_branch=jbosstools-4.4.3.x
+  jbt_branch=jbosstools-4.4.4.x
 else
-  jbt_branch=master
+  jbt_branch=jbosstools-4.4.x
 fi
 cd ~/truu # ~
 for d in product website artwork devdoc ci; do # note: ci repo is private

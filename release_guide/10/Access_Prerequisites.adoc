@@ -4,9 +4,9 @@ Before you can do anything in the JBoss Tools / Devstudio release guides, you'll
 
 To run builds and stage/release code via Jenkins jobs, you need access to the Jenkins servers. You should already have Kerberos-based login access to both the Boston MW Jenkins and the Central CI Jenkins. If not, contact PnT (details below).
 
-IMPORTANT: For password access to wonka jenkins - ask Nick Boldt or Jess Sightler.
+NOTE: For password access to wonka jenkins - ask Nick Boldt or Jess Sightler. (DEPRECATED: jobs have all moved to CCI Jenkins.)
 
-NOTE: For admin access to CCI jenkins (beyond simple job exec permission) - ask Pavol Srna.
+NOTE: For admin access to CCI jenkins (beyond simple job exec permission) - ask Pavol Srna or Nick Boldt to give you 'admin' access from https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/role-strategy/assign-roles
 
 == File hosting
 
@@ -25,7 +25,7 @@ IMPORTANT: For JBIDE/JBDS JIRA, you need adminstrator access - ask Nick Boldt, D
 
 == Github
 
-You need push rights to some github repos to store changes made live on download.jboss.org or devstudio.redhat.com.
+You need push rights to some github repos to store changes made live on download.jboss.org or devstudio.redhat.com, and push tags.
 
 IMPORTANT: For github repos under jbosstools and jbdevstudio orgs - ask Jeff Maury or Denis Golovin for access.
 

@@ -5,14 +5,15 @@ For GA releases, there are a number of artifacts that need to be released to Nex
 Once in Nexus, Jenkkins jobs can then be updated to use the released versions rather than SNAPSHOT versions.
 
 
-[cols="3a,3a,3a,3a,3a,2a", options="header"]
+[cols="3a,3a,3a,3a,3a,2a,2a", options="header"]
 |===
 |Artifact
 |Github Project
 |GAV(s)
 |Jenkins Job
 |link:https://developer.jboss.org/wiki/MavenDeployingARelease[Nexus Staging]
-|Latest Version
+|Latest Release
+|Next Version
 
 | ###### *Target Platforms*
 |
@@ -29,7 +30,9 @@ org.jboss.tools.targetplatforms
 |
 * https://repository.jboss.org/nexus/#stagingRepositories[Close then release]
 |
-4.62.0.Final
+* 4.62.0.Final
+|
+* 4.70.0.AM1-SNAPSHOT
 
 | ###### *Tycho Plugins & Rules*
 |
@@ -46,11 +49,13 @@ org.jboss.tools.releng
 
 * https://repository.jboss.org/nexus/#nexus-search;gav%7Eorg.jboss.tools.releng%7Eenforcer-rules%7E0.26*%7E%7E[enforcer-rules]
 |
-* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-maven-plugins.tycho-plugins_master/[jbosstools-maven-plugins.tycho-plugins_master] (CCI)
+* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-maven-plugins.tycho-plugins_master/[jbosstools-maven-plugins.tycho-plugins_master]
 |
 * https://repository.jboss.org/nexus/#stagingRepositories[Close then release]
 |
-0.26.1
+* 0.26.1
+|
+* 1.0.0-SNAPSHOT
 
 | ###### *Releng Scripts & Tools*
 |
@@ -60,11 +65,15 @@ org.jboss.tools.releng
 
 * https://repository.jboss.org/nexus/#nexus-search;gav%7Eorg.jboss.tools.releng%7Ejbosstools-releng-publish%7E4.4.*%7E%7E[jbosstools-releng-publish]
 |
-* http://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-build-ci_4.4.neon/[jbosstools-build-ci_4.4.neon] (BMW)
+* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-build-ci_master/[jbosstools-build-ci_master]
+* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-build-ci_4.4.neon/[jbosstools-build-ci_4.4.neon]
 |
 * https://repository.jboss.org/nexus/#stagingRepositories[Close then release]
 |
-4.4.3.Final
+* 4.4.3.Final
+|
+* 4.5.0.AM1-SNAPSHOT
+* 4.4.4.AM1-SNAPSHOT
 
 | ###### *Parent Pom*
 |
@@ -74,12 +83,16 @@ org.jboss.tools
 
 * https://repository.jboss.org/nexus/#nexus-search;gav%7Eorg.jboss.tools%7Eparent%7E4.4.*%7E%7E[parent]
 |
-* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-build.parent_master/[jbosstools-build.parent_master] (CCI)
-* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-build.parent_4.4.neon/[jbosstools-build.parent_4.4.neon] (CCI)
+* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-build.parent_master/[jbosstools-build.parent_master]
+* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-build.parent_4.4.neon/[jbosstools-build.parent_4.4.neon]
 |
 * https://repository.jboss.org/nexus/#stagingRepositories[Close then release]
 |
-4.4.3.Final-SNAPSHOT (not currently released - waiting until 4.4.x branch is created)
+* 4.4.3.Final
+|
+* 4.5.0.AM1-SNAPSHOT
+* 4.4.4.AM1-SNAPSHOT
+
 |===
 
 

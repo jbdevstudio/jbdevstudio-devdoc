@@ -342,17 +342,20 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.4.3.Final
-versionWithRespin_ds=10.3.0.GA
-
+versionWithRespin_jbt_PREV_GA=4.4.2.Final
 versionWithRespin_jbt_PREV=4.4.3.AM2
+versionWithRespin_jbt=4.4.3.Final
 versionWithRespin_jbt_NEXT=4.4.4.AM1
+
+versionWithRespin_ds_PREV_GA=10.2.0.GA
 versionWithRespin_ds_PREV=10.3.0.AM2
+versionWithRespin_ds=10.3.0.GA
 versionWithRespin_ds_NEXT=10.4.0.AM1
 
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 buildType="development"; if [[ ${version_jbt} == *".Final" ]]; then buildType="stable"; fi
+
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-04-update-ide-config.properties; do
@@ -360,8 +363,14 @@ for j in jbosstools-releng-push-to-dev-stable-04-update-ide-config.properties; d
   sleep 3s
 
   data="token=RELENG&buildType=${buildType}&\
-versionWithRespin_jbt_PREV=${versionWithRespin_jbt_PREV}&versionWithRespin_jbt_NEXT=${versionWithRespin_jbt_NEXT}&versionWithRespin_jbt=${versionWithRespin_jbt}&\
-versionWithRespin_ds_PREV=${versionWithRespin_ds_PREV}&versionWithRespin_ds_NEXT=${versionWithRespin_ds_NEXT}&versionWithRespin_ds=${versionWithRespin_ds}"
+versionWithRespin_jbt_PREV_GA=${versionWithRespin_jbt_PREV_GA}&\
+versionWithRespin_jbt_PREV=${versionWithRespin_jbt_PREV}&\
+versionWithRespin_jbt=${versionWithRespin_jbt}&\
+versionWithRespin_jbt_NEXT=${versionWithRespin_jbt_NEXT}&\
+versionWithRespin_ds_PREV_GA=${versionWithRespin_ds_PREV_GA}&\
+versionWithRespin_ds_PREV=${versionWithRespin_ds_PREV}&\
+versionWithRespin_ds=${versionWithRespin_ds}&\
+versionWithRespin_ds_NEXT=${versionWithRespin_ds_NEXT}"
   nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
   sleep 15s
 

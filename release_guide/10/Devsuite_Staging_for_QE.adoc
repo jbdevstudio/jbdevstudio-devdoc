@@ -24,8 +24,8 @@ you@wonka.mw.lab.eng.bos.redhat.com:/home/windup/apache2/www/html/RHDS/10.0/stag
 
 To prepare for staging in CSP, copy these files into the build folder and rename them so they match the filename of the .exe installer:
 
-https://raw.githubusercontent.com/jbdevstudio/jbdevstudio-product/jbosstools-4.4.0.x/results/customer-portal/devsuite.detailed-description.html
-https://raw.githubusercontent.com/jbdevstudio/jbdevstudio-product/jbosstools-4.4.0.x/results/customer-portal/devsuite.manual-instructions.txt
+https://raw.githubusercontent.com/jbdevstudio/jbdevstudio-product/jbosstools-4.4.x/results/customer-portal/devsuite.detailed-description.html
+https://raw.githubusercontent.com/jbdevstudio/jbdevstudio-product/jbosstools-4.4.x/results/customer-portal/devsuite.manual-instructions.txt
 
 First connect to dev01.mw.lab.eng.bos.redhat.com as +hudson+ user (requires permissions).
 

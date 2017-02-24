@@ -369,8 +369,8 @@ versionWithRespin_jbt=4.4.3.Final
 versionWithRespin_ds=10.3.0.GA
 versionWithRespin_ds_PREV=10.3.0.AM2
 earlyaccess_IS=earlyaccess/
-version_jbt_IS=4.4.0.Final
-version_ds_IS=10.0.0.GA
+version_jbt_IS=4.4.1.Final
+version_ds_IS=10.1.0.GA
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-04-update-merge-composites-html; do

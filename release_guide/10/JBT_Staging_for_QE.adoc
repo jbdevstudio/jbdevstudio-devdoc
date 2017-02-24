@@ -164,7 +164,7 @@ echo ""
 == Update Discovery Sites and URLs
 
 [[update-discovery-urls]]
-Update the *stable branch* (or master) discovery job ( https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-discovery_4.4.neon/configure (or jbosstools-discovery_master)) to use the correct source URLs and versions +
+Update the *stable branch* (or master) discovery job ( https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-discovery_4.4.neon/configure (or jbosstools-discovery_master)) to use the correct source URLs and versions +
 
 
 Then respin the job:
@@ -187,23 +187,23 @@ version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\
 TARGET_PLATFORM_VERSION_MAX=4.62.0.Final
 TARGET_PLATFORM_CENTRAL_MAX=4.62.0.Final-SNAPSHOT
 
-bosmwjenkins=https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-discovery_${stream_jbt}; do
-  prevJob=$(${JP} -s ${bosmwjenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${bosmwjenkins}/${j} enable"
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
   sleep 3
 
   data="buildType=staging&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
 TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&TARGET_PLATFORM_CENTRAL_MAX=${TARGET_PLATFORM_CENTRAL_MAX}"
-  nextJob=$(${JP} -s ${bosmwjenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${bosmwjenkins}/${j} buildWithParameters ${data}"
+  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
   sleep 15s
 
   if [[ "${prevJob}" == "${nextJob}" ]]; then
     echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
-    echo "[WARN] ${bosmwjenkins}/${j}"
+    echo "[WARN] ${ccijenkins}/${j}"
   else
-    ${JP} -s ${bosmwjenkins} -j ${j} -t disable
-    ${JP} -s ${bosmwjenkins} -j ${j} -t lastBuild/toggleLogKeep
+    ${JP} -s ${ccijenkins} -j ${j} -t disable
+    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
   fi
 done
 
@@ -496,7 +496,7 @@ for j in jbosstools-buildflow_${stream_jbt} jbosstools-composite-install_${strea
 done
 echo ""
 for j in jbosstools-discovery_${stream_jbt}; do
-  ${JP} -s ${bosmwjenkins} -j ${j} -t enable
+  ${JP} -s ${ccijenkins} -j ${j} -t enable
 done
 
 ----

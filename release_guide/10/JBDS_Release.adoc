@@ -90,11 +90,11 @@ Goal is to update the following pages to include links to guides and to set the 
 * http://developers.redhat.com/products/devstudio/hello-world/
 * http://developers.redhat.com/products/devstudio/docs-and-apis/
 
-Past example:
+The download page will be automatically updated when new downloads are uploaded into "Download Manager" and no further action is needed. For changes to the other pages that need making manually in Drupal, where they are managed, a bug must be filed. For example:
 
 * https://issues.jboss.org/browse/DEVELOPER-3908
 
-Later, the necessary changes should be made in Drupal, where this website is managed, by someone who has the necessary permissions.
+Once the release is completed and the download page reflects the latest GA version, the necessary changes will be made by someone who has the necessary permissions (currently Mike Guerette).
 
 Once you have the JIRA, you can link to it when sending the note to release-engineering@ below.
 

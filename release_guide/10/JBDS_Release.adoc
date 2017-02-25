@@ -27,6 +27,11 @@ google-chrome && google-chrome https://issues.jboss.org/plugins/servlet/project-
 
 == Rename artifacts to remove timestamp and buildID
 
+[IMPORTANT]
+====
+TODO: Migrate this step to a Jenkins job: https://issues.jboss.org/browse/JBDS-4288
+====
+
 To comply with Goldengate URL rules, we need to rename artifacts before they go to the CSP. For example
 `devstudio-10.3.0.AM1-v20151002-2235-B124-installer-eap.jar` must be renamed to `devstudio-10.3.0.AM1-installer-eap.jar`.
 

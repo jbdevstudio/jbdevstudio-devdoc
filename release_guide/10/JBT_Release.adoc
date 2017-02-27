@@ -222,6 +222,28 @@ Here's a job that verifies everything is updated:
 
 https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-04-update-merge-composites-html/
 
+[IMPORTANT]
+====
+
+To know what values to use for merging in the Integration Stack content (IS-suffixed variables), contact Paul Leacu or compare these URLs:
+
+http://download.jboss.org/jbosstools/neon/stable/updates/integration-stack/discovery/4.4.1.Final/ vs
+http://download.jboss.org/jbosstools/neon/development/updates/integration-stack/discovery/4.4.1.Final/
+and
+http://download.jboss.org/jbosstools/neon/stable/updates/integration-stack/discovery/4.4.1.Final/ vs
+http://download.jboss.org/jbosstools/neon/stable/updates/integration-stack/discovery/4.4.1.Final/earlyaccess/
+
+Similarly for devstudio:
+
+https://devstudio.jboss.com/10.0/stable/updates/integration-stack/discovery/10.1.0.GA/ vs
+https://devstudio.jboss.com/10.0/development/updates/integration-stack/discovery/10.1.0.GA/
+and
+https://devstudio.jboss.com/10.0/stable/updates/integration-stack/discovery/10.1.0.GA/ vs
+https://devstudio.jboss.com/10.0/stable/updates/integration-stack/discovery/10.1.0.GA/earlyaccess/
+
+====
+
+
 [source,bash]
 ----
 
@@ -230,8 +252,9 @@ export userpass=KERBUSER:PASSWORD
 
 versionWithRespin_jbt=4.4.3.Final
 versionWithRespin_ds=10.3.0.GA
-versionWithRespin_ds_PREV=10.3.0.AM2
-earlyaccess_IS=earlyaccess/
+versionWithRespin_ds_PREV_GA=10.2.0.GA
+qual_IS="stable" # "development" or "stable" as applicable - see tip above
+earlyaccess_IS="" # "" or "earlyaccess/" as applicable - see tip above
 version_jbt_IS=4.4.1.Final
 version_ds_IS=10.1.0.GA
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
@@ -239,8 +262,8 @@ JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-04-update-merge-composites-html; do
   prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
   sleep 3s
-  data="token=RELENG&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
-versionWithRespin_ds_PREV=${versionWithRespin_ds_PREV}&earlyaccess_IS=${earlyaccess_IS}&version_jbt_IS=${version_jbt_IS}&version_ds_IS=${version_ds_IS}"
+  data="token=RELENG&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&versionWithRespin_ds_PREV_GA=${versionWithRespin_ds_PREV_GA}&\
+qual_IS=${qual_IS}&earlyaccess_IS=${earlyaccess_IS}&version_jbt_IS=${version_jbt_IS}&version_ds_IS=${version_ds_IS}"
   nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
   sleep 15s
 

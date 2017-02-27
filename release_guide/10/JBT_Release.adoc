@@ -241,6 +241,17 @@ and
 https://devstudio.jboss.com/10.0/stable/updates/integration-stack/discovery/10.1.0.GA/ vs
 https://devstudio.jboss.com/10.0/stable/updates/integration-stack/discovery/10.1.0.GA/earlyaccess/
 
+The URLs used to fetch IS content are as follows:
+
+[source,bash]
+----
+eclipseReleaseName=neon
+devstudioReleaseVersion=10.0
+
+http://download.jboss.org/jbosstools/${eclipseReleaseName}/${qual_IS}/updates/integration-stack/discovery/${version_jbt_IS}/${earlyaccess_IS}
+https://devstudio.redhat.com/${devstudioReleaseVersion}/${qual_IS}/updates/integration-stack/discovery/${version_ds_IS}/${earlyaccess_IS}
+----
+
 ====
 
 

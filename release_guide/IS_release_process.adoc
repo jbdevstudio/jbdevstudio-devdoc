@@ -1143,7 +1143,8 @@ http://www.jboss.org/products/devstudio/get-started
 == Check List - Candidate Release
 
 * Verify that you're using a non -SNAPSHOT target platform.  .CRn or .Final are ok.
-* Build JBTIS in Jenkins (JBTIS-aggregate-discovery) - Use these parameters (example):
+** See *IS_TP_VERSION* parameter below
+* Build JBTIS in Jenkins (link:https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/JBTIS-aggregate-discovery[JBTIS-aggregate-discovery]) - Use these parameters (example):
 
 ** *STAGE* - Enable		
 ** *VERSION* - 4.4.2.CR1  (example)
@@ -1151,7 +1152,7 @@ http://www.jboss.org/products/devstudio/get-started
 ** *BUILD_ALIAS* - ${BUILD_TIMESTAMP}
 ** *BUILD_KIND* - jbosstools
 ** *BUILD_TYPE* - integration 
-** *IS_TP_VERSION* - 4.4.2.CR1
+** *IS_TP_VERSION* - 4.4.2.Final
 ** *TARGET_PLATFORM* - neon
 ** *UPSTREAM_DIRECTORY_XML* - http://download.jboss.org/jbosstools/neon/stable/updates/discovery.central/4.4.3.Final/jbosstools-directory.xml
 ** *UPSTREAM_UPDATE_SITE* - http://download.jboss.org/jbosstools/neon/stable/updates/
@@ -1162,7 +1163,7 @@ http://www.jboss.org/products/devstudio/get-started
 ** *DISCOVERY_SITE* - http://download.jboss.org/jbosstools/neon/staging/updates/integration-stack/${VERSION}
 ** *DISCOVERY_EA_SITE* - http://download.jboss.org/jbosstools/neon/staging/updates/integration-stack/${VERSION}/earlyaccess
 
-* Build DevstudioIS in Jenkins () - Use these parameters (example):
+* Build DevstudioIS in Jenkins (link:https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/DevstudioIS-aggregate-discovery[DevstudioIS-aggregate-discovery]) - Use these parameters (example):
 ** *STAGE* - Enable
 ** *VERSION* - 10.2.0.CR1
 ** *VERSION_MAJOR* - 10.0
@@ -1171,8 +1172,8 @@ http://www.jboss.org/products/devstudio/get-started
 ** *BUILD_ALIAS* - CR1
 ** *BUILD_KIND* - devstudio
 ** *BUILD_TYPE* - integration
-** *IS_TP_VERSION* - 4.4.2.CR1
-** *DEVSTUDIOIS_TP_VERSION* - 10.0.2.CR1
+** *IS_TP_VERSION* - 4.4.2.Final
+** *DEVSTUDIOIS_TP_VERSION* - 10.2.0.GA
 ** *UPSTREAM_DIRECTORY_XML* - https://devstudio.redhat.com/static/10.0/stable/updates/discovery.earlyaccess/10.3.0.GA/devstudio-directory.xml
 ** *UPSTREAM_UPDATE_SITE* - https://devstudio.redhat.com/${VERSION_MAJOR}/stable/updates/
 ** *UPDATE_SITE* - https://devstudio.redhat.com/${VERSION_MAJOR}/staging/updates/integration-stack/${VERSION}
@@ -1186,7 +1187,7 @@ http://www.jboss.org/products/devstudio/get-started
 ** *DEVSTUDIO_INSTALLER* - https://devstudio.redhat.com/static/10.0/stable/builds/devstudio-10.3.0.GA-build-product/2017-02-18_16-51-02-B94/all/devstudio-10.3.0.GA-v20170218-1636-B94-installer-standalone.jar
 ** *skipRevisionCheckWhenPublishing* - Enabled
 ** *BUILD_INSTALLER* - Enabled
-
+* Update /media/TOOLS-ssh/neon/staging/updates/integration-stack/compositeArtifacts.xml compositeContent.xml
 * Test! - p2 install, RH JBoss Central, all 3 stand-alone installers, offline zips
 
 * Look for an email from the DevstudioIS-notification-email job
@@ -1196,14 +1197,14 @@ http://www.jboss.org/products/devstudio/get-started
 == Check List - stable/ development Release
 
 * Verify that you're using a .Final target platform.
-* Build JBTIS in Jenkins (JBTIS-aggregate-discovery) - Use these parameters (example):
+* Build JBTIS in Jenkins (link:https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/JBTIS-aggregate-discovery[JBTIS-aggregate-discovery]) - Use these parameters (example):
 
 ** *STAGE* - Enable		
 ** *VERSION* - 4.4.2.Final  (example)
 ** *EA_ENABLED* - as needed
 ** *BUILD_ALIAS* - ${BUILD_TIMESTAMP}
 ** *BUILD_KIND* - jbosstools
-** *BUILD_TYPE* - integration 
+** *BUILD_TYPE* - stable (or development)
 ** *IS_TP_VERSION* - 4.4.2.Final
 ** *TARGET_PLATFORM* - neon
 ** *UPSTREAM_DIRECTORY_XML* - http://download.jboss.org/jbosstools/neon/stable/updates/discovery.central/4.4.3.Final/jbosstools-directory.xml
@@ -1215,7 +1216,7 @@ http://www.jboss.org/products/devstudio/get-started
 ** *DISCOVERY_SITE* - http://download.jboss.org/jbosstools/neon/staging/updates/integration-stack/${VERSION}
 ** *DISCOVERY_EA_SITE* - http://download.jboss.org/jbosstools/neon/staging/updates/integration-stack/${VERSION}/earlyaccess
 
-* Publish JBTIS in Jenkins (JBTIS-aggregate-publish) - Use these parameters (example):
+* Publish JBTIS in Jenkins (link:https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/JBTIS-aggregate-publish/[JBTIS-aggregate-publish]) - Use these parameters (example):
 ** *VERSION* - 4.4.2.Final
 ** *TARGET_PLATFORM* - neon
 ** *SOURCE_PATH* - neon/staging/updates/integration-stack/${VERSION}/
@@ -1224,7 +1225,7 @@ http://www.jboss.org/products/devstudio/get-started
 ** *PARENT_FOLDER* - integration-stack
 ** *BUILD_KIND* - jbosstools
 
-* Build DevstudioIS in Jenkins (DevstudioIS-aggregate-discovery) - Use these parameters (example):
+* Build DevstudioIS in Jenkins (link:https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/DevstudioIS-aggregate-discovery[DevstudioIS-aggregate-discovery]) - Use these parameters (example):
 ** *STAGE* - Enable
 ** *VERSION* - 10.2.0.GA
 ** *VERSION_MAJOR* - 10.0
@@ -1232,9 +1233,9 @@ http://www.jboss.org/products/devstudio/get-started
 ** *EA_ENABLED* - as needed
 ** *BUILD_ALIAS* - 
 ** *BUILD_KIND* - devstudio
-** *BUILD_TYPE* - integration
+** *BUILD_TYPE* - stable (or development)
 ** *IS_TP_VERSION* - 4.4.2.Final
-** *DEVSTUDIOIS_TP_VERSION* - 10.0.2.GA
+** *DEVSTUDIOIS_TP_VERSION* - 10.2.0.GA
 ** *UPSTREAM_DIRECTORY_XML* - https://devstudio.redhat.com/static/10.0/stable/updates/discovery.earlyaccess/10.3.0.GA/devstudio-directory.xml
 ** *UPSTREAM_UPDATE_SITE* - https://devstudio.redhat.com/${VERSION_MAJOR}/stable/updates/
 ** *UPDATE_SITE* - https://devstudio.redhat.com/${VERSION_MAJOR}/staging/updates/integration-stack/${VERSION}
@@ -1249,14 +1250,14 @@ http://www.jboss.org/products/devstudio/get-started
 ** *skipRevisionCheckWhenPublishing* - Enabled
 ** *BUILD_INSTALLER* - Enabled
 
-* Publish DevstudioIS in Jenkins (DevstudioIS-aggregate-publish) - Use these parameters (example):
+* Publish DevstudioIS in Jenkins (link:https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/DevstudioIS-aggregate-publish/[DevstudioIS-aggregate-publish]) - Use these parameters (example):
 ** *BUILD_TYPE* - stable
 ** *EA_ENABLED* - as needed
 ** *VERSION_MAJOR* - 10.0
 ** *VERSION* - 10.2.0.GA
 ** *PARENT_FOLDER* - integration-stack
 ** *SOURCE_PATH* - 10.0/staging/updates/integration-stack
-
+* Update /media/JBDS-ssh/10.0/staging/updates/integration-stack/compositeArtifacts.xml compositeContent.xml
 * Test! - p2 install, RH JBoss Central, all 3 stand-alone installers, offline zips, Eclipse Marketplace
 
 * Go Live
@@ -1268,4 +1269,4 @@ The publish jobs put the bits into the outward facing directories but you're not
 
 * Look for an email from the DevstudioIS-notification-email job
 ** Tweek that email and send it to jbds-is-pm-list, soa-tools-list, Andrej, Matus, Tomas, Tim, Gomathi, jboss-qe-leads, Jane, Misha, Nacia
-** DEVSTUDIOIS 10.1.0.GA/ JBTIS 4.4.1.Final now live
+** DEVSTUDIOIS 10.2.0.GA/ JBTIS 4.4.2.Final now live

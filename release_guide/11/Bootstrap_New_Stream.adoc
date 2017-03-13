@@ -1,0 +1,47 @@
+Before you can build anything in JBoss Tools / Devstudio release for a new release stream (eg. Neon -> Oxygen, Oxygen -> Photon) you need to do some initial bootstrapping.
+
+== Create JBoss Tools composite sites
+
+Every year we need a new pair of composite sites. These are used to determine when a new JBoss Tools aggregate must be built, based on polling the p2 metadata of the composite.
+
+Latest versions are here:
+
+* http://download.jboss.org/jbosstools/neon/snapshots/builds/_composite_/core/
+* http://download.jboss.org/jbosstools/oxygen/snapshots/builds/_composite_/core/
+
+== Create Stable, Development, Staging, Snapshots placeholder update sites & build folders
+
+Every year we need to create placeholder URLs for these locations:
+
+* http://download.jboss.org/jbosstools/oxygen/snapshots/updates/
+* http://download.jboss.org/jbosstools/oxygen/snapshots/builds/
+* http://download.jboss.org/jbosstools/oxygen/staging/updates/
+* http://download.jboss.org/jbosstools/oxygen/staging/builds/
+* http://download.jboss.org/jbosstools/oxygen/development/updates/
+* http://download.jboss.org/jbosstools/oxygen/stable/updates/
+
+* https://devstudio.redhat.com/11/snapshots/updates/
+* https://devstudio.redhat.com/11/snapshots/builds/
+* https://devstudio.redhat.com/11/staging/updates/
+* https://devstudio.redhat.com/11/staging/builds/
+* https://devstudio.redhat.com/11/development/updates/
+* https://devstudio.redhat.com/11/stable/updates/
+
+== Update Web Tools Server Adapter Discovery plugin w/ link to new URL
+
+Every year the WTP Server Adapter discovery plugin needs to be updated to point to the new year's JBoss Tools stuff.
+
+See https://issues.jboss.org/browse/JBIDE-24080 and https://bugs.eclipse.org/513578
+
+In addition to making the change in the webtools project, the destination folder must also ezist as a valid update site.
+
+Initially, this will be a symlink to the latest CI build or last year's stable site (if no CI available). Once a stable is available, the symlink then needs to be updated. So in order, the symlinks from http://download.jboss.org/jbosstools/updates/webtools/oxygen/ could be:
+
+* http://download.jboss.org/jbosstools/neon/stable/updates/
+* http://download.jboss.org/jbosstools/oxygen/snapshots/updates/ (once available)
+* http://download.jboss.org/jbosstools/oxygen/development/updates/ (once first AM milestone is released)
+* http://download.jboss.org/jbosstools/oxygen/stable/updates/ (once first GA/Final is released)
+
+== More?
+
+There are probably more steps to be done. This doc is a work in progress and more will be added here as they are remembered/needed.

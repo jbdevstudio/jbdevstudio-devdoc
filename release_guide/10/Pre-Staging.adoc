@@ -71,6 +71,7 @@ for j in jbosstools-releng-push-to-staging-00-new-and-noteworthy-jiras; do
 done
 
 ----
+
 Or, you can run this script:
 
 [source,bash]

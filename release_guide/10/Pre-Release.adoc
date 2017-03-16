@@ -33,44 +33,34 @@ TODO: Migrate this step to a Jenkins job: https://issues.jboss.org/browse/JBDS-4
 To comply with Goldengate URL rules, we need to rename artifacts before they go to the CSP. For example
 `devstudio-10.3.0.AM1-v20151002-2235-B124-installer-eap.jar` must be renamed to `devstudio-10.3.0.AM1-installer-eap.jar`.
 
-Connect to dev01.hosts.mwqe.eng.bos.redhat.com as +hudson+ user (requires permissions).
+Configure, then run this job: https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-00-rename-GA-artifacts/
 
 [source,bash]
 ----
-me@local$ ssh dev01.hosts.mwqe.eng.bos.redhat.com
-me@dev01$ sudo su - hudson
-hudson@dev01$ ...
-----
 
-Then:
+# kerberos login for the Jenkins server
+export userpass=KERBUSER:PASSWORD
 
-[source,bash]
-----
-versionExe=1.3.0-GA # note the dash, not period after x.y.z
-versionWithRespin_ds=10.4.0.AM1 # a, b, c...
-version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
-pushd /qa/services/http/binaries/RHDS/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
-for f in $(ls *latest*); do echo "rm $f"; rm -f $f; done
-for f in $(ls devstudio-${version_ds}-* | grep -v latest); do g=$(echo $f | sed s#-v[[:digit:]]*-[[:digit:]]*-B[[:digit:]]*##); echo "mv $f $g"; mv $f $g; done
-for f in $(ls development-suite-${versionExe}-* | grep -v latest); do g=$(echo $f | sed s#-[[:digit:]]*-[[:digit:]]*##); echo "mv $f $g"; mv $f $g; done
-touch *
-chmod +x *.jar *.exe
-ls -l
-popd
-----
+versionWithRespin_ds=10.4.0.AM1
 
-Now, move & symlink the ${versionWithRespin_ds} folder:
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+for j in jbosstools-releng-push-to-dev-stable-00-rename-GA-artifacts; do
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  sleep 3s
 
-[source,bash]
-----
-versionWithRespin_ds=10.4.0.AM1 # a, b, c...
-version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
-buildType=stable # use /stable/ or /development/ as appropriate
-pushd /qa/services/http/binaries/RHDS/10.0/staging/builds/
-mkdir -p ../../${buildType}/builds/
-mv devstudio-${versionWithRespin_ds}-build-product ../../${buildType}/builds/devstudio-${version_ds}-build-product
-ln -s ../../${buildType}/builds/devstudio-${version_ds}-build-product devstudio-${versionWithRespin_ds}-build-product
-popd
+  data="versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}"
+  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+  sleep 15s
+
+  if [[ "${prevJob}" == "${nextJob}" ]]; then
+    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
+    echo "[WARN] ${ccijenkins}/${j}"
+  else
+    ${JP} -s ${ccijenkins} -j ${j} -t disable
+    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+  fi
+done
 
 ----
 

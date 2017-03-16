@@ -4,23 +4,26 @@ This repository contains documentation for building, staging, and releasing both
 
 == Table of Contents
 
-* Getting Started
+* Pre-Staging
 ** link:Access_Prerequisites.adoc[Access Prerequisites] - systems to which you need access, passwords, ssh keys
 ** link:Branching_and_Tagging.adoc[Branching and Tagging] - steps to perform to branch in preparation before staging
-** link:New_And_Noteworthy.adoc[New And Noteworthy] - steps to perform to create New & Noteworthy JIRAs, prior to staging
+** link:Pre-Staging.adoc[Pre-Staging] - steps to perform prior to staging, such as emails to mailing lists and creation of  New & Noteworthy JIRAs
 
 * Staging
-** link:JBT_Staging_for_QE.adoc[JBoss Tools Staging] - how to stage a release of JBoss Tools for QE review
-** link:JBDS_Staging_for_QE.adoc[Devstudio Staging] - how to stage a release of Devstudio for QE review
+** link:JBT_Staging.adoc[JBoss Tools Staging] - how to stage a release of JBoss Tools for QE review
+** link:Devstudio_Staging.adoc[Devstudio Staging] - how to stage a release of Devstudio for QE review
+
+* Pre-Release
+** link:Pre-Release.adoc[Pre-Release] - steps to perform prior to a release, such as JIRA cleanup, artifact renaming, RCM ticket creation
 
 * Release
 ** link:Nexus_Release.adoc[Nexus Release] - details about how to release build artifacts to Nexus for use in downstream builds
 ** link:JBT_Release.adoc[JBoss Tools Release] - how to promote a staged JBoss Tools build to release, after QE approval
-** link:JBDS_Release.adoc[Devstudio Release] - how to promote a staged Devstudio build to release, after QE approval
+** link:Devstudio_Release.adoc[Devstudio Release] - how to promote a staged Devstudio build to release, after QE approval
 ** link:Branching_and_Tagging.adoc[Branching and Tagging] - steps to perform to tag a release
 
 ---
 
 * Other Documents (outdated)
-** link:Devsuite_Staging_for_QE.adoc[Devsuite Staging]
+** link:Devsuite_Staging.adoc[Devsuite Staging]
 ** link:Merge_IS_Discovery.adoc[Merge Integration Stack Discovery] - steps to perform to ensure that the latest IS content is merged into JBoss Tools and Devstudio Central Discovery sites

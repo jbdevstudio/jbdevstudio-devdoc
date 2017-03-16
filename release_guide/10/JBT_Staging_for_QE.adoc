@@ -236,6 +236,8 @@ NOTE: To save time, you can run this in parallel with the above step to create t
 [IMPORTANT]
 ====
 
+Use dev90.hosts.mwqe.eng.bos.redhat.com (10.19.65.30) instead of www.qa.jboss.com (10.16.89.17) as can no longer ssh to hudson@www.qa
+
 Currently, the steps that require access to hudson@10.16.89.17 or /qa/services/http/binaries/RHDS/targetplatforms/ are
 disabled as they appears to be timing out (or don't work).
 

@@ -12,7 +12,7 @@ NOTE: For admin access to CCI jenkins (beyond simple job exec permission) - ask 
 
 In case scripts fail or manual file tweaks are needed, direct filesystem access is highly recommended.
 
-NOTE: For both systems listed, open a PnT ticket at https://redhat.service-now.com/pnt/ and submit your ssh public key. Copy your manager on the request to be granted permission. See also https://mojo.redhat.com/docs/DOC-1093189
+NOTE: For both systems listed, open a PnT ticket at https://redhat.service-now.com/pnt/ and submit your ssh public key. Copy your manager on the request to be granted permission. See link:https://mojo.redhat.com/docs/DOC-1093189[]
 
 * filemgmt.jboss.org
 * dev01.hosts.mwqe.eng.bos.redhat.com (10.19.64.251)

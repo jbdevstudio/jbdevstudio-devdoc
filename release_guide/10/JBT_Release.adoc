@@ -4,6 +4,13 @@ This document describe how to publish a valid JBoss Tools build to production af
 
 With distractions (email, IRC), this process took 90 mins for the Beta release.
 
+= Pre-Release Steps
+
+See link:Pre-Release.adoc[Pre-Release]
+
+
+= Release steps
+
 == Clone jbosstools-build-ci repo
 
 [source,bash]
@@ -476,7 +483,7 @@ google-chrome && google-chrome https://issues.jboss.org/plugins/servlet/project-
 
 == Submit PR to update tools.jboss.org
 
-See JBDS_Release.adoc
+See link:Devstudio_Release.adoc[Devstudio Release]
 
 
 == Smoke test the release
@@ -493,17 +500,17 @@ Before notifying team of release, must check for obvious problems. Any failure t
 
 == Tagging JBoss Tools
 
-See Branching_and_Tagging.adoc
+See link:Branching_and_Tagging.adoc[Branching and Tagging]
 
 
 == Tagging Developer Studio
 
-See Branching_and_Tagging.adoc
+See link:Branching_and_Tagging.adoc[Branching and Tagging]
 
 
 == Notify Team Lead(s)
 
-See JBDS_Release.adoc
+See link:Devstudio_Release.adoc[Devstudio Release]
 
 
 == Disable dev-stable jobs
@@ -569,4 +576,4 @@ Open the appropriate job, edit its parameters, and kick the job.
 
 == Commit updates to release guide (including this document):
 
-See JBDS_Release.adoc
+See link:Devstudio_Release.adoc[Devstudio Release]

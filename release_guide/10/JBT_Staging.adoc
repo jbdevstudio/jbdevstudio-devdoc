@@ -2,6 +2,13 @@
 
 This document describe how to provide a valid JBoss Tools build to QE so they can test us.
 
+= Pre-Staging Steps
+
+See link:Pre-Staging.adoc[Pre-Staging]
+
+
+= Staging steps
+
 [NOTE]
 ====
 Note that +sftp://tools@10.5.105.197/downloads_htdocs/tools/+ maps to +http://download.jboss.org/jbosstools/+ +

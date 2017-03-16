@@ -2,6 +2,7 @@
 
 These steps can be done before the actual release (eg., on the Thurs or Fri before the Monday release, as long as QE has more-or-less signed off). Check with QE before proceeding.
 
+
 == Verify that all JIRAs assigned to the current milestone are resolved
 
 Launch the config pages for JBIDE and JBDS and using the gear icons, release the milestone version in JIRA.
@@ -20,6 +21,7 @@ google-chrome && google-chrome https://issues.jboss.org/plugins/servlet/project-
   https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
 
 ----
+
 
 == Rename artifacts to remove timestamp and buildID
 
@@ -72,6 +74,7 @@ popd
 
 ----
 
+
 == Verify install instructions are correct
 
 Look at the .txt and .html files in /qa/services/http/binaries/RHDS/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
@@ -82,6 +85,7 @@ If anything is wrong, fix it by hand, then also commit your changes to the templ
 
 https://github.com/jbdevstudio/jbdevstudio-product/commit/3827045dca85e73c5ae339cc13f514591e3c1835
 https://github.com/jbdevstudio/jbdevstudio-product/commit/e6c2954207d1db7451f7adfd2d89c7ceccd6adbe
+
 
 == File bug to update http://developers.redhat.com/products/devstudio/
 
@@ -102,6 +106,7 @@ Once you have the JIRA, you can link to it when sending the note to release-engi
 NOTE: If we ever decide to drop the EAP-bundled installer, or there's a newer version of EAP than is bundled, we could add the EAP 7 zip / installer to list of devstudio artifacts on both developers.redhat.com and www.jboss.org. Explicit listing of files used to be done like this:
 * https://github.com/redhat-developer/developers.redhat.com/blob/25640af93a8d7d219c189d37c528534acda17483/products/devstudio/_common/product.yml and
 * https://github.com/redhat-developer/developers.redhat.com/blob/25640af93a8d7d219c189d37c528534acda17483/products/eap/_common/product.yml
+
 
 == Clone jbosstools-build-ci repo
 

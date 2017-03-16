@@ -38,7 +38,7 @@ chmod +x -R */*.sh */*/*.sh
 ----
 
 
-== Creating New & Noteworthy JIRAs
+== Create New & Noteworthy JIRAs
 
 Configure, then run this job: https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-staging-00-new-and-noteworthy-jiras/
 
@@ -48,8 +48,8 @@ Configure, then run this job: https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.4.4.AM7
-versionWithRespin_ds=10.4.0.AM7
+versionWithRespin_jbt=4.4.4.AM2
+versionWithRespin_ds=10.4.0.AM2
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh

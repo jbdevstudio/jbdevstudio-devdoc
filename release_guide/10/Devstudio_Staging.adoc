@@ -1,6 +1,13 @@
-= Publishing devstudio Installers & update sites for QE
+= Staging devstudio Installers & update sites for QE
 
 This document describe how to provide a valid JBoss Developer Studio build to QE so they can test us.
+
+= Pre-Staging Steps
+
+See link:Pre-Staging.adoc[Pre-Staging]
+
+
+= Staging steps
 
 [IMPORTANT]
 ====
@@ -31,15 +38,15 @@ chmod +x -R */*.sh */*/*.sh
 
 == Update Discovery Sites and URLs
 
-See details in JBT_Staging_For_QE.adoc
+See link:JBT_Staging.adoc[JBoss Tools Staging]
 
 == Verify correct version set in com.jboss.devstudio.central.core
 
-See details in JBT_Staging_For_QE.adoc
+See link:JBT_Staging.adoc[JBoss Tools Staging]
 
 == Disable jobs
 
-See details in JBT_Staging_For_QE.adoc
+See link:JBT_Staging.adoc[JBoss Tools Staging]
 
 == Stage to devstudio.redhat.com and internal qa server
 
@@ -83,12 +90,12 @@ https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-
 
 === Update /staging/updates/ sites and merge in Integration Stack content
 
-See details in JBT_Staging_For_QE.adoc
+See link:JBT_Staging.adoc[JBoss Tools Staging]
 
 
 == Release the latest staging site to ide-config.properties
 
-See details in JBT_Staging_For_QE.adoc
+See link:JBT_Staging.adoc[JBoss Tools Staging]
 
 
 == Smoke test the release (manually)
@@ -128,12 +135,12 @@ If this fails, it is most likely due to a bug or a failure in a step above. If p
 
 == Enable jobs
 
-See details in JBT_Staging_For_QE.adoc
+See link:JBT_Staging.adoc[JBoss Tools Staging]
 
 
 == Notify the team (send 1 email)
 
-See details in JBT_Staging_For_QE.adoc
+See link:JBT_Staging.adoc[JBoss Tools Staging]
 
 
 == Trigger QE Smoke tests (automated)

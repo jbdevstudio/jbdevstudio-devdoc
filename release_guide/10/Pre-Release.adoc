@@ -1,0 +1,159 @@
+= Pre-Release Steps
+
+These steps can be done before the actual release (eg., on the Thurs or Fri before the Monday release, as long as QE has more-or-less signed off). Check with QE before proceeding.
+
+== Verify that all JIRAs assigned to the current milestone are resolved
+
+Launch the config pages for JBIDE and JBDS and using the gear icons, release the milestone version in JIRA.
+
+Note: If there are unresolved issues with a fixversion set to the current milestone, make sure those issues will not be lost / forgotten.
+
+Send an email to jbosstools-dev@ and jboss-devstudio-list@  reminding people to close out their JIRAs or move them to the next milestone fixversion.
+
+Sample email: http://lists.jboss.org/pipermail/jbosstools-dev/2014-April/008799.html
+
+DO NOT proceed with the release if there are any unresolved issues. Only JIRAs allowed before release should be bookeping JIRAs or issues that cannot be closed until the push is complete.
+
+[source,bash]
+----
+google-chrome && google-chrome https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
+  https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
+
+----
+
+== Rename artifacts to remove timestamp and buildID
+
+[IMPORTANT]
+====
+TODO: Migrate this step to a Jenkins job: https://issues.jboss.org/browse/JBDS-4288
+====
+
+To comply with Goldengate URL rules, we need to rename artifacts before they go to the CSP. For example
+`devstudio-10.3.0.AM1-v20151002-2235-B124-installer-eap.jar` must be renamed to `devstudio-10.3.0.AM1-installer-eap.jar`.
+
+Connect to dev01.hosts.mwqe.eng.bos.redhat.com as +hudson+ user (requires permissions).
+
+[source,bash]
+----
+me@local$ ssh dev01.hosts.mwqe.eng.bos.redhat.com
+me@dev01$ sudo su - hudson
+hudson@dev01$ ...
+----
+
+Then:
+
+[source,bash]
+----
+versionExe=1.3.0-GA # note the dash, not period after x.y.z
+versionWithRespin_ds=10.4.0.AM1 # a, b, c...
+version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
+pushd /qa/services/http/binaries/RHDS/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
+for f in $(ls *latest*); do echo "rm $f"; rm -f $f; done
+for f in $(ls devstudio-${version_ds}-* | grep -v latest); do g=$(echo $f | sed s#-v[[:digit:]]*-[[:digit:]]*-B[[:digit:]]*##); echo "mv $f $g"; mv $f $g; done
+for f in $(ls development-suite-${versionExe}-* | grep -v latest); do g=$(echo $f | sed s#-[[:digit:]]*-[[:digit:]]*##); echo "mv $f $g"; mv $f $g; done
+touch *
+chmod +x *.jar *.exe
+ls -l
+popd
+----
+
+Now, move & symlink the ${versionWithRespin_ds} folder:
+
+[source,bash]
+----
+versionWithRespin_ds=10.4.0.AM1 # a, b, c...
+version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
+buildType=stable # use /stable/ or /development/ as appropriate
+pushd /qa/services/http/binaries/RHDS/10.0/staging/builds/
+mkdir -p ../../${buildType}/builds/
+mv devstudio-${versionWithRespin_ds}-build-product ../../${buildType}/builds/devstudio-${version_ds}-build-product
+ln -s ../../${buildType}/builds/devstudio-${version_ds}-build-product devstudio-${versionWithRespin_ds}-build-product
+popd
+
+----
+
+== Verify install instructions are correct
+
+Look at the .txt and .html files in /qa/services/http/binaries/RHDS/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
+
+Verify that they contain correct install/usage instructions & versions.
+
+If anything is wrong, fix it by hand, then also commit your changes to the templates.
+
+https://github.com/jbdevstudio/jbdevstudio-product/commit/3827045dca85e73c5ae339cc13f514591e3c1835
+https://github.com/jbdevstudio/jbdevstudio-product/commit/e6c2954207d1db7451f7adfd2d89c7ceccd6adbe
+
+== File bug to update http://developers.redhat.com/products/devstudio/
+
+Goal is to update the following pages to include links to guides and to set the correct latest GA release version:
+
+* http://developers.redhat.com/products/devstudio/download/
+* http://developers.redhat.com/products/devstudio/hello-world/
+* http://developers.redhat.com/products/devstudio/docs-and-apis/
+
+The download page will be automatically updated when new downloads are uploaded into "Download Manager" and no further action is needed. For changes to the other pages that need making manually in Drupal, where they are managed, a bug must be filed. For example:
+
+* https://issues.jboss.org/browse/DEVELOPER-3908
+
+Once the release is completed and the download page reflects the latest GA version, the necessary changes will be made by someone who has the necessary permissions (currently Mike Guerette).
+
+Once you have the JIRA, you can link to it when sending the note to release-engineering@ below.
+
+NOTE: If we ever decide to drop the EAP-bundled installer, or there's a newer version of EAP than is bundled, we could add the EAP 7 zip / installer to list of devstudio artifacts on both developers.redhat.com and www.jboss.org. Explicit listing of files used to be done like this:
+* https://github.com/redhat-developer/developers.redhat.com/blob/25640af93a8d7d219c189d37c528534acda17483/products/devstudio/_common/product.yml and
+* https://github.com/redhat-developer/developers.redhat.com/blob/25640af93a8d7d219c189d37c528534acda17483/products/eap/_common/product.yml
+
+== Clone jbosstools-build-ci repo
+
+See link:JBT_Staging.adoc[JBoss Tools Staging]
+
+
+== Announce internally for push to CSP staging site
+
+Submit an RCM ticket to release-engineering@redhat.com to requet that the binaries be uploaded to the CSP (Red Hat Customer Portal) and Download Manager.
+
+IMPORTANT: As this takes some time and requires coordination with other teams, this step should be initiated a few days before release to allow processing time.
+
+Previous ticket:
+
+* https://projects.engineering.redhat.com/browse/RCM-12959
+
+Communicate with Chris O'Brien (internal IRC: siege) to coordinate the release. All the above can happen in parallel / before the updates below.
+
+Here is a job that creates the RCM ticket:
+
+WARNING: TODO: make sure this works (untested - was done by hand last time).
+
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-dev-stable-00-releng-request-email/configure
+
+[source,bash]
+----
+
+# kerberos login for the Jenkins server
+export userpass=KERBUSER:PASSWORD
+
+versionWithRespin_ds=10.4.0.AM1
+GOLIVEDATE="Foo, Feb 30, 2017"
+TOrecipients="release-engineering@redhat.com"
+CCrecipients="cobrien@redhat.com, mhusnain@redhat.com, nboldt@redhat.com, jmaury@redhat.com, timoran@redhat.com"
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+for j in jbosstools-releng-push-to-dev-stable-00-releng-request-email; do
+  prevJob=$(prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable" -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  sleep 3s
+
+  data="token=RELENG&versionWithRespin_ds=${versionWithRespin_ds}&\
+GOLIVEDATE=${GOLIVEDATE}&TOrecipients=${TOrecipients}&CCrecipients=${CCrecipients}"
+  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+  sleep 15s
+
+  if [[ "${prevJob}" != "${nextJob}" ]]; then
+    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
+    echo "[WARN] ${ccijenkins}/${j}"
+  else
+    ${JP} -s ${ccijenkins} -j ${j} -t disable
+    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+  fi
+done
+
+----

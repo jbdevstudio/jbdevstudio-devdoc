@@ -42,6 +42,18 @@ Initially, this will be a symlink to the latest CI build or last year's stable s
 * http://download.jboss.org/jbosstools/oxygen/development/updates/ (once first AM milestone is released)
 * http://download.jboss.org/jbosstools/oxygen/stable/updates/ (once first GA/Final is released)
 
+== Update ide-config.properties
+
+With the maintenance branch moving from master to 4.4.x links need to be updated.
+
+Eg., https://github.com/jbosstools/jbosstools-download.jboss.org/pull/623
+
+We then also need to add entries for 4.5/11 snapshots.
+
+Eg., https://github.com/jbosstools/jbosstools-download.jboss.org/commit/ce5c4c29a8dfdf809643dbe03746250591894800
+
+Once 4.4.4.Final/10.4.0.GA are done, we can then update ide-config.*-fragment.properties to include staging and development URLs for 4.5/11.
+
 == More?
 
 There are probably more steps to be done. This doc is a work in progress and more will be added here as they are remembered/needed.

@@ -56,8 +56,8 @@ You will need to enable the jobs:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.4.4.AM1
-versionWithRespin_ds=10.4.0.AM1
+versionWithRespin_jbt=4.4.4.AM2
+versionWithRespin_ds=10.4.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # if [[ ${version_jbt} == *".Final" ]]; then
@@ -82,9 +82,9 @@ Configure, then run this job:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-version_parent=4.4.4.AM1-SNAPSHOT
-versionWithRespin_jbt=4.4.4.AM1
-versionWithRespin_ds=10.4.0.AM1
+version_parent=4.4.4.AM2-SNAPSHOT
+versionWithRespin_jbt=4.4.4.AM2
+versionWithRespin_ds=10.4.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 if [[ ${version_jbt} == *".Final" ]]; then
@@ -118,7 +118,7 @@ done
 
 
 If any branches have not yet been created, you can either:
-* Ask Denis, Fred, or Max to get them created
+* Ask Denis, Fred, or Nick to get them created
 * Create them yourself like this:
 
 [source,bash]
@@ -141,8 +141,8 @@ To prevent accidentally rebuilding something while you're copying it away, make 
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.4.4.AM1
-versionWithRespin_ds=10.4.0.AM1
+versionWithRespin_jbt=4.4.4.AM2
+versionWithRespin_ds=10.4.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # if [[ ${version_jbt} == *".Final" ]]; then
@@ -182,8 +182,8 @@ Then respin the job:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.4.4.AM1
-versionWithRespin_ds=10.4.0.AM1
+versionWithRespin_jbt=4.4.4.AM2
+versionWithRespin_ds=10.4.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # if [[ ${version_jbt} == *".Final" ]]; then
@@ -191,8 +191,8 @@ version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\
 # else
 #   stream_jbt=master
 # fi
-TARGET_PLATFORM_VERSION_MAX=4.62.0.Final
-TARGET_PLATFORM_CENTRAL_MAX=4.62.0.Final-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.63.0.Final-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.63.0.Final-SNAPSHOT
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
@@ -224,7 +224,7 @@ You'll need this later for smoke testing. Start fetching it now to save time lat
 [source,bash]
 ----
 
-cd ~/tmp; wget http://download.eclipse.org/technology/epp/downloads/release/neon/2/eclipse-jee-neon-2-linux-gtk-x86_64.tar.gz &
+cd ~/tmp; wget http://download.eclipse.org/technology/epp/downloads/release/neon/3/eclipse-jee-neon-3-linux-gtk-x86_64.tar.gz &
 # or
 cd ~/tmp; wget https://hudson.eclipse.org/packaging/job/neon.epp-tycho-build/437/artifact/org.eclipse.epp.packages/archive/20160913-0900_eclipse-jee-neon-1-linux.gtk.x86_64.tar.gz &
 
@@ -261,12 +261,12 @@ When run on Bos MW, this job was able to do a local copy using NFS mounted drive
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.4.4.AM1
-versionWithRespin_ds=10.4.0.AM1
+versionWithRespin_jbt=4.4.4.AM2
+versionWithRespin_ds=10.4.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
-TARGET_PLATFORM_VERSION_MAX=4.62.0.Final
-TARGET_PLATFORM_CENTRAL_MAX=4.62.0.Final-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.63.0.Final-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.63.0.Final-SNAPSHOT
 # if [[ ${version_jbt} == *".Final" ]]; then
   stream_jbt=4.4.neon
   stream_ds=10.0.neon
@@ -277,6 +277,10 @@ TARGET_PLATFORM_CENTRAL_MAX=4.62.0.Final-SNAPSHOT
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+for j in jbosstools-releng-push-to-staging-03-verify-builds-update-sites; do
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  google-chrome ${ccijenkins}/${j} &
+done
 for j in jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites; do
   prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
   sleep 3s
@@ -294,6 +298,7 @@ TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&TARGET_PLATFORM_CENTR
     ${JP} -s ${ccijenkins} -j ${j} -t disable
     ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
   fi
+  google-chrome ${ccijenkins}/${j} &
 done
 
 ----
@@ -302,7 +307,7 @@ If you can't get the job to run because dev01 slave is backlogged with a long qu
 
 http://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites/configure-readonly/
 
-And now, we wait about 30-60 mins for the above job to complete.
+And now, we wait about 35 mins for the above job to complete.
 
 ```
 Time passes...
@@ -314,9 +319,14 @@ When done, it's time to verify everything was pushed correctly.
 
 === Verify builds and update sites correctly pushed
 
-Here's a job that verifies everything is published:
+[IMPORTANT]
+====
+This step should have fired automatically when the *jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites* job completed.
+
+But if you want to run it yourself, here's a job that verifies everything is published:
 
 http://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-03-verify-builds-update-sites/
+====
 
 [source,bash]
 ----
@@ -324,8 +334,8 @@ http://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-t
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.4.4.AM1
-versionWithRespin_ds=10.4.0.AM1
+versionWithRespin_jbt=4.4.4.AM2
+versionWithRespin_ds=10.4.0.AM2
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
@@ -374,12 +384,12 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.4.4.AM1
-versionWithRespin_ds=10.4.0.AM1
-versionWithRespin_ds_PREV=10.3.0.GA
-earlyaccess_IS=earlyaccess/
-version_jbt_IS=4.4.1.Final
-version_ds_IS=10.1.0.GA
+versionWithRespin_jbt=4.4.4.AM2
+versionWithRespin_ds=10.4.0.AM2
+versionWithRespin_ds_PREV=10.4.0.AM1
+earlyaccess_IS=
+version_jbt_IS=4.4.2.Final
+version_ds_IS=10.2.0.GA
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-04-update-merge-composites-html; do
@@ -416,14 +426,14 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 export userpass=KERBUSER:PASSWORD
 
 versionWithRespin_jbt_PREV_GA=4.4.3.Final
-versionWithRespin_jbt_PREV=4.4.3.Final
-versionWithRespin_jbt=4.4.4.AM1
-versionWithRespin_jbt_NEXT=4.4.4.AM2
+versionWithRespin_jbt_PREV=4.4.4.AM1
+versionWithRespin_jbt=4.4.4.AM2
+versionWithRespin_jbt_NEXT=4.4.4.AM3
 
 versionWithRespin_ds_PREV_GA=10.3.0.GA
-versionWithRespin_ds_PREV=10.3.0.GA
-versionWithRespin_ds=10.4.0.AM1
-versionWithRespin_ds_NEXT=10.4.0.AM2
+versionWithRespin_ds_PREV=10.4.0.AM1
+versionWithRespin_ds=10.4.0.AM2
+versionWithRespin_ds_NEXT=10.4.0.AM3
 
 buildType="staging"
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
@@ -482,8 +492,8 @@ If the next build WILL be a respin, you need to simply:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.4.4.AM1
-versionWithRespin_ds=10.4.0.AM1
+versionWithRespin_jbt=4.4.4.AM2
+versionWithRespin_ds=10.4.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # if [[ ${version_jbt} == *".Final" ]]; then
@@ -531,8 +541,8 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-rele
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.4.4.AM1
-versionWithRespin_ds=10.4.0.AM1
+versionWithRespin_jbt=4.4.4.AM2
+versionWithRespin_ds=10.4.0.AM2
 if [[ ${version_jbt} == *".Final" ]]; then
   stream_jbt=4.4.neon
   github_branch=jbosstools-4.4.4.x
@@ -541,8 +551,8 @@ else
   github_branch=jbosstools-4.4.x
 fi
 TARGET_PLATFORM_VERSION_MIN=4.60.2.Final
-TARGET_PLATFORM_VERSION_MAX=4.62.0.Final
-TARGET_PLATFORM_CENTRAL_MAX=4.62.0.Final-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.63.0.Final-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.63.0.Final-SNAPSHOT
 respinSuffix=""
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
@@ -576,8 +586,8 @@ You will need to disable the jobs once the bits are staged, so that they won't r
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.4.4.AM1
-versionWithRespin_ds=10.4.0.AM1
+versionWithRespin_jbt=4.4.4.AM2
+versionWithRespin_ds=10.4.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # if [[ ${version_jbt} == *".Final" ]]; then

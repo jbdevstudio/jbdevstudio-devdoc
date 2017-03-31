@@ -4,6 +4,9 @@ This repository contains documentation for building, staging, and releasing both
 
 == Table of Contents
 
+* Start of Sprint
+** link:Start_of_Sprint.adoc[Start of Sprint] - steps to perform at the start of a sprint
+
 * Pre-Staging
 ** link:Access_Prerequisites.adoc[Access Prerequisites] - systems to which you need access, passwords, ssh keys
 ** link:Branching_and_Tagging.adoc[Branching and Tagging] - steps to perform to branch in preparation before staging

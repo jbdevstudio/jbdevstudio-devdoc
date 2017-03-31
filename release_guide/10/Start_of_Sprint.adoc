@@ -1,0 +1,85 @@
+= Start of Sprint steps
+
+At the start of a sprint, a number of things need to be done:
+
+* Create New & Noteworthy JIRAs
+
+* Close out previous sprint and start a new one in JIRA
+
+* Verify correct versions in JIRA for JBIDE and JBDS, including start/end/code freeze dates (or else jiralint will break)
+
+* Update jobs to run against the correct branch / target platform versions (if applicable)
+
+
+== Create New & Noteworthy JIRAs
+
+Configure, then run this job: https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-staging-00-new-and-noteworthy-jiras/
+
+[source,bash]
+----
+
+# kerberos login for the Jenkins server
+export userpass=KERBUSER:PASSWORD
+
+versionWithRespin_jbt=4.4.4.AM2
+versionWithRespin_ds=10.4.0.AM2
+
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+for j in jbosstools-releng-push-to-staging-00-new-and-noteworthy-jiras; do
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  sleep 3s
+
+  data="versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}"
+  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+  sleep 15s
+
+  if [[ "${prevJob}" == "${nextJob}" ]]; then
+    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
+    echo "[WARN] ${ccijenkins}/${j}"
+  else
+    ${JP} -s ${ccijenkins} -j ${j} -t disable
+    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+  fi
+done
+
+----
+
+Or, you can run this script:
+
+[source,bash]
+----
+
+python /tmp/jbt.github/jbosstools-build-ci/util/createnewandnoteworthy.py -u usernameJIRA -p passwordJIRA -s https://issues.stage.jboss.org \
+  -i ${versionWithRespin_jbt} -d ${versionWithRespin_ds}
+
+----
+
+
+== Close out previous sprint and start a new one in JIRA
+
+See:
+
+* https://issues.jboss.org/secure/RapidBoard.jspa?rapidView=3484&view=planning.nodetail
+* https://issues.jboss.org/secure/RapidBoard.jspa?rapidView=3410&view=planning.nodetail
+* https://issues.jboss.org/secure/RapidBoard.jspa?rapidView=641&view=planning.nodetail
+* https://issues.jboss.org/secure/RapidBoard.jspa?rapidView=3482&view=planning.nodetail
+* https://issues.jboss.org/secure/RapidBoard.jspa?rapidView=3382&view=planning.nodetail
+
+== Verify correct versions in JIRA for JBIDE and JBDS, including start/end/code freeze dates (or else jiralint will break)
+
+See:
+
+* https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions
+* https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
+
+Then run:
+
+* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-jiralint-daily/
+* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-jiralint-weekly/
+
+
+== Update jobs to run against the correct branch / target platform versions
+
+If applicable, you might need to update jobs to pull sources from a new branch (4.4.x or 4.4.4.x) or a new target platform.
+

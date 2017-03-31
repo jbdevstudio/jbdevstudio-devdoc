@@ -3,10 +3,12 @@
 Before beginning a stage at the end of a sprint, a number of things need to be done:
 
 * Send reminder note to jbosstools-dev@lists.jboss.org of upcoming target platform freeze
+
 * Send reminder note to jbosstools-dev@lists.jboss.org of upcoming code freeze (last Wed of sprint)
+
 * Confirm latest Integration Stack (IS) release & URLs
+
 * Clone jbosstools-build-ci repo
-* Create New & Noteworthy JIRAs (last Wed of sprint)
 
 
 == Send reminder note to jbosstools-dev@lists.jboss.org of upcoming target platform freeze & code freeze
@@ -36,49 +38,3 @@ git checkout jbosstools-4.4.x
 chmod +x -R */*.sh */*/*.sh
 
 ----
-
-
-== Create New & Noteworthy JIRAs
-
-Configure, then run this job: https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-staging-00-new-and-noteworthy-jiras/
-
-[source,bash]
-----
-
-# kerberos login for the Jenkins server
-export userpass=KERBUSER:PASSWORD
-
-versionWithRespin_jbt=4.4.4.AM2
-versionWithRespin_ds=10.4.0.AM2
-
-ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for j in jbosstools-releng-push-to-staging-00-new-and-noteworthy-jiras; do
-  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
-  sleep 3s
-
-  data="versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}"
-  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
-  sleep 15s
-
-  if [[ "${prevJob}" == "${nextJob}" ]]; then
-    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
-    echo "[WARN] ${ccijenkins}/${j}"
-  else
-    ${JP} -s ${ccijenkins} -j ${j} -t disable
-    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
-  fi
-done
-
-----
-
-Or, you can run this script:
-
-[source,bash]
-----
-
-python /tmp/jbt.github/jbosstools-build-ci/util/createnewandnoteworthy.py -u usernameJIRA -p passwordJIRA -s https://issues.stage.jboss.org \
-  -i ${versionWithRespin_jbt} -d ${versionWithRespin_ds}
-
-----
-

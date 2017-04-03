@@ -155,10 +155,10 @@ e.g.   http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.1.CR
 The IS Target Platform project also creates four repositories and corresponding zip files for the community repositories needed for offline use.  There is no target platform publish job.
 
 * http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.1.CR2/jbtis/REPO/
-  http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.1.CR2/jbtis/target-platform-4.4.1.CR2.zip (MD5)
+  http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.1.CR2/jbtis/target-platform-4.4.1.CR2.zip (sha256)
 
 * http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.1.CR2/jbtis/earlyaccess/REPO/
-  http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.1.CR2/jbtis/earlyaccess/target-platform-4.4.1.CR2-earlyaccess.zip (MD5)
+  http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.1.CR2/jbtis/earlyaccess/target-platform-4.4.1.CR2-earlyaccess.zip (sha256)
 
 * http://download.jboss.org/jbosstools/targetplatforms/jbtistarget/4.4.1.CR2/devstudiois/REPO/
 
@@ -472,12 +472,12 @@ https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBTIS-aggregate-publish-4.3
 https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBTIS-aggregate-publish-4.2.x/    # luna
 https://jenkins.mw.lab.eng.bos.redhat.com/hudson/job/JBTIS-aggregate-publish-4.1.x/    # kepler
 
-Verify - note that the offline zip files and MD5s are also created (e.g.):
+Verify - note that the offline zip files and sha256s are also created (e.g.):
 
-http://download.jboss.org/jbosstools/neon/staging/updates/integration-stack/jbosstools-integration-stack-4.4.0.CR1-updatesite.zip (MD5) +
-http://download.jboss.org/jbosstools/neon/staging/updates/integration-stack/jbosstools-integration-stack-4.4.0.CR1--updatesite-earlyaccess.zip (MD5) (if built) +
+http://download.jboss.org/jbosstools/neon/staging/updates/integration-stack/jbosstools-integration-stack-4.4.0.CR1-updatesite.zip (sha256) +
+http://download.jboss.org/jbosstools/neon/staging/updates/integration-stack/jbosstools-integration-stack-4.4.0.CR1--updatesite-earlyaccess.zip (sha256) (if built) +
 
-http://download.jboss.org/jbosstools/neon/stable/updates/integration-stack/jbosstools-integration-stack-4.4.0.CR1-updatesite.zip (MD5) +
+http://download.jboss.org/jbosstools/neon/stable/updates/integration-stack/jbosstools-integration-stack-4.4.0.CR1-updatesite.zip (sha256) +
 
 ==== Publish and Push the JBTIS Aggregate Update Site
 
@@ -699,20 +699,20 @@ http://download.jboss.org/jbosstools/neon/stable/updates/discovery.earlyaccess/4
 
 ==== Publish the Community IS Sources
 
-This is the JBTIS community project sources only.  Individual component's source bundles are carried in the aggregate.  In this example we're publishing the 4.4.0.Final JBTIS project sources (Neon zip and MD5).
+This is the JBTIS community project sources only.  Individual component's source bundles are carried in the aggregate.  In this example we're publishing the 4.4.0.Final JBTIS project sources (Neon zip and sha256).
 
 [source,bash]
 ----
 mkdir -p ~/temp/release;  cd ~/temp/release  
   
 rsync -arzq --protocol=28 tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/staging/JBTIS-aggregate-disc/all/JBTIS-aggregate-disc-SNAPSHOT-src.zip .  
-rsync -arzq --protocol=28 tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/staging/JBTIS-aggregate-disc/all/JBTIS-aggregate-disc-SNAPSHOT-src.zip.MD5 .  
+rsync -arzq --protocol=28 tools@filemgmt.jboss.org:/downloads_htdocs/tools/builds/staging/JBTIS-aggregate-disc/all/JBTIS-aggregate-disc-SNAPSHOT-src.zip.sha256 .  
 
 mv JBTIS-aggregate-disc-SNAPSHOT-src.zip jbosstools-integration-stack-sources-4.4.0.Final.zip  
-mv JBTIS-aggregate-disc-SNAPSHOT-src.zip.MD5 jbosstools-integration-stack-sources-4.4.0.Final.zip.MD5  
+mv JBTIS-aggregate-disc-SNAPSHOT-src.zip.sha256 jbosstools-integration-stack-sources-4.4.0.Final.zip.sha256  
 
 rsync -arzq --protocol=28 jbosstools-integration-stack-sources-4.4.0.Final.zip tools@filemgmt.jboss.org:/downloads_htdocs/tools/neon/development/updates/integration-stack/
-rsync -arzq --protocol=28 jbosstools-integration-stack-sources-4.4.0.Final.zip.MD5 tools@filemgmt.jboss.org:/downloads_htdocs/tools/neon/development/updates/integration-stack/
+rsync -arzq --protocol=28 jbosstools-integration-stack-sources-4.4.0.Final.zip.sha256 tools@filemgmt.jboss.org:/downloads_htdocs/tools/neon/development/updates/integration-stack/
 ----
 
 ==== Test Eclipse Update
@@ -867,6 +867,43 @@ As an example, lets build the production stack using the link:https://jenkins.mw
 
 Note the community JBTIS aggregate composite site from which this build draws its content.  As with the JBTIS build, the build type is selectable - make sure you select the correct parameter as it affects the discovery site and site index.html.
 
+[NOTE]
+----
+NOTE: Be aware of the COMPOSITE_URLS that you define within the Jekins job.  These define the discovery composites.  For a stable build all you need is:
+----
+[source,bash]
+[bold]
+----
+<children size="1">
+   <child location="https://devstudio.redhat.com/10.0/stable/updates/"/>
+</children>
+----
+[NOTE]
+----
+For a development build you need:
+----
+[source,bash]
+[bold]
+----
+<children size="3">
+   <child location="https://devstudio.redhat.com/10.0/development/updates/"/>
+   <child location="https://devstudio.redhat.com/10.0/development/updates/integration-stack/10.2.0.GA"/>
+   <child location="https://devstudio.redhat.com/targetplatforms/devstudioistarget/10.2.0.GA.devstudio-is-target-platform/REPO/"/>
+</children>
+----
+[NOTE]
+----
+For a staging build you need:
+----
+[source,bash]
+[bold]
+----
+<children size="3">
+   <child location="https://devstudio.redhat.com/10.0/staging/updates/"/>
+   <child location="https://devstudio.redhat.com/10.0/staging/updates/integration-stack/10.3.0.CR1-SNAPSHOT"/>
+   <child location="https://devstudio.redhat.com/targetplatforms/devstudioistarget/10.3.0.CR1-SNAPSHOT.devstudio-is-target-platform/REPO/"/>
+</children>
+----
 *SNAPSHOTS -*
 
 * https://devstudio.redhat.com/10.0/snapshots/updates/integration-stack/
@@ -900,7 +937,7 @@ Verify:
 
 https://devstudio.redhat.com/10.0/staging/updates/integration-stack/
  
-==== Publish and Push the DevstudioIS Aggregate Update Site
+==== Publish and Push the DevstudioIS Aggregate Update Site (not for staging)
 
 Update the production aggregate Eclipse p2 repository as well as the offline .zip file.  If this is an earlyaccess jar - update the earlyaccess (devstudio/earlyaccess) composites.
 
@@ -1029,14 +1066,14 @@ Ref: http://docbuilder.usersys.redhat.com/23023/#Install_JBoss_Developer_Studio_
 Retrieve the offline Devstudio zips:
 
 https://devstudio.redhat.com/updates/10.0/#offline
-* https://devstudio.redhat.com/10.0/staging/updates/integration-stack/devstudio-integration-stack-10.0.0.CR1-updatesite.zip (MD5)
-* http://download.jboss.org/jbosstools/neon/staging/updates/integration-stack/jbosstools-integration-stack-4.4.0.Final-updatesite.zip (MD5)
+* https://devstudio.redhat.com/10.0/staging/updates/integration-stack/devstudio-integration-stack-10.0.0.CR1-updatesite.zip (sha256)
+* http://download.jboss.org/jbosstools/neon/staging/updates/integration-stack/jbosstools-integration-stack-4.4.0.Final-updatesite.zip (sha256)
 
 If you don't already have `installFromTarget.sh`, you can use this:
 
 https://gist.github.com/nickboldt/e899f4e22a0654af667e
 
-Install Devstudio into ~/offline, then simnply 
+Install Devstudio into ~/offline, then simply 
 
 [source,bash]
 ----
@@ -1053,30 +1090,29 @@ Stand-alone Installers:
 
 With the 10.1.0 Neon release there exists three installers.  A standard IS installer contains Devstudio core + IS.  A Fuse Tooling installer containing Devstudio core + IS + a supplemental runtime.  A 'skinny' Fuse Tooling installer containing just Fuse Tooling + Devstudio core.
 
-*  https://devstudio.redhat.com/10.0/staging/updates/integration-stack/10.1.0.CR2/devstudio-integration-stack-10.1.0.CR2-standalone-installer.jar (MD5)
-*  https://devstudio.redhat.com/10.0/staging/updates/integration-stack/10.1.0.CR2/devstudio-integration-stack-10.1.0.CR2-fuse-tooling-installer.jar (MD5)
-*  https://devstudio.redhat.com/10.0/staging/updates/integration-stack/10.1.0.CR2/devstudio-integration-stack-10.1.0.CR2-fuse-installer-runtime.jar (MD5)
+*  https://devstudio.redhat.com/10.0/staging/updates/integration-stack/10.3.0.GA/devstudio-integration-stack-10.3.0.GA-standalone-installer.jar (sha256)
+*  https://devstudio.redhat.com/10.0/staging/updates/integration-stack/10.3.0.GA/devstudio-integration-stack-10.3.0.GA-fuse-tooling-installer.jar (sha256)
+*  https://devstudio.redhat.com/10.0/staging/updates/integration-stack/10.3.0.GA/devstudio-integration-stack-10.3.0.GA-fuse-installer-runtime.jar (sha256)
 
 [source,bash]
 ----
-java -jar devstudio-integration-stack-10.1.0.CR2-standalone-installer.jar
+java -jar devstudio-integration-stack-10.3.0.GA-standalone-installer.jar
 
-java -jar devstudio-integration-stack-10.1.0.CR2-fuse-tooling-installer.jar
+java -jar devstudio-integration-stack-10.3.0.GA-fuse-tooling-installer.jar
 
-java -jar devstudio-integration-stack-10.1.0.CR2-fuse-installer-runtime.jar
+java -jar devstudio-integration-stack-10.3.0.GA-fuse-installer-runtime.jar
 ----
 
-==== Update the Red Hat Customer Support Portal (CSP)
+==== Update the Red Hat Customer Support Portal (CSP) and Download Manager
 
 Generate a ticket with engineering services. 
 [source,bash]
 ---- 
-Ref: https://engineering.redhat.com/rt/Ticket/Display.html?id=296645
-Ref: https://engineering.redhat.com/rt/Ticket/Display.html?id=341933
+Ref: https://projects.engineering.redhat.com/browse/RCM-14498
 ----
 Verify:
 
-https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=10.0.0
+https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=jbossdeveloperstudio&version=10.3.0
 
 ==== Update developers.redhat.com 
 
@@ -1187,7 +1223,13 @@ http://www.jboss.org/products/devstudio/get-started
 ** *DEVSTUDIO_INSTALLER* - https://devstudio.redhat.com/static/10.0/stable/builds/devstudio-10.3.0.GA-build-product/2017-02-18_16-51-02-B94/all/devstudio-10.3.0.GA-v20170218-1636-B94-installer-standalone.jar
 ** *skipRevisionCheckWhenPublishing* - Enabled
 ** *BUILD_INSTALLER* - Enabled
+* Validate the results of the spawned p2 director install tester job link:https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-install-p2director.install-tests.integration-stack.matrix_master[jbosstools-install-p2director.install-tests.integration-stack.matrix_master]
 * Update /media/TOOLS-ssh/neon/staging/updates/integration-stack/compositeArtifacts.xml compositeContent.xml
+* Update /media/JBDS-ssh/10.0/staging/updates/integration-stack/compositeArtifacts.xml compositeContent.xml
+* Update /media/TOOLS-ssh/neon/staging/updates/integration-stack/discovery/compositeArtifacts.xml compositeContent.xml
+* Update /media/JBDS-ssh/10.0/staging/updates/integration-stack/discovery/compositeArtifacts.xml compositeContent.xml
+
+* Verify /media/TOOLS-ssh/neon/staging/updates/integration-stack/discovery/<VERSION>/compositeArtifacts.xml compositeContent.xml
 * Test! - p2 install, RH JBoss Central, all 3 stand-alone installers, offline zips
 
 * Look for an email from the DevstudioIS-notification-email job
@@ -1231,7 +1273,7 @@ http://www.jboss.org/products/devstudio/get-started
 ** *VERSION_MAJOR* - 10.0
 ** *JBTIS_VERSION* - 4.4.2.Final
 ** *EA_ENABLED* - as needed
-** *BUILD_ALIAS* - 
+** *BUILD_ALIAS* - leave empty
 ** *BUILD_KIND* - devstudio
 ** *BUILD_TYPE* - stable (or development)
 ** *IS_TP_VERSION* - 4.4.2.Final
@@ -1256,12 +1298,28 @@ http://www.jboss.org/products/devstudio/get-started
 ** *VERSION_MAJOR* - 10.0
 ** *VERSION* - 10.2.0.GA
 ** *PARENT_FOLDER* - integration-stack
-** *SOURCE_PATH* - 10.0/staging/updates/integration-stack
-* Update /media/JBDS-ssh/10.0/staging/updates/integration-stack/compositeArtifacts.xml compositeContent.xml
+** *SOURCE_PATH* - 10.0/stable/updates/integration-stack
+* Validate the results of the spawned p2 director install tester job link:https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-install-p2director.install-tests.integration-stack.matrix_master[jbosstools-install-p2director.install-tests.integration-stack.matrix_master]
+* Update /media/TOOLS-ssh/neon/stable/updates/integration-stack/compositeArtifacts.xml compositeContent.xml
+* Update /media/JBDS-ssh/10.0/stable/updates/integration-stack/compositeArtifacts.xml compositeContent.xml
+* Update /media/TOOLS-ssh/neon/stable/updates/integration-stack/discovery/compositeArtifacts.xml compositeContent.xml
+* Update /media/JBDS-ssh/10.0/stable/updates/integration-stack/discovery/compositeArtifacts.xml compositeContent.xml
+
+* Verify /media/TOOLS-ssh/neon/stable/updates/integration-stack/discovery/<VERSION>/compositeArtifacts.xml compositeContent.xml
+
+
 * Test! - p2 install, RH JBoss Central, all 3 stand-alone installers, offline zips, Eclipse Marketplace
 
 * Go Live
 The publish jobs put the bits into the outward facing directories but you're not live until you've modified the composites.
+
+*Don't forget to modify the composites within the version discovery directories.*  i.e.
+
+https://devstudio.redhat.com/10.0/development/updates/integration-stack/discovery/10.2.0.GA/compositeArtifacts.xml
+https://devstudio.redhat.com/10.0/development/updates/integration-stack/discovery/10.2.0.GA/compositeContent.xml
+
+Correct the entries for stable, development and staging
+
 ** Go Live JBTIS
 ** See *Publish and Push the JBTIS Aggregate Update Site*
 ** Go Live DevstudioIS

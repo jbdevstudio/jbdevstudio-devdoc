@@ -191,8 +191,8 @@ if [[ ${version_jbt} == *".Final" ]]; then
 else
   stream_jbt=master
 fi
-TARGET_PLATFORM_VERSION_MAX=4.63.0.Final-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.63.0.Final-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.70.0.AM1-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.70.0.AM1-SNAPSHOT
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
@@ -224,7 +224,7 @@ You'll need this later for smoke testing. Start fetching it now to save time lat
 [source,bash]
 ----
 
-cd ~/tmp; wget http://download.eclipse.org/technology/epp/downloads/release/neon/3/eclipse-jee-neon-3-linux-gtk-x86_64.tar.gz &
+cd ~/tmp; wget http://download.eclipse.org/technology/epp/downloads/release/oxygen/M5/eclipse-jee-oxygen-M5-linux-gtk-x86_64.tar.gz &
 # or
 cd ~/tmp; wget https://hudson.eclipse.org/packaging/job/neon.epp-tycho-build/437/artifact/org.eclipse.epp.packages/archive/20160913-0900_eclipse-jee-neon-1-linux.gtk.x86_64.tar.gz &
 
@@ -261,12 +261,14 @@ When run on Bos MW, this job was able to do a local copy using NFS mounted drive
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
+eclipseReleaseName=oxygen
+devstudioReleaseVersion=11
 versionWithRespin_jbt=4.5.0.AM0
 versionWithRespin_ds=11.0.0.AM0
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
-TARGET_PLATFORM_VERSION_MAX=4.63.0.Final-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.63.0.Final-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.70.0.AM1-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.70.0.AM1-SNAPSHOT
 if [[ ${version_jbt} == *".Final" ]]; then
   stream_jbt=4.5.oxygen
   stream_ds=11.0.oxygen
@@ -285,7 +287,7 @@ for j in jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites; do
   prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
   sleep 3s
 
-  data="stream_jbt=${stream_jbt}&stream_ds=${stream_ds}&\
+  data="eclipseReleaseName=${eclipseReleaseName}&devstudioReleaseVersion=${devstudioReleaseVersion}&stream_jbt=${stream_jbt}&stream_ds=${stream_ds}&\
 versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
 TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&TARGET_PLATFORM_CENTRAL_MAX=${TARGET_PLATFORM_CENTRAL_MAX}"
   nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
@@ -334,6 +336,8 @@ http://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-t
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
+eclipseReleaseName=oxygen
+devstudioReleaseVersion=11
 versionWithRespin_jbt=4.5.0.AM0
 versionWithRespin_ds=11.0.0.AM0
 
@@ -343,7 +347,8 @@ for j in jbosstools-releng-push-to-staging-03-verify-builds-update-sites; do
   prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
   sleep 3s
 
-  data="versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
+  data="eclipseReleaseName=${eclipseReleaseName}&devstudioReleaseVersion=${devstudioReleaseVersion}&\
+versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
 skipdiscovery=false&onlydiscovery=false&buildType=staging"
   nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
   sleep 15s
@@ -551,8 +556,8 @@ else
   github_branch=master # later jbosstools-4.5.x
 fi
 TARGET_PLATFORM_VERSION_MIN=4.60.2.Final
-TARGET_PLATFORM_VERSION_MAX=4.63.0.Final-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.63.0.Final-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.70.0.AM1-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.70.0.AM1-SNAPSHOT
 respinSuffix=""
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh

@@ -25,7 +25,7 @@ A Jenkins job can then be triggered to sync changes to download.jboss.org: https
 Before running any of the jobs or scripts below, make sure to set the correct versions to the values for the release you're staging or releasing.
 
 * look for versionWithRespin, update to version you're staging
-* look for PREV and NEXT variables; set to previous / next milestone (AM1, AM2, AM3, Final/GA)
+* look for PREV and NEXT variables; set to previous / next milestone (AMx, AMy, AMz, Final/GA)
 * check target platform versions are current w/ latest versions
 * check parent pom version, version_parent, is current
 * check Integration Stack variables like earlyaccess_IS, version_jbt_IS, version_ds_IS are correct. Double-check best values with Paul Leacu (pleacu).
@@ -154,7 +154,7 @@ else
 fi
 bosmwjenkins=https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for j in jbosstools-buildflow-force-publish_${stream_jbt} jbosstools-buildflow_${stream_jbt} jbosstools-composite-install_${stream_jbt} jbosstools-browsersim-standalone_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} jbosstools-build-sites.aggregate.coretests-site_${stream_jbt}  jbosstools-build-sites.aggregate.child-sites_${stream_jbt} devstudio.product_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} jbosstools-install-grinder.install-tests.matrix_${stream_jbt}; do
+for j in jbosstools-buildflow-force-publish_${stream_jbt} jbosstools-buildflow_${stream_jbt} jbosstools-composite-install_${stream_jbt} jbosstools-browsersim-standalone_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstools-build-sites.aggregate.child-sites_${stream_jbt} devstudio.product_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} jbosstools-install-grinder.install-tests.matrix_${stream_jbt}; do
   ${JP} -s ${bosmwjenkins} -j ${j} -t disable
   ${JP} -s ${bosmwjenkins} -j ${j} -t lastBuild/toggleLogKeep
 done
@@ -243,14 +243,7 @@ NOTE: To save time, you can run this in parallel with the above step to create t
 [IMPORTANT]
 ====
 
-Use dev90.hosts.mwqe.eng.bos.redhat.com (10.19.65.30) instead of www.qa.jboss.com (10.16.89.17) as can no longer ssh to hudson@www.qa
-
-Currently, the steps that require access to hudson@10.16.89.17 or /qa/services/http/binaries/RHDS/targetplatforms/ are
-disabled as they appears to be timing out (or don't work).
-
-When run on Bos MW, this job was able to do a local copy using NFS mounted drive.
-
-*TODO*: re-enable this step to run with SSHFS once https://issues.jboss.org/browse/JBQA-13424 is fixed?
+Use devstudio@wonka.mw.lab.eng.bos.redhat.com (10.16.89.81) instead of: dev90.hosts.mwqe.eng.bos.redhat.com (10.19.65.30) or www.qa.jboss.com (10.16.89.17) as can no longer ssh to hudson@www.qa and nfs mlounted drive doesn't work anymore.
 
 ====
 
@@ -305,7 +298,7 @@ done
 
 ----
 
-If you can't get the job to run because dev01 slave is backlogged with a long queue, look in the job configuration and run the script manually on dev01 itself.
+If you can't get the job to run because CCI Jenkins is backlogged with a long queue, look in the job configuration and run the script manually on dev90.
 
 http://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites/configure-readonly/
 
@@ -364,9 +357,6 @@ done
 
 ----
 
-If you can't get the job to run because dev01 slave is backlogged with a long queue, look in the job configuration and run the script manually on dev01 itself.
-
-http://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites/configure-readonly/
 
 === Cleanup OLD builds
 
@@ -391,7 +381,7 @@ export userpass=KERBUSER:PASSWORD
 
 versionWithRespin_jbt=4.5.0.AM0
 versionWithRespin_ds=11.0.0.AM0
-versionWithRespin_ds_PREV=10.4.0.AM1
+versionWithRespin_ds_PREV=10.4.0.GA
 earlyaccess_IS=
 version_jbt_IS=4.4.2.Final
 version_ds_IS=10.2.0.GA
@@ -431,12 +421,12 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 export userpass=KERBUSER:PASSWORD
 
 versionWithRespin_jbt_PREV_GA=4.4.3.Final
-versionWithRespin_jbt_PREV=4.4.4.AM1
+versionWithRespin_jbt_PREV=4.4.4.Final
 versionWithRespin_jbt=4.5.0.AM0
 versionWithRespin_jbt_NEXT=4.5.0.AM1
 
 versionWithRespin_ds_PREV_GA=10.3.0.GA
-versionWithRespin_ds_PREV=10.4.0.AM1
+versionWithRespin_ds_PREV=10.4.0.GA
 versionWithRespin_ds=11.0.0.AM0
 versionWithRespin_ds_NEXT=11.0.0.AM1
 
@@ -529,7 +519,7 @@ IMPORTANT: TODO: if you switched the _master jobs to run from origin/jbosstools-
 
 If the next build will NOT be a respin, you will also need to ALSO make these changes to jobs, and upversion/release artifacts such as releng scripts or target platforms if you haven't done so already:
 
-* set correct github branch, eg., switch from 4.5.3.AM1x to 4.5.x
+* set correct github branch, eg., switch from 4.5.3.x to 4.5.x
 * upversion dependencies, eg., releng scripts move from version CR1 to CR1 (if that's been released)
 * upversion target platforms / Central version (if those have been released)
 

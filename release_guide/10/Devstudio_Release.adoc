@@ -28,8 +28,8 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.4.4.AM2
-versionWithRespin_ds=10.4.0.AM2
+versionWithRespin_jbt=4.4.4.AM3
+versionWithRespin_ds=10.4.0.AM3
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # since we are now forking from 4.4.x all jobs will run from 4.4.neon stream
@@ -129,23 +129,22 @@ For non-Final/GA releases, only JBT should be added. Examples:
 
 === SHA256 values
 
-To get the SHA256 values for easy pasting into the product.yml file, first connect to dev01.hosts.mwqe.eng.bos.redhat.com as +hudson+ user (requires permissions).
+To get the SHA256 values for easy pasting into the product.yml file, first connect to wonka.mw.lab.eng.bos.redhat.com (10.16.89.81) as +devstudio+ user (requires permissions).
 
 [source,bash]
 ----
-me@local$ ssh dev01.hosts.mwqe.eng.bos.redhat.com # or dev90
-me@dev01$ sudo su - hudson
-hudson@dev01$ ...
+me@local$ ssh devstudio@wonka.mw.lab.eng.bos.redhat.com
+devstudio@wonka$ ...
 ----
 
 Then run this:
 
 [source,bash]
 ----
-versionWithRespin_ds=10.4.0.AM2
+versionWithRespin_ds=10.4.0.AM3
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # **
 
-cd ~/RHDS/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ # ~
+cd ~/devstudio/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ # ~
 for f in *.jar *.zip; do
   size=$(du -h $f); size=${size%*M*};
   sha=$(cat ${f}.sha256); sh=${sha:0:2};
@@ -173,8 +172,8 @@ Then, back on your own machine...
 
 [source,bash]
 ----
-version_jbt=4.4.4.AM2
-version_ds=10.4.0.AM2
+version_jbt=4.4.4.AM3
+version_ds=10.4.0.AM3
 
 topic=release-${version_jbt}
 github_branch=master
@@ -276,7 +275,7 @@ Before notifying team of release, must check for obvious problems. Any failure t
 [source,bash]
 ----
 
-version_ds=10.4.0.AM2
+version_ds=10.4.0.AM3
 if [[ ${version_ds} == *"GA" ]]; then
   qual="stable"
   cd ~/tmp # ~
@@ -305,12 +304,12 @@ Using the script below, you can trigger the job remotely.
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-blogURL=/blog/4.4.4.AM2-for-neon.3.html
+blogURL=/blog/4.4.4.AM3-for-neon.3.html
 pullrequestNum=697
 eclipseVersionSuffix=".3" # for Eclipse 4.6.3 Neon.3
 
-versionWithRespin_jbt=4.4.4.AM2
-versionWithRespin_ds=10.4.0.AM2
+versionWithRespin_jbt=4.4.4.AM3
+versionWithRespin_ds=10.4.0.AM3
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # \) # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 
@@ -342,8 +341,8 @@ done
 [source,bash]
 ----
 
-version_jbt=4.4.4.AM2
-version_ds=10.4.0.AM2
+version_jbt=4.4.4.AM3
+version_ds=10.4.0.AM3
 cd jbdevstudio-devdoc/release_guide/
 git commit -m "update release guide for ${version_jbt} and ${version_ds}" .
 git push origin HEAD:master

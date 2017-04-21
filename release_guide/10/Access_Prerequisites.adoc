@@ -4,8 +4,6 @@ Before you can do anything in the JBoss Tools / Devstudio release guides, you'll
 
 To run builds and stage/release code via Jenkins jobs, you need access to the Jenkins servers. You should already have Kerberos-based login access to both the Boston MW Jenkins and the Central CI Jenkins. If not, contact PnT (details below).
 
-NOTE: For password access to wonka jenkins - ask Nick Boldt or Jess Sightler. (DEPRECATED: jobs have all moved to CCI Jenkins.)
-
 NOTE: For admin access to CCI jenkins (beyond simple job exec permission) - ask Pavol Srna or Nick Boldt to give you 'admin' access from https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/role-strategy/assign-roles
 
 == File hosting
@@ -15,7 +13,9 @@ In case scripts fail or manual file tweaks are needed, direct filesystem access 
 NOTE: For both systems listed, open a PnT ticket at https://redhat.service-now.com/pnt/ and submit your ssh public key. Copy your manager on the request to be granted permission. See link:https://mojo.redhat.com/docs/DOC-1093189[]
 
 * filemgmt.jboss.org
-* dev01.hosts.mwqe.eng.bos.redhat.com (10.19.64.251)
+* dev01.hosts.mwqe.eng.bos.redhat.com (10.19.64.251) [DEPRECATED - no longer works as of 2017/03/15]
+* dev90.hosts.mwqe.eng.bos.redhat.com (10.19.65.30) [DEPRECATED - no longer works as of 2017/04/20]
+* devstudio@wonka.mw.lab.eng.bos.redhat.com (10.16.89.81) - ask Nick Boldt or Jess Sightler.
 
 == JIRA
 

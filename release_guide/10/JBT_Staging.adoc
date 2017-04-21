@@ -25,7 +25,7 @@ A Jenkins job can then be triggered to sync changes to download.jboss.org: https
 Before running any of the jobs or scripts below, make sure to set the correct versions to the values for the release you're staging or releasing.
 
 * look for versionWithRespin, update to version you're staging
-* look for PREV and NEXT variables; set to previous / next milestone (AM1, AM2, AM3, Final/GA)
+* look for PREV and NEXT variables; set to previous / next milestone (AMx, AMy, AMz, Final/GA)
 * check target platform versions are current w/ latest versions
 * check parent pom version, version_parent, is current
 * check Integration Stack variables like earlyaccess_IS, version_jbt_IS, version_ds_IS are correct. Double-check best values with Paul Leacu (pleacu).
@@ -56,8 +56,8 @@ You will need to enable the jobs:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.4.4.AM2
-versionWithRespin_ds=10.4.0.AM2
+versionWithRespin_jbt=4.4.4.AM3
+versionWithRespin_ds=10.4.0.AM3
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # if [[ ${version_jbt} == *".Final" ]]; then
@@ -82,9 +82,9 @@ Configure, then run this job:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-version_parent=4.4.4.AM2-SNAPSHOT
-versionWithRespin_jbt=4.4.4.AM2
-versionWithRespin_ds=10.4.0.AM2
+version_parent=4.4.4.AM3-SNAPSHOT
+versionWithRespin_jbt=4.4.4.AM3
+versionWithRespin_ds=10.4.0.AM3
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 if [[ ${version_jbt} == *".Final" ]]; then
@@ -141,8 +141,8 @@ To prevent accidentally rebuilding something while you're copying it away, make 
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.4.4.AM2
-versionWithRespin_ds=10.4.0.AM2
+versionWithRespin_jbt=4.4.4.AM3
+versionWithRespin_ds=10.4.0.AM3
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # if [[ ${version_jbt} == *".Final" ]]; then
@@ -182,8 +182,8 @@ Then respin the job:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.4.4.AM2
-versionWithRespin_ds=10.4.0.AM2
+versionWithRespin_jbt=4.4.4.AM3
+versionWithRespin_ds=10.4.0.AM3
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # if [[ ${version_jbt} == *".Final" ]]; then
@@ -243,14 +243,7 @@ NOTE: To save time, you can run this in parallel with the above step to create t
 [IMPORTANT]
 ====
 
-Use dev90.hosts.mwqe.eng.bos.redhat.com (10.19.65.30) instead of www.qa.jboss.com (10.16.89.17) as can no longer ssh to hudson@www.qa
-
-Currently, the steps that require access to hudson@10.16.89.17 or /qa/services/http/binaries/RHDS/targetplatforms/ are
-disabled as they appears to be timing out (or don't work).
-
-When run on Bos MW, this job was able to do a local copy using NFS mounted drive.
-
-*TODO*: re-enable this step to run with SSHFS once https://issues.jboss.org/browse/JBQA-13424 is fixed?
+Use devstudio@wonka.mw.lab.eng.bos.redhat.com (10.16.89.81) instead of: dev90.hosts.mwqe.eng.bos.redhat.com (10.19.65.30) or www.qa.jboss.com (10.16.89.17) as can no longer ssh to hudson@www.qa and nfs mlounted drive doesn't work anymore.
 
 ====
 
@@ -261,8 +254,10 @@ When run on Bos MW, this job was able to do a local copy using NFS mounted drive
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.4.4.AM2
-versionWithRespin_ds=10.4.0.AM2
+eclipseReleaseName=neon
+devstudioReleaseVersion=10.0
+versionWithRespin_jbt=4.4.4.AM3
+versionWithRespin_ds=10.4.0.AM3
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 TARGET_PLATFORM_VERSION_MAX=4.63.0.Final-SNAPSHOT
@@ -285,7 +280,7 @@ for j in jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites; do
   prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
   sleep 3s
 
-  data="stream_jbt=${stream_jbt}&stream_ds=${stream_ds}&\
+  data="eclipseReleaseName=${eclipseReleaseName}&devstudioReleaseVersion=${devstudioReleaseVersion}&stream_jbt=${stream_jbt}&stream_ds=${stream_ds}&\
 versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
 TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&TARGET_PLATFORM_CENTRAL_MAX=${TARGET_PLATFORM_CENTRAL_MAX}"
   nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
@@ -303,7 +298,7 @@ done
 
 ----
 
-If you can't get the job to run because dev01 slave is backlogged with a long queue, look in the job configuration and run the script manually on dev01 itself.
+If you can't get the job to run because CCI Jenkins is backlogged with a long queue, look in the job configuration and run the script manually on dev90.
 
 http://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites/configure-readonly/
 
@@ -334,8 +329,10 @@ http://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-t
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.4.4.AM2
-versionWithRespin_ds=10.4.0.AM2
+eclipseReleaseName=neon
+devstudioReleaseVersion=10.0
+versionWithRespin_jbt=4.4.4.AM3
+versionWithRespin_ds=10.4.0.AM3
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
@@ -343,7 +340,8 @@ for j in jbosstools-releng-push-to-staging-03-verify-builds-update-sites; do
   prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
   sleep 3s
 
-  data="versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
+  data="eclipseReleaseName=${eclipseReleaseName}&devstudioReleaseVersion=${devstudioReleaseVersion}&\
+versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
 skipdiscovery=false&onlydiscovery=false&buildType=staging"
   nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
   sleep 15s
@@ -359,9 +357,6 @@ done
 
 ----
 
-If you can't get the job to run because dev01 slave is backlogged with a long queue, look in the job configuration and run the script manually on dev01 itself.
-
-http://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites/configure-readonly/
 
 === Cleanup OLD builds
 
@@ -384,9 +379,9 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.4.4.AM2
-versionWithRespin_ds=10.4.0.AM2
-versionWithRespin_ds_PREV=10.4.0.AM1
+versionWithRespin_jbt=4.4.4.AM3
+versionWithRespin_ds=10.4.0.AM3
+versionWithRespin_ds_PREV=10.4.0.AM2
 earlyaccess_IS=
 version_jbt_IS=4.4.2.Final
 version_ds_IS=10.2.0.GA
@@ -426,14 +421,14 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 export userpass=KERBUSER:PASSWORD
 
 versionWithRespin_jbt_PREV_GA=4.4.3.Final
-versionWithRespin_jbt_PREV=4.4.4.AM1
-versionWithRespin_jbt=4.4.4.AM2
-versionWithRespin_jbt_NEXT=4.4.4.AM3
+versionWithRespin_jbt_PREV=4.4.4.AM2
+versionWithRespin_jbt=4.4.4.AM3
+versionWithRespin_jbt_NEXT=4.4.4.Final
 
 versionWithRespin_ds_PREV_GA=10.3.0.GA
-versionWithRespin_ds_PREV=10.4.0.AM1
-versionWithRespin_ds=10.4.0.AM2
-versionWithRespin_ds_NEXT=10.4.0.AM3
+versionWithRespin_ds_PREV=10.4.0.AM2
+versionWithRespin_ds=10.4.0.AM3
+versionWithRespin_ds_NEXT=10.4.0.GA
 
 buildType="staging"
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
@@ -492,8 +487,8 @@ If the next build WILL be a respin, you need to simply:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.4.4.AM2
-versionWithRespin_ds=10.4.0.AM2
+versionWithRespin_jbt=4.4.4.AM3
+versionWithRespin_ds=10.4.0.AM3
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # if [[ ${version_jbt} == *".Final" ]]; then
@@ -524,7 +519,7 @@ IMPORTANT: TODO: if you switched the _master jobs to run from origin/jbosstools-
 
 If the next build will NOT be a respin, you will also need to ALSO make these changes to jobs, and upversion/release artifacts such as releng scripts or target platforms if you haven't done so already:
 
-* set correct github branch, eg., switch from 4.4.3.AM1x to 4.4.x
+* set correct github branch, eg., switch from 4.4.3.x to 4.4.x
 * upversion dependencies, eg., releng scripts move from version CR1 to CR1 (if that's been released)
 * upversion target platforms / Central version (if those have been released)
 
@@ -541,8 +536,8 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-rele
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.4.4.AM2
-versionWithRespin_ds=10.4.0.AM2
+versionWithRespin_jbt=4.4.4.AM3
+versionWithRespin_ds=10.4.0.AM3
 if [[ ${version_jbt} == *".Final" ]]; then
   stream_jbt=4.4.neon
   github_branch=jbosstools-4.4.4.x
@@ -586,8 +581,8 @@ You will need to disable the jobs once the bits are staged, so that they won't r
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.4.4.AM2
-versionWithRespin_ds=10.4.0.AM2
+versionWithRespin_jbt=4.4.4.AM3
+versionWithRespin_ds=10.4.0.AM3
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # if [[ ${version_jbt} == *".Final" ]]; then

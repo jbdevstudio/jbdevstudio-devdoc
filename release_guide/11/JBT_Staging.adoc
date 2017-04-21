@@ -46,31 +46,11 @@ chmod +x -R */*.sh */*/*.sh
 
 ----
 
-== Enable staging jobs
+== Enable pipeline jobs
 
-You will need to enable the jobs:
+You will need to enable the pipeline.
 
-[source,bash]
-----
-
-# kerberos login for the Jenkins server
-export userpass=KERBUSER:PASSWORD
-
-versionWithRespin_jbt=4.5.0.AM0
-versionWithRespin_ds=11.0.0.AM0
-version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
-version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
-if [[ ${version_jbt} == *".Final" ]]; then
-  stream_jbt=4.5.oxygen
-else
-  stream_jbt=master
-fi
-bosmwjenkins=https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job
-JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-# TODO: enable this buildflow job -- currently not useful
-# ${JP} -s ${bosmwjenkins} -j jbosstools-releng-push-to-staging-buildflow_${stream_jbt} -t enable
-
-----
+TODO: https://issues.jboss.org/browse/JBIDE-24182 wrap staging/release process with pipeline job
 
 == Verify correct versions, branches exist, and root poms are correct
 
@@ -597,6 +577,5 @@ for j in jbosstools-releng-push-to-staging-03-verify-builds-update-sites \
          jbosstools-releng-push-to-staging-01-check-versions-branches-root-poms; do
   ${JP} -s ${ccijenkins} -j ${j} -t disable
 done
-${JP} -s ${bosmwjenkins} -j jbosstools-releng-push-to-staging-buildflow_${stream_jbt} -t disable
 
 ----

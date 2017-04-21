@@ -68,11 +68,11 @@ TIP: Once the staging build folder exists, start fetching the devstudio installe
 
 cd ~/tmp
 versionWithRespin_ds=10.4.0.AM3
-wget https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
+wget http://wonka.mw.lab.eng.bos.redhat.com/rhd/devstudio/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
 installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 echo "Installer jar: ${installerJar}"
 rm -f index.html
-wget https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/${installerJar}
+time wget http://wonka.mw.lab.eng.bos.redhat.com/rhd/devstudio/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/${installerJar}
 
 ----
 
@@ -112,6 +112,7 @@ https://devstudio.redhat.com/10.0/staging/updates/
 
 [source,bash]
 ----
+
 versionWithRespin_ds=10.4.0.AM3
 cd ~/tmp
 wget https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
@@ -122,7 +123,12 @@ rm -f index.html
 # should have already downloaded this above
 if [[ ! -f ${installerJar} ]]; then wget https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/${installerJar}; fi
 
-java -jar ~/tmp/${installerJar}
+if [[ -d ~/devstudio ]]; then mv ~/devstudio{,_BAK}; fi
+echo 1 | java -jar ~/tmp/${installerJar} -console # install headlessly to ~/devstudio
+mv ~/devstudio ~/${installerJar/.jar/} # rename install folder
+if [[ -d ~/devstudio_BAK ]]; then mv ~/devstudio{_BAK,}; fi
+
+cd ~/${installerJar/.jar/}/studio; ./devstudio -data /tmp/wksp-${installerJar/.jar/}
 
 ----
 

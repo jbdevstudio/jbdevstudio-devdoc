@@ -23,15 +23,10 @@ google-chrome && google-chrome https://issues.jboss.org/plugins/servlet/project-
 ----
 
 
-== Rename artifacts to remove timestamp and buildID
-
-[IMPORTANT]
-====
-TODO: Migrate this step to a Jenkins job: https://issues.jboss.org/browse/JBDS-4288
-====
+== Rename GA artifacts to remove timestamp and buildID
 
 To comply with Goldengate URL rules, we need to rename artifacts before they go to the CSP. For example
-`devstudio-10.4.0.AM3-v20151002-2235-B124-installer-eap.jar` must be renamed to `devstudio-10.4.0.AM3-installer-eap.jar`.
+`devstudio-10.4.0.GA-v20151002-2235-B124-installer-eap.jar` must be renamed to `devstudio-10.4.0.GA-installer-eap.jar`.
 
 Configure, then run this job: https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-00-rename-GA-artifacts/
 
@@ -41,26 +36,28 @@ Configure, then run this job: https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_ds=10.4.0.AM3
+versionWithRespin_ds=10.4.0.GA
 
-ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for j in jbosstools-releng-push-to-dev-stable-00-rename-GA-artifacts; do
-  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
-  sleep 3s
+if [[ ${versionWithRespin_ds} == *"GA" ]]; then
+  ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+  JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+  for j in jbosstools-releng-push-to-dev-stable-00-rename-GA-artifacts; do
+    prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+    sleep 3s
 
-  data="versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}"
-  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
-  sleep 15s
+    data="versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}"
+    nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+    sleep 15s
 
-  if [[ "${prevJob}" == "${nextJob}" ]]; then
-    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
-    echo "[WARN] ${ccijenkins}/${j}"
-  else
-    ${JP} -s ${ccijenkins} -j ${j} -t disable
-    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
-  fi
-done
+    if [[ "${prevJob}" == "${nextJob}" ]]; then
+      echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
+      echo "[WARN] ${ccijenkins}/${j}"
+    else
+      ${JP} -s ${ccijenkins} -j ${j} -t disable
+      ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+    fi
+  done
+fi
 
 ----
 
@@ -128,27 +125,29 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-rele
 export userpass=KERBUSER:PASSWORD
 
 versionWithRespin_ds=10.4.0.AM3
-GOLIVEDATE="Foo, Feb 30, 2017"
-TOrecipients="release-engineering@redhat.com"
-CCrecipients="cobrien@redhat.com, mhusnain@redhat.com, nboldt@redhat.com, jmaury@redhat.com, timoran@redhat.com"
-ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for j in jbosstools-releng-push-to-dev-stable-00-releng-request-email; do
-  prevJob=$(prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable" -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
-  sleep 3s
+if [[ ${versionWithRespin_ds} == *"GA" ]]; then
+  GOLIVEDATE="Mon, Feb 30, 2017"
+  TOrecipients="release-engineering@redhat.com"
+  CCrecipients="cobrien@redhat.com, mhusnain@redhat.com, nboldt@redhat.com, jmaury@redhat.com, timoran@redhat.com"
+  ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+  JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+  for j in jbosstools-releng-push-to-dev-stable-00-releng-request-email; do
+    prevJob=$(prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable" -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+    sleep 3s
 
-  data="token=RELENG&versionWithRespin_ds=${versionWithRespin_ds}&\
-GOLIVEDATE=${GOLIVEDATE}&TOrecipients=${TOrecipients}&CCrecipients=${CCrecipients}"
-  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
-  sleep 15s
+    data="token=RELENG&versionWithRespin_ds=${versionWithRespin_ds}&\
+  GOLIVEDATE=${GOLIVEDATE}&TOrecipients=${TOrecipients}&CCrecipients=${CCrecipients}"
+    nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+    sleep 15s
 
-  if [[ "${prevJob}" != "${nextJob}" ]]; then
-    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
-    echo "[WARN] ${ccijenkins}/${j}"
-  else
-    ${JP} -s ${ccijenkins} -j ${j} -t disable
-    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
-  fi
-done
+    if [[ "${prevJob}" != "${nextJob}" ]]; then
+      echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
+      echo "[WARN] ${ccijenkins}/${j}"
+    else
+      ${JP} -s ${ccijenkins} -j ${j} -t disable
+      ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+    fi
+  done
+fi
 
 ----

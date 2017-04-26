@@ -566,12 +566,9 @@ ${JP} -s ${ccijenkins} -j jbosstools-build.parent_4.4.neon -t build
 
 == Prepare for next milestone
 
-Depending on what's coming next, you will want to run one of these two jobs:
+Configure & run this job:
 
-* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-staging-00-parent-pom-update-and-branch-task-jiras/
 * https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-staging-00-parent-pom-update-task-jiras/
-
-Open the appropriate job, edit its parameters, and kick the job.
 
 == Commit updates to release guide (including this document):
 

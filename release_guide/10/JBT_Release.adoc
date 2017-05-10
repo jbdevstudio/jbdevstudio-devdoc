@@ -20,7 +20,7 @@ mkdir -p /tmp/jbt.github
 cd /tmp/jbt.github
 if [[ ! -d jbosstools-build-ci ]]; then git clone git@github.com:jbosstools/jbosstools-build-ci.git; fi
 cd jbosstools-build-ci
-git checkout jbosstools-4.4.x
+git checkout master
 chmod +x -R */*.sh */*/*.sh
 
 ----

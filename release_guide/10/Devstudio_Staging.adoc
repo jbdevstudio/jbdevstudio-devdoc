@@ -67,7 +67,7 @@ TIP: Once the staging build folder exists, start fetching the devstudio installe
 ----
 
 cd ~/tmp
-versionWithRespin_ds=10.4.0.AM3
+versionWithRespin_ds=10.4.0.GA
 wget http://wonka.mw.lab.eng.bos.redhat.com/rhd/devstudio/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
 installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 echo "Installer jar: ${installerJar}"
@@ -113,7 +113,7 @@ https://devstudio.redhat.com/10.0/staging/updates/
 [source,bash]
 ----
 
-versionWithRespin_ds=10.4.0.AM3
+versionWithRespin_ds=10.4.0.GA
 cd ~/tmp
 wget https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
 installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
@@ -159,7 +159,7 @@ Trigger the QE smoke tests in https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_ds=10.4.0.AM3
+versionWithRespin_ds=10.4.0.GA
 cd ~/tmp
 wget https://devstudio.redhat.com/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
 installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")

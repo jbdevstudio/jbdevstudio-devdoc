@@ -62,9 +62,9 @@ Configure, then run this job:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-version_parent=4.4.4.AM3-SNAPSHOT
-versionWithRespin_jbt=4.4.4.AM3
-versionWithRespin_ds=10.4.0.AM3
+version_parent=4.4.4.Final-SNAPSHOT
+versionWithRespin_jbt=4.4.4.Final
+versionWithRespin_ds=10.4.0.GA
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 if [[ ${version_jbt} == *".Final" ]]; then
@@ -121,8 +121,8 @@ To prevent accidentally rebuilding something while you're copying it away, make 
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.4.4.AM3
-versionWithRespin_ds=10.4.0.AM3
+versionWithRespin_jbt=4.4.4.Final
+versionWithRespin_ds=10.4.0.GA
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # if [[ ${version_jbt} == *".Final" ]]; then
@@ -162,8 +162,8 @@ Then respin the job:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.4.4.AM3
-versionWithRespin_ds=10.4.0.AM3
+versionWithRespin_jbt=4.4.4.Final
+versionWithRespin_ds=10.4.0.GA
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # if [[ ${version_jbt} == *".Final" ]]; then
@@ -171,7 +171,7 @@ version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\
 # else
 #   stream_jbt=master
 # fi
-TARGET_PLATFORM_VERSION_MAX=4.63.0.Final-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.63.0.Final
 TARGET_PLATFORM_CENTRAL_MAX=4.63.0.Final-SNAPSHOT
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
@@ -235,11 +235,11 @@ export userpass=KERBUSER:PASSWORD
 
 eclipseReleaseName=neon
 devstudioReleaseVersion=10.0
-versionWithRespin_jbt=4.4.4.AM3
-versionWithRespin_ds=10.4.0.AM3
+versionWithRespin_jbt=4.4.4.Final
+versionWithRespin_ds=10.4.0.GA
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
-TARGET_PLATFORM_VERSION_MAX=4.63.0.Final-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.63.0.Final
 TARGET_PLATFORM_CENTRAL_MAX=4.63.0.Final-SNAPSHOT
 # if [[ ${version_jbt} == *".Final" ]]; then
   stream_jbt=4.4.neon
@@ -308,8 +308,8 @@ export userpass=KERBUSER:PASSWORD
 
 eclipseReleaseName=neon
 devstudioReleaseVersion=10.0
-versionWithRespin_jbt=4.4.4.AM3
-versionWithRespin_ds=10.4.0.AM3
+versionWithRespin_jbt=4.4.4.Final
+versionWithRespin_ds=10.4.0.GA
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
@@ -356,9 +356,9 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.4.4.AM3
-versionWithRespin_ds=10.4.0.AM3
-versionWithRespin_ds_PREV=10.4.0.AM2
+versionWithRespin_jbt=4.4.4.Final
+versionWithRespin_ds=10.4.0.GA
+versionWithRespin_ds_PREV=10.4.0.AM3
 earlyaccess_IS=
 version_jbt_IS=4.4.2.Final
 version_ds_IS=10.2.0.GA
@@ -398,14 +398,14 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 export userpass=KERBUSER:PASSWORD
 
 versionWithRespin_jbt_PREV_GA=4.4.3.Final
-versionWithRespin_jbt_PREV=4.4.4.AM2
-versionWithRespin_jbt=4.4.4.AM3
-versionWithRespin_jbt_NEXT=4.4.4.Final
+versionWithRespin_jbt_PREV=4.4.4.AM3
+versionWithRespin_jbt=4.4.4.Final
+versionWithRespin_jbt_NEXT=4.4.5.AM1
 
 versionWithRespin_ds_PREV_GA=10.3.0.GA
-versionWithRespin_ds_PREV=10.4.0.AM2
-versionWithRespin_ds=10.4.0.AM3
-versionWithRespin_ds_NEXT=10.4.0.GA
+versionWithRespin_ds_PREV=10.4.0.AM3
+versionWithRespin_ds=10.4.0.GA
+versionWithRespin_ds_NEXT=10.5.0.AM1
 
 buildType="staging"
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
@@ -464,8 +464,8 @@ If the next build WILL be a respin, you need to simply:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.4.4.AM3
-versionWithRespin_ds=10.4.0.AM3
+versionWithRespin_jbt=4.4.4.Final
+versionWithRespin_ds=10.4.0.GA
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # if [[ ${version_jbt} == *".Final" ]]; then
@@ -513,8 +513,8 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-rele
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.4.4.AM3
-versionWithRespin_ds=10.4.0.AM3
+versionWithRespin_jbt=4.4.4.Final
+versionWithRespin_ds=10.4.0.GA
 if [[ ${version_jbt} == *".Final" ]]; then
   stream_jbt=4.4.neon
   github_branch=jbosstools-4.4.4.x
@@ -522,8 +522,8 @@ else
   stream_jbt=4.4.neon
   github_branch=jbosstools-4.4.x
 fi
-TARGET_PLATFORM_VERSION_MIN=4.60.2.Final
-TARGET_PLATFORM_VERSION_MAX=4.63.0.Final-SNAPSHOT
+TARGET_PLATFORM_VERSION_MIN=4.60.3.Final
+TARGET_PLATFORM_VERSION_MAX=4.63.0.Final
 TARGET_PLATFORM_CENTRAL_MAX=4.63.0.Final-SNAPSHOT
 respinSuffix=""
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
@@ -558,8 +558,8 @@ You will need to disable the jobs once the bits are staged, so that they won't r
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.4.4.AM3
-versionWithRespin_ds=10.4.0.AM3
+versionWithRespin_jbt=4.4.4.Final
+versionWithRespin_ds=10.4.0.GA
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # if [[ ${version_jbt} == *".Final" ]]; then

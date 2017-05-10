@@ -124,7 +124,7 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-rele
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_ds=10.4.0.AM3
+versionWithRespin_ds=10.4.0.GA
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   GOLIVEDATE="Mon, Feb 30, 2017"
   TOrecipients="release-engineering@redhat.com"

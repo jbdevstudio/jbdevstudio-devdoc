@@ -27,13 +27,10 @@ org.jboss.tools.targetplatforms
 * https://repository.jboss.org/nexus/#nexus-search;gav%7Eorg.jboss.tools.targetplatforms%7Ejbdevstudio-unified%7E4.6*%7E%7E[jbdevstudio-unified]
 |
 * https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstoolstargetplatform-4.70.x/[jbosstoolstargetplatform-4.70.x]
-* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstoolstargetplatform-4.63.x/[jbosstoolstargetplatform-4.63.x]
-* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstoolstargetplatform-4.60.x/[jbosstoolstargetplatform-4.60.x]
 |
 * https://repository.jboss.org/nexus/#stagingRepositories[Close then release]
 |
-* 4.60.3.Final
-* 4.63.0.Final
+* 4.70.0.AM1-SNAPSHOT
 |
 * 4.70.0.AM1-SNAPSHOT
 
@@ -69,11 +66,10 @@ org.jboss.tools.releng
 * https://repository.jboss.org/nexus/#nexus-search;gav%7Eorg.jboss.tools.releng%7Ejbosstools-releng-publish%7E4.4.*%7E%7E[jbosstools-releng-publish]
 |
 * https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-build-ci_master/[jbosstools-build-ci_master]
-* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-build-ci_4.4.neon/[jbosstools-build-ci_4.4.neon]
 |
 * https://repository.jboss.org/nexus/#stagingRepositories[Close then release]
 |
-* 4.4.4.Final
+* 4.5.0.AM1-SNAPSHOT
 |
 * 4.5.0.AM1-SNAPSHOT
 
@@ -86,11 +82,10 @@ org.jboss.tools
 * https://repository.jboss.org/nexus/#nexus-search;gav%7Eorg.jboss.tools%7Eparent%7E4.4.*%7E%7E[parent]
 |
 * https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-build.parent_master/[jbosstools-build.parent_master]
-* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-build.parent_4.4.neon/[jbosstools-build.parent_4.4.neon]
 |
 * https://repository.jboss.org/nexus/#stagingRepositories[Close then release]
 |
-* 4.4.4.Final
+* 4.5.0.AM1-SNAPSHOT
 |
 * 4.5.0.AM1-SNAPSHOT
 

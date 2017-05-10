@@ -11,7 +11,9 @@ Before beginning a stage at the end of a sprint, a number of things need to be d
 4. Clone jbosstools-build-ci repo
 
 
-If this is a GA sprint (the last 3 weeks before a GA release), there are 6 additional steps:
+If this is a GA sprint (the last 3 weeks before a GA release), there are 6 additional steps.
+
+For the first 4 steps, see also link:Nexus_Release.adoc[Release to Nexus].
 
 1. Release jbosstools-build-ci, eg., jbosstoolsRelengPublishVersion = 4.4.4.Final
 

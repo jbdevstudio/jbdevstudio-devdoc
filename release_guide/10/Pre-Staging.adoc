@@ -2,13 +2,40 @@
 
 Before beginning a stage at the end of a sprint, a number of things need to be done:
 
-* Send reminder note to jbosstools-dev@lists.jboss.org of upcoming target platform freeze
+1. Send reminder note to jbosstools-dev@lists.jboss.org of upcoming target platform freeze
 
-* Send reminder note to jbosstools-dev@lists.jboss.org of upcoming code freeze (last Wed of sprint)
+2. Send reminder note to jbosstools-dev@lists.jboss.org of upcoming code freeze (last Wed of sprint)
 
-* Confirm latest Integration Stack (IS) release & URLs
+3. Confirm latest Integration Stack (IS) release & URLs
 
-* Clone jbosstools-build-ci repo
+4. Clone jbosstools-build-ci repo
+
+
+If this is a GA sprint (the last 3 weeks before a GA release), there are 6 additional steps:
+
+1. Release jbosstools-build-ci, eg., jbosstoolsRelengPublishVersion = 4.4.4.Final
+
+2. Release jbosstools-maven-plugins, eg., jbossTychoPluginsVersion = 1.0.0
+
+3. Release target platform(s), eg.
+ * branch 4.60.x / TARGET_PLATFORM_VERSION_MIN = 4.60.3.Final
+ * branch 4.63.x / TARGET_PLATFORM_VERSION_MAX = 4.63.0.Final
+
+4. Release parent pom: 5 changes, eg.:
+ * version = 4.4.4.Final
+ * jbosstoolsRelengPublishVersion = 4.4.4.Final
+ * jbossTychoPluginsVersion = 1.0.0
+ * TARGET_PLATFORM_VERSION_MIN = 4.60.3.Final
+ * TARGET_PLATFORM_VERSION_MAX = 4.63.0.Final
+
+5. Update jobs: 4 changes, eg.:
+ * parent pom version = 4.4.4.Final
+ * jbosstoolsRelengPublishVersion = 4.4.4.Final
+ * TARGET_PLATFORM_VERSION_MIN = 4.60.3.Final
+ * TARGET_PLATFORM_VERSION_MAX = 4.63.0.Final
+
+6. Submit JIRAs to update root poms to use latest TP and parent pom version:
+* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-00-parent-pom-update-task-jiras/
 
 
 == Send reminder note to jbosstools-dev@lists.jboss.org of upcoming target platform freeze & code freeze
@@ -34,7 +61,7 @@ mkdir -p /tmp/jbt.github
 cd /tmp/jbt.github
 if [[ ! -d jbosstools-build-ci ]]; then git clone git@github.com:jbosstools/jbosstools-build-ci.git; fi
 cd jbosstools-build-ci
-git checkout jbosstools-4.4.x
+git checkout master
 chmod +x -R */*.sh */*/*.sh
 
 ----

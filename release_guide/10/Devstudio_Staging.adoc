@@ -197,7 +197,7 @@ done
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_ds=10.3.0.GA
+versionWithRespin_ds=10.4.0.GA
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-05-sign-rpm-email-request; do
@@ -219,19 +219,21 @@ done
 
 ----
 
-2. Chris signs it, and gives back a URL,eg., http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/JBDS-10.3.0/rpms/signed/
+2. Chris signs it, and gives back a URL,eg., http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/JBDS-10.4.0/rpms/signed/
 
 3. Fetch rpms, regen metadata
 
 [source,bash]
 ----
 
+### TODO ### NOT DONE YET
+
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_ds=10.3.0.GA
+versionWithRespin_ds=10.4.0.GA
 # NOTE: do not use http://download-node-02.eng.bos.redhat.com as it may not resolve from within Jenkins
-signedURL=http://download.devel.redhat.com/devel/candidates/jboss/devstudio/devstudio-10.3.0.GA/rpms/signed
+signedURL=http://download.devel.redhat.com/devel/candidates/jboss/devstudio/devstudio-10.4.0.GA/rpms/signed
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-06-sign-rpm-fetch; do
@@ -260,19 +262,19 @@ NOTE: Run the following commands as root user:
 [source,bash]
 ----
 
-cat <<EOF > /etc/yum.repos.d/rh-eclipse46-devstudio.repo
+cat <<EOF > /etc/yum.repos.d/rh-eclipse46-devstudio-10.4.0.repo
 
-[rh-eclipse46-devstudio-staging-10.3]
-name=rh-eclipse46-devstudio-staging-10.3
-baseurl=https://devstudio.redhat.com/10.0/staging/builds/devstudio-10.3.0.GA-build-rpm/latest/x86_64/
+[rh-eclipse46-devstudio-staging-10.4.0]
+name=rh-eclipse46-devstudio-staging-10.4.0
+baseurl=https://devstudio.redhat.com/10.0/staging/builds/devstudio-10.4.0.GA-build-rpm/latest/x86_64/
 enabled=1
 gpgcheck=1
 upgrade_requirements_on_install=1
 metadata_expire=2m
 
-[rh-eclipse46-devstudio-snapshots-10.3]
-name=rh-eclipse46-devstudio-snapshots-10.3
-baseurl=https://devstudio.redhat.com/10.0/snapshots/rpms/10.3.0/x86_64/
+[rh-eclipse46-devstudio-snapshots-10.4.0]
+name=rh-eclipse46-devstudio-snapshots-10.4.0
+baseurl=https://devstudio.redhat.com/10.0/snapshots/rpms/10.4.0/x86_64/
 enabled=0
 gpgcheck=0
 upgrade_requirements_on_install=1
@@ -293,7 +295,7 @@ yum install rh-eclipse46-devstudio -y --best
 Installation should complete without any problems. Should NOT see an error like this:
 [source,bash]
 ----
-Error: Package rh-eclipse46-devstudio-10.3-0.20170218.1756.el7.x86_64.rpm is not signed
+Error: Package rh-eclipse46-devstudio-10.4-0.20170218.1756.el7.x86_64.rpm is not signed
 ----
 ====
 

@@ -20,7 +20,7 @@ git clone https://github.com/jbosstools/jbosstools-download.jboss.org
 git clone https://github.com/jbosstools/jbosstools-maven-plugins
 git clone https://github.com/jbosstools/jbosstools-versionwatch
 
-github_branch=jbosstools-4.4.4.x
+github_branch=jbosstools-4.4.x
 for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins versionwatch; do
   echo "====================================================================="
   echo "Branching jbosstools-${d} from branch ${github_branch}..."
@@ -87,7 +87,7 @@ git clone https://github.com/jbdevstudio/jbdevstudio-website
 git clone https://github.com/jbdevstudio/jbdevstudio-artwork
 git clone https://github.com/jbdevstudio/jbdevstudio-devdoc
 
-github_branch=jbosstools-4.4.4.x
+github_branch=jbosstools-4.4.x
 for d in product ci website artwork devdoc; do
   echo "====================================================================="
   echo "Branching jbdevstudio-${d} from branch ${github_branch}..."
@@ -168,11 +168,11 @@ git clone git@github.com:jbosstools/jbosstools-versionwatch.git
 # download.jboss.org tag might not be valid as tweaks to ide-config.properties happen frequently
 
 version_jbt=4.4.4.Final
-if [[ ${version_jbt} == *".Final" ]]; then
-  github_branch=jbosstools-4.4.4.x
-else
+# if [[ ${version_jbt} == *".Final" ]]; then
+#   github_branch=jbosstools-4.4.4.x
+# else
   github_branch=jbosstools-4.4.x
-fi
+# fi
 cd ~/tru # ~
 for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins versionwatch; do
   echo "====================================================================="
@@ -204,11 +204,11 @@ git clone git@github.com:jbdevstudio/jbdevstudio-devdoc.git
 git clone git@github.com:jbdevstudio/jbdevstudio-ci.git
 
 version_ds=10.4.0.GA
-if [[ ${version_ds} == *".GA" ]]; then
-  github_branch=jbosstools-4.4.4.x
-else
+# if [[ ${version_ds} == *".GA" ]]; then
+#   github_branch=jbosstools-4.4.4.x
+# else
   github_branch=jbosstools-4.4.x
-fi
+# fi
 cd ~/truu # ~
 for d in product website artwork devdoc ci; do # note: ci repo is private
   echo "====================================================================="

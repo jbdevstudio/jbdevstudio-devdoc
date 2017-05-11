@@ -112,9 +112,9 @@ Previous ticket:
 
 Communicate with Chris O'Brien (internal IRC: siege) to coordinate the release. All the above can happen in parallel / before the updates below.
 
-Here is a job that creates the RCM ticket:
+For a GA build, you'll have requested RPM signing via here: link:Devstudio_Staging.adoc[Sign RPM]. Use that signingTicket value below.
 
-WARNING: TODO: make sure this works (untested - was done by hand last time).
+Here is a job that creates the RCM ticket:
 
 https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-dev-stable-00-releng-request-email/configure
 
@@ -126,7 +126,9 @@ export userpass=KERBUSER:PASSWORD
 
 versionWithRespin_ds=10.4.0.GA
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
-  GOLIVEDATE="Mon, Feb 30, 2017"
+  # signingTicket from https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-05-sign-rpm-email-request
+  signingTicket="RCM-16174"
+  GOLIVEDATE="Wed, May 17, 2017"
   TOrecipients="release-engineering@redhat.com"
   CCrecipients="cobrien@redhat.com, mhusnain@redhat.com, nboldt@redhat.com, jmaury@redhat.com, timoran@redhat.com"
   ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
@@ -135,8 +137,8 @@ if [[ ${versionWithRespin_ds} == *"GA" ]]; then
     prevJob=$(prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable" -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
     sleep 3s
 
-    data="token=RELENG&versionWithRespin_ds=${versionWithRespin_ds}&\
-  GOLIVEDATE=${GOLIVEDATE}&TOrecipients=${TOrecipients}&CCrecipients=${CCrecipients}"
+    data="token=RELENG&versionWithRespin_ds=${versionWithRespin_ds}&signingTicket=${signingTicket}&\
+GOLIVEDATE=${GOLIVEDATE}&TOrecipients=${TOrecipients}&CCrecipients=${CCrecipients}"
     nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
     sleep 15s
 

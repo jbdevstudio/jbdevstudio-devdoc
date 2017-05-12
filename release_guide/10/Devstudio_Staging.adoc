@@ -231,9 +231,9 @@ done
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_ds=10.4.0.GA
 # NOTE: do not use http://download-node-02.eng.bos.redhat.com as it may not resolve from within Jenkins
 signedURL=http://download.devel.redhat.com/devel/candidates/jboss/devstudio/devstudio-10.4.0.GA/rpms/signed
+versionWithRespin_ds=10.4.0.GA
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-06-sign-rpm-fetch; do
@@ -282,11 +282,11 @@ metadata_expire=120m
 
 EOF
 
-# If you already have rh-eclipse46-devstudio installed:
-yum update rh-eclipse46-devstudio -y --best
+# If you already have rh-eclipse46-devstudio installed (can add --best flag for Fedora install)
+yum update rh-eclipse46-devstudio -y
 
 # Or, if not already installed
-yum install rh-eclipse46-devstudio -y --best
+yum install rh-eclipse46-devstudio -y
 
 ----
 
@@ -296,6 +296,14 @@ Installation should complete without any problems. Should NOT see an error like 
 [source,bash]
 ----
 Error: Package rh-eclipse46-devstudio-10.4-0.20170218.1756.el7.x86_64.rpm is not signed
+----
+
+Alternatively, you could download the rpms from https://devstudio.redhat.com/10.0/staging/builds/devstudio-10.4.0.GA-build-rpm/latest/x86_64/
+and test them like this to verify their signatures:
+
+[source,bash]
+----
+rpm -K  *.rpm | grep pgp
 ----
 ====
 

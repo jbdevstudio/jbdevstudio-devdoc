@@ -2,9 +2,7 @@
 
 As of jbosstools 4.4.1.Final / 4.4.2.AM1, you can use these jobs to perform the above steps, including sending emails to project leads to speed up the branching and root pom repairs:
 
-https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-releng-parent-pom-update-and-branch-task-jiras/
-
-https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-releng-parent-pom-update-task-jiras/
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-staging-00-parent-pom-update-task-jiras/
 
 == Branching JBoss Tools
 

@@ -16,7 +16,7 @@ Note that +sftp://tools@10.5.105.197/downloads_htdocs/tools/+ maps to +http://do
 (Use filemgmt.jboss.org IP instead of 10.5.105.197 because it's 3x faster!)
 
 If you do not need it urgently, you can push files there simply by pushing a change into the following location: https://github.com/jbosstools/jbosstools-download.jboss.org/tree/master/jbosstools .
-A Jenkins job can then be triggered to sync changes to download.jboss.org: https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-download.jboss.org-rsync-from-svn/
+A Jenkins job can then be triggered to sync changes to download.jboss.org: https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-download.jboss.org-rsync-from-git/
 ====
 
 [IMPORTANT]
@@ -133,16 +133,15 @@ version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\
 #   stream_ds=master
 # fi
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-for j in jbosstools-buildflow-force-publish_${stream_jbt} jbosstools-buildflow_${stream_jbt} jbosstools-build.parent_${stream_jbt} jbosstoolstargetplatform-central-4.63.x jbosstoolstargetplatform-4.63.x devstudio.product_${stream_ds} devstudio.rpm_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} jbosstools-install-grinder.install-tests.matrix_${stream_jbt}; do
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+for j in jbosstools-buildflow-force-publish_${stream_jbt} jbosstools-buildflow_${stream_jbt} jbosstools-build.parent_${stream_jbt} \
+    jbosstools-discovery_${stream_jbt} jbosstoolstargetplatform-central-4.63.x jbosstoolstargetplatform-4.63.x \
+    devstudio.product_${stream_ds} devstudio.rpm_${stream_ds} devstudio.versionwatch_${stream_ds} \
+    jbosstools-install-p2director.install-tests.matrix_${stream_jbt} jbosstools-install-grinder.install-tests.matrix_${stream_jbt} \
+    jbosstools-composite-install_${stream_jbt} jbosstools-browsersim-standalone_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} \
+    jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstools-build-sites.aggregate.child-sites_${stream_jbt}; do
   ${JP} -s ${ccijenkins} -j ${j} -t disable
   ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
-done
-echo ""
-bosmwjenkins=https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job
-JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for j in jbosstools-composite-install_${stream_jbt} jbosstools-browsersim-standalone_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstools-build-sites.aggregate.child-sites_${stream_jbt}; do
-  ${JP} -s ${bosmwjenkins} -j ${j} -t disable
-  ${JP} -s ${bosmwjenkins} -j ${j} -t lastBuild/toggleLogKeep
 done
 echo ""
 
@@ -216,7 +215,7 @@ cd ~/tmp; wget https://hudson.eclipse.org/packaging/job/neon.epp-tycho-build/437
 
 Here is a job that performs the copy (& rename) from /snapshots/ to /staging/:
 
-http://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites/
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites/
 
 NOTE: To save time, you can run this in parallel with the above step to create the Red Hat Central discovery site.
 
@@ -279,7 +278,7 @@ done
 
 If you can't get the job to run because CCI Jenkins is backlogged with a long queue, look in the job configuration and run the script manually on dev90.
 
-http://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites/configure-readonly/
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites/configure-readonly/
 
 And now, we wait about 35 mins for the above job to complete.
 
@@ -297,7 +296,7 @@ This step should have fired automatically when the *jbosstools-releng-push-to-st
 
 But if you want to run it yourself, here's a job that verifies everything is published:
 
-http://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-03-verify-builds-update-sites/
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-03-verify-builds-update-sites/
 ====
 
 [source,bash]
@@ -341,7 +340,7 @@ Optional step.
 
 Run this job to move any old builds into an OLD/ folder for later cleanup, or delete them immediately.
 
-https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job/jbosstools-releng-push-to-staging-08-delete-builds-and-update-sites/
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-08-delete-builds-and-update-sites/
 
 
 === Update /staging/updates/ sites and merge in Integration Stack content
@@ -477,13 +476,14 @@ version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\
 # fi
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for j in jbosstools-buildflow-force-publish_${stream_jbt} jbosstools-buildflow_${stream_jbt} jbosstools-build.parent_${stream_jbt} jbosstoolstargetplatform-central-4.63.x jbosstoolstargetplatform-4.63.x devstudio.product_${stream_ds} devstudio.rpm_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} jbosstools-install-grinder.install-tests.matrix_${stream_jbt} jbosstools-discovery_${stream_jbt}; do
+
+for j in jbosstools-buildflow-force-publish_${stream_jbt} jbosstools-buildflow_${stream_jbt} jbosstools-build.parent_${stream_jbt} \
+    jbosstools-discovery_${stream_jbt} jbosstoolstargetplatform-central-4.63.x jbosstoolstargetplatform-4.63.x \
+    devstudio.product_${stream_ds} devstudio.rpm_${stream_ds} devstudio.versionwatch_${stream_ds} \
+    jbosstools-install-p2director.install-tests.matrix_${stream_jbt} jbosstools-install-grinder.install-tests.matrix_${stream_jbt} \
+    jbosstools-composite-install_${stream_jbt} jbosstools-browsersim-standalone_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} \
+    jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstools-build-sites.aggregate.child-sites_${stream_jbt}; do
   ${JP} -s ${ccijenkins} -j ${j} -t enable
-done
-echo ""
-bosmwjenkins=https://jenkins.hosts.mwqe.eng.bos.redhat.com/hudson/job
-for j in jbosstools-composite-install_${stream_jbt} jbosstools-browsersim-standalone_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstools-build-sites.aggregate.child-sites_${stream_jbt}; do
-  ${JP} -s ${bosmwjenkins} -j ${j} -t enable
 done
 echo ""
 

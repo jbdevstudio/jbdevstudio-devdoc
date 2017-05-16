@@ -126,11 +126,11 @@ export userpass=KERBUSER:PASSWORD
 
 versionWithRespin_ds=10.4.0.GA
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
-  # signingTicket from https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-05-sign-rpm-email-request
+  # signingTicket from https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-05-sign-rpm-request-email
   signingTicket="RCM-16174"
   GOLIVEDATE="Wed, May 17, 2017"
   TOrecipients="release-engineering@redhat.com"
-  CCrecipients="cobrien@redhat.com, mhusnain@redhat.com, nboldt@redhat.com, jmaury@redhat.com, timoran@redhat.com"
+  CCrecipients="cobrien@redhat.com, mhusnain@redhat.com, nboldt@redhat.com, jmaury@redhat.com, timoran@redhat.com, bodavis@redhat.com"
   ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
   JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
   for j in jbosstools-releng-push-to-dev-stable-00-releng-request-email; do

@@ -200,7 +200,7 @@ export userpass=KERBUSER:PASSWORD
 versionWithRespin_ds=10.4.0.GA
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for j in jbosstools-releng-push-to-staging-05-sign-rpm-email-request; do
+for j in jbosstools-releng-push-to-staging-05-sign-rpm-request-email; do
   prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
   sleep 3s
 

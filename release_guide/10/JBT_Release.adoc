@@ -215,7 +215,6 @@ done
 
 ----
 
-
 === Update /development/updates/ sites (and /stable/updates if Final)
 
 Here's a job that verifies everything is updated:
@@ -361,6 +360,8 @@ for j in jbosstools-releng-push-to-dev-stable-05-release-target-platforms; do
   fi
 done
 
+# NOTE: if you released another TP at the same time (eg., 4.60.3.Final and 4.63.0.Final), repeat for that version too.
+
 ----
 
 
@@ -441,20 +442,20 @@ To diff if any new features have been added/removed:
 
 [source,bash]
 ----
-version_jbt_PREV=4.4.4.AM3
+version_jbt_PREV_Mktplace=4.4.3.Final
 version_jbt=4.4.4.Final
 
 # for Final releases only!
 if [[ ${version_jbt} == *"Final" ]]; then
   cd /tmp
-  wget -O ${version_jbt_PREV}.properties http://download.jboss.org/jbosstools/static/neon/development/updates/core/${version_jbt_PREV}/site.properties
+  wget -O ${version_jbt_PREV_Mktplace}.properties http://download.jboss.org/jbosstools/static/neon/development/updates/core/${version_jbt_PREV_Mktplace}/site.properties
   wget -O ${version_jbt}.properties http://download.jboss.org/jbosstools/static/neon/development/updates/core/${version_jbt}/site.properties
-  diff -u ${version_jbt_PREV}.properties ${version_jbt}.properties
+  diff -u ${version_jbt_PREV_Mktplace}.properties ${version_jbt}.properties
 
   # then verify the the new feature(s) were added to the CoreTools category
   google-chrome && google-chrome https://marketplace.eclipse.org/content/jboss-tools/edit
 
-  rm -f /tmp/${version_jbt_PREV}.properties /tmp/${version_jbt}.properties
+  rm -f /tmp/${version_jbt_PREV_Mktplace}.properties /tmp/${version_jbt}.properties
 fi
 
 ----

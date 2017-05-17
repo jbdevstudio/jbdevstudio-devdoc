@@ -49,8 +49,7 @@ if [[ ${versionWithRespin_ds} == *"GA" ]]; then # GA only
     prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
     sleep 3s
 
-    data="stream_jbt=${stream_jbt}&stream_ds=${stream_ds}&\
-  versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}"
+    data="stream_jbt=${stream_jbt}&stream_ds=${stream_ds}&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}"
     nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
     sleep 15s
 
@@ -248,10 +247,8 @@ popd
 
 Commit changes and submit PR, eg.,
 
-* https://github.com/jbosstools/jbosstools-website/pull/703,
-* https://github.com/jbosstools/jbosstools-website/pull/697,
-* https://github.com/jbosstools/jbosstools-website/pull/651 or
-* https://github.com/jbosstools/jbosstools-website/pull/664
+* https://github.com/jbosstools/jbosstools-website/pull/709,
+* https://github.com/jbosstools/jbosstools-website/pull/703
 
 == Tagging Developer Studio
 
@@ -311,8 +308,8 @@ Using the script below, you can trigger the job remotely.
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-blogURL=/blog/4.4.4.AM3-for-neon.3.html
-pullrequestNum=703
+blogURL=/blog/10.4.0.ga-for-neon.3.html
+pullrequestNum=709
 eclipseVersionSuffix=".3" # for Eclipse 4.6.3 Neon.3
 
 versionWithRespin_jbt=4.4.4.Final

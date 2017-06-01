@@ -1,0 +1,576 @@
+= Release JBoss Tools Development Milestone
+
+This document describe how to publish a valid JBoss Tools build to production after being verified by QE.
+
+With distractions (email, IRC), this process took 90 mins for the Beta release.
+
+= Pre-Release Steps
+
+See link:Pre-Release.adoc[Pre-Release]
+
+
+= Release steps
+
+== Clone jbosstools-build-ci repo
+
+[source,bash]
+----
+
+mkdir -p /tmp/jbt.github
+cd /tmp/jbt.github
+if [[ ! -d jbosstools-build-ci ]]; then git clone git@github.com:jbosstools/jbosstools-build-ci.git; fi
+cd jbosstools-build-ci
+git checkout master
+chmod +x -R */*.sh */*/*.sh
+
+----
+
+
+== Verify that all JIRAs assigned to the current milestone are resolved
+
+Launch the config pages for JBIDE and JBDS and using the gear icons, release the milestone version in JIRA.
+
+Note: If there are unresolved issues with a fixversion set to the current milestone, make sure those issues will not be lost / forgotten.
+
+Send an email to jbosstools-dev@ and jboss-devstudio-list@  reminding people to close out their JIRAs or move them to the next milestone fixversion.
+
+Sample email: http://lists.jboss.org/pipermail/jbosstools-dev/2014-April/008799.html
+
+Should NOT proceed with the release if there are many unresolved issues. Only JIRAs allowed before release should be bookkeping or release process JIRAs.
+
+[source,bash]
+----
+
+google-chrome && google-chrome https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
+  https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
+
+----
+
+Note that in practice, there are almost ALWAYS unresolved issues at release time.
+
+So, instead of closing out the release, you can kick this job to send reminder emails to the team:
+
+[source,bash]
+----
+
+# kerberos login for the Jenkins server
+export userpass=KERBUSER:PASSWORD
+
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+for j in jbosstools-jiralint-weekly; do
+  ${JP} -s ${ccijenkins} -j ${j} -t build
+done
+
+----
+
+
+== Summary
+
+Here are some generalities site promotion/release process. It's not an exhaustive list so you need to read the full document to do a release, but it gives an overview of the various steps.
+
+. CI build output is published the 'builds/staging' folder, while aggregated update-sites goes to 'updates/nightly' folder
+. After branching, component repository are rebuilt from branch (instead of 'master') and new aggregated updatesites are created as well.  A site is promoted from nightly to staging for QE, and moves from 'updates/nightly' to 'updates/staging', including a respin suffix if required.
+.. When QE approves, release is accepted and promoted
+... JIRA is checked to ensure all JIRAs for this milestone are resolved
+... Site moves from 'updates/staging' with respin label to 'static/releases' without respin label
+... Links to 'updates/neon' are replaced to link to new version
+... JBoss Tools website is updated
+... Git repositories are tagged
+... Eclipse Marketplace entries are created or updated
+... JIRA version can be released
+... Interested parties are notified
+
+[IMPORTANT]
+====
+
+Before running any of the jobs or scripts below, make sure to set the correct versions to the values for the release you're staging or releasing.
+
+* look for versionWithRespin, update to version you're staging
+* look for PREV and NEXT variables; set to previous / next milestone (AM1, AM3, AM3, Final/GA)
+* check target platform versions are current w/ latest versions
+* check parent pom version, version_parent, is current
+* check Integration Stack variables like earlyaccess_IS, version_jbt_IS, version_ds_IS are correct. Double-check best values with Paul Leacu (pleacu).
+
+====
+
+== Copy sites
+
+These steps happens on filemgmt.jboss.org, in the jbosstools download area.
+
+=== Copy content to release directory
+
+Here is a job that performs the copy from /staging/ to /development/ and/or to /stable too:
+
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites/
+
+[source,bash]
+----
+
+# kerberos login for the Jenkins server
+export userpass=KERBUSER:PASSWORD
+
+versionWithRespin_jbt=4.4.4.Final
+versionWithRespin_ds=10.4.0.GA
+version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
+version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
+# if [[ ${version_jbt} == *".Final" ]]; then
+  stream_jbt=4.4.neon
+  stream_ds=10.0.neon
+# else
+#   stream_jbt=master
+#   stream_ds=master
+# fi
+TARGET_PLATFORM_VERSION_MAX=4.63.0.Final
+TARGET_PLATFORM_CENTRAL_MAX=4.63.0.Final-SNAPSHOT
+
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+for j in jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites; do
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+done
+for j in jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites; do
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  sleep 3s
+
+  data="stream_jbt=${stream_jbt}&stream_ds=${stream_ds}&\
+versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
+TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&TARGET_PLATFORM_CENTRAL_MAX=${TARGET_PLATFORM_CENTRAL_MAX}"
+  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+  sleep 15s
+
+  if [[ "${prevJob}" == "${nextJob}" ]]; then
+    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
+    echo "[WARN] ${ccijenkins}/${j}"
+  else
+    ${JP} -s ${ccijenkins} -j ${j} -t disable
+    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+  fi
+done
+
+----
+
+If any of the above fails, ssh to dev01 or dev90, sudo to hudson, and do this. NOTE: will not work if run from within a screen session.
+
+[source,bash]
+----
+
+# get stage script
+WORKSPACE=/tmp
+cd ${WORKSPACE}
+if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
+wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/jbosstools-4.4.x/publish/stage.sh --no-check-certificate
+chmod +x stage.sh
+STAGE=${WORKSPACE}/stage.sh
+eclipseReleaseName=neon
+JBDS="devstudio@10.5.105.197:/www_htdocs/devstudio" # use filemgmt IP
+TOOLS="tools@10.5.105.197:/downloads_htdocs/tools"
+qual=development
+quiet="-q"
+
+# for example, run this for the JBT central discovery plugins:
+versionWithRespin_jbt=4.4.4.Final
+version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
+${STAGE} -sites "discovery.central" -stream "${versionWithRespin_jbt}" -vr ${version_jbt} -DESTINATION "${TOOLS}" \
+    -sd ${eclipseReleaseName} -dd static/${eclipseReleaseName} -st staging -dt ${qual} \
+    -JOB_NAME jbosstools-${versionWithRespin_jbt}-build-\${site} ${quiet} -suz -sus &
+
+----
+
+
+When the job above is done, this verification job will trigger automatically if it's enabled:
+
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites/
+
+But you can run it again if you'd like:
+
+[source,bash]
+----
+
+# kerberos login for the Jenkins server
+export userpass=KERBUSER:PASSWORD
+
+versionWithRespin_jbt=4.4.4.Final
+versionWithRespin_ds=10.4.0.GA
+
+# buildType=development in this case, development will ALSO check stable URLs if we're pushing out a GA/Final release
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+for j in jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites; do
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  sleep 3s
+  data="versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
+skipdiscovery=false&onlydiscovery=false&buildType=development"
+  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+  sleep 15s
+
+  if [[ "${prevJob}" == "${nextJob}" ]]; then
+    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
+    echo "[WARN] ${ccijenkins}/${j}"
+  else
+    ${JP} -s ${ccijenkins} -j ${j} -t disable
+    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+  fi
+done
+
+----
+
+=== Update /development/updates/ sites (and /stable/updates if Final)
+
+Here's a job that verifies everything is updated:
+
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-04-update-merge-composites-html/
+
+[IMPORTANT]
+====
+
+To know what values to use for merging in the Integration Stack content (IS-suffixed variables), contact Paul Leacu or compare these URLs:
+
+http://download.jboss.org/jbosstools/neon/stable/updates/integration-stack/discovery/4.4.1.Final/ vs
+http://download.jboss.org/jbosstools/neon/development/updates/integration-stack/discovery/4.4.1.Final/
+and
+http://download.jboss.org/jbosstools/neon/stable/updates/integration-stack/discovery/4.4.1.Final/ vs
+http://download.jboss.org/jbosstools/neon/stable/updates/integration-stack/discovery/4.4.1.Final/earlyaccess/
+
+Similarly for devstudio:
+
+https://devstudio.jboss.com/10.0/stable/updates/integration-stack/discovery/10.1.0.GA/ vs
+https://devstudio.jboss.com/10.0/development/updates/integration-stack/discovery/10.1.0.GA/
+and
+https://devstudio.jboss.com/10.0/stable/updates/integration-stack/discovery/10.1.0.GA/ vs
+https://devstudio.jboss.com/10.0/stable/updates/integration-stack/discovery/10.1.0.GA/earlyaccess/
+
+The URLs used to fetch IS content are as follows:
+
+[source,bash]
+----
+eclipseReleaseName=neon
+devstudioReleaseVersion=10.0
+
+http://download.jboss.org/jbosstools/${eclipseReleaseName}/${qual_IS}/updates/integration-stack/discovery/${version_jbt_IS}/${earlyaccess_IS}
+https://devstudio.redhat.com/${devstudioReleaseVersion}/${qual_IS}/updates/integration-stack/discovery/${version_ds_IS}/${earlyaccess_IS}
+----
+
+====
+
+
+[source,bash]
+----
+
+# kerberos login for the Jenkins server
+export userpass=KERBUSER:PASSWORD
+
+versionWithRespin_jbt=4.4.4.Final
+versionWithRespin_ds=10.4.0.GA
+versionWithRespin_ds_PREV_GA=10.3.0.GA
+qual_IS="stable" # "development" or "stable" as applicable - see tip above
+earlyaccess_IS="" # "" or "earlyaccess/" as applicable - see tip above
+version_jbt_IS=4.4.2.Final
+version_ds_IS=10.2.0.GA
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+for j in jbosstools-releng-push-to-dev-stable-04-update-merge-composites-html; do
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  sleep 3s
+  data="token=RELENG&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&versionWithRespin_ds_PREV_GA=${versionWithRespin_ds_PREV_GA}&\
+qual_IS=${qual_IS}&earlyaccess_IS=${earlyaccess_IS}&version_jbt_IS=${version_jbt_IS}&version_ds_IS=${version_ds_IS}"
+  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+  sleep 15s
+
+  if [[ "${prevJob}" == "${nextJob}" ]]; then
+    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
+    echo "[WARN] ${ccijenkins}/${j}"
+  else
+    ${JP} -s ${ccijenkins} -j ${j} -t disable
+    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+  fi
+done
+
+----
+
+
+=== WebTools
+
+==== Publish Site
+
+Webtools site is expected to be found in +http://download.jboss.org/tools/updates/webtools/neon+. So, with a sftp client, on filemgmt.jboss.org,
+create a symlink from +/updates/webtools/neon+ to http://download.jboss.org/jbosstools/neon/stable/updates/ (or /development/updates/ if we're
+before first Final release).
+
+[source,bash]
+----
+# verify site contents are shown
+google-chrome && google-chrome http://download.jboss.org/jbosstools/updates/webtools/neon http://download.jboss.org/jbosstools/updates/webtools/
+
+----
+
+==== Notify webtools project
+
+If this is the first milestone release (ie if you had to create the 'updates/webtools/neon' directory (next year will be "neon"), ensure that upstream project Web Tools (WTP) knows to include this new URL in their server adapter wizard. New bugzilla required!
+
+* https://issues.jboss.org/browse/JBIDE-18921
+* https://bugs.eclipse.org/454810
+
+== Update Target Platforms
+
+If this new release includes a new Target Platform, you need to release the latest target platform. If not, there's nothing to do here.
+
+For Final or GA releases, the target platform folders should be moved to /static/ and composited back.
+
+Thus for example,
+
+http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/4.*.*.Final/
+http://download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/4.*.*.Final/
+
+should be moved to:
+
+http://download.jboss.org/jbosstools/static/targetplatforms/jbosstoolstarget/4.*.*.Final/
+http://download.jboss.org/jbosstools/static/targetplatforms/jbdevstudiotarget/4.*.*.Final/
+
+Then you can create composites in the old locations pointing to the new one, like this:
+
+Here's a job that moves the target platform, then creates the symlinks to the /static/ location from the non-static ones.
+
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-05-release-target-platforms/
+
+IMPORTANT: This job also verifies that -SNAPSHOT content is properly populated on the servers, so it should be run for .Final and -SNAPSHOT target platforms alike.
+
+[source,bash]
+----
+
+# kerberos login for the Jenkins server
+export userpass=KERBUSER:PASSWORD
+
+TARGET_PLATFORM_VERSION_MAX=4.63.0.Final
+
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+for j in jbosstools-releng-push-to-dev-stable-05-release-target-platforms; do
+  prevJob=$(prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable" -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  sleep 3s
+  data="token=RELENG&TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}"
+  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+  sleep 15s
+  if [[ "${prevJob}" == "${nextJob}" ]]; then
+    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
+    echo "[WARN] ${ccijenkins}/${j}"
+  else
+    ${JP} -s ${ccijenkins} -j ${j} -t disable
+    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+  fi
+done
+
+# NOTE: if you released another TP at the same time (eg., 4.60.3.Final and 4.63.0.Final), repeat for that version too.
+
+----
+
+
+== Release the latest development and/or stable milestone to ide-config.properties
+
+Here's a job that verifies everything is updated:
+
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-04-update-ide-config.properties/
+
+[source,bash]
+----
+
+# kerberos login for the Jenkins server
+export userpass=KERBUSER:PASSWORD
+
+versionWithRespin_jbt_PREV_GA=4.4.3.Final
+versionWithRespin_jbt_PREV=4.4.4.AM3
+versionWithRespin_jbt=4.4.4.Final
+versionWithRespin_jbt_NEXT=4.4.5.AM1
+
+versionWithRespin_ds_PREV_GA=10.3.0.GA
+versionWithRespin_ds_PREV=10.4.0.AM3
+versionWithRespin_ds=10.4.0.GA
+versionWithRespin_ds_NEXT=10.5.0.AM1
+
+version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
+version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
+buildType="development"; if [[ ${version_jbt} == *".Final" ]]; then buildType="stable"; fi
+
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+for j in jbosstools-releng-push-to-dev-stable-04-update-ide-config.properties; do
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  sleep 3s
+
+  data="token=RELENG&buildType=${buildType}&\
+versionWithRespin_jbt_PREV_GA=${versionWithRespin_jbt_PREV_GA}&\
+versionWithRespin_jbt_PREV=${versionWithRespin_jbt_PREV}&\
+versionWithRespin_jbt=${versionWithRespin_jbt}&\
+versionWithRespin_jbt_NEXT=${versionWithRespin_jbt_NEXT}&\
+versionWithRespin_ds_PREV_GA=${versionWithRespin_ds_PREV_GA}&\
+versionWithRespin_ds_PREV=${versionWithRespin_ds_PREV}&\
+versionWithRespin_ds=${versionWithRespin_ds}&\
+versionWithRespin_ds_NEXT=${versionWithRespin_ds_NEXT}"
+  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+  sleep 15s
+
+  if [[ "${prevJob}" == "${nextJob}" ]]; then
+    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
+    echo "[WARN] ${ccijenkins}/${j}"
+  else
+    ${JP} -s ${ccijenkins} -j ${j} -t disable
+    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+  fi
+done
+
+----
+
+
+== Update Eclipse Marketplace (add/remove features)
+
+WARNING: Only applies to the milestone release before an x.y.0.Final and all .Final releases. (For example, do for x.y.0.AM1 but not x.y.z.AM1.)
+
+=== If node does not yet exist
+
+For the first Beta, create a new node on Marketplace, using content from http://download.jboss.org/jbosstools/static/neon/stable/updates/core/4.4.3.AM1/site.properties
+
+=== If node already exists
+
+Access it via +https://marketplace.eclipse.org/content/jboss-tools/edit+ and update the following things:
+
+* Solution version number to match new version
+* Description to match new version & dependencies
+* Notes / warnings (if applicable, eg., JDK issues)
+* Update list of features, using content of http://download.jboss.org/jbosstools/static/neon/stable/updates/core/4.4.3.AM1/site.properties
+
+To diff if any new features have been added/removed:
+
+[source,bash]
+----
+version_jbt_PREV_Mktplace=4.4.3.Final
+version_jbt=4.4.4.Final
+
+# for Final releases only!
+if [[ ${version_jbt} == *"Final" ]]; then
+  cd /tmp
+  wget -O ${version_jbt_PREV_Mktplace}.properties http://download.jboss.org/jbosstools/static/neon/development/updates/core/${version_jbt_PREV_Mktplace}/site.properties
+  wget -O ${version_jbt}.properties http://download.jboss.org/jbosstools/static/neon/development/updates/core/${version_jbt}/site.properties
+  diff -u ${version_jbt_PREV_Mktplace}.properties ${version_jbt}.properties
+
+  # then verify the the new feature(s) were added to the CoreTools category
+  google-chrome && google-chrome https://marketplace.eclipse.org/content/jboss-tools/edit
+
+  rm -f /tmp/${version_jbt_PREV_Mktplace}.properties /tmp/${version_jbt}.properties
+fi
+
+----
+
+=== Validate Marketplace install
+
+(If this is an development milestone towards a .0.Final, or a stable .x.Final build...)
+
+1. Get a compatible Eclipse
+2. Install from Marketplace
+3. Install everything from Central + Earlyaccess
+4. Test a project example
+
+
+== Release JIRA
+
+If there are no unresolved issues, release the milestone version in JIRA.
+
+Launch the config pages for JBIDE and JBDS and using the gear icons, release the milestone version in JIRA.
+
+[source,bash]
+----
+
+google-chrome && google-chrome https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
+  https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
+
+----
+
+
+== Submit PR to update tools.jboss.org
+
+See link:Devstudio_Release.adoc[Devstudio Release]
+
+
+== Smoke test the release
+
+Before notifying team of release, must check for obvious problems. Any failure there should be fixed with highest priority. In general, it could be wrong URLs in a composite site.
+
+=== Validate update site install
+
+1. Get a recent Eclipse (compatible with the target version of JBT)
+2. Install Abridged category from http://download.jboss.org/jbosstools/neon/development/updates/ and/or http://download.jboss.org/jbosstools/neon/stable/updates/
+3. Restart. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
+4. Check log for errors, start an example project or run a quickstart, check log again
+5. Check to make sure "Windows > Prefs > Install/Update > Available Software Sites" shows you what you expect to see
+
+== Tagging JBoss Tools
+
+See link:Branching_and_Tagging.adoc[Branching and Tagging]
+
+
+== Notify Team Lead(s)
+
+See link:Devstudio_Release.adoc[Devstudio Release]
+
+
+== Disable dev-stable jobs
+
+You will need to disable the jobs once the bits are released, so that they won't run accidentally.
+
+[source,bash]
+----
+
+# kerberos login for the Jenkins server
+export userpass=KERBUSER:PASSWORD
+
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+for j in jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites \
+  jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites; do
+  ${JP} -s ${ccijenkins} -j ${j} -t disable
+done
+
+----
+
+== Bump parent pom to newer BUILD_ALIAS value
+
+Once the current milestone is done, the BUILD_ALIAS in parent pom should be bumped to a new value.
+
+[source,bash]
+----
+
+# adjust these steps to fit your own path location & git workflow
+cd ~/tru # ~
+pushd jbosstools-build/parent
+BUILD_ALIAS=Final
+BUILD_ALIAS_NEXT=AM1
+
+git fetch origin jbosstools-4.4.x
+git checkout FETCH_HEAD
+
+sed -i -e "s#<BUILD_ALIAS>${BUILD_ALIAS}</BUILD_ALIAS>#<BUILD_ALIAS>${BUILD_ALIAS_NEXT}</BUILD_ALIAS>#" pom.xml
+
+# TODO: bump the version of the parent pom too? eg., from AM1 -> Final?
+ci "bump parent pom to BUILD_ALIAS = ${BUILD_ALIAS_NEXT}" pom.xml
+git push origin HEAD:jbosstools-4.4.x
+
+# rebuild parent pom in jbosstools-4.4.x branch
+# https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-build.parent_4.4.neon/build
+
+# kerberos login for the Jenkins server
+export userpass=KERBUSER:PASSWORD
+
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+${JP} -s ${ccijenkins} -j jbosstools-build.parent_4.4.neon -t build
+
+----
+
+== Prepare for next milestone
+
+Configure & run this job:
+
+* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-staging-00-parent-pom-update-task-jiras/
+
+== Commit updates to release guide (including this document):
+
+See link:Devstudio_Release.adoc[Devstudio Release]

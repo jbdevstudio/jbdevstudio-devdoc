@@ -396,15 +396,15 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt_PREV_GA=4.4.3.Final
+versionWithRespin_jbt_PREV_GA=4.4.4.Final
 versionWithRespin_jbt_PREV=4.4.4.Final
 versionWithRespin_jbt=4.5.0.AM1
-versionWithRespin_jbt_NEXT=4.5.0.AM1
+versionWithRespin_jbt_NEXT=4.5.0.AM2
 
-versionWithRespin_ds_PREV_GA=10.3.0.GA
+versionWithRespin_ds_PREV_GA=10.4.0.GA
 versionWithRespin_ds_PREV=10.4.0.GA
 versionWithRespin_ds=11.0.0.AM1
-versionWithRespin_ds_NEXT=11.0.0.AM1
+versionWithRespin_ds_NEXT=11.0.0.AM2
 
 buildType="staging"
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job

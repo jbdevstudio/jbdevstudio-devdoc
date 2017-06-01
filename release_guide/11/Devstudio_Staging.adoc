@@ -105,7 +105,7 @@ Before notifying team of staged release, must check for obvious problems.
 1. Get a recent Eclipse (compatible with the target version of JBT)
 2. Install Bring Your Own Eclipse category from
 
-https://devstudio.redhat.com/10.0/staging/updates/
+https://devstudio.redhat.com/11/staging/updates/
 
 3. Restart when prompted. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
 4. Check log, start an example project, check log again
@@ -255,7 +255,7 @@ done
 
 ----
 
-Next, update your /etc/yum.repos.d/rh-eclipse46-devstudio.repo file like this:
+Next, update your /etc/yum.repos.d/rh-eclipse47-devstudio.repo file like this:
 
 NOTE: Run the following commands as root user:
 

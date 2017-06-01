@@ -138,7 +138,7 @@ for j in jbosstools-buildflow-force-publish_${stream_jbt} jbosstools-buildflow_$
     jbosstools-discovery_${stream_jbt} jbosstoolstargetplatform-central-4.70.x jbosstoolstargetplatform-4.70.x \
     devstudio.product_${stream_ds} devstudio.rpm_${stream_ds} devstudio.versionwatch_${stream_ds} \
     jbosstools-install-p2director.install-tests.matrix_${stream_jbt} jbosstools-install-grinder.install-tests.matrix_${stream_jbt} \
-    jbosstools-composite-install_${stream_jbt} jbosstools-browsersim-standalone_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} \
+    jbosstools-composite-install_${stream_jbt} jbosstools-browsersim_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} \
     jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstools-build-sites.aggregate.child-sites_${stream_jbt}; do
   ${JP} -s ${ccijenkins} -j ${j} -t disable
   ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
@@ -359,8 +359,8 @@ versionWithRespin_jbt=4.5.0.AM1
 versionWithRespin_ds=11.0.0.AM1
 versionWithRespin_ds_PREV=10.4.0.GA
 earlyaccess_IS=
-version_jbt_IS=4.4.2.Final
-version_ds_IS=10.2.0.GA
+version_jbt_IS=4.4.3.Final
+version_ds_IS=10.3.0.GA
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-04-update-merge-composites-html; do
@@ -481,7 +481,7 @@ for j in jbosstools-buildflow-force-publish_${stream_jbt} jbosstools-buildflow_$
     jbosstools-discovery_${stream_jbt} jbosstoolstargetplatform-central-4.70.x jbosstoolstargetplatform-4.70.x \
     devstudio.product_${stream_ds} devstudio.rpm_${stream_ds} devstudio.versionwatch_${stream_ds} \
     jbosstools-install-p2director.install-tests.matrix_${stream_jbt} jbosstools-install-grinder.install-tests.matrix_${stream_jbt} \
-    jbosstools-composite-install_${stream_jbt} jbosstools-browsersim-standalone_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} \
+    jbosstools-composite-install_${stream_jbt} jbosstools-browsersim_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} \
     jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstools-build-sites.aggregate.child-sites_${stream_jbt}; do
   ${JP} -s ${ccijenkins} -j ${j} -t enable
 done

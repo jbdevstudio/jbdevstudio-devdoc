@@ -1,0 +1,3 @@
+= Red Hat Development Suite Installer Release Process - 1.x
+
+Please follow internal document link:https://mojo.redhat.com/docs/DOC-1131975[here].

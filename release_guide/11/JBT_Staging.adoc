@@ -203,7 +203,7 @@ You'll need this later for smoke testing. Start fetching it now to save time lat
 [source,bash]
 ----
 
-cd ~/tmp; wget http://download.eclipse.org/technology/epp/downloads/release/oxygen/M5/eclipse-jee-oxygen-M7-linux-gtk-x86_64.tar.gz &
+cd ~/tmp; wget http://download.eclipse.org/technology/epp/downloads/release/oxygen/M7/eclipse-jee-oxygen-M7-linux-gtk-x86_64.tar.gz &
 # or
 cd ~/tmp; wget https://hudson.eclipse.org/packaging/job/neon.epp-tycho-build/437/artifact/org.eclipse.epp.packages/archive/20160913-0900_eclipse-jee-neon-1-linux.gtk.x86_64.tar.gz &
 
@@ -443,7 +443,7 @@ Before notifying team of staged release, must check for obvious problems.
 1. Get a recent Eclipse (compatible with the target version of JBT)
 2. Install Abridged category from
 
-http://download.jboss.org/jbosstools/neon/staging/updates/
+http://download.jboss.org/jbosstools/oxygen/staging/updates/
 
 3. Restart when prompted. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
 4. Check log, start an example project, check log again

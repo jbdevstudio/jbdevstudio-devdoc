@@ -63,8 +63,8 @@ Configure, then run this job:
 export userpass=KERBUSER:PASSWORD
 
 version_parent=4.5.0.AM1-SNAPSHOT
-versionWithRespin_jbt=4.5.0.AM1
-versionWithRespin_ds=11.0.0.AM1
+versionWithRespin_jbt=4.5.0.AM1d
+versionWithRespin_ds=11.0.0.AM1d
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 if [[ ${version_jbt} == *".Final" ]]; then
@@ -121,8 +121,8 @@ To prevent accidentally rebuilding something while you're copying it away, make 
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.0.AM1
-versionWithRespin_ds=11.0.0.AM1
+versionWithRespin_jbt=4.5.0.AM1d
+versionWithRespin_ds=11.0.0.AM1d
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 if [[ ${version_jbt} == *".Final" ]]; then
@@ -161,8 +161,8 @@ Then respin the job:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.0.AM1
-versionWithRespin_ds=11.0.0.AM1
+versionWithRespin_jbt=4.5.0.AM1d
+versionWithRespin_ds=11.0.0.AM1d
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 if [[ ${version_jbt} == *".Final" ]]; then
@@ -203,9 +203,9 @@ You'll need this later for smoke testing. Start fetching it now to save time lat
 [source,bash]
 ----
 
-cd ~/tmp; wget http://download.eclipse.org/technology/epp/downloads/release/oxygen/M7/eclipse-jee-oxygen-M7-linux-gtk-x86_64.tar.gz &
+cd ~/tmp; wget http://download.eclipse.org/technology/epp/downloads/release/oxygen/RC3/eclipse-jee-oxygen-RC3-linux-gtk-x86_64.tar.gz &
 # or
-cd ~/tmp; wget https://hudson.eclipse.org/packaging/job/neon.epp-tycho-build/437/artifact/org.eclipse.epp.packages/archive/20160913-0900_eclipse-jee-neon-1-linux.gtk.x86_64.tar.gz &
+cd ~/tmp; wget https://hudson.eclipse.org/packaging/job/oxygen.epp-tycho-build/319/artifact/org.eclipse.epp.packages/archive/20170620-1800_eclipse-jee-oxygen-RC4-linux.gtk.x86_64.tar.gz &
 
 ----
 
@@ -234,8 +234,8 @@ export userpass=KERBUSER:PASSWORD
 
 eclipseReleaseName=oxygen
 devstudioReleaseVersion=11
-versionWithRespin_jbt=4.5.0.AM1
-versionWithRespin_ds=11.0.0.AM1
+versionWithRespin_jbt=4.5.0.AM1d
+versionWithRespin_ds=11.0.0.AM1d
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 TARGET_PLATFORM_VERSION_MAX=4.70.0.AM1-SNAPSHOT
@@ -307,8 +307,8 @@ export userpass=KERBUSER:PASSWORD
 
 eclipseReleaseName=oxygen
 devstudioReleaseVersion=11
-versionWithRespin_jbt=4.5.0.AM1
-versionWithRespin_ds=11.0.0.AM1
+versionWithRespin_jbt=4.5.0.AM1d
+versionWithRespin_ds=11.0.0.AM1d
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
@@ -355,9 +355,9 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.0.AM1
-versionWithRespin_ds=11.0.0.AM1
-versionWithRespin_ds_PREV=10.4.0.GA
+versionWithRespin_jbt=4.5.0.AM1d
+versionWithRespin_ds=11.0.0.AM1d
+versionWithRespin_ds_PREV=11.0.0.AM1
 earlyaccess_IS=
 version_jbt_IS=4.4.3.Final
 version_ds_IS=10.3.0.GA
@@ -397,13 +397,13 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 export userpass=KERBUSER:PASSWORD
 
 versionWithRespin_jbt_PREV_GA=4.4.4.Final
-versionWithRespin_jbt_PREV=4.4.4.Final
-versionWithRespin_jbt=4.5.0.AM1
+versionWithRespin_jbt_PREV=4.5.0.AM1
+versionWithRespin_jbt=4.5.0.AM1d
 versionWithRespin_jbt_NEXT=4.5.0.AM2
 
 versionWithRespin_ds_PREV_GA=10.4.0.GA
-versionWithRespin_ds_PREV=10.4.0.GA
-versionWithRespin_ds=11.0.0.AM1
+versionWithRespin_ds_PREV=11.0.0.AM1
+versionWithRespin_ds=11.0.0.AM1d
 versionWithRespin_ds_NEXT=11.0.0.AM2
 
 buildType="staging"
@@ -463,8 +463,8 @@ If the next build WILL be a respin, you need to simply:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.0.AM1
-versionWithRespin_ds=11.0.0.AM1
+versionWithRespin_jbt=4.5.0.AM1d
+versionWithRespin_ds=11.0.0.AM1d
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 if [[ ${version_jbt} == *".Final" ]]; then
@@ -510,8 +510,8 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-rele
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.0.AM1
-versionWithRespin_ds=11.0.0.AM1
+versionWithRespin_jbt=4.5.0.AM1d
+versionWithRespin_ds=11.0.0.AM1d
 if [[ ${version_jbt} == *".Final" ]]; then
   stream_jbt=4.5.oxygen
   github_branch=jbosstools-4.5.0.x
@@ -555,8 +555,8 @@ You will need to disable the jobs once the bits are staged, so that they won't r
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.0.AM1
-versionWithRespin_ds=11.0.0.AM1
+versionWithRespin_jbt=4.5.0.AM1d
+versionWithRespin_ds=11.0.0.AM1d
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 if [[ ${version_jbt} == *".Final" ]]; then

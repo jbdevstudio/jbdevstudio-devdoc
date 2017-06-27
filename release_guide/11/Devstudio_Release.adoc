@@ -20,7 +20,7 @@ See link:JBT_Release.adoc[JBT Release]
 
 If and only if we are releasing at the same the RPM version of Devstudio that is designed to work on RHSCL, then this job should also be run:
 
-https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-02-copy-builds-and-rpms/
+https://dev-platform-jenkins-rhel7.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-02-copy-builds-and-rpms/
 
 [source,bash]
 ----
@@ -28,22 +28,22 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.4.4.Final
-versionWithRespin_ds=10.4.0.GA
+versionWithRespin_jbt=4.5.0.AM1d
+versionWithRespin_ds=11.0.0.AM1d
 
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then # GA only
   version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
   version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
-  # since we are now forking from 4.4.x all jobs will run from 4.4.neon stream
-  # if [[ ${version_jbt} == *".Final" ]]; then
-    stream_jbt=4.4.neon
-    stream_ds=10.0.neon
-  # else
-  #  stream_jbt=master
-  #  stream_ds=master
-  # fi
+  # TODO: later, we will beforking from 4.5.x all jobs will run from 4.5.oxygen stream
+  if [[ ${version_jbt} == *".Final" ]]; then
+    stream_jbt=4.5.oxygen
+    stream_ds=11.0.oxygen
+  else
+    stream_jbt=master
+    stream_ds=master
+  fi
 
-  ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+  ccijenkins=https://dev-platform-jenkins-rhel7.rhev-ci-vms.eng.rdu2.redhat.com/job
   JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
   for j in jbosstools-releng-push-to-dev-stable-02-copy-builds-and-rpms; do
     prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
@@ -143,7 +143,7 @@ Then run this:
 
 [source,bash]
 ----
-versionWithRespin_ds=10.4.0.GA
+versionWithRespin_ds=11.0.0.AM1d
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # **
 
 cd ~/devstudio/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ # ~
@@ -174,8 +174,8 @@ Then, back on your own machine...
 
 [source,bash]
 ----
-version_jbt=4.4.4.Final
-version_ds=10.4.0.GA
+version_jbt=4.5.0.AM1
+version_ds=11.0.0.AM1
 
 topic=release-${version_jbt}
 github_branch=master
@@ -279,7 +279,7 @@ Before notifying team of release, must check for obvious problems. Any failure t
 [source,bash]
 ----
 
-version_ds=10.4.0.GA
+version_ds=11.0.0.AM1
 if [[ ${version_ds} == *"GA" ]]; then
   qual="stable"
   cd ~/tmp # ~
@@ -298,7 +298,7 @@ fi
 
 Here's a job that notifies Jeff that the website is ready to be updated with a new blog post:
 
-https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-dev-stable-07-notification-emails/configure
+https://dev-platform-jenkins-rhel7.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-dev-stable-07-notification-emails/configure
 
 Using the script below, you can trigger the job remotely.
 
@@ -308,16 +308,16 @@ Using the script below, you can trigger the job remotely.
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-blogURL=/blog/10.4.0.ga-for-neon.3.html
+blogURL=/blog/4.5.0.am1-for-oxygen.0.html
 pullrequestNum=709
-eclipseVersionSuffix=".3" # for Eclipse 4.6.3 Neon.3
+eclipseVersionSuffix="" # TODO: use .1 for Eclipse 4.7.1 Oxygen.1
 
-versionWithRespin_jbt=4.4.4.Final
-versionWithRespin_ds=10.4.0.GA
+versionWithRespin_jbt=4.5.0.AM1d
+versionWithRespin_ds=11.0.0.AM1d
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # \) # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 
-ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+ccijenkins=https://dev-platform-jenkins-rhel7.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-07-notification-emails; do
   prevJob=$(prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable" -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
@@ -347,8 +347,8 @@ done
 
 cd ~/truu # ~
 
-version_jbt=4.4.4.Final
-version_ds=10.4.0.GA
+version_jbt=4.5.0.AM1
+version_ds=11.0.0.AM1
 cd jbdevstudio-devdoc/release_guide/
 git commit -m "update release guide for ${version_jbt} and ${version_ds}" .
 git push origin HEAD:master

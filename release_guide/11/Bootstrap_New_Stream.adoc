@@ -17,8 +17,17 @@ Every year we need to create placeholder URLs for these locations:
 * http://download.jboss.org/jbosstools/oxygen/snapshots/builds/
 * http://download.jboss.org/jbosstools/oxygen/staging/updates/
 * http://download.jboss.org/jbosstools/oxygen/staging/builds/
-* http://download.jboss.org/jbosstools/oxygen/development/updates/ (copy content from oxygen/development/ site)
-* http://download.jboss.org/jbosstools/oxygen/stable/updates/ (copy content from neon/stable/ site)
+
+(copy content from previous year's URLs)
+* http://download.jboss.org/jbosstools/oxygen/development/updates/
+* http://download.jboss.org/jbosstools/oxygen/development/updates/core/
+* http://download.jboss.org/jbosstools/oxygen/development/updates/coretests/
+* http://download.jboss.org/jbosstools/oxygen/stable/updates/
+* http://download.jboss.org/jbosstools/oxygen/stable/updates/core/
+* http://download.jboss.org/jbosstools/oxygen/stable/updates/coretests/
+
+* http://download.jboss.org/jbosstools/static/oxygen/development/updates/coretests/
+* http://download.jboss.org/jbosstools/static/oxygen/stable/updates/coretests/
 
 * https://devstudio.redhat.com/11/snapshots/updates/
 * https://devstudio.redhat.com/11/snapshots/builds/
@@ -41,6 +50,18 @@ Initially, this will be a symlink to the latest CI build or last year's stable s
 * http://download.jboss.org/jbosstools/oxygen/snapshots/updates/ (once available)
 * http://download.jboss.org/jbosstools/oxygen/development/updates/ (once first AM milestone is released)
 * http://download.jboss.org/jbosstools/oxygen/stable/updates/ (once first GA/Final is released)
+
+[source,bash]
+----
+# mount TOOLS first, then
+cd ~/TOOLS-ssh/oxygen/development/updates; ln -s ../../../updates/webtools/oxygen/ webtools
+cd ~/TOOLS-ssh/oxygen/stable/updates; ln -s ../../../updates/webtools/oxygen/ webtools
+
+# to switch from CI to dev milestone, or stable release
+cd ~/TOOLS-ssh/updates/webtools; rm -f oxygen; ln -s ../../oxygen/snapshots/updates/ oxygen
+cd ~/TOOLS-ssh/updates/webtools; rm -f oxygen; ln -s ../../oxygen/development/updates/ oxygen
+cd ~/TOOLS-ssh/updates/webtools; rm -f oxygen; ln -s ../../oxygen/stable/updates/ oxygen
+----
 
 == Update ide-config.properties
 

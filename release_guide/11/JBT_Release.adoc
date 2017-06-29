@@ -56,7 +56,7 @@ So, instead of closing out the release, you can kick this job to send reminder e
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-ccijenkins=https://dev-platform-jenkins-rhel7.rhev-ci-vms.eng.rdu2.redhat.com/job
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-jiralint-weekly; do
   ${JP} -s ${ccijenkins} -j ${j} -t build
@@ -74,7 +74,7 @@ Here are some generalities site promotion/release process. It's not an exhaustiv
 .. When QE approves, release is accepted and promoted
 ... JIRA is checked to ensure all JIRAs for this milestone are resolved
 ... Site moves from 'updates/staging' with respin label to 'static/releases' without respin label
-... Links to 'updates/neon' are replaced to link to new version
+... Links to 'updates/oxygen' are replaced to link to new version
 ... JBoss Tools website is updated
 ... Git repositories are tagged
 ... Eclipse Marketplace entries are created or updated
@@ -102,7 +102,7 @@ These steps happens on filemgmt.jboss.org, in the jbosstools download area.
 
 Here is a job that performs the copy from /staging/ to /development/ and/or to /stable too:
 
-https://dev-platform-jenkins-rhel7.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites/
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites/
 
 [source,bash]
 ----
@@ -124,7 +124,7 @@ fi
 TARGET_PLATFORM_VERSION_MAX=4.70.0.AM1-SNAPSHOT
 TARGET_PLATFORM_CENTRAL_MAX=4.70.0.AM1-SNAPSHOT
 
-ccijenkins=https://dev-platform-jenkins-rhel7.rhev-ci-vms.eng.rdu2.redhat.com/job
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites; do
   prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
@@ -180,7 +180,7 @@ ${STAGE} -sites "discovery.central" -stream "${versionWithRespin_jbt}" -vr ${ver
 
 When the job above is done, this verification job will trigger automatically if it's enabled:
 
-https://dev-platform-jenkins-rhel7.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites/
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites/
 
 But you can run it again if you'd like:
 
@@ -194,7 +194,7 @@ versionWithRespin_jbt=4.5.0.AM1d
 versionWithRespin_ds=11.0.0.AM1d
 
 # buildType=development in this case, development will ALSO check stable URLs if we're pushing out a GA/Final release
-ccijenkins=https://dev-platform-jenkins-rhel7.rhev-ci-vms.eng.rdu2.redhat.com/job
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites; do
   prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
@@ -219,7 +219,7 @@ done
 
 Here's a job that verifies everything is updated:
 
-https://dev-platform-jenkins-rhel7.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-04-update-merge-composites-html/
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-04-update-merge-composites-html/
 
 [IMPORTANT]
 ====
@@ -267,7 +267,7 @@ qual_IS="stable" # "development" or "stable" as applicable - see tip above
 earlyaccess_IS="" # "" or "earlyaccess/" as applicable - see tip above
 version_jbt_IS=4.4.3.Final
 version_ds_IS=10.3.0.GA
-ccijenkins=https://dev-platform-jenkins-rhel7.rhev-ci-vms.eng.rdu2.redhat.com/job
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-04-update-merge-composites-html; do
   prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
@@ -293,20 +293,20 @@ done
 
 ==== Publish Site
 
-Webtools site is expected to be found in +http://download.jboss.org/tools/updates/webtools/neon+. So, with a sftp client, on filemgmt.jboss.org,
-create a symlink from +/updates/webtools/neon+ to http://download.jboss.org/jbosstools/oxygen/stable/updates/ (or /development/updates/ if we're
+Webtools site is expected to be found in +http://download.jboss.org/tools/updates/webtools/oxygen+. So, with a sftp client, on filemgmt.jboss.org,
+create a symlink from +/updates/webtools/oxygen+ to http://download.jboss.org/jbosstools/oxygen/stable/updates/ (or /development/updates/ if we're
 before first Final release).
 
 [source,bash]
 ----
 # verify site contents are shown
-google-chrome && google-chrome http://download.jboss.org/jbosstools/updates/webtools/neon http://download.jboss.org/jbosstools/updates/webtools/
+google-chrome && google-chrome http://download.jboss.org/jbosstools/updates/webtools/oxygen http://download.jboss.org/jbosstools/updates/webtools/
 
 ----
 
 ==== Notify webtools project
 
-If this is the first milestone release (ie if you had to create the 'updates/webtools/neon' directory (next year will be "neon"), ensure that upstream project Web Tools (WTP) knows to include this new URL in their server adapter wizard. New bugzilla required!
+If this is the first milestone release (ie if you had to create the 'updates/webtools/oxygen' directory (next year will be "oxygen"), ensure that upstream project Web Tools (WTP) knows to include this new URL in their server adapter wizard. New bugzilla required!
 
 * https://issues.jboss.org/browse/JBIDE-18921
 * https://bugs.eclipse.org/454810
@@ -331,7 +331,7 @@ Then you can create composites in the old locations pointing to the new one, lik
 
 Here's a job that moves the target platform, then creates the symlinks to the /static/ location from the non-static ones.
 
-https://dev-platform-jenkins-rhel7.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-05-release-target-platforms/
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-05-release-target-platforms/
 
 IMPORTANT: This job also verifies that -SNAPSHOT content is properly populated on the servers, so it should be run for .Final and -SNAPSHOT target platforms alike.
 
@@ -343,10 +343,11 @@ export userpass=KERBUSER:PASSWORD
 
 TARGET_PLATFORM_VERSION_MAX=4.70.0.AM1-SNAPSHOT
 
-ccijenkins=https://dev-platform-jenkins-rhel7.rhev-ci-vms.eng.rdu2.redhat.com/job
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-05-release-target-platforms; do
-  prevJob=$(prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable" -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+
   sleep 3s
   data="token=RELENG&TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}"
   nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
@@ -369,7 +370,7 @@ done
 
 Here's a job that verifies everything is updated:
 
-https://dev-platform-jenkins-rhel7.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-04-update-ide-config.properties/
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-04-update-ide-config.properties/
 
 [source,bash]
 ----
@@ -391,7 +392,7 @@ version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 buildType="development"; if [[ ${version_jbt} == *".Final" ]]; then buildType="stable"; fi
 
-ccijenkins=https://dev-platform-jenkins-rhel7.rhev-ci-vms.eng.rdu2.redhat.com/job
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-04-update-ide-config.properties; do
   prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
@@ -442,13 +443,13 @@ To diff if any new features have been added/removed:
 
 [source,bash]
 ----
-version_jbt_PREV_Mktplace=4.4.4.Final
+path_jbt_PREV_Mktplace=neon/stable/updates/core/4.4.4.Final
 version_jbt=4.5.0.AM1
 
 # for Final releases only!
-if [[ ${version_jbt} == *"Final" ]]; then
+if [[ ${version_jbt} == *"Final" ]] || [[ ${path_jbt_PREV_Mktplace} != "oxygen"* ]]; then
   cd /tmp
-  wget -O ${version_jbt_PREV_Mktplace}.properties http://download.jboss.org/jbosstools/static/oxygen/development/updates/core/${version_jbt_PREV_Mktplace}/site.properties
+  wget -O ${version_jbt_PREV_Mktplace}.properties http://download.jboss.org/jbosstools/static/${path_jbt_PREV_Mktplace}/site.properties
   wget -O ${version_jbt}.properties http://download.jboss.org/jbosstools/static/oxygen/development/updates/core/${version_jbt}/site.properties
   diff -u ${version_jbt_PREV_Mktplace}.properties ${version_jbt}.properties
 
@@ -522,7 +523,7 @@ You will need to disable the jobs once the bits are released, so that they won't
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-ccijenkins=https://dev-platform-jenkins-rhel7.rhev-ci-vms.eng.rdu2.redhat.com/job
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites \
   jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites; do
@@ -538,6 +539,9 @@ Once the current milestone is done, the BUILD_ALIAS in parent pom should be bump
 [source,bash]
 ----
 
+# kerberos login for the Jenkins server
+export userpass=KERBUSER:PASSWORD
+
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru # ~
 pushd jbosstools-build/parent
@@ -549,28 +553,86 @@ git checkout FETCH_HEAD
 
 sed -i -e "s#<BUILD_ALIAS>${BUILD_ALIAS}</BUILD_ALIAS>#<BUILD_ALIAS>${BUILD_ALIAS_NEXT}</BUILD_ALIAS>#" pom.xml
 
-# TODO: bump the version of the parent pom too? eg., from AM1 -> Final?
+# bump the version of the parent pom too? eg., from AM1 -> Final?
 ci "bump parent pom to BUILD_ALIAS = ${BUILD_ALIAS_NEXT}" pom.xml
 git push origin HEAD:master # jbosstools-4.5.0.x
 
-# rebuild parent pom in master # jbosstools-4.5.0.x branch
-# https://dev-platform-jenkins-rhel7.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-build.parent_master # jbosstools-4.5.x
-
-# kerberos login for the Jenkins server
-export userpass=KERBUSER:PASSWORD
-
-ccijenkins=https://dev-platform-jenkins-rhel7.rhev-ci-vms.eng.rdu2.redhat.com/job
+# rebuild parent pom
+# https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-build.parent_master # jbosstools-4.5.0.x
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 stream_jbt=master
-${JP} -s ${ccijenkins} -j jbosstools-build.parent_${stream_jbt} -t build
+for j in jbosstools-build.parent_${stream_jbt}; do
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  sleep 3s
+
+  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t build -q); echo "[${nextJob}] ${ccijenkins}/${j} build"
+  sleep 15s
+
+  if [[ "${prevJob}" == "${nextJob}" ]]; then
+    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
+    echo "[WARN] ${ccijenkins}/${j}"
+  else
+    ${JP} -s ${ccijenkins} -j ${j} -t disable
+    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+  fi
+done
 
 ----
 
 == Prepare for next milestone
 
-Configure & run this job:
+Run this job:
 
-* https://dev-platform-jenkins-rhel7.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-staging-00-parent-pom-update-task-jiras/
+* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-staging-00-parent-pom-update-task-jiras/
+
+[source,bash]
+----
+
+# kerberos login for the Jenkins server
+export userpass=KERBUSER:PASSWORD
+
+versionWithRespin_jbt_NEXT=4.5.0.AM2
+versionWithRespin_ds_NEXT=11.0.0.AM2
+if [[ ${versionWithRespin_jbt_NEXT} == *".Final" ]]; then
+  version_parent_NEXT=4.5.0.Final
+  createBranch=true
+  github_branch=jbosstools-4.5.0.x
+  github_branch_fallback=master # or jbosstools-4.5.x?
+else
+  version_parent_NEXT=4.5.0.AM2-SNAPSHOT
+  createBranch=false
+  github_branch=master
+  github_branch_fallback=master # or jbosstools-4.5.x?
+fi
+TARGET_PLATFORM_VERSION_MIN=4.70.0.AM1-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.70.0.AM1-SNAPSHOT
+JIRA_HOST="https://issues.jboss.org"
+TOrecipients="nboldt@redhat.com"
+
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+for j in jbosstools-releng-push-to-staging-00-parent-pom-update-task-jiras; do
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  sleep 3s
+
+  data="versionWithRespin_jbt_NEXT=${versionWithRespin_jbt_NEXT}&versionWithRespin_ds_NEXT=${versionWithRespin_ds_NEXT}&\
+version_parent_NEXT=${version_parent_NEXT}&github_branch=${github_branch}&github_branch_fallback=${github_branch_fallback}&\
+TARGET_PLATFORM_VERSION_MIN=${TARGET_PLATFORM_VERSION_MIN}&TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&\
+JIRA_HOST=${JIRA_HOST}&TOrecipients=${TOrecipients}&createBranch=${createBranch}"
+  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+  sleep 15s
+
+  if [[ "${prevJob}" == "${nextJob}" ]]; then
+    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
+    echo "[WARN] ${ccijenkins}/${j}"
+  else
+    ${JP} -s ${ccijenkins} -j ${j} -t disable
+    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+  fi
+done
+
+----
 
 == Commit updates to release guide (including this document):
 

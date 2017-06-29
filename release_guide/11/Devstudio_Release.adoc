@@ -20,7 +20,7 @@ See link:JBT_Release.adoc[JBT Release]
 
 If and only if we are releasing at the same the RPM version of Devstudio that is designed to work on RHSCL, then this job should also be run:
 
-https://dev-platform-jenkins-rhel7.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-02-copy-builds-and-rpms/
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-02-copy-builds-and-rpms/
 
 [source,bash]
 ----
@@ -43,7 +43,7 @@ if [[ ${versionWithRespin_ds} == *"GA" ]]; then # GA only
     stream_ds=master
   fi
 
-  ccijenkins=https://dev-platform-jenkins-rhel7.rhev-ci-vms.eng.rdu2.redhat.com/job
+  ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
   JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
   for j in jbosstools-releng-push-to-dev-stable-02-copy-builds-and-rpms; do
     prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
@@ -83,7 +83,7 @@ See link:JBT_Release.adoc[JBT Release]
 
 == Update Marketplace entry
 
-WARNING: Only applies to Beta and better versions.
+WARNING: Only applies to Beta and better versions (but usually just GA).
 
 [source,bash]
 ----
@@ -131,34 +131,52 @@ For non-Final/GA releases, only JBT should be added. Examples:
 
 === SHA256 values
 
-To get the SHA256 values for easy pasting into the product.yml file, first connect to wonka.mw.lab.eng.bos.redhat.com (10.16.89.81) as +devstudio+ user (requires permissions).
+To get the SHA256 values for easy pasting into the product.yml file, fetch & parse the staging build page, eg.
+  https://devstudio.redhat.com/11/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
+
+Run this:
 
 [source,bash]
 ----
-me@local$ ssh devstudio@wonka.mw.lab.eng.bos.redhat.com
-devstudio@wonka$ ...
-----
 
-Then run this:
+# TODO make sure this works for GA release
 
-[source,bash]
-----
+echo "" > /tmp/yml.txt
+
 versionWithRespin_ds=11.0.0.AM1d
-version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # **
+# test with versionWithRespin_ds=11.0.0.AM1d, but only want this for GA
+if [[ ${versionWithRespin_ds} == *"GA" ]]; then
+  version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # **
+  theURL=https://devstudio.redhat.com/11/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all
+  searchPattern="jar|zip"
 
-cd ~/devstudio/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ # ~
-for f in *.jar *.zip; do
-  size=$(du -h $f); size=${size%*M*};
-  sha=$(cat ${f}.sha256); sh=${sha:0:2};
-  echo "            url: http://www.jboss.org/download-manager/content/origin/files/sha256/${sh}/${sha}/${f}" >> /tmp/yml.txt
-  echo "            file_size: ${size}MB" >> /tmp/yml.txt
-done
-cd /tmp
-f=devstudio-${version_ds}-target-platform.zip
-size=$(wget https://devstudio.redhat.com/10.0/development/updates/core/ --no-check-certificate -q -O - | egrep devstudio-${version_ds}-target-platform.zip | egrep -v sha256 | sed "s#.\+>\([0-9]\+M\)</td.\+#\1#")
-# sha=$(wget https://devstudio.redhat.com/10.0/development/updates/core/${f}.sha256 --no-check-certificate -q -O -); sh=${sha:0:2}
-echo "            url: https://devstudio.redhat.com/10.0/development/updates/core/${f}" >> /tmp/yml.txt
-echo "            file_size: ${size}B" >> /tmp/yml.txt
+  rm -f /tmp/index.html
+  wget --no-check-certificate -q ${theURL}/ -O /tmp/index.html
+  for f in $(cat index.html | egrep "${searchPattern}" | egrep -v "sha256|TXT|latest" | sed -e "s#.\+>\(.\+\(.zip\|.jar\)\)<.\+#\1#"); do
+    size=$(cat index.html | egrep "${searchPattern}" | egrep -v "sha256|TXT|latest" | grep $f | sed -e "s#.\+>\(.\+\(.zip\|.jar\)\)<.\+<td align=\"right\">\([ 0-9MK]\+\)</td>.\+#\3#"); echo "$f: $size"
+    sha=$(wget --no-check-certificate -q ${theURL}/${f}.sha256 -O -); sh=${sha:0:2}; # echo $sha :: $sh
+    echo "            url: http://www.jboss.org/download-manager/content/origin/files/sha256/${sh}/${sha}/${f}" >> /tmp/yml.txt
+    echo "            file_size: ${size}B" >> /tmp/yml.txt
+    echo "" >> /tmp/yml.txt
+  done
+fi
+
+# test with versionWithRespin_ds=10.4.0.GA, but only want this for GA
+if [[ ${versionWithRespin_ds} == *"GA" ]]; then
+  version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # **
+  theURL=https://devstudio.redhat.com/static/11/stable/updates/core/
+  searchPattern="${versionWithRespin_ds}-.*.zip"
+
+  rm -f /tmp/index.html
+  wget --no-check-certificate -q ${theURL}/ -O /tmp/index.html
+  for f in $(cat index.html | egrep "${searchPattern}" | egrep -v "sha256|TXT|latest" | sed -e "s#.\+>\(.\+\(.zip\|.jar\)\)<.\+#\1#"); do
+    size=$(cat index.html | egrep "${searchPattern}" | egrep -v "sha256|TXT|latest" | grep $f | sed -e "s#.\+>\(.\+\(.zip\|.jar\)\)<.\+<td align=\"right\">\([ 0-9MK]\+\)</td>.\+#\3#"); echo "$f: $size"
+    sha=$(wget --no-check-certificate -q ${theURL}/${f}.sha256 -O -); sh=${sha:0:2}; # echo $sha :: $sh
+    echo "            url: http://www.jboss.org/download-manager/content/origin/files/sha256/${sh}/${sha}/${f}" >> /tmp/yml.txt
+    echo "            file_size: ${size}B" >> /tmp/yml.txt
+    echo "" >> /tmp/yml.txt
+  done
+fi
 cat /tmp/yml.txt; rm -f /tmp/yml.txt
 
 ----
@@ -247,6 +265,7 @@ popd
 
 Commit changes and submit PR, eg.,
 
+* https://github.com/jbosstools/jbosstools-website/pull/720,
 * https://github.com/jbosstools/jbosstools-website/pull/709,
 * https://github.com/jbosstools/jbosstools-website/pull/703
 
@@ -264,13 +283,13 @@ Before notifying team of release, must check for obvious problems. Any failure t
 === Validate update site install (BYOE)
 
 1. Get a recent Eclipse (compatible with the target version of JBT)
-2. Install BYOE category from https://devstudio.redhat.com/10.0/development/updates/ and/or https://devstudio.redhat.com/10.0/stable/updates/
+2. Install BYOE category from https://devstudio.redhat.com/11/development/updates/ and/or https://devstudio.redhat.com/11/stable/updates/
 3. Restart. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
 4. Check log, start an example project, check log again
 
 === Validate installer install
 
-1. Download JBDS installer from https://devstudio.redhat.com/10.0/development/builds/ or https://devstudio.redhat.com/10.0/stable/builds/
+1. Download JBDS installer from https://devstudio.redhat.com/11/development/builds/ or https://devstudio.redhat.com/11/stable/builds/
 2. Install via UI or headlessly with
     java -jar devstudio-*.jar -console -options /dev/null
 3. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
@@ -283,11 +302,11 @@ version_ds=11.0.0.AM1
 if [[ ${version_ds} == *"GA" ]]; then
   qual="stable"
   cd ~/tmp # ~
-  wget https://devstudio.redhat.com/static/10.0/${qual}/builds/devstudio-${version_ds}-build-product/latest/all/
+  wget https://devstudio.redhat.com/static/11/${qual}/builds/devstudio-${version_ds}-build-product/latest/all/
   installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
   echo "Installer jar: ${installerJar}"
   rm -f index.html
-  wget https://devstudio.redhat.com/static/10.0/${qual}/builds/devstudio-${version_ds}-build-product/latest/all/${installerJar}
+  wget https://devstudio.redhat.com/static/11/${qual}/builds/devstudio-${version_ds}-build-product/latest/all/${installerJar}
   java -jar ~/tmp/${installerJar} # ~
 fi
 
@@ -298,7 +317,7 @@ fi
 
 Here's a job that notifies Jeff that the website is ready to be updated with a new blog post:
 
-https://dev-platform-jenkins-rhel7.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-dev-stable-07-notification-emails/configure
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-dev-stable-07-notification-emails/configure
 
 Using the script below, you can trigger the job remotely.
 
@@ -309,15 +328,15 @@ Using the script below, you can trigger the job remotely.
 export userpass=KERBUSER:PASSWORD
 
 blogURL=/blog/4.5.0.am1-for-oxygen.0.html
-pullrequestNum=709
-eclipseVersionSuffix="" # TODO: use .1 for Eclipse 4.7.1 Oxygen.1
+pullrequestNum=720
+eclipseVersionSuffix=".0" # TODO: use .1 for Eclipse 4.7.1 Oxygen.1
 
 versionWithRespin_jbt=4.5.0.AM1d
 versionWithRespin_ds=11.0.0.AM1d
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # \) # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 
-ccijenkins=https://dev-platform-jenkins-rhel7.rhev-ci-vms.eng.rdu2.redhat.com/job
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-07-notification-emails; do
   prevJob=$(prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable" -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"

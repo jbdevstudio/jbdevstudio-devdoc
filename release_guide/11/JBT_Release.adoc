@@ -378,18 +378,18 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt_PREV_GA=4.4.4.Final
-versionWithRespin_jbt_PREV=4.4.4.Final
-versionWithRespin_jbt=4.5.0.AM1d
-versionWithRespin_jbt_NEXT=4.5.0.AM2
+version_jbt_PREV_GA=4.4.4.Final
+version_jbt_PREV=4.4.4.Final
+version_jbt=4.5.0.AM1
+version_jbt_NEXT=4.5.0.AM2
 
-versionWithRespin_ds_PREV_GA=10.4.0.GA
-versionWithRespin_ds_PREV=10.4.0.GA
-versionWithRespin_ds=11.0.0.AM1d
-versionWithRespin_ds_NEXT=11.0.0.AM2
+version_ds_PREV_GA=10.4.0.GA
+version_ds_PREV=10.4.0.GA
+version_ds=11.0.0.AM1
+version_ds_NEXT=11.0.0.AM2
 
-version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
-version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
+version_jbt=$(echo ${version_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
+version_ds=$(echo ${version_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 buildType="development"; if [[ ${version_jbt} == *".Final" ]]; then buildType="stable"; fi
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
@@ -399,14 +399,14 @@ for j in jbosstools-releng-push-to-dev-stable-04-update-ide-config.properties; d
   sleep 3s
 
   data="token=RELENG&buildType=${buildType}&\
-versionWithRespin_jbt_PREV_GA=${versionWithRespin_jbt_PREV_GA}&\
-versionWithRespin_jbt_PREV=${versionWithRespin_jbt_PREV}&\
-versionWithRespin_jbt=${versionWithRespin_jbt}&\
-versionWithRespin_jbt_NEXT=${versionWithRespin_jbt_NEXT}&\
-versionWithRespin_ds_PREV_GA=${versionWithRespin_ds_PREV_GA}&\
-versionWithRespin_ds_PREV=${versionWithRespin_ds_PREV}&\
-versionWithRespin_ds=${versionWithRespin_ds}&\
-versionWithRespin_ds_NEXT=${versionWithRespin_ds_NEXT}"
+version_jbt_PREV_GA=${version_jbt_PREV_GA}&\
+version_jbt_PREV=${version_jbt_PREV}&\
+version_jbt=${version_jbt}&\
+version_jbt_NEXT=${version_jbt_NEXT}&\
+version_ds_PREV_GA=${version_ds_PREV_GA}&\
+version_ds_PREV=${version_ds_PREV}&\
+version_ds=${version_ds}&\
+version_ds_NEXT=${version_ds_NEXT}"
   nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
   sleep 15s
 

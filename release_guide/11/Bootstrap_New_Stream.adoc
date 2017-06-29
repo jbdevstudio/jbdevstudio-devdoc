@@ -13,28 +13,49 @@ Latest versions are here:
 
 Every year we need to create placeholder URLs for these locations:
 
-* http://download.jboss.org/jbosstools/oxygen/snapshots/updates/
 * http://download.jboss.org/jbosstools/oxygen/snapshots/builds/
-* http://download.jboss.org/jbosstools/oxygen/staging/updates/
+* http://download.jboss.org/jbosstools/oxygen/snapshots/updates/
 * http://download.jboss.org/jbosstools/oxygen/staging/builds/
+* http://download.jboss.org/jbosstools/oxygen/staging/updates/
 
 (copy content from previous year's URLs)
 * http://download.jboss.org/jbosstools/oxygen/development/updates/
 * http://download.jboss.org/jbosstools/oxygen/development/updates/core/
 * http://download.jboss.org/jbosstools/oxygen/development/updates/coretests/
+* http://download.jboss.org/jbosstools/oxygen/development/updates/fuse-extras/
 * http://download.jboss.org/jbosstools/oxygen/stable/updates/
 * http://download.jboss.org/jbosstools/oxygen/stable/updates/core/
 * http://download.jboss.org/jbosstools/oxygen/stable/updates/coretests/
+* http://download.jboss.org/jbosstools/oxygen/stable/updates/fuse-extras/
 
+* http://download.jboss.org/jbosstools/static/oxygen/development/builds/
 * http://download.jboss.org/jbosstools/static/oxygen/development/updates/coretests/
+* http://download.jboss.org/jbosstools/static/oxygen/development/updates/fuse-extras/
+* http://download.jboss.org/jbosstools/static/oxygen/stable/builds/
 * http://download.jboss.org/jbosstools/static/oxygen/stable/updates/coretests/
+* http://download.jboss.org/jbosstools/static/oxygen/stable/updates/fuse-extras/
 
-* https://devstudio.redhat.com/11/snapshots/updates/
+And for devstudio:
+
 * https://devstudio.redhat.com/11/snapshots/builds/
-* https://devstudio.redhat.com/11/staging/updates/
+* https://devstudio.redhat.com/11/snapshots/updates/
 * https://devstudio.redhat.com/11/staging/builds/
-* https://devstudio.redhat.com/11/development/updates/ (copy content from 10.0/development/ site)
-* https://devstudio.redhat.com/11/stable/updates/ (copy content from 10.0/stable/ site)
+* https://devstudio.redhat.com/11/staging/updates/
+
+(copy content from previous year's URLs)
+* https://devstudio.redhat.com/11/development/builds/
+* https://devstudio.redhat.com/11/development/updates/
+* https://devstudio.redhat.com/11/development/updates/fuse-extras/
+* https://devstudio.redhat.com/11/stable/builds/
+* https://devstudio.redhat.com/11/stable/updates/
+* https://devstudio.redhat.com/11/stable/updates/fuse-extras/
+
+* https://devstudio.redhat.com/static/11/development/builds/
+* https://devstudio.redhat.com/static/11/development/updates/
+* https://devstudio.redhat.com/static/11/development/updates/fuse-extras/
+* https://devstudio.redhat.com/static/11/stable/builds/
+* https://devstudio.redhat.com/static/11/stable/updates/
+* https://devstudio.redhat.com/static/11/stable/updates/fuse-extras/
 
 == Update Web Tools Server Adapter Discovery plugin w/ link to new URL
 

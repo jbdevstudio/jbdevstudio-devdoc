@@ -5,22 +5,34 @@ These steps can be done before the actual release (eg., on the Thurs or Fri befo
 
 == Verify that all JIRAs assigned to the current milestone are resolved
 
-Launch the config pages for JBIDE and JBDS and using the gear icons, release the milestone version in JIRA.
-
-Note: If there are unresolved issues with a fixversion set to the current milestone, make sure those issues will not be lost / forgotten.
-
-Send an email to jbosstools-dev@ and jboss-devstudio-list@  reminding people to close out their JIRAs or move them to the next milestone fixversion.
-
-Sample email: http://lists.jboss.org/pipermail/jbosstools-dev/2014-April/008799.html
-
-DO NOT proceed with the release if there are any unresolved issues. Only JIRAs allowed before release should be bookeping JIRAs or issues that cannot be closed until the push is complete.
+Kick this job to send reminder emails to the team, in case some issues are not yet resolved:
 
 [source,bash]
 ----
+
+# kerberos login for the Jenkins server
+export userpass=KERBUSER:PASSWORD
+
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+for j in jbosstools-jiralint-weekly; do
+  ${JP} -s ${ccijenkins} -j ${j} -t build
+done
+
 google-chrome && google-chrome https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
   https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
 
 ----
+
+The new policy is to bump issues to the next fixversion if they're in the next sprint target, or to the .x fixversion if they're not.
+
+So, for a query like this, you will bulk-move all the issues not resolved for AM1 to AM2.
+
+https://issues.jboss.org/issues/?jql=(project%20%3D%20JBIDE%20AND%20resolution%20%3D%20Unresolved%20AND%20fixVersion%20%3D%20%2212331862%22%20OR%20project%20%3D%20JBDS%20AND%20resolution%20%3D%20Unresolved%20AND%20fixVersion%20%3D%20%2212331860%22)%20and%20sprint%20%3D%20%22devex%20%23134%20Jun%202017%22
+
+Note that you cannot move JBIDE and JBDS issues to new fixversions at the same time.
+
+TODO: script this so we can bulk move issues in seconds instead of minutes.
 
 
 == Rename GA artifacts to remove timestamp and buildID

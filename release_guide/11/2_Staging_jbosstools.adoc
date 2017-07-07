@@ -4,7 +4,7 @@ This document describe how to provide a valid JBoss Tools build to QE so they ca
 
 = Pre-Staging Steps
 
-See link:Pre-Staging.adoc[Pre-Staging]
+See link:1_Staging_preparation.adoc[Pre-Staging]
 
 
 = Staging steps

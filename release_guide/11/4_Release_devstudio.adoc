@@ -4,7 +4,7 @@ This document describe how to publish a valid JBoss Developer Studio build to pr
 
 = Pre-Release Steps
 
-See link:Pre-Release.adoc[Pre-Release]
+See link:3_Release_preparation.adoc[Pre-Release]
 
 
 = Release steps
@@ -14,7 +14,7 @@ Once QE has signed off, and bits are staged to CSP, you can proceed w/ the rest 
 
 == Copy content to release directory
 
-See link:JBT_Release.adoc[JBT Release]
+See link:4_Release_jbosstools.adoc[JBT Release]
 
 == Copy RPM content to release directory
 
@@ -68,17 +68,17 @@ fi
 
 == Update /development/updates/ sites (and /stable/updates if Final)
 
-See link:JBT_Release.adoc[JBT Release]
+See link:4_Release_jbosstools.adoc[JBT Release]
 
 
 == Update Target Platforms
 
-See link:JBT_Release.adoc[JBT Release]
+See link:4_Release_jbosstools.adoc[JBT Release]
 
 
 == Release the latest milestone to ide-config.properties
 
-See link:JBT_Release.adoc[JBT Release]
+See link:4_Release_jbosstools.adoc[JBT Release]
 
 
 == Update Marketplace entry
@@ -115,7 +115,7 @@ Access it via +http://marketplace.eclipse.org/content/red-hat-jboss-developer-st
 
 == Release JIRA
 
-See link:JBT_Release.adoc[JBT Release]
+See link:4_Release_jbosstools.adoc[JBT Release]
 
 
 == Submit PR to update tools.jboss.org
@@ -271,7 +271,7 @@ Commit changes and submit PR, eg.,
 
 == Tagging Developer Studio
 
-See link:Branching_and_Tagging.adoc[Branching and Tagging]
+See link:5_Branching_and_tagging.adoc[Branching and Tagging]
 
 
 == Smoke test the release

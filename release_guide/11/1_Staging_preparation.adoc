@@ -17,13 +17,16 @@ Before beginning a stage at the end of a sprint, a number of things need to be d
 
 This will also serve as a reminder of the upcoming CODE FREEZE on the last Wednesday of the sprint.
 
-2. For GA releases, the target plaform must also be link:Nexus_Release.adoc[released to Nexus].
+2. For GA releases, the target plaform must also be link:5_Release_nexus.adoc[released to Nexus].
 
 
 == Confirm latest Integration Stack (IS) release & URLs
 
-Contact Paul Leacu (pleacu@redhat.com) to ask what the latest IS releases are (4.5.x, 11.x) and the URLs to use when link:Merge_IS_Discovery.adoc[merging this content] into the Central Discovery sites.
+Contact Paul Leacu (pleacu@redhat.com) to ask what the latest IS releases are (4.5.x, 11.x) and the URLs to use when merging this content into the Central Discovery sites.
 
+The job that will handles this merge step is:
+
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-staging-04-update-merge-composites-html/
 
 == Clone jbosstools-build-ci repo
 

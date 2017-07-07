@@ -6,7 +6,7 @@ With distractions (email, IRC), this process took 90 mins for the Beta release.
 
 = Pre-Release Steps
 
-See link:Pre-Release.adoc[Pre-Release]
+See link:3_Release_preparation.adoc[Pre-Release]
 
 
 = Release steps
@@ -483,7 +483,7 @@ google-chrome && google-chrome https://issues.jboss.org/plugins/servlet/project-
 
 == Submit PR to update tools.jboss.org
 
-See link:Devstudio_Release.adoc[Devstudio Release]
+See link:4_Release_devstudio.adoc[Devstudio Release]
 
 
 == Smoke test the release
@@ -500,12 +500,12 @@ Before notifying team of release, must check for obvious problems. Any failure t
 
 == Tagging JBoss Tools
 
-See link:Branching_and_Tagging.adoc[Branching and Tagging]
+See link:5_Branching_and_tagging.adoc[Branching and Tagging]
 
 
 == Notify Team Lead(s)
 
-See link:Devstudio_Release.adoc[Devstudio Release]
+See link:4_Release_devstudio.adoc[Devstudio Release]
 
 
 == Disable dev-stable jobs
@@ -631,4 +631,4 @@ done
 
 == Commit updates to release guide (including this document):
 
-See link:Devstudio_Release.adoc[Devstudio Release]
+See link:4_Release_devstudio.adoc[Devstudio Release]

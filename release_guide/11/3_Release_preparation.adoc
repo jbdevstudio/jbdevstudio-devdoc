@@ -109,7 +109,7 @@ NOTE: If we ever decide to drop the EAP-bundled installer, or there's a newer ve
 
 == Clone jbosstools-build-ci repo
 
-See link:JBT_Staging.adoc[JBoss Tools Staging]
+See link:2_Staging_jbosstools.adoc[JBoss Tools Staging]
 
 
 == Announce internally for push to CSP staging site
@@ -124,7 +124,7 @@ Previous ticket:
 
 Communicate with Chris O'Brien (internal IRC: siege) to coordinate the release. All the above can happen in parallel / before the updates below.
 
-For a GA build, you'll have requested RPM signing via here: link:Devstudio_Staging.adoc[Sign RPM]. Use that signingTicket value below.
+For a GA build, you'll have requested RPM signing via here: link:2_Staging_devstudio.adoc[Sign RPM]. Use that signingTicket value below.
 
 Here is a job that creates the RCM ticket:
 

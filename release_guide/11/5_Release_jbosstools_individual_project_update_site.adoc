@@ -23,7 +23,6 @@ By passing in parameters such as these:
 
 * SOURCE_PATH = neon/snapshots/builds/jbosstools-freemarker_4.4.neon/latest/all/repo/
 * TARGET_PATH = neon/stable/updates/core/freemarker/1.5.300.v20161214-1103
-* DESTINATION = tools@10.5.105.197:/downloads_htdocs/tools
 
 The resulting site is created here:
 

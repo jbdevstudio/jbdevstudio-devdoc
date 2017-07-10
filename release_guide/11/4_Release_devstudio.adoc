@@ -1,6 +1,6 @@
 = Release JBoss Developer Studio Development Milestone
 
-This document describe how to publish a valid JBoss Developer Studio build to production after being verified by QE.
+This document describes how to publish a valid JBoss Developer Studio build to production after being verified by QE.
 
 = Pre-Release Steps
 

@@ -11,9 +11,9 @@ See link:1_Staging_preparation.adoc[Pre-Staging]
 
 [NOTE]
 ====
-Note that +sftp://tools@10.5.105.197/downloads_htdocs/tools/+ maps to +http://download.jboss.org/jbosstools/+ +
+Note that +sftp://tools@[IP FOR filemgmt]:/downloads_htdocs/tools/+ maps to +http://download.jboss.org/jbosstools/+ +
 
-(Use filemgmt.jboss.org IP instead of 10.5.105.197 because it's 3x faster!)
+(Use filemgmt IP instead of FQDN because it's 3x faster!)
 
 If you do not need it urgently, you can push files there simply by pushing a change into the following location: https://github.com/jbosstools/jbosstools-download.jboss.org/tree/master/jbosstools .
 A Jenkins job can then be triggered to sync changes to download.jboss.org: https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-download.jboss.org-rsync-from-git/

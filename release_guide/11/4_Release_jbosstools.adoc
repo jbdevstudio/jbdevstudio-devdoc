@@ -145,7 +145,11 @@ done
 
 ----
 
-If any of the above fails, ssh to dev01 or dev90, sudo to hudson, and do this. NOTE: will not work if run from within a screen session.
+If any of the above fails, ssh to dev01 or dev90, sudo to hudson, and do this.
+
+NOTE: will not work if run from within a screen session.
+
+NOTE: This backup step has not been needed for the last two releases.
 
 [source,bash]
 ----
@@ -158,8 +162,8 @@ wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/master/pub
 chmod +x stage.sh
 STAGE=${WORKSPACE}/stage.sh
 eclipseReleaseName=oxygen
-JBDS="devstudio@10.5.105.197:/www_htdocs/devstudio" # use filemgmt IP
-TOOLS="tools@10.5.105.197:/downloads_htdocs/tools"
+JBDS="devstudio@[IP FOR filemgmt]:/www_htdocs/devstudio" # use filemgmt IP as it's 3x faster
+TOOLS="tools@[IP FOR filemgmt]:/downloads_htdocs/tools"
 qual=development
 quiet="-q"
 

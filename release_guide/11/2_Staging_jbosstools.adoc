@@ -24,9 +24,9 @@ A Jenkins job can then be triggered to sync changes to download.jboss.org: https
 
 Before running any of the jobs or scripts below, make sure to set the correct versions to the values for the release you're staging or releasing.
 
-* look for versionWithRespin, update to version you're staging
+* look for versionWithRespin_ or version_, update to version you're staging
 * look for PREV and NEXT variables; set to previous / next milestone (AMx, AMy, AMz, Final/GA)
-* check target platform versions are current w/ latest versions
+* check TARGET_PLATFORM_ versions are current w/ latest versions
 * check parent pom version, version_parent, is current
 * check Integration Stack variables like earlyaccess_IS, version_jbt_IS, version_ds_IS are correct. Double-check best values with Paul Leacu (pleacu).
 
@@ -62,9 +62,9 @@ Configure, then run this job:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-version_parent=4.5.0.AM1-SNAPSHOT
-versionWithRespin_jbt=4.5.0.AM1d
-versionWithRespin_ds=11.0.0.AM1d
+version_parent=4.5.0.AM2-SNAPSHOT
+versionWithRespin_jbt=4.5.0.AM2
+versionWithRespin_ds=11.0.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 if [[ ${version_jbt} == *".Final" ]]; then
@@ -121,8 +121,8 @@ To prevent accidentally rebuilding something while you're copying it away, make 
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.0.AM1d
-versionWithRespin_ds=11.0.0.AM1d
+versionWithRespin_jbt=4.5.0.AM2
+versionWithRespin_ds=11.0.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 if [[ ${version_jbt} == *".Final" ]]; then
@@ -158,11 +158,13 @@ Then respin the job:
 [source,bash]
 ----
 
+TODO: trigger 03 job to check if discovery is done
+
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.0.AM1d
-versionWithRespin_ds=11.0.0.AM1d
+versionWithRespin_jbt=4.5.0.AM2
+versionWithRespin_ds=11.0.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 if [[ ${version_jbt} == *".Final" ]]; then
@@ -234,8 +236,8 @@ export userpass=KERBUSER:PASSWORD
 
 eclipseReleaseName=oxygen
 devstudioReleaseVersion=11
-versionWithRespin_jbt=4.5.0.AM1d
-versionWithRespin_ds=11.0.0.AM1d
+versionWithRespin_jbt=4.5.0.AM2
+versionWithRespin_ds=11.0.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 TARGET_PLATFORM_VERSION_MAX=4.70.0.AM1-SNAPSHOT
@@ -307,8 +309,8 @@ export userpass=KERBUSER:PASSWORD
 
 eclipseReleaseName=oxygen
 devstudioReleaseVersion=11
-versionWithRespin_jbt=4.5.0.AM1d
-versionWithRespin_ds=11.0.0.AM1d
+versionWithRespin_jbt=4.5.0.AM2
+versionWithRespin_ds=11.0.0.AM2
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
@@ -355,12 +357,12 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.0.AM1d
-versionWithRespin_ds=11.0.0.AM1d
-versionWithRespin_ds_PREV=11.0.0.AM1
+versionWithRespin_jbt=4.5.0.AM2
+versionWithRespin_ds=11.0.0.AM2
+versionWithRespin_ds_PREV=11.0.0.AM1d
 earlyaccess_IS=
-version_jbt_IS=4.4.3.Final
-version_ds_IS=10.3.0.GA
+version_jbt_IS=4.5.0.AM1
+version_ds_IS=11.0.0.AM1
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-04-update-merge-composites-html; do
@@ -398,13 +400,13 @@ export userpass=KERBUSER:PASSWORD
 
 versionWithRespin_jbt_PREV_GA=4.4.4.Final
 versionWithRespin_jbt_PREV=4.5.0.AM1
-versionWithRespin_jbt=4.5.0.AM1d
-versionWithRespin_jbt_NEXT=4.5.0.AM2
+versionWithRespin_jbt=4.5.0.AM2
+versionWithRespin_jbt_NEXT=4.5.0.GA
 
 versionWithRespin_ds_PREV_GA=10.4.0.GA
 versionWithRespin_ds_PREV=11.0.0.AM1
-versionWithRespin_ds=11.0.0.AM1d
-versionWithRespin_ds_NEXT=11.0.0.AM2
+versionWithRespin_ds=11.0.0.AM2
+versionWithRespin_ds_NEXT=11.0.0.GA
 
 buildType="staging"
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
@@ -463,8 +465,8 @@ If the next build WILL be a respin, you need to simply:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.0.AM1d
-versionWithRespin_ds=11.0.0.AM1d
+versionWithRespin_jbt=4.5.0.AM2
+versionWithRespin_ds=11.0.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 if [[ ${version_jbt} == *".Final" ]]; then
@@ -510,8 +512,8 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-rele
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.0.AM1d
-versionWithRespin_ds=11.0.0.AM1d
+versionWithRespin_jbt=4.5.0.AM2
+versionWithRespin_ds=11.0.0.AM2
 if [[ ${version_jbt} == *".Final" ]]; then
   stream_jbt=4.5.oxygen
   github_branch=jbosstools-4.5.0.x
@@ -555,8 +557,8 @@ You will need to disable the jobs once the bits are staged, so that they won't r
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.0.AM1d
-versionWithRespin_ds=11.0.0.AM1d
+versionWithRespin_jbt=4.5.0.AM2
+versionWithRespin_ds=11.0.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 if [[ ${version_jbt} == *".Final" ]]; then

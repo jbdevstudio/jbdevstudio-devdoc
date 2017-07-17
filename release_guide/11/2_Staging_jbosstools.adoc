@@ -6,6 +6,40 @@ This document describe how to provide a valid JBoss Tools build to QE so they ca
 
 See link:1_Staging_preparation.adoc[Pre-Staging]
 
+== Clone jbosstools-build-ci repo
+
+[source,bash]
+----
+
+mkdir -p /tmp/jbt.github
+cd /tmp/jbt.github
+if [[ ! -d jbosstools-build-ci ]]; then git clone git@github.com:jbosstools/jbosstools-build-ci.git; fi
+cd jbosstools-build-ci
+git checkout master # later jbosstools-4.5.x
+chmod +x -R */*.sh */*/*.sh
+
+----
+
+== Remind people about jira triage
+
+Kick this job to send reminder emails to the team re unresolved JIRAs with fixversion = current release.
+
+[source,bash]
+----
+
+# kerberos login for the Jenkins server
+export userpass=KERBUSER:PASSWORD
+
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+for j in jbosstools-jiralint-weekly; do
+  ${JP} -s ${ccijenkins} -j ${j} -t build
+done
+
+google-chrome && google-chrome https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
+  https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
+
+----
 
 = Staging steps
 

@@ -6,6 +6,20 @@ This document describe how to provide a valid JBoss Developer Studio build to QE
 
 See link:1_Staging_preparation.adoc[Pre-Staging]
 
+== Clone jbosstools-build-ci repo
+
+[source,bash]
+----
+
+mkdir -p /tmp/jbt.github
+cd /tmp/jbt.github
+if [[ ! -d jbosstools-build-ci ]]; then git clone git@github.com:jbosstools/jbosstools-build-ci.git; fi
+cd jbosstools-build-ci
+git checkout master # later jbosstools-4.5.x
+chmod +x -R */*.sh */*/*.sh
+
+----
+
 
 = Staging steps
 
@@ -21,20 +35,6 @@ Before running any of the jobs or scripts below, make sure to set the correct ve
 * check Integration Stack variables like earlyaccess_IS, version_jbt_IS, version_ds_IS are correct. Double-check best values with Paul Leacu (pleacu).
 
 ====
-
-== Clone jbosstools-build-ci repo
-
-[source,bash]
-----
-
-mkdir -p /tmp/jbt.github
-cd /tmp/jbt.github
-if [[ ! -d jbosstools-build-ci ]]; then git clone git@github.com:jbosstools/jbosstools-build-ci.git; fi
-cd jbosstools-build-ci
-git checkout master # later jbosstools-4.5.x
-chmod +x -R */*.sh */*/*.sh
-
-----
 
 == Update Discovery Sites and URLs
 

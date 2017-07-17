@@ -24,7 +24,10 @@ google-chrome && google-chrome https://issues.jboss.org/plugins/servlet/project-
 
 ----
 
-The new policy is to bump issues to the next fixversion if they're in the next sprint target, or to the .x fixversion if they're not.
+
+The new policy (@since AM1) is to bump issues to the next fixversion if they're in the next sprint target, or to the .x fixversion if they're not.
+
+TODO: don't move BLOCKER or CRITICAL issues to .x (@since AM2).
 
 So, for a query like this, you will bulk-move all the issues not resolved for AM1 to AM2.
 

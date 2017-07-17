@@ -6,12 +6,18 @@ Before beginning a stage at the end of a sprint, a number of things need to be d
 
 * Send reminder note to jbosstools-dev@lists.jboss.org of upcoming code freeze (last Wed of sprint)
 
+* Send reminder note to jmaury@redhat.com to ask that next sprint version be added so triage can be done
+
+* Send reminder note to jbosstools-dev@lists.jboss.org to ask that triage can be done
+** TODO: https://issues.jboss.org/browse/JBIDE-24674
+** blocker/critical issues: make these your priority work for the forthcoming sprint - move to .next version & assign to the forthcoming sprint
+** other issues that WILL be done in the next sprint: move to .next version & assign to the forthcoming sprint, but lower down
+** non-blocker & non-critical issues that won't be done in the next sprint: move to .x
+
 * Confirm latest Integration Stack (IS) release & URLs
 
-* Clone jbosstools-build-ci repo
 
-
-== Send reminder note to jbosstools-dev@lists.jboss.org of upcoming target platform freeze & code freeze
+== Send reminder note(s) to jbosstools-dev@lists.jboss.org of upcoming target platform freeze, code freeze, and JIRA triage
 
 1. If there have been significant changes to target platforms this sprint, on the Monday prior to the last Wednesday of the sprint, send a note to jbosstools-dev@lists.jboss.org reminding people of these changes and calling for any last minute updates that might be needed to be done to the TARGET PLATFORMS before code freeze. Changes must be committed, built, and live by EOD Tuesday, one day before code freeze.
 
@@ -28,16 +34,3 @@ The job that will handles this merge step is:
 
 https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-staging-04-update-merge-composites-html/
 
-== Clone jbosstools-build-ci repo
-
-[source,bash]
-----
-
-mkdir -p /tmp/jbt.github
-cd /tmp/jbt.github
-if [[ ! -d jbosstools-build-ci ]]; then git clone git@github.com:jbosstools/jbosstools-build-ci.git; fi
-cd jbosstools-build-ci
-git checkout master # later jbosstools-4.5.x
-chmod +x -R */*.sh */*/*.sh
-
-----

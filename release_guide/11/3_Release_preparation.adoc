@@ -3,9 +3,9 @@
 These steps can be done before the actual release (eg., on the Thurs or Fri before the Monday release, as long as QE has more-or-less signed off). Check with QE before proceeding.
 
 
-== Verify that all JIRAs assigned to the current milestone are resolved
+== Remind devs about JIRA triage
 
-Kick this job to send reminder emails to the team, in case some issues are not yet resolved:
+Kick this job to send reminder emails to the team, in case some issues are not yet resolved.
 
 [source,bash]
 ----
@@ -19,24 +19,7 @@ for j in jbosstools-jiralint-weekly; do
   ${JP} -s ${ccijenkins} -j ${j} -t build
 done
 
-google-chrome && google-chrome https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
-  https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
-
 ----
-
-
-The new policy (@since AM1) is to bump issues to the next fixversion if they're in the next sprint target, or to the .x fixversion if they're not.
-
-TODO: don't move BLOCKER or CRITICAL issues to .x (@since AM2).
-
-So, for a query like this, you will bulk-move all the issues not resolved for AM1 to AM2.
-
-https://issues.jboss.org/issues/?jql=(project%20%3D%20JBIDE%20AND%20resolution%20%3D%20Unresolved%20AND%20fixVersion%20%3D%20%2212331862%22%20OR%20project%20%3D%20JBDS%20AND%20resolution%20%3D%20Unresolved%20AND%20fixVersion%20%3D%20%2212331860%22)%20and%20sprint%20%3D%20%22devex%20%23134%20Jun%202017%22
-
-Note that you cannot move JBIDE and JBDS issues to new fixversions at the same time.
-
-TODO: script this so we can bulk move issues in seconds instead of minutes.
-
 
 == Rename GA artifacts to remove timestamp and buildID
 
@@ -51,7 +34,7 @@ Configure, then run this job: https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_ds=10.4.0.GA
+versionWithRespin_ds=11.0.0.GA
 
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
@@ -139,7 +122,7 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-rele
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_ds=10.4.0.GA
+versionWithRespin_ds=11.0.0.GA
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   # signingTicket from https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-05-sign-rpm-request-email
   signingTicket="RCM-----"

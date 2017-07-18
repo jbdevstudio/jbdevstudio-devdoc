@@ -26,11 +26,9 @@ chmod +x -R */*.sh */*/*.sh
 ----
 
 
-== Verify that all JIRAs assigned to the current milestone are resolved
+== Remind devs about JIRA triage
 
-Launch the config pages for JBIDE and JBDS and using the gear icons, release the milestone version in JIRA.
-
-Kick this job to send reminder emails to the team, in case some issues are not yet resolved:
+Kick this job to send reminder emails to the team, in case some issues are not yet resolved.
 
 [source,bash]
 ----
@@ -44,21 +42,7 @@ for j in jbosstools-jiralint-weekly; do
   ${JP} -s ${ccijenkins} -j ${j} -t build
 done
 
-google-chrome && google-chrome https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
-  https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
-
 ----
-
-The new policy is to bump issues to the next fixversion if they're in the next sprint target, or to the .x fixversion if they're not.
-
-So, for a query like this, you will bulk-move all the issues not resolved for AM1 to AM2.
-
-https://issues.jboss.org/issues/?jql=(project%20%3D%20JBIDE%20AND%20resolution%20%3D%20Unresolved%20AND%20fixVersion%20%3D%20%2212331862%22%20OR%20project%20%3D%20JBDS%20AND%20resolution%20%3D%20Unresolved%20AND%20fixVersion%20%3D%20%2212331860%22)%20and%20sprint%20%3D%20%22devex%20%23134%20Jun%202017%22
-
-Note that you cannot move JBIDE and JBDS issues to new fixversions at the same time.
-
-TODO: script this so we can bulk move issues in seconds instead of minutes.
-
 
 == Summary
 
@@ -105,8 +89,8 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.0.AM1d
-versionWithRespin_ds=11.0.0.AM1d
+versionWithRespin_jbt=4.5.0.AM2
+versionWithRespin_ds=11.0.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 if [[ ${version_jbt} == *".Final" ]]; then
@@ -168,7 +152,7 @@ qual=development
 quiet="-q"
 
 # for example, run this for the JBT central discovery plugins:
-versionWithRespin_jbt=4.5.0.AM1d
+versionWithRespin_jbt=4.5.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 ${STAGE} -sites "discovery.central" -stream "${versionWithRespin_jbt}" -vr ${version_jbt} -DESTINATION "${TOOLS}" \
     -sd ${eclipseReleaseName} -dd static/${eclipseReleaseName} -st staging -dt ${qual} \
@@ -189,8 +173,8 @@ But you can run it again if you'd like:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.0.AM1d
-versionWithRespin_ds=11.0.0.AM1d
+versionWithRespin_jbt=4.5.0.AM2
+versionWithRespin_ds=11.0.0.AM2
 
 # buildType=development in this case, development will ALSO check stable URLs if we're pushing out a GA/Final release
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
@@ -259,13 +243,13 @@ https://devstudio.redhat.com/${devstudioReleaseVersion}/${qual_IS}/updates/integ
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.0.AM1d
-versionWithRespin_ds=11.0.0.AM1d
+versionWithRespin_jbt=4.5.0.AM2
+versionWithRespin_ds=11.0.0.AM2
 versionWithRespin_ds_PREV_GA=10.4.0.GA
-qual_IS="stable" # "development" or "stable" as applicable - see tip above
+qual_IS="development" # "development" or "stable" as applicable - see tip above
 earlyaccess_IS="" # "" or "earlyaccess/" as applicable - see tip above
-version_jbt_IS=4.4.3.Final
-version_ds_IS=10.3.0.GA
+version_jbt_IS=4.5.0.AM1
+version_ds_IS=11.0.0.AM1
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-04-update-merge-composites-html; do
@@ -342,6 +326,8 @@ export userpass=KERBUSER:PASSWORD
 
 TARGET_PLATFORM_VERSION_MAX=4.70.0.AM1-SNAPSHOT
 
+# run this for .Final and -SNAPSHOT target platforms, too
+
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-05-release-target-platforms; do
@@ -378,14 +364,14 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 export userpass=KERBUSER:PASSWORD
 
 version_jbt_PREV_GA=4.4.4.Final
-version_jbt_PREV=4.4.4.Final
-version_jbt=4.5.0.AM1
-version_jbt_NEXT=4.5.0.AM2
+version_jbt_PREV=4.5.0.AM1
+version_jbt=4.5.0.AM2
+version_jbt_NEXT=4.5.0.Final
 
 version_ds_PREV_GA=10.4.0.GA
-version_ds_PREV=10.4.0.GA
-version_ds=11.0.0.AM1
-version_ds_NEXT=11.0.0.AM2
+version_ds_PREV=11.0.0.AM1
+version_ds=11.0.0.AM2
+version_ds_NEXT=11.0.0.GA
 
 version_jbt=$(echo ${version_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${version_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
@@ -442,11 +428,11 @@ To diff if any new features have been added/removed:
 
 [source,bash]
 ----
-path_jbt_PREV_Mktplace=neon/stable/updates/core/4.4.4.Final
-version_jbt=4.5.0.AM1
+path_jbt_PREV_Mktplace=oxygen/development/updates/core/4.5.0.AM1
+version_jbt=4.5.0.AM2
 
-# for Final releases only!
-if [[ ${version_jbt} == *"Final" ]] || [[ ${path_jbt_PREV_Mktplace} != "oxygen"* ]]; then
+# for Final releases only, or for milestones prior to the first x.y.0.Final.
+if [[ ${version_jbt} == *"Final" ]] || [[ ${path_jbt_PREV_Mktplace} == *"AM"* ]]; then
   cd /tmp
   wget -O ${version_jbt_PREV_Mktplace}.properties http://download.jboss.org/jbosstools/static/${path_jbt_PREV_Mktplace}/site.properties
   wget -O ${version_jbt}.properties http://download.jboss.org/jbosstools/static/oxygen/development/updates/core/${version_jbt}/site.properties
@@ -470,21 +456,6 @@ fi
 4. Test a project example
 
 
-== Release JIRA
-
-If there are no unresolved issues, release the milestone version in JIRA.
-
-Launch the config pages for JBIDE and JBDS and using the gear icons, release the milestone version in JIRA.
-
-[source,bash]
-----
-
-google-chrome && google-chrome https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
-  https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
-
-----
-
-
 == Submit PR to update tools.jboss.org
 
 See link:4_Release_devstudio.adoc[Devstudio Release]
@@ -502,7 +473,7 @@ Before notifying team of release, must check for obvious problems. Any failure t
 4. Check log for errors, start an example project or run a quickstart, check log again
 5. Check to make sure "Windows > Prefs > Install/Update > Available Software Sites" shows you what you expect to see
 
-== Tagging JBoss Tools
+== Tag JBoss Tools
 
 See link:5_Branching_and_tagging.adoc[Branching and Tagging]
 
@@ -531,6 +502,46 @@ done
 
 ----
 
+== Release JIRA
+
+The new policy (@since AM1) is to bump issues to the next fixversion if they're in the next sprint target, or to the .x fixversion if they're not.
+
+TODO: don't move BLOCKER or CRITICAL issues to .x (@since AM2).
+
+So, for a query like this, you will bulk-move all the issues not resolved for AM1 to AM2.
+
+[source,bash]
+----
+version_jbt=4.5.0.AM2
+version_ds=11.0.0.AM2
+# TODO use just the devex and number / omit the date
+thisSprint="devex #134 Jun 2017"; sprint=${sprint// /%20}; sprint=${sprint//#/%23}
+nextSprint="devex #135 July 2017"; sprint=${sprint// /%20}; sprint=${sprint//#/%23}
+
+echo Move these BLOCKER/CRITICAL JBIDE issues to the next milestone
+google-chrome "https://issues.jboss.org/issues/?jql=project%20in%20(JBDS)%20AND%20resolution%20%3D%20Unresolved%20AND%20fixVersion%20in%20(%22${version_ds}%22)%20AND%20priority%20in%20(blocker%2Ccritical)%20AND%20summary%20"\!"~%20%22New%20and%20Noteworthy%22%20AND%20sprint%20%3D%20%22${sprint}%22"
+
+echo Move these BLOCKER/CRITICAL JBDS issues to the next milestone
+google-chrome "https://issues.jboss.org/issues/?jql=project%20in%20(JBIDE)%20AND%20resolution%20%3D%20Unresolved%20AND%20fixVersion%20in%20(%22${version_jbt}%22)%20AND%20priority%20in%20(blocker%2Ccritical)%20AND%20summary%20"\!"~%20%22New%20and%20Noteworthy%22%20AND%20sprint%20%3D%20%22${sprint}%22"
+
+# TODO
+# non-urgent issues to .x
+# nextSprint issues to next milestone
+
+----
+
+When there are no unresolved issues, release the milestone version in JIRA.
+
+Launch the config pages for JBIDE and JBDS and using the gear icons, release the milestone version in JIRA.
+
+[source,bash]
+----
+
+google-chrome && google-chrome https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
+  https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
+
+----
+
 == Bump parent pom to newer BUILD_ALIAS value
 
 Once the current milestone is done, the BUILD_ALIAS in parent pom should be bumped to a new value.
@@ -544,8 +555,8 @@ export userpass=KERBUSER:PASSWORD
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru # ~
 pushd jbosstools-build/parent
-BUILD_ALIAS=AM1
-BUILD_ALIAS_NEXT=AM2
+BUILD_ALIAS=AM2
+BUILD_ALIAS_NEXT=Final
 
 git fetch origin master # jbosstools-4.5.0.x
 git checkout FETCH_HEAD
@@ -591,19 +602,19 @@ Run this job:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt_NEXT=4.5.0.AM2
-versionWithRespin_ds_NEXT=11.0.0.AM2
-if [[ ${versionWithRespin_jbt_NEXT} == *".Final" ]]; then
-  version_parent_NEXT=4.5.0.Final
-  createBranch=true
-  github_branch=jbosstools-4.5.0.x
-  github_branch_fallback=master # or jbosstools-4.5.x?
-else
-  version_parent_NEXT=4.5.0.AM2-SNAPSHOT
+versionWithRespin_jbt_NEXT=4.5.0.Final
+versionWithRespin_ds_NEXT=11.0.0.GA
+#if [[ ${versionWithRespin_jbt_NEXT} == *".Final" ]]; then
+#  version_parent_NEXT=4.5.0.Final-SNAPSHOT
+#  createBranch=true
+#  github_branch=jbosstools-4.5.0.x
+#  github_branch_fallback=master # or jbosstools-4.5.x?
+#else
+  version_parent_NEXT=4.5.0.Final-SNAPSHOT
   createBranch=false
   github_branch=master
   github_branch_fallback=master # or jbosstools-4.5.x?
-fi
+#fi
 TARGET_PLATFORM_VERSION_MIN=4.70.0.AM1-SNAPSHOT
 TARGET_PLATFORM_VERSION_MAX=4.70.0.AM1-SNAPSHOT
 JIRA_HOST="https://issues.jboss.org"

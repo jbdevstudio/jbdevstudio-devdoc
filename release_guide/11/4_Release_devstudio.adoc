@@ -28,8 +28,8 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.0.AM1d
-versionWithRespin_ds=11.0.0.AM1d
+versionWithRespin_jbt=4.5.0.AM2
+versionWithRespin_ds=11.0.0.AM2
 
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then # GA only
   version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
@@ -143,8 +143,8 @@ Run this:
 
 echo "" > /tmp/yml.txt
 
-versionWithRespin_ds=11.0.0.AM1d
-# test with versionWithRespin_ds=11.0.0.AM1d, but only want this for GA
+versionWithRespin_ds=11.0.0.AM2
+# test with versionWithRespin_ds=11.0.0.AM2, but only want this for GA
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # **
   theURL=https://devstudio.redhat.com/11/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all
@@ -161,7 +161,7 @@ if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   done
 fi
 
-# test with versionWithRespin_ds=10.4.0.GA, but only want this for GA
+# test with versionWithRespin_ds=11.0.0.GA, but only want this for GA
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # **
   theURL=https://devstudio.redhat.com/static/11/stable/updates/core/
@@ -192,8 +192,8 @@ Then, back on your own machine...
 
 [source,bash]
 ----
-version_jbt=4.5.0.AM1
-version_ds=11.0.0.AM1
+version_jbt=4.5.0.AM2
+version_ds=11.0.0.AM2
 
 topic=release-${version_jbt}
 github_branch=master
@@ -265,11 +265,12 @@ popd
 
 Commit changes and submit PR, eg.,
 
+* https://github.com/jbosstools/jbosstools-website/pull/729,
 * https://github.com/jbosstools/jbosstools-website/pull/720,
 * https://github.com/jbosstools/jbosstools-website/pull/709,
 * https://github.com/jbosstools/jbosstools-website/pull/703
 
-== Tagging Developer Studio
+== Tag Developer Studio
 
 See link:5_Branching_and_tagging.adoc[Branching and Tagging]
 
@@ -298,7 +299,7 @@ Before notifying team of release, must check for obvious problems. Any failure t
 [source,bash]
 ----
 
-version_ds=11.0.0.AM1
+version_ds=11.0.0.AM2
 if [[ ${version_ds} == *"GA" ]]; then
   qual="stable"
   cd ~/tmp # ~
@@ -327,12 +328,12 @@ Using the script below, you can trigger the job remotely.
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-blogURL=/blog/4.5.0.am1-for-oxygen.0.html
-pullrequestNum=720
+blogURL=/blog/4.5.0.am2-for-oxygen.0.html
+pullrequestNum=729
 eclipseVersionSuffix=".0" # TODO: use .1 for Eclipse 4.7.1 Oxygen.1
 
-versionWithRespin_jbt=4.5.0.AM1d
-versionWithRespin_ds=11.0.0.AM1d
+versionWithRespin_jbt=4.5.0.AM2
+versionWithRespin_ds=11.0.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # \) # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 
@@ -366,8 +367,8 @@ done
 
 cd ~/truu # ~
 
-version_jbt=4.5.0.AM1
-version_ds=11.0.0.AM1
+version_jbt=4.5.0.AM2
+version_ds=11.0.0.AM2
 cd jbdevstudio-devdoc/release_guide/
 git commit -m "update release guide for ${version_jbt} and ${version_ds}" .
 git push origin HEAD:master

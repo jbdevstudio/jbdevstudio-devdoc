@@ -504,29 +504,20 @@ done
 
 == Release JIRA
 
-The new policy (@since AM1) is to bump issues to the next fixversion if they're in the next sprint target, or to the .x fixversion if they're not.
+The new policy (@since AM1) is to bump issues to the next fixversion if they're in the next sprint target (or if they're blocker/critical), or to the .x fixversion if they're not.
 
-TODO: don't move BLOCKER or CRITICAL issues to .x (@since AM2).
-
-So, for a query like this, you will bulk-move all the issues not resolved for AM1 to AM2.
+Here's a script to do all the moving for you automatically.
 
 [source,bash]
 ----
-version_jbt=4.5.0.AM2
-version_ds=11.0.0.AM2
-# TODO use just the devex and number / omit the date
-thisSprint="devex #134 Jun 2017"; sprint=${sprint// /%20}; sprint=${sprint//#/%23}
-nextSprint="devex #135 July 2017"; sprint=${sprint// /%20}; sprint=${sprint//#/%23}
 
-echo Move these BLOCKER/CRITICAL JBIDE issues to the next milestone
-google-chrome "https://issues.jboss.org/issues/?jql=project%20in%20(JBDS)%20AND%20resolution%20%3D%20Unresolved%20AND%20fixVersion%20in%20(%22${version_ds}%22)%20AND%20priority%20in%20(blocker%2Ccritical)%20AND%20summary%20"\!"~%20%22New%20and%20Noteworthy%22%20AND%20sprint%20%3D%20%22${sprint}%22"
-
-echo Move these BLOCKER/CRITICAL JBDS issues to the next milestone
-google-chrome "https://issues.jboss.org/issues/?jql=project%20in%20(JBIDE)%20AND%20resolution%20%3D%20Unresolved%20AND%20fixVersion%20in%20(%22${version_jbt}%22)%20AND%20priority%20in%20(blocker%2Ccritical)%20AND%20summary%20"\!"~%20%22New%20and%20Noteworthy%22%20AND%20sprint%20%3D%20%22${sprint}%22"
-
-# TODO
-# non-urgent issues to .x
-# nextSprint issues to next milestone
+# TODO JBIDE-24674 wrap this with a Jenkins job, using -A flag to automatically affect changes
+python
+/tmp/jbt.github/jbosstools-build-ci/util/checkUnresolvedIssues.py
+  --jira https://issues.stage.jboss.org --jirauser ME --jirapwd SECRET \
+  --jbt 4.5.0.AM2 --jbt_NEXT 4.5.0.Final \
+  --ds 11.0.0.AM2 --ds_NEXT 11.0.0.GA \
+  --sprint "devex #134 Jun 2017" --sprint_NEXT "devex #135 July 2017"
 
 ----
 

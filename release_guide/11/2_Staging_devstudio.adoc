@@ -61,10 +61,8 @@ TIP: Once the staging build folder exists, start fetching the devstudio installe
 
 cd ~/tmp
 versionWithRespin_ds=11.0.0.AM2
-wget https://devstudio.redhat.com/11/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
-installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
+installerJar=$(wget -O - -q https://devstudio.redhat.com/11/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 echo "Installer jar: ${installerJar}"
-rm -f index.html
 time wget https://devstudio.redhat.com/11/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/${installerJar}
 
 ----
@@ -108,10 +106,8 @@ https://devstudio.redhat.com/11/staging/updates/
 
 versionWithRespin_ds=11.0.0.AM2
 cd ~/tmp
-wget https://devstudio.redhat.com/11/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
-installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
+installerJar=$(wget -O - -q https://devstudio.redhat.com/11/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 echo "Installer jar: ${installerJar}"
-rm -f index.html
 
 # should have already downloaded this above
 if [[ ! -f ${installerJar} ]]; then wget https://devstudio.redhat.com/11/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/${installerJar}; fi
@@ -153,11 +149,7 @@ Trigger the QE smoke tests in https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.
 export userpass=KERBUSER:PASSWORD
 
 versionWithRespin_ds=11.0.0.AM2
-cd ~/tmp
-wget https://devstudio.redhat.com/11/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
-installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
-rm -f index.html
-
+installerJar=$(wget -O - -q https://devstudio.redhat.com/11/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 version_ds_INST=${installerJar#devstudio-}
 version_ds_INST=${version_ds_INST%-installer*}
 echo "Devstudio installer version: ${version_ds_INST}"

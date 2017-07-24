@@ -303,10 +303,9 @@ version_ds=11.0.0.AM2
 if [[ ${version_ds} == *"GA" ]]; then
   qual="stable"
   cd ~/tmp # ~
-  wget https://devstudio.redhat.com/static/11/${qual}/builds/devstudio-${version_ds}-build-product/latest/all/
-  installerJar=$(cat index.html | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
+  installerJar=$(wget -O - -q https://devstudio.redhat.com/static/11/${qual}/builds/devstudio-${version_ds}-build-product/latest/all/ | \
+    grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
   echo "Installer jar: ${installerJar}"
-  rm -f index.html
   wget https://devstudio.redhat.com/static/11/${qual}/builds/devstudio-${version_ds}-build-product/latest/all/${installerJar}
   java -jar ~/tmp/${installerJar} # ~
 fi

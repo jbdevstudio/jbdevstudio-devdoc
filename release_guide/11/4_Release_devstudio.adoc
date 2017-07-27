@@ -327,7 +327,7 @@ Using the script below, you can trigger the job remotely.
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-blogURL=/blog/4.5.0.am2-for-oxygen.0.html
+blogURL=/blog/11.0.0.ga-for-oxygen.0.html
 pullrequestNum=729
 eclipseVersionSuffix=".0" # TODO: use .1 for Eclipse 4.7.1 Oxygen.1
 

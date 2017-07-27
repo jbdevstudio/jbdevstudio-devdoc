@@ -315,7 +315,7 @@ fi
 
 == Notify Team Lead(s)
 
-Here's a job that notifies Jeff that the website is ready to be updated with a new blog post:
+Here's a job that notifies Jeff (or Matt) that the website is ready to be updated with a new blog post:
 
 https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-dev-stable-07-notification-emails/configure
 
@@ -328,11 +328,11 @@ Using the script below, you can trigger the job remotely.
 export userpass=KERBUSER:PASSWORD
 
 blogURL=/blog/11.0.0.ga-for-oxygen.0.html
-pullrequestNum=729
+pullrequestNum=73x
 eclipseVersionSuffix=".0" # TODO: use .1 for Eclipse 4.7.1 Oxygen.1
 
-versionWithRespin_jbt=4.5.0.AM2
-versionWithRespin_ds=11.0.0.AM2
+versionWithRespin_jbt=4.5.0.Final
+versionWithRespin_ds=11.0.0.GA
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # \) # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 

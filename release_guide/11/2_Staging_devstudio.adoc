@@ -60,7 +60,7 @@ TIP: Once the staging build folder exists, start fetching the devstudio installe
 ----
 
 cd ~/tmp
-versionWithRespin_ds=11.0.0.AM2
+versionWithRespin_ds=11.0.0.GA
 installerJar=$(wget -O - -q https://devstudio.redhat.com/11/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 echo "Installer jar: ${installerJar}"
 time wget https://devstudio.redhat.com/11/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/${installerJar}
@@ -104,7 +104,7 @@ https://devstudio.redhat.com/11/staging/updates/
 [source,bash]
 ----
 
-versionWithRespin_ds=11.0.0.AM2
+versionWithRespin_ds=11.0.0.GA
 cd ~/tmp
 installerJar=$(wget -O - -q https://devstudio.redhat.com/11/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 echo "Installer jar: ${installerJar}"
@@ -148,7 +148,7 @@ Trigger the QE smoke tests in https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_ds=11.0.0.AM2
+versionWithRespin_ds=11.0.0.GA
 installerJar=$(wget -O - -q https://devstudio.redhat.com/11/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 version_ds_INST=${installerJar#devstudio-}
 version_ds_INST=${version_ds_INST%-installer*}
@@ -174,6 +174,11 @@ done
 0. This section only applies to GA builds. No need to sign AMx milestones!
 
 1. give URL link to Chris via RCM ticket, eg., https://projects.engineering.redhat.com/browse/RCM-12825
+
+TODO: switch to gold key, not dev key?
+
+https://www.redhat.com/security/data/fd431d51.txt
+https://access.redhat.com/security/team/key
 
 [source,bash]
 ----

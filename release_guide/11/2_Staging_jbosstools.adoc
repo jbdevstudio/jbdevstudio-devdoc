@@ -165,8 +165,7 @@ done
 echo ""
 for j in jbosstools-buildflow-force-publish_${stream_jbt} jbosstools-buildflow_${stream_jbt} jbosstools-build.parent_${stream_jbt} \
     jbosstools-discovery_${stream_jbt} jbosstoolstargetplatform-central-4.70.x jbosstoolstargetplatform-4.70.x \
-    devstudio.product_${stream_ds} devstudio.rpm_${stream_ds} devstudio.versionwatch_${stream_ds} \
-    jbosstools-install-p2director.install-tests.matrix_${stream_jbt} jbosstools-install-grinder.install-tests.matrix_${stream_jbt} \
+    devstudio.product_${stream_ds} devstudio.rpm_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} \
     jbosstools-composite-install_${stream_jbt} jbosstools-browsersim_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} \
     jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstools-build-sites.aggregate.child-sites_${stream_jbt}; do
   ${JP} -s ${ccijenkins} -j ${j} -t disable
@@ -433,7 +432,7 @@ versionWithRespin_jbt_NEXT=4.5.1.AM1
 versionWithRespin_ds_PREV_GA=10.4.0.GA
 versionWithRespin_ds_PREV=11.0.0.AM2
 versionWithRespin_ds=11.0.0.GA
-versionWithRespin_ds_NEXT=11.1.0.GA
+versionWithRespin_ds_NEXT=11.1.0.AM1
 
 buildType="staging"
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
@@ -508,16 +507,15 @@ JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for p in aerogear arquillian base browsersim build-ci build.parent central discovery forge freemarker fuse-extras hibernate integration-tests.aggregate \
     javaee-tests-matrix javaee jst livereload openshift-restclient-java openshift server-Run-Unit-and-ITests server vpe webservices; do
   j=jbosstools-${p}_master
-  ${JP} -s ${ccijenkins} -j ${j} -t enable
+  ${JP} -s ${ccijenkins} -j ${j} -t enable &
 done
 echo ""
 for j in jbosstools-buildflow-force-publish_${stream_jbt} jbosstools-buildflow_${stream_jbt} jbosstools-build.parent_${stream_jbt} \
     jbosstools-discovery_${stream_jbt} jbosstoolstargetplatform-central-4.70.x jbosstoolstargetplatform-4.70.x \
-    devstudio.product_${stream_ds} devstudio.rpm_${stream_ds} devstudio.versionwatch_${stream_ds} \
-    jbosstools-install-p2director.install-tests.matrix_${stream_jbt} jbosstools-install-grinder.install-tests.matrix_${stream_jbt} \
+    devstudio.product_${stream_ds} devstudio.rpm_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} \
     jbosstools-composite-install_${stream_jbt} jbosstools-browsersim_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} \
     jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstools-build-sites.aggregate.child-sites_${stream_jbt}; do
-  ${JP} -s ${ccijenkins} -j ${j} -t enable
+  ${JP} -s ${ccijenkins} -j ${j} -t enable &
 done
 echo ""
 
@@ -602,7 +600,9 @@ version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\
 # fi
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for j in jbosstools-releng-push-to-staging-03-verify-builds-update-sites \
+for j in jbosstools-releng-push-to-staging-04-update-ide-config.properties \
+         jbosstools-releng-push-to-staging-04-update-merge-composites-html \
+         jbosstools-releng-push-to-staging-03-verify-builds-update-sites \
          jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites \
          jbosstools-releng-push-to-staging-01-check-versions-branches-root-poms; do
   ${JP} -s ${ccijenkins} -j ${j} -t disable

@@ -209,7 +209,7 @@ done
 
 ----
 
-2. Chris signs it, and gives back a URL,eg., http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/JBDS-11.0.0/rpms/signed/
+2. Chris signs it, and gives back a URL,eg., http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/devstudio-11.0.0/rpms/signed/
 
 3. Fetch rpms, regen metadata
 
@@ -277,6 +277,10 @@ yum update rh-eclipse47-devstudio -y
 
 # Or, if not already installed
 yum install rh-eclipse47-devstudio -y
+
+# note, if verifying unsigned rpms, use:
+yum update --nogpgcheck # or
+yum install --nogpgcheck
 
 ----
 

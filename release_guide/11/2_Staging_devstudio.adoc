@@ -216,8 +216,6 @@ done
 [source,bash]
 ----
 
-### TODO ### NOT DONE YET
-
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
@@ -237,7 +235,7 @@ for j in jbosstools-releng-push-to-staging-06-sign-rpm-fetch; do
   if [[ "${prevJob}" == "${nextJob}" ]]; then
     echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
     echo "[WARN] ${ccijenkins}/${j}"
-  Eclipse
+  else
     ${JP} -s ${ccijenkins} -j ${j} -t disable
     ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
   fi
@@ -245,9 +243,9 @@ done
 
 ----
 
-Next, update your /etc/yum.repos.d/rh-eclipse47-devstudio.repo file like this:
+4. Next, update your /etc/yum.repos.d/rh-eclipse47-devstudio.repo file like this:
 
-NOTE: Run the following commands as root user:
+5. NOTE: Run the following commands as root user:
 
 [source,bash]
 ----
@@ -289,7 +287,7 @@ yum install --nogpgcheck
 Installation should complete without any problems. Should NOT see an error like this:
 [source,bash]
 ----
-Error: Package rh-eclipse47-devstudio-11.0-0.20170218.1756.el7.x86_64.rpm is not signed
+Error: Package rh-eclipse47-devstudio-11.0-0.20170809.1307.el7.x86_64.rpm is not signed
 ----
 
 Alternatively, you could download the rpms from https://devstudio.redhat.com/11/staging/builds/devstudio-11.0.0.GA-build-rpm/latest/x86_64/
@@ -301,4 +299,51 @@ rpm -K  *.rpm | grep pgp
 ----
 ====
 
+== Push RPM to DevTools channel
 
+@since 11.0
+
+For a GA build, you'll have requested RPM signing via here: link:2_Staging_devstudio.adoc[Sign RPM]. Use that signingTicket value below.
+
+Here is a job that creates the RCM ticket to push the signed RPMs to the DevTools channel:
+
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-06-publish-to-channel-request-email/configure
+
+[source,bash]
+----
+
+# kerberos login for the Jenkins server
+export userpass=KERBUSER:PASSWORD
+
+versionWithRespin_ds=11.0.0.GA
+if [[ ${versionWithRespin_ds} == *"GA" ]]; then
+  # signingTicket from https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-05-sign-rpm-request-email
+  signingTicket="https://projects.engineering.redhat.com/browse/RCM-19657"
+  STAGE_DATE="2017-08-10"
+  GOLIVEDATE="2017-08-14"
+  TOrecipients="release-engineering@redhat.com"
+  CCrecipients="nboldt@redhat.com, rhartman@redhat.com, rzima@redhat.com, mat.booth@redhat.com, vkadlcik@redhat.com, timoran@redhat.com, bodavis@redhat.com, mbenitez@redhat.com"
+  CCrecipients=${CCrecipients// /%20}
+  recipientOverride="nboldt@redhat.com" # or ""
+  ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+  JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+  for j in jbosstools-releng-push-to-staging-06-publish-to-channel-request-email; do
+    prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+    sleep 3s
+
+    data="token=RELENG&versionWithRespin_ds=${versionWithRespin_ds}&GOLIVEDATE=${GOLIVEDATE}&STAGE_DATE=${STAGE_DATE}\
+&TOrecipients=${TOrecipients}&CCrecipients=${CCrecipients}&recipientOverride=${recipientOverride}&signingTicket=${signingTicket}"
+    nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+    sleep 15s
+
+    if [[ "${prevJob}" != "${nextJob}" ]]; then
+      echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
+      echo "[WARN] ${ccijenkins}/${j}"
+    else
+      ${JP} -s ${ccijenkins} -j ${j} -t disable
+      ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+    fi
+  done
+fi
+
+----

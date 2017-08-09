@@ -62,7 +62,7 @@ fi
 
 == Verify install instructions are correct
 
-Look at the .txt and .html files in /qa/services/http/binaries/RHDS/10.0/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
+Look at the .txt and .html files in https://devstudio.redhat.com/11/staging/builds/devstudio-11.0.0.GA-build-product/latest/all/
 
 Verify that they contain correct install/usage instructions & versions.
 
@@ -73,6 +73,8 @@ https://github.com/jbdevstudio/jbdevstudio-product/commit/e6c2954207d1db7451f7ad
 
 
 == File bug to update http://developers.redhat.com/products/devstudio/
+
+TODO: fix this step so it reflects actual reality -- ping Mike Guerette & Erin Rooney a couple weeks in advance to get this stuff ready in in time for GA.
 
 Goal is to update the following pages to include links to guides and to set the correct latest GA release version:
 
@@ -106,6 +108,7 @@ IMPORTANT: As this takes some time and requires coordination with other teams, t
 
 Previous ticket:
 
+* https://projects.engineering.redhat.com/browse/RCM-20050
 * https://projects.engineering.redhat.com/browse/RCM-12959
 
 Communicate with Chris O'Brien (internal IRC: siege) to coordinate the release. All the above can happen in parallel / before the updates below.
@@ -125,18 +128,21 @@ export userpass=KERBUSER:PASSWORD
 versionWithRespin_ds=11.0.0.GA
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   # signingTicket from https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-05-sign-rpm-request-email
-  signingTicket="RCM-----"
-  GOLIVEDATE="Mon, Aug 14, 2017"
+  signingTicket="https://projects.engineering.redhat.com/browse/RCM-19657"
+  STAGE_DATE="2017-08-10"
+  GOLIVEDATE="2017-08-14"
   TOrecipients="release-engineering@redhat.com"
-  CCrecipients="cobrien@redhat.com, mhusnain@redhat.com, nboldt@redhat.com, jmaury@redhat.com, timoran@redhat.com, bodavis@redhat.com"
+  CCrecipients="cobrien@redhat.com, erooney@redhat.com, rkratky@redhat.com, sbharadw@redhat.com, nboldt@redhat.com, mat.booth@redhat.com, jmaury@redhat.com, mbenitez@redhat.com, timoran@redhat.com, bodavis@redhat.com"
+  CCrecipients=${CCrecipients// /%20}
+  recipientOverride="nboldt@redhat.com" # or ""
   ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
   JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
   for j in jbosstools-releng-push-to-dev-stable-00-releng-request-email; do
-    prevJob=$(prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable" -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+    prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
     sleep 3s
 
-    data="token=RELENG&versionWithRespin_ds=${versionWithRespin_ds}&signingTicket=${signingTicket}&\
-GOLIVEDATE=${GOLIVEDATE}&TOrecipients=${TOrecipients}&CCrecipients=${CCrecipients}"
+    data="token=RELENG&versionWithRespin_ds=${versionWithRespin_ds}&GOLIVEDATE=${GOLIVEDATE}&STAGE_DATE=${STAGE_DATE}\
+&TOrecipients=${TOrecipients}&CCrecipients=${CCrecipients}&recipientOverride=${recipientOverride}&signingTicket=${signingTicket}"
     nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
     sleep 15s
 

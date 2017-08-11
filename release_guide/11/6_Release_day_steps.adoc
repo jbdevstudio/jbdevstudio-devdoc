@@ -1,0 +1,42 @@
+On Release Day (currently the Monday after the end of the GA sprint), there are a few remaining TODOs to do:
+
+== Release latest JBoss Tools and Devstudio downloads and latest blog to tools.jboss.org
+
+Push the blog PR [0] and the update to include the latest JBT and devstudio versions [1] to both the master [2] and production [3] branches, then wait about 2 x 3 mins for Travis [4] to rebuild everything
+
+[0] https://github.com/jbosstools/jbosstools-website/pull/736
+[1] https://github.com/jbosstools/jbosstools-website/pull/741
+
+[2] http://tools.stage.jboss.org/downloads/overview.html and http://tools.stage.jboss.org/blog/
+[3] http://tools.jboss.org/downloads/overview.html and http://tools.jboss.org/blog/
+
+[4] https://travis-ci.org/jbosstools/jbosstools-website
+
+
+== Release staged bits to production customer portal and Download Manager
+
+* Tell RCM (Chris O'Brien / siege on IRC) to release the staged stuff in the customer portal to production, via the RCM ticket [0]
+
+[0] https://projects.engineering.redhat.com/browse/RCM-20050
+
+
+== Announce releases to mailing lists
+
+Send email announcements to the mailing lists (one for jBT, one for devstudio) - see details in these emails, usually sent on the Wed or Thursday after the end of the sprint:
+
+* Ready for JBoss Developer Studio 11.0.0.GA blog & announcement
+* Ready for JBoss Tools 4.5.0.Final blog & announcement
+
+
+== Check Devstudio marketing materials are updated to include latest devstudio 11.0.0.GA release
+
+* https://developers.redhat.com/products/devstudio/overview/
+* https://developers.redhat.com/products/devstudio/download/
+* https://developers.redhat.com/products/devstudio/hello-world/
+* https://developers.redhat.com/products/devstudio/docs-and-apis/
+* https://developers.redhat.com/products/devstudio/updates/
+
+If anything is not correct, please ping Mike Guerette immediately.
+
+See also https://docs.google.com/document/d/1ZL2dJcc12uK4xOjVuzqGAHlSuQu5nOygB8H83HN4WPY/edit#heading=h.1b2veerq3bz3
+

@@ -5,9 +5,11 @@ On Release Day (currently the Monday after the end of the GA sprint), there are 
 Push the blog PR [0] and the update to include the latest JBT and devstudio versions [1] to both the master [2] and production [3] branches, then wait about 2 x 3 mins for Travis [4] to rebuild everything
 
 [0] https://github.com/jbosstools/jbosstools-website/pull/736
+
 [1] https://github.com/jbosstools/jbosstools-website/pull/741
 
 [2] http://tools.stage.jboss.org/downloads/overview.html and http://tools.stage.jboss.org/blog/
+
 [3] http://tools.jboss.org/downloads/overview.html and http://tools.jboss.org/blog/
 
 [4] https://travis-ci.org/jbosstools/jbosstools-website
@@ -15,7 +17,7 @@ Push the blog PR [0] and the update to include the latest JBT and devstudio vers
 
 == Release staged bits to production customer portal and Download Manager
 
-* Tell RCM (Chris O'Brien / siege on IRC) to release the staged stuff in the customer portal to production, via the RCM ticket [0]
+* Tell RCM (Chris O'Brien / siege on IRC) to release the staged stuff in the customer portal to production, via the RCM ticket [0].
 
 [0] https://projects.engineering.redhat.com/browse/RCM-20050
 

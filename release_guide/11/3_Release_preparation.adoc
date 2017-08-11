@@ -134,7 +134,7 @@ if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   TOrecipients="release-engineering@redhat.com"
   CCrecipients="cobrien@redhat.com, erooney@redhat.com, rkratky@redhat.com, sbharadw@redhat.com, nboldt@redhat.com, mat.booth@redhat.com, jmaury@redhat.com, mbenitez@redhat.com, timoran@redhat.com, bodavis@redhat.com"
   CCrecipients=${CCrecipients// /%20}
-  recipientOverride="nboldt@redhat.com" # or ""
+  recipientOverride="" # or "nboldt@redhat.com"
   ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
   JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
   for j in jbosstools-releng-push-to-dev-stable-00-releng-request-email; do

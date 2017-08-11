@@ -28,20 +28,20 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.0.AM2
-versionWithRespin_ds=11.0.0.AM2
+versionWithRespin_jbt=4.5.0.Final
+versionWithRespin_ds=11.0.0.GA
 
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then # GA only
   version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
   version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
   # TODO: later, we will beforking from 4.5.x all jobs will run from 4.5.oxygen stream
-  if [[ ${version_jbt} == *".Final" ]]; then
-    stream_jbt=4.5.oxygen
-    stream_ds=11.0.oxygen
-  else
+  # if [[ ${version_jbt} == *".Final" ]]; then
+  #   stream_jbt=4.5.oxygen
+  #   stream_ds=11.0.oxygen
+  # else
     stream_jbt=master
     stream_ds=master
-  fi
+  # fi
 
   ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
   JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
@@ -143,8 +143,8 @@ Run this:
 
 echo "" > /tmp/yml.txt
 
-versionWithRespin_ds=11.0.0.AM2
-# test with versionWithRespin_ds=11.0.0.AM2, but only want this for GA
+versionWithRespin_ds=11.0.0.GA
+# test with versionWithRespin_ds=11.0.0.GA, but only want this for GA
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # **
   theURL=https://devstudio.redhat.com/11/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all
@@ -152,8 +152,8 @@ if [[ ${versionWithRespin_ds} == *"GA" ]]; then
 
   rm -f /tmp/index.html
   wget --no-check-certificate -q ${theURL}/ -O /tmp/index.html
-  for f in $(cat index.html | egrep "${searchPattern}" | egrep -v "sha256|TXT|latest" | sed -e "s#.\+>\(.\+\(.zip\|.jar\)\)<.\+#\1#"); do
-    size=$(cat index.html | egrep "${searchPattern}" | egrep -v "sha256|TXT|latest" | grep $f | sed -e "s#.\+>\(.\+\(.zip\|.jar\)\)<.\+<td align=\"right\">\([ 0-9MK]\+\)</td>.\+#\3#"); echo "$f: $size"
+  for f in $(cat /tmp/index.html | egrep "${searchPattern}" | egrep -v "sha256|TXT|latest" | sed -e "s#.\+>\(.\+\(.zip\|.jar\)\)<.\+#\1#"); do
+    size=$(cat /tmp/index.html | egrep "${searchPattern}" | egrep -v "sha256|TXT|latest" | grep $f | sed -e "s#.\+>\(.\+\(.zip\|.jar\)\)<.\+<td align=\"right\">\([ 0-9MK]\+\)</td>.\+#\3#"); echo "$f: $size"
     sha=$(wget --no-check-certificate -q ${theURL}/${f}.sha256 -O -); sh=${sha:0:2}; # echo $sha :: $sh
     echo "            url: http://www.jboss.org/download-manager/content/origin/files/sha256/${sh}/${sha}/${f}" >> /tmp/yml.txt
     echo "            file_size: ${size}B" >> /tmp/yml.txt
@@ -169,8 +169,8 @@ if [[ ${versionWithRespin_ds} == *"GA" ]]; then
 
   rm -f /tmp/index.html
   wget --no-check-certificate -q ${theURL}/ -O /tmp/index.html
-  for f in $(cat index.html | egrep "${searchPattern}" | egrep -v "sha256|TXT|latest" | sed -e "s#.\+>\(.\+\(.zip\|.jar\)\)<.\+#\1#"); do
-    size=$(cat index.html | egrep "${searchPattern}" | egrep -v "sha256|TXT|latest" | grep $f | sed -e "s#.\+>\(.\+\(.zip\|.jar\)\)<.\+<td align=\"right\">\([ 0-9MK]\+\)</td>.\+#\3#"); echo "$f: $size"
+  for f in $(cat /tmp/index.html | egrep "${searchPattern}" | egrep -v "sha256|TXT|latest" | sed -e "s#.\+>\(.\+\(.zip\|.jar\)\)<.\+#\1#"); do
+    size=$(cat /tmp/index.html | egrep "${searchPattern}" | egrep -v "sha256|TXT|latest" | grep $f | sed -e "s#.\+>\(.\+\(.zip\|.jar\)\)<.\+<td align=\"right\">\([ 0-9MK]\+\)</td>.\+#\3#"); echo "$f: $size"
     sha=$(wget --no-check-certificate -q ${theURL}/${f}.sha256 -O -); sh=${sha:0:2}; # echo $sha :: $sh
     echo "            url: http://www.jboss.org/download-manager/content/origin/files/sha256/${sh}/${sha}/${f}" >> /tmp/yml.txt
     echo "            file_size: ${size}B" >> /tmp/yml.txt
@@ -192,8 +192,8 @@ Then, back on your own machine...
 
 [source,bash]
 ----
-version_jbt=4.5.0.AM2
-version_ds=11.0.0.AM2
+version_jbt=4.5.0.Final
+version_ds=11.0.0.GA
 
 topic=release-${version_jbt}
 github_branch=master
@@ -265,6 +265,7 @@ popd
 
 Commit changes and submit PR, eg.,
 
+* https://github.com/jbosstools/jbosstools-website/pull/741,
 * https://github.com/jbosstools/jbosstools-website/pull/729,
 * https://github.com/jbosstools/jbosstools-website/pull/720,
 * https://github.com/jbosstools/jbosstools-website/pull/709,
@@ -299,7 +300,7 @@ Before notifying team of release, must check for obvious problems. Any failure t
 [source,bash]
 ----
 
-version_ds=11.0.0.AM2
+version_ds=11.0.0.GA
 if [[ ${version_ds} == *"GA" ]]; then
   qual="stable"
   cd ~/tmp # ~
@@ -328,13 +329,17 @@ Using the script below, you can trigger the job remotely.
 export userpass=KERBUSER:PASSWORD
 
 blogURL=/blog/11.0.0.ga-for-oxygen.0.html
-pullrequestNum=73x
+pullrequestNum=741
 eclipseVersionSuffix=".0" # TODO: use .1 for Eclipse 4.7.1 Oxygen.1
+STAGE_DATE="2017-08-10"
+GOLIVEDATE="2017-08-14"
 
 versionWithRespin_jbt=4.5.0.Final
 versionWithRespin_ds=11.0.0.GA
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # \) # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
+
+recipientOverride="" # or "nboldt@redhat.com"
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
@@ -342,8 +347,8 @@ for j in jbosstools-releng-push-to-dev-stable-07-notification-emails; do
   prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
   sleep 3s
 
-  data="version_jbt=${version_jbt}&version_ds=${version_ds}&\
-blogURL=${blogURL}&pullrequestNum=${pullrequestNum}&eclipseVersionSuffix=${eclipseVersionSuffix}"
+  data="version_jbt=${version_jbt}&version_ds=${version_ds}&GOLIVEDATE=${GOLIVEDATE}&STAGE_DATE=${STAGE_DATE}\
+&blogURL=${blogURL}&pullrequestNum=${pullrequestNum}&eclipseVersionSuffix=${eclipseVersionSuffix}&recipientOverride=${recipientOverride}"
   nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
   sleep 15s
 
@@ -366,11 +371,17 @@ done
 
 cd ~/truu # ~
 
-version_jbt=4.5.0.AM2
-version_ds=11.0.0.AM2
+version_jbt=4.5.0.Final
+version_ds=11.0.0.GA
 cd jbdevstudio-devdoc/release_guide/
 git commit -m "update release guide for ${version_jbt} and ${version_ds}" .
 git push origin HEAD:master
 
 ----
 
+
+== Final release steps
+
+On Release Day (currently the Monday after the end of the GA sprint), there are a few remaining TODOs to do.
+
+See link:6_Release_day_steps.adoc[JBoss Tools and Devstudio Release Day Steps]

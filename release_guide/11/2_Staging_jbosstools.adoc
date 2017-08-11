@@ -600,11 +600,22 @@ version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\
 # fi
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for j in jbosstools-releng-push-to-staging-04-update-ide-config.properties \
-         jbosstools-releng-push-to-staging-04-update-merge-composites-html \
-         jbosstools-releng-push-to-staging-03-verify-builds-update-sites \
-         jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites \
-         jbosstools-releng-push-to-staging-01-check-versions-branches-root-poms; do
+for j in \
+  jbosstools-releng-push-to-staging-00-bootstrap-next-snapshot-sites \
+  jbosstools-releng-push-to-staging-00-new-and-noteworthy-jiras \
+  jbosstools-releng-push-to-staging-00-parent-pom-update-task-jiras \
+  jbosstools-releng-push-to-staging-01-check-copy-speed \
+  jbosstools-releng-push-to-staging-01-check-versions-branches-root-poms \
+  jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites \
+  jbosstools-releng-push-to-staging-03-verify-builds-update-sites \
+  jbosstools-releng-push-to-staging-04-update-ide-config.properties \
+  jbosstools-releng-push-to-staging-04-update-merge-composites-html \
+  jbosstools-releng-push-to-staging-05-sign-rpm-request-email \
+  jbosstools-releng-push-to-staging-06-publish-to-channel-request-email \
+  jbosstools-releng-push-to-staging-06-sign-rpm-fetch \
+  jbosstools-releng-push-to-staging-07-notification-emails \
+  jbosstools-releng-push-to-staging-08-delete-builds-and-update-sites \
+; do
   ${JP} -s ${ccijenkins} -j ${j} -t disable
 done
 

@@ -324,7 +324,7 @@ if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   TOrecipients="release-engineering@redhat.com"
   CCrecipients="nboldt@redhat.com, rhartman@redhat.com, rzima@redhat.com, mat.booth@redhat.com, vkadlcik@redhat.com, timoran@redhat.com, bodavis@redhat.com, mbenitez@redhat.com"
   CCrecipients=${CCrecipients// /%20}
-  recipientOverride="nboldt@redhat.com" # or ""
+  recipientOverride="" # or "nboldt@redhat.com"
   ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
   JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
   for j in jbosstools-releng-push-to-staging-06-publish-to-channel-request-email; do

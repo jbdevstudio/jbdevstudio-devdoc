@@ -79,9 +79,16 @@ These steps happens on filemgmt.jboss.org, in the jbosstools download area.
 
 === Copy content to release directory
 
-Here is a job that performs the copy from /staging/ to /development/ and/or to /stable too:
+Here are 2 jobs that performs the copy from /staging/ to /development/ and/or to /stable too:
 
-https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites/
+* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites-jbosstools/
+* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites-devstudio/
+
+And here are two experimental matrix jobs that do the same, but in many parallel steps:
+
+* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites_jbt/
+* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites_ds/
+
 
 [source,bash]
 ----
@@ -89,26 +96,27 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.0.AM2
-versionWithRespin_ds=11.0.0.AM2
+versionWithRespin_jbt=4.5.0.Final
+versionWithRespin_ds=11.0.0.GA
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
-if [[ ${version_jbt} == *".Final" ]]; then
-  stream_jbt=4.5.oxygen
-  stream_ds=11.0.oxygen
-else
+# if [[ ${version_jbt} == *".Final" ]]; then
+#   stream_jbt=4.5.oxygen
+#   stream_ds=11.0.oxygen
+# else
   stream_jbt=master
   stream_ds=master
-fi
-TARGET_PLATFORM_VERSION_MAX=4.70.0.AM1-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.70.0.AM1-SNAPSHOT
+# fi
+TARGET_PLATFORM_VERSION_MAX=4.70.2.Final
+TARGET_PLATFORM_CENTRAL_MAX=4.70.0.Final-SNAPSHOT
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites; do
   prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
 done
-for j in jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites; do
+for j in jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites_jbt \
+  jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites_ds; do
   prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
   sleep 3s
 
@@ -152,7 +160,7 @@ qual=development
 quiet="-q"
 
 # for example, run this for the JBT central discovery plugins:
-versionWithRespin_jbt=4.5.0.AM2
+versionWithRespin_jbt=4.5.0.Final
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 ${STAGE} -sites "discovery.central" -stream "${versionWithRespin_jbt}" -vr ${version_jbt} -DESTINATION "${TOOLS}" \
     -sd ${eclipseReleaseName} -dd static/${eclipseReleaseName} -st staging -dt ${qual} \
@@ -173,8 +181,8 @@ But you can run it again if you'd like:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.0.AM2
-versionWithRespin_ds=11.0.0.AM2
+versionWithRespin_jbt=4.5.0.Final
+versionWithRespin_ds=11.0.0.GA
 
 # buildType=development in this case, development will ALSO check stable URLs if we're pushing out a GA/Final release
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
@@ -240,11 +248,13 @@ https://devstudio.redhat.com/${devstudioReleaseVersion}/${qual_IS}/updates/integ
 [source,bash]
 ----
 
+TODO: Here
+
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.0.AM2
-versionWithRespin_ds=11.0.0.AM2
+versionWithRespin_jbt=4.5.0.Final
+versionWithRespin_ds=11.0.0.GA
 versionWithRespin_ds_PREV_GA=10.4.0.GA
 qual_IS="development" # "development" or "stable" as applicable - see tip above
 earlyaccess_IS="" # "" or "earlyaccess/" as applicable - see tip above
@@ -324,7 +334,7 @@ IMPORTANT: This job also verifies that -SNAPSHOT content is properly populated o
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-TARGET_PLATFORM_VERSION_MAX=4.70.0.AM1-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.70.2.Final
 
 # run this for .Final and -SNAPSHOT target platforms, too
 
@@ -364,14 +374,14 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 export userpass=KERBUSER:PASSWORD
 
 version_jbt_PREV_GA=4.4.4.Final
-version_jbt_PREV=4.5.0.AM1
-version_jbt=4.5.0.AM2
-version_jbt_NEXT=4.5.0.Final
+version_jbt_PREV=4.5.0.AM2
+version_jbt=4.5.0.Final
+version_jbt_NEXT=4.5.1.AM1
 
 version_ds_PREV_GA=10.4.0.GA
-version_ds_PREV=11.0.0.AM1
-version_ds=11.0.0.AM2
-version_ds_NEXT=11.0.0.GA
+version_ds_PREV=11.0.0.AM2
+version_ds=11.0.0.GA
+version_ds_NEXT=11.1.0.AM1
 
 version_jbt=$(echo ${version_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${version_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
@@ -422,14 +432,14 @@ Access it via +https://marketplace.eclipse.org/content/jboss-tools/edit+ and upd
 * Solution version number to match new version
 * Description to match new version & dependencies
 * Notes / warnings (if applicable, eg., JDK issues)
-* Update list of features, using content of http://download.jboss.org/jbosstools/static/oxygen/stable/updates/core/4.5.0.AM1/site.properties
+* Update list of features, using content of http://download.jboss.org/jbosstools/static/oxygen/stable/updates/core/4.5.0.AM2/site.properties
 
 To diff if any new features have been added/removed:
 
 [source,bash]
 ----
-path_jbt_PREV_Mktplace=oxygen/development/updates/core/4.5.0.AM1
-version_jbt=4.5.0.AM2
+path_jbt_PREV_Mktplace=oxygen/development/updates/core/4.5.0.AM2
+version_jbt=4.5.0.Final
 
 # for Final releases only, or for milestones prior to the first x.y.0.Final.
 if [[ ${version_jbt} == *"Final" ]] || [[ ${path_jbt_PREV_Mktplace} == *"AM"* ]]; then
@@ -495,8 +505,19 @@ export userpass=KERBUSER:PASSWORD
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for j in jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites \
-  jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites; do
+for j in \
+  jbosstools-releng-push-to-dev-stable-00-releng-request-email \
+  jbosstools-releng-push-to-dev-stable-00-rename-GA-artifacts \
+  jbosstools-releng-push-to-dev-stable-02-copy-builds-and-rpms \
+  jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites-devstudio \
+  jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites_ds \
+  jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites-jbosstools \
+  jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites_jbt \
+  jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites \
+  jbosstools-releng-push-to-dev-stable-04-update-ide-config.properties \
+  jbosstools-releng-push-to-dev-stable-04-update-merge-composites-html \
+  jbosstools-releng-push-to-dev-stable-05-release-target-platforms \
+  jbosstools-releng-push-to-dev-stable-07-notification-emails; do
   ${JP} -s ${ccijenkins} -j ${j} -t disable
 done
 
@@ -511,13 +532,14 @@ Here's a script to do all the moving for you automatically.
 [source,bash]
 ----
 
-# TODO JBIDE-24674 wrap this with a Jenkins job, using -A flag to automatically affect changes
-python
-/tmp/jbt.github/jbosstools-build-ci/util/checkUnresolvedIssues.py
-  --jira https://issues.stage.jboss.org --jirauser ME --jirapwd SECRET \
-  --jbt 4.5.0.AM2 --jbt_NEXT 4.5.0.Final \
-  --ds 11.0.0.AM2 --ds_NEXT 11.0.0.GA \
-  --sprint "devex #134 Jun 2017" --sprint_NEXT "devex #135 July 2017"
+# TODO JBIDE-24674 wrap this with a Jenkins job, using -A flag to automatically affect changes, once we're sure that the issues left over are OK to move
+# (eg., filter out labels = releasework)
+
+python -W ignore /tmp/jbt.github/jbosstools-build-ci/util/checkUnresolvedIssues.py \
+  --jbt 4.5.0.Final --jbt_NEXT 4.5.1.AM1 --ds 11.0.0.GA --ds_NEXT 11.1.0.AM1 \
+  --sprint "devex #135 July 2017" --sprint_NEXT "devex #136 August 2017" \
+  --jira https://issues.jboss.org --jirauser nickboldt --jirapwd \
+PASSWORD
 
 ----
 
@@ -546,11 +568,13 @@ export userpass=KERBUSER:PASSWORD
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru # ~
 pushd jbosstools-build/parent
-BUILD_ALIAS=AM2
-BUILD_ALIAS_NEXT=Final
+BUILD_ALIAS=Final
+BUILD_ALIAS_NEXT=AM1
 
 git fetch origin master # jbosstools-4.5.0.x
 git checkout FETCH_HEAD
+
+# TODO after a GA release, bump version of the parent pom too, not just the BUILD_ALIAS
 
 sed -i -e "s#<BUILD_ALIAS>${BUILD_ALIAS}</BUILD_ALIAS>#<BUILD_ALIAS>${BUILD_ALIAS_NEXT}</BUILD_ALIAS>#" pom.xml
 
@@ -593,21 +617,21 @@ Run this job:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt_NEXT=4.5.0.Final
-versionWithRespin_ds_NEXT=11.0.0.GA
+versionWithRespin_jbt_NEXT=4.5.1.AM1
+versionWithRespin_ds_NEXT=11.1.0.AM1
 #if [[ ${versionWithRespin_jbt_NEXT} == *".Final" ]]; then
 #  version_parent_NEXT=4.5.0.Final-SNAPSHOT
 #  createBranch=true
 #  github_branch=jbosstools-4.5.0.x
 #  github_branch_fallback=master # or jbosstools-4.5.x?
 #else
-  version_parent_NEXT=4.5.0.Final-SNAPSHOT
+  version_parent_NEXT=4.5.1.AM1-SNAPSHOT
   createBranch=false
   github_branch=master
   github_branch_fallback=master # or jbosstools-4.5.x?
 #fi
-TARGET_PLATFORM_VERSION_MIN=4.70.0.AM1-SNAPSHOT
-TARGET_PLATFORM_VERSION_MAX=4.70.0.AM1-SNAPSHOT
+TARGET_PLATFORM_VERSION_MIN=4.70.2.Final
+TARGET_PLATFORM_VERSION_MAX=4.70.2.Final
 JIRA_HOST="https://issues.jboss.org"
 TOrecipients="nboldt@redhat.com"
 
@@ -638,3 +662,10 @@ done
 == Commit updates to release guide (including this document):
 
 See link:4_Release_devstudio.adoc[Devstudio Release]
+
+
+== Final release steps
+
+On Release Day (currently the Monday after the end of the GA sprint), there are a few remaining TODOs to do.
+
+See link:6_Release_day_steps.adoc[JBoss Tools and Devstudio Release Day Steps]

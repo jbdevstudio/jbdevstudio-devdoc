@@ -17,9 +17,12 @@ git clone https://github.com/jbosstools/jbosstools-discovery
 git clone https://github.com/jbosstools/jbosstools-download.jboss.org
 git clone https://github.com/jbosstools/jbosstools-maven-plugins
 git clone https://github.com/jbosstools/jbosstools-versionwatch
+...
 
 github_branch=master
-for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins versionwatch; do
+for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins versionwatch \
+  aerogear arquillian base browsersim central forge fuse fuse-extras hibernate \
+  integration-tests javaee jst livereload openshift server vpe webservices ; do # freemarker
   echo "====================================================================="
   echo "Branching jbosstools-${d} from branch ${github_branch}..."
   pushd jbosstools-${d}
@@ -40,7 +43,7 @@ If you have just branched for a.b.x (rather than a.b.0.y), please make sure you 
 ----
 pushd jbosstools-download.jboss.org/jbosstools/
 
-pushd neon/snapshots/updates/
+pushd oxygen/snapshots/updates/
 ls -l com*
 # lrwxrwxrwx  compositeArtifacts.xml -> discovery.central/master/compositeArtifacts.xml
 # lrwxrwxrwx  compositeContent.xml -> discovery.central/master/compositeContent.xml
@@ -50,20 +53,20 @@ ln -s discovery.central/${stream}/compositeArtifacts.xml
 ln -s discovery.central/${stream}/compositeContent.xml
 popd
 
-# then commit changes to github and rsync new symlinks to to $TOOLS/neon/snapshots/updates/
+# then commit changes to github and rsync new symlinks to to $TOOLS/oxygen/snapshots/updates/
 # ...
 
-# may also want to create new/updated symlinks for future release Eclipse 4.6 Neon / JBDS 11
+# may also want to create new/updated symlinks for future release Eclipse 4.7 Oxygen / JBDS 11
 
 pushd updates/snapshots
-ls -l 11.0.neon master
-# lrwxrwxrwx  neon -> ../../neon/snapshots/updates/
-# lrwxrwxrwx  11 -> neon/
-# lrwxrwxrwx  master -> neon/
+ls -l 11.0.oxygen master
+# lrwxrwxrwx  oxygen -> ../../oxygen/snapshots/updates/
+# lrwxrwxrwx  11 -> oxygen/
+# lrwxrwxrwx  master -> oxygen/
 rm -f master
-ln -s ../../neon/snapshots/updates/ neon
-ln -s neon/ 11
-ln -s neon/ master
+ln -s ../../oxygen/snapshots/updates/ oxygen
+ln -s oxygen/ 11
+ln -s oxygen/ master
 popd
 
 # then commit changes to github and rsync new symlinks to to $TOOLS/updates/snapshots/
@@ -120,16 +123,16 @@ popd
 # then commit changes to github and rsync new symlinks to to $JBDS/11/snapshots/updates/
 # ...
 
-# may also want to create new/updated symlinks for future release Eclipse 4.6 Neon / JBDS 11
+# may also want to create new/updated symlinks for future release Eclipse 4.7 Oxygen / JBDS 11
 
 pushd updates/snapshots
-ls -l 11.0.neon master
+ls -l 11.0.oxygen master
 # lrwxrwxrwx  11 -> ../../11/snapshots/updates/
-# lrwxrwxrwx  neon -> 11/
+# lrwxrwxrwx  oxygen -> 11/
 # lrwxrwxrwx  master -> 11/
 rm -f master
 ln -s ../../11/snapshots/updates/ 11
-ln -s 11 neon
+ln -s 11 oxygen
 ln -s 11/ master
 popd
 
@@ -165,14 +168,16 @@ git clone git@github.com:jbosstools/jbosstools-versionwatch.git
 # maven-plugins does not get released/branched the same as other projects, but tag it anyway
 # download.jboss.org tag might not be valid as tweaks to ide-config.properties happen frequently
 
-version_jbt=4.5.0.AM2
-if [[ ${version_jbt} == *".Final" ]]; then
-  github_branch=jbosstools-4.5.0.x
-else
+version_jbt=4.5.0.Final
+# if [[ ${version_jbt} == *".Final" ]]; then
+#   github_branch=jbosstools-4.5.0.x
+# else
   github_branch=master
-fi
+# fi
 cd ~/tru # ~
-for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins versionwatch; do
+for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins versionwatch \
+  aerogear arquillian base browsersim central forge fuse fuse-extras hibernate \
+  integration-tests javaee jst livereload openshift server vpe webservices ; do # freemarker
   echo "====================================================================="
   echo "Tagging jbosstools-${d} from branch ${github_branch} as tag ${version_jbt}..."
   pushd jbosstools-${d}
@@ -201,12 +206,12 @@ git clone git@github.com:jbdevstudio/jbdevstudio-artwork.git
 git clone git@github.com:jbdevstudio/jbdevstudio-devdoc.git
 git clone git@github.com:jbdevstudio/jbdevstudio-ci.git
 
-version_ds=11.0.0.AM2
-if [[ ${version_ds} == *".GA" ]]; then
-  github_branch=jbosstools-4.5.0.x
-else
+version_ds=11.0.0.GA
+# if [[ ${version_ds} == *".GA" ]]; then
+#   github_branch=jbosstools-4.5.0.x
+# else
   github_branch=master
-fi
+# fi
 cd ~/truu # ~
 for d in product website artwork devdoc ci; do # note: ci repo is private
   echo "====================================================================="

@@ -47,6 +47,8 @@ And for devstudio:
 * https://devstudio.redhat.com/11/development/updates/
 * https://devstudio.redhat.com/11/development/updates/fuse-extras/
 * https://devstudio.redhat.com/11/stable/builds/
+* https://devstudio.redhat.com/11/index.html
+* https://devstudio.redhat.com/11/stable/index.html
 * https://devstudio.redhat.com/11/stable/updates/
 * https://devstudio.redhat.com/11/stable/updates/fuse-extras/
 

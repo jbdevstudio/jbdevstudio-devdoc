@@ -183,6 +183,7 @@ https://access.redhat.com/security/team/key
 [source,bash]
 ----
 
+# TODO: use ticket template https://mojo.redhat.com/docs/DOC-1096582 for request-email
 
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
@@ -311,6 +312,8 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-rele
 
 [source,bash]
 ----
+
+# TODO: use ticket template https://mojo.redhat.com/docs/DOC-1096582 for request-email
 
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD

@@ -525,7 +525,7 @@ done
 
 == Release JIRA
 
-The new policy (@since AM1) is to bump issues to the next fixversion if they're in the next sprint target (or if they're blocker/critical), or to the .x fixversion if they're not.
+The new policy (@since 4.5.AM1) is to bump issues to the next fixversion if they're in the next sprint target (or if they're blocker/critical), or to the .x fixversion if they're not.
 
 Here's a script to do all the moving for you automatically.
 
@@ -535,9 +535,17 @@ Here's a script to do all the moving for you automatically.
 # TODO JBIDE-24674 wrap this with a Jenkins job, using -A flag to automatically affect changes, once we're sure that the issues left over are OK to move
 # (eg., filter out labels = releasework)
 
+sprint="devex #136 August 2017"
+sprint_NEXT="devex #137 Sept 2017"
+versionWithRespin_jbt=4.5.1.AM1
+versionWithRespin_jbt_NEXT=4.5.1.AM2
+versionWithRespin_ds=11.1.0.AM1
+versionWithRespin_ds_NEXT=11.1.0.AM2
+
 python -W ignore /tmp/jbt.github/jbosstools-build-ci/util/checkUnresolvedIssues.py \
-  --jbt 4.5.0.Final --jbt_NEXT 4.5.1.AM1 --ds 11.0.0.GA --ds_NEXT 11.1.0.AM1 \
-  --sprint "devex #135 July 2017" --sprint_NEXT "devex #136 August 2017" \
+  --jbt ${versionWithRespin_jbt} --jbt_NEXT ${versionWithRespin_jbt_NEXT} \
+  --ds ${versionWithRespin_ds} --ds_NEXT ${versionWithRespin_ds_NEXT} \
+  --sprint ${sprint} --sprint_NEXT ${sprint_NEXT} \
   --jira https://issues.jboss.org --jirauser nickboldt --jirapwd \
 PASSWORD
 

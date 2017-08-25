@@ -111,8 +111,7 @@ for j in jbosstools-releng-push-to-staging-01-check-versions-branches-root-poms;
     echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
     echo "[WARN] ${ccijenkins}/${j}"
   else
-    ${JP} -s ${ccijenkins} -j ${j} -t disable
-    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+    { ${JP} -s ${ccijenkins} -j ${j} -t disable && ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep & }
   fi
 done
 
@@ -158,8 +157,8 @@ ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for p in aerogear arquillian base browsersim build-ci build.parent central discovery fabric8analytics forge fuse-extras hibernate integration-tests.aggregate \
     javaee-tests-matrix javaee jst livereload openshift-restclient-java openshift server-Run-Unit-and-ITests server vpe webservices; do # fuse freemarker
-  j=jbosstools-${p}_master
-  { ${JP} -s ${ccijenkins} -j ${j} -t disable && ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep & }
+    j=jbosstools-${p}_master
+    { ${JP} -s ${ccijenkins} -j ${j} -t disable && ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep & }
 done
 echo ""
 for j in jbosstools-buildflow-force-publish_${stream_jbt} jbosstools-buildflow_${stream_jbt} jbosstools-build.parent_${stream_jbt} \
@@ -167,7 +166,7 @@ for j in jbosstools-buildflow-force-publish_${stream_jbt} jbosstools-buildflow_$
     devstudio.product_${stream_ds} devstudio.rpm_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} \
     jbosstools-composite-install_${stream_jbt} jbosstools-browsersim_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} \
     jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstools-build-sites.aggregate.child-sites_${stream_jbt}; do
-  { ${JP} -s ${ccijenkins} -j ${j} -t disable && ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep & }
+    { ${JP} -s ${ccijenkins} -j ${j} -t disable && ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep & }
 done
 echo ""
 
@@ -219,8 +218,7 @@ version_jbt_IS=${version_jbt_IS}&version_ds_IS=${version_ds_IS}&qual_IS=${qual_I
     echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
     echo "[WARN] ${ccijenkins}/${j}"
   else
-    ${JP} -s ${ccijenkins} -j ${j} -t disable
-    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+    { ${JP} -s ${ccijenkins} -j ${j} -t disable && ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep & }
   fi
 done
 
@@ -301,8 +299,7 @@ TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&TARGET_PLATFORM_CENTR
     echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
     echo "[WARN] ${ccijenkins}/${j}"
   else
-    ${JP} -s ${ccijenkins} -j ${j} -t disable
-    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+    { ${JP} -s ${ccijenkins} -j ${j} -t disable && ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep & }
   fi
   google-chrome ${ccijenkins}/${j} &
 done
@@ -360,8 +357,7 @@ skipdiscovery=false&onlydiscovery=false&buildType=staging"
     echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
     echo "[WARN] ${ccijenkins}/${j}"
   else
-    ${JP} -s ${ccijenkins} -j ${j} -t disable
-    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+    { ${JP} -s ${ccijenkins} -j ${j} -t disable && ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep & }
   fi
 done
 
@@ -412,8 +408,7 @@ version_ds_IS=${version_ds_IS}"
     echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
     echo "[WARN] ${ccijenkins}/${j}"
   else
-    ${JP} -s ${ccijenkins} -j ${j} -t disable
-    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+    { ${JP} -s ${ccijenkins} -j ${j} -t disable && ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep & }
   fi
 done
 
@@ -464,8 +459,7 @@ versionWithRespin_ds_NEXT=${versionWithRespin_ds_NEXT}"
     echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
     echo "[WARN] ${ccijenkins}/${j}"
   else
-    ${JP} -s ${ccijenkins} -j ${j} -t disable
-    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+    { ${JP} -s ${ccijenkins} -j ${j} -t disable && ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep & }
   fi
 done
 
@@ -578,8 +572,7 @@ TARGET_PLATFORM_VERSION_MIN=${TARGET_PLATFORM_VERSION_MIN}&TARGET_PLATFORM_VERSI
     echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
     echo "[WARN] ${ccijenkins}/${j}"
   else
-    ${JP} -s ${ccijenkins} -j ${j} -t disable
-    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+    { ${JP} -s ${ccijenkins} -j ${j} -t disable && ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep & }
   fi
 done
 

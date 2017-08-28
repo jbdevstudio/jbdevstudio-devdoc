@@ -371,8 +371,8 @@ done
 
 cd ~/truu # ~
 
-version_jbt=4.5.0.Final
-version_ds=11.0.0.GA
+version_jbt=4.5.1.AM1
+version_ds=11.1.0.AM1
 cd jbdevstudio-devdoc/release_guide/
 git commit -m "update release guide for ${version_jbt} and ${version_ds}" .
 git push origin HEAD:master

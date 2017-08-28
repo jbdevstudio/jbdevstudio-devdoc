@@ -248,8 +248,6 @@ https://devstudio.redhat.com/${devstudioReleaseVersion}/${qual_IS}/updates/integ
 [source,bash]
 ----
 
-TODO: Here
-
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
@@ -532,22 +530,22 @@ Here's a script to do all the moving for you automatically.
 [source,bash]
 ----
 
-# TODO JBIDE-24674 wrap this with a Jenkins job, using -A flag to automatically affect changes, once we're sure that the issues left over are OK to move
-# (eg., filter out labels = releasework)
+export userpass=nickboldt:PASSWORD
+
+# can filter out labels using --skipLabels "releasework, task, qa" etc.
+# can do a dry run (list issues, do not change them with -D
+# skip verifying JIRA fixversions with -S
 
 sprint="devex #136 August 2017"
-sprint_NEXT="devex #137 Sept 2017"
+sprint_NEXT="devex #137 September 2017"
 versionWithRespin_jbt=4.5.1.AM1
 versionWithRespin_jbt_NEXT=4.5.1.AM2
 versionWithRespin_ds=11.1.0.AM1
 versionWithRespin_ds_NEXT=11.1.0.AM2
-
-python -W ignore /tmp/jbt.github/jbosstools-build-ci/util/checkUnresolvedIssues.py \
+python -W ignore /tmp/jbt.github/jbosstools-build-ci/util/checkUnresolvedIssues.py -S --jira https://issues.jboss.org \
   --jbt ${versionWithRespin_jbt} --jbt_NEXT ${versionWithRespin_jbt_NEXT} \
   --ds ${versionWithRespin_ds} --ds_NEXT ${versionWithRespin_ds_NEXT} \
-  --sprint ${sprint} --sprint_NEXT ${sprint_NEXT} \
-  --jira https://issues.jboss.org --jirauser nickboldt --jirapwd \
-PASSWORD
+  --sprint "${sprint}" --sprint_NEXT "${sprint_NEXT}"
 
 ----
 
@@ -576,8 +574,8 @@ export userpass=KERBUSER:PASSWORD
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru # ~
 pushd jbosstools-build/parent
-BUILD_ALIAS=Final
-BUILD_ALIAS_NEXT=AM1
+BUILD_ALIAS=AM1
+BUILD_ALIAS_NEXT=AM2
 
 git fetch origin master # jbosstools-4.5.0.x
 git checkout FETCH_HEAD
@@ -606,8 +604,7 @@ for j in jbosstools-build.parent_${stream_jbt}; do
     echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
     echo "[WARN] ${ccijenkins}/${j}"
   else
-    ${JP} -s ${ccijenkins} -j ${j} -t disable
-    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+    { ${JP} -s ${ccijenkins} -j ${j} -t disable && ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep & }
   fi
 done
 

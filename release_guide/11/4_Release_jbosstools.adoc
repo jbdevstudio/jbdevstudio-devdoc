@@ -288,6 +288,10 @@ Webtools site is expected to be found in +http://download.jboss.org/tools/update
 create a symlink from +/updates/webtools/oxygen+ to http://download.jboss.org/jbosstools/oxygen/stable/updates/ (or /development/updates/ if we're
 before first Final release).
 
+For a GA release, make sure to change this symlink from /development/ or /snapshots/ to /stable/.
+
+
+
 [source,bash]
 ----
 # verify site contents are shown

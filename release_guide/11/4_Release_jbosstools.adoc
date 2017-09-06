@@ -315,12 +315,12 @@ For Final or GA releases, the target platform folders should be moved to /static
 Thus for example,
 
 http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/4.*.*.Final/
-http://download.jboss.org/jbosstools/targetplatforms/jbdevstudiotarget/4.*.*.Final/
+http://download.jboss.org/jbosstools/targetplatforms/devstudiotarget/4.*.*.Final/
 
 should be moved to:
 
 http://download.jboss.org/jbosstools/static/targetplatforms/jbosstoolstarget/4.*.*.Final/
-http://download.jboss.org/jbosstools/static/targetplatforms/jbdevstudiotarget/4.*.*.Final/
+http://download.jboss.org/jbosstools/static/targetplatforms/devstudiotarget/4.*.*.Final/
 
 Then you can create composites in the old locations pointing to the new one, like this:
 

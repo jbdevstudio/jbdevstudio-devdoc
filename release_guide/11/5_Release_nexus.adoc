@@ -23,9 +23,8 @@ org.jboss.tools.targetplatforms
 
 * https://repository.jboss.org/nexus/#nexus-search;gav%7Eorg.jboss.tools.targetplatforms%7Ejbosstools-multiple%7E4.6*%7E%7E[jbosstools-multiple]
 * https://repository.jboss.org/nexus/#nexus-search;gav%7Eorg.jboss.tools.targetplatforms%7Ejbosstools-unified%7E4.6*%7E%7E[jbosstools-unified]
-* https://repository.jboss.org/nexus/#nexus-search;gav%7Eorg.jboss.tools.targetplatforms%7Ejbdevstudio-multiple%7E4.6*%7E%7E[jbdevstudio-multiple]
-* https://repository.jboss.org/nexus/#nexus-search;gav%7Eorg.jboss.tools.targetplatforms%7Ejbdevstudio-unified%7E4.6*%7E%7E[jbdevstudio-unified]
 |
+* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstoolstargetplatform-4.71.x/[jbosstoolstargetplatform-4.71.x]
 * https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstoolstargetplatform-4.70.x/[jbosstoolstargetplatform-4.70.x]
 |
 * https://repository.jboss.org/nexus/#stagingRepositories[Close then release]

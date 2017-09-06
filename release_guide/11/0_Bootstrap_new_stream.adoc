@@ -39,6 +39,7 @@ And for devstudio:
 
 * https://devstudio.redhat.com/11/snapshots/builds/
 * https://devstudio.redhat.com/11/snapshots/updates/
+* https://devstudio.redhat.com/11/snapshots/rpms/ (update 'latest' symlink to point to the most recent 11.x.0 folder)
 * https://devstudio.redhat.com/11/staging/builds/
 * https://devstudio.redhat.com/11/staging/updates/
 

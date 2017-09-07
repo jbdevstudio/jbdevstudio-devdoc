@@ -20,9 +20,7 @@ git clone https://github.com/jbosstools/jbosstools-versionwatch
 ...
 
 github_branch=master
-for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins versionwatch \
-  aerogear arquillian base browsersim central forge fuse fuse-extras hibernate \
-  integration-tests javaee jst livereload openshift server vpe webservices ; do # freemarker
+for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins versionwatch; do
   echo "====================================================================="
   echo "Branching jbosstools-${d} from branch ${github_branch}..."
   pushd jbosstools-${d}
@@ -175,9 +173,7 @@ version_jbt=4.5.1.AM1
   github_branch=master
 # fi
 cd ~/tru # ~
-for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins versionwatch \
-  aerogear arquillian base browsersim central forge fuse fuse-extras hibernate \
-  integration-tests javaee jst livereload openshift server vpe webservices ; do # freemarker
+for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins versionwatch; do
   echo "====================================================================="
   echo "Tagging jbosstools-${d} from branch ${github_branch} as tag ${version_jbt}..."
   pushd jbosstools-${d}

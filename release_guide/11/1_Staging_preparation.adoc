@@ -11,14 +11,15 @@ Before beginning a stage at the end of a sprint, a number of things need to be d
 * Confirm latest Integration Stack (IS) release & URLs
 
 
-== Clone jbosstools-build-ci repo
+== Clone jbosstools-build-ci repo or link to it from elsewhere on disk
 
 [source,bash]
 ----
 
 mkdir -p /tmp/jbt.github
 cd /tmp/jbt.github
-if [[ ! -d jbosstools-build-ci ]]; then git clone git@github.com:jbosstools/jbosstools-build-ci.git; fi
+if [[ -d ~/tru/jbosstools-build-ci ]]; then ln -s ~/tru/jbosstools-build-ci; fi
+if [[ ! -d jbosstools-build-ci ]] && [[ -L jbosstools-build-ci ]]; then git clone git@github.com:jbosstools/jbosstools-build-ci.git; fi
 cd jbosstools-build-ci
 git checkout master # later jbosstools-4.5.x
 chmod +x -R */*.sh */*/*.sh
@@ -51,16 +52,16 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-rele
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-sprint="devex #136 August 2017"
-sprint_NEXT="devex #137 Sept 2017"
-versionWithRespin_jbt=4.5.1.AM1
-versionWithRespin_jbt_NEXT=4.5.1.AM2
-versionWithRespin_ds=11.1.0.AM1
-versionWithRespin_ds_NEXT=11.1.0.AM2
+sprint="devex #137 September 2017"
+sprint_NEXT="devex #138 September 2017"
+versionWithRespin_jbt=4.5.1.AM2
+versionWithRespin_jbt_NEXT=4.5.1.AM3
+versionWithRespin_ds=11.1.0.AM2
+versionWithRespin_ds_NEXT=11.1.0.AM3
 TOrecipients1="jmaury@redhat.com"
 TOrecipients2="jbosstools-dev@lists.jboss.org"
 CCrecipients="jmaury@redhat.com"
-recipientOverride="nboldt@redhat.com" # or "nboldt@redhat.com"
+recipientOverride="" # or "nboldt@redhat.com"
 # encode spaces
 sprint=${sprint// /%20}
 sprint_NEXT=${sprint_NEXT// /%20}

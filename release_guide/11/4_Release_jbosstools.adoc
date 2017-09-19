@@ -97,8 +97,8 @@ And here are two experimental matrix jobs that do the same, but in many parallel
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.0.Final
-versionWithRespin_ds=11.0.0.GA
+versionWithRespin_jbt=4.5.1.AM2
+versionWithRespin_ds=11.1.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # if [[ ${version_jbt} == *".Final" ]]; then
@@ -108,7 +108,7 @@ version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\
   stream_jbt=master
   stream_ds=master
 # fi
-TARGET_PLATFORM_VERSION_MAX=4.70.2.Final
+TARGET_PLATFORM_VERSION_MAX=4.71.0.AM2-SNAPSHOT
 TARGET_PLATFORM_CENTRAL_MAX=4.70.0.Final-SNAPSHOT
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
@@ -131,7 +131,6 @@ TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&TARGET_PLATFORM_CENTR
     echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
     echo "[WARN] ${ccijenkins}/${j}"
   else
-    ${JP} -s ${ccijenkins} -j ${j} -t disable
     ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
   fi
 done
@@ -182,8 +181,8 @@ But you can run it again if you'd like:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.0.Final
-versionWithRespin_ds=11.0.0.GA
+versionWithRespin_jbt=4.5.1.AM2
+versionWithRespin_ds=11.1.0.AM2
 
 # buildType=development in this case, development will ALSO check stable URLs if we're pushing out a GA/Final release
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
@@ -252,13 +251,13 @@ https://devstudio.redhat.com/${devstudioReleaseVersion}/${qual_IS}/updates/integ
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.0.Final
-versionWithRespin_ds=11.0.0.GA
-versionWithRespin_ds_PREV_GA=10.4.0.GA
-qual_IS="development" # "development" or "stable" as applicable - see tip above
+versionWithRespin_jbt=4.5.1.AM2
+versionWithRespin_ds=11.1.0.AM2
+versionWithRespin_ds_PREV_GA=11.0.0.GA
+qual_IS="stable" # "development" or "stable" as applicable - see tip above
 earlyaccess_IS="" # "" or "earlyaccess/" as applicable - see tip above
-version_jbt_IS=4.5.0.AM1
-version_ds_IS=11.0.0.AM1
+version_jbt_IS=4.5.0.Final
+version_ds_IS=11.0.0.GA
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-04-update-merge-composites-html; do
@@ -290,7 +289,6 @@ create a symlink from +/updates/webtools/oxygen+ to http://download.jboss.org/jb
 before first Final release).
 
 For a GA release, make sure to change this symlink from /development/ or /snapshots/ to /stable/.
-
 
 
 [source,bash]
@@ -337,7 +335,7 @@ IMPORTANT: This job also verifies that -SNAPSHOT content is properly populated o
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-TARGET_PLATFORM_VERSION_MAX=4.70.2.Final
+TARGET_PLATFORM_VERSION_MAX=4.71.0.AM2-SNAPSHOT
 
 # run this for .Final and -SNAPSHOT target platforms, too
 
@@ -376,15 +374,15 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-version_jbt_PREV_GA=4.4.4.Final
-version_jbt_PREV=4.5.0.AM2
-version_jbt=4.5.0.Final
-version_jbt_NEXT=4.5.1.AM1
+version_jbt_PREV_GA=4.5.0.Final
+version_jbt_PREV=4.5.0.Final
+version_jbt=4.5.1.AM2
+version_jbt_NEXT=4.5.1.AM3
 
-version_ds_PREV_GA=10.4.0.GA
-version_ds_PREV=11.0.0.AM2
-version_ds=11.0.0.GA
-version_ds_NEXT=11.1.0.AM1
+version_ds_PREV_GA=11.0.0.GA
+version_ds_PREV=11.0.0.GA
+version_ds=11.1.0.AM2
+version_ds_NEXT=11.1.0.AM3
 
 version_jbt=$(echo ${version_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${version_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
@@ -412,7 +410,6 @@ version_ds_NEXT=${version_ds_NEXT}"
     echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
     echo "[WARN] ${ccijenkins}/${j}"
   else
-    ${JP} -s ${ccijenkins} -j ${j} -t disable
     ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
   fi
 done
@@ -435,14 +432,14 @@ Access it via +https://marketplace.eclipse.org/content/jboss-tools/edit+ and upd
 * Solution version number to match new version
 * Description to match new version & dependencies
 * Notes / warnings (if applicable, eg., JDK issues)
-* Update list of features, using content of http://download.jboss.org/jbosstools/static/oxygen/stable/updates/core/4.5.0.AM2/site.properties
+* Update list of features, using content of http://download.jboss.org/jbosstools/static/oxygen/stable/updates/core/4.5.1.AM2/site.properties
 
 To diff if any new features have been added/removed:
 
 [source,bash]
 ----
-path_jbt_PREV_Mktplace=oxygen/development/updates/core/4.5.0.AM2
-version_jbt=4.5.0.Final
+path_jbt_PREV_Mktplace=oxygen/stable/updates/core/4.5.0.Final
+version_jbt=4.5.1.AM2
 
 # for Final releases only, or for milestones prior to the first x.y.0.Final.
 if [[ ${version_jbt} == *"Final" ]] || [[ ${path_jbt_PREV_Mktplace} == *"AM"* ]]; then
@@ -541,12 +538,12 @@ export userpass=nickboldt:PASSWORD
 # can do a dry run (list issues, do not change them with -D
 # skip verifying JIRA fixversions with -S
 
-sprint="devex #136 August 2017"
-sprint_NEXT="devex #137 September 2017"
-versionWithRespin_jbt=4.5.1.AM1
-versionWithRespin_jbt_NEXT=4.5.1.AM2
-versionWithRespin_ds=11.1.0.AM1
-versionWithRespin_ds_NEXT=11.1.0.AM2
+sprint="devex #137 September 2017"
+sprint_NEXT="devex #138 September 2017"
+versionWithRespin_jbt=4.5.1.AM2
+versionWithRespin_jbt_NEXT=4.5.1.AM3
+versionWithRespin_ds=11.1.0.AM2
+versionWithRespin_ds_NEXT=11.1.0.AM3
 python -W ignore /tmp/jbt.github/jbosstools-build-ci/util/checkUnresolvedIssues.py -S --jira https://issues.jboss.org \
   --jbt ${versionWithRespin_jbt} --jbt_NEXT ${versionWithRespin_jbt_NEXT} \
   --ds ${versionWithRespin_ds} --ds_NEXT ${versionWithRespin_ds_NEXT} \
@@ -579,8 +576,8 @@ export userpass=KERBUSER:PASSWORD
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru # ~
 pushd jbosstools-build/parent
-BUILD_ALIAS=AM1
-BUILD_ALIAS_NEXT=AM2
+BUILD_ALIAS=AM2
+BUILD_ALIAS_NEXT=AM3
 
 git fetch origin master # jbosstools-4.5.0.x
 git checkout FETCH_HEAD
@@ -627,8 +624,8 @@ Run this job:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt_NEXT=4.5.1.AM1
-versionWithRespin_ds_NEXT=11.1.0.AM1
+versionWithRespin_jbt_NEXT=4.5.1.AM2
+versionWithRespin_ds_NEXT=11.1.0.AM2
 #if [[ ${versionWithRespin_jbt_NEXT} == *".Final" ]]; then
 #  version_parent_NEXT=4.5.0.Final-SNAPSHOT
 #  createBranch=true
@@ -640,8 +637,8 @@ versionWithRespin_ds_NEXT=11.1.0.AM1
   github_branch=master
   github_branch_fallback=master # or jbosstools-4.5.x?
 #fi
-TARGET_PLATFORM_VERSION_MIN=4.70.2.Final
-TARGET_PLATFORM_VERSION_MAX=4.70.2.Final
+TARGET_PLATFORM_VERSION_MIN=4.70.3.AM2-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.71.0.AM2-SNAPSHOT
 JIRA_HOST="https://issues.jboss.org"
 TOrecipients="nboldt@redhat.com"
 

@@ -192,8 +192,8 @@ Then, back on your own machine...
 
 [source,bash]
 ----
-version_jbt=4.5.0.Final
-version_ds=11.0.0.GA
+version_jbt=4.5.1.AM2
+version_ds=11.1.0.AM2
 
 topic=release-${version_jbt}
 github_branch=master
@@ -218,9 +218,9 @@ pushd jbosstools-website/
   # make changes, using the generated content above, then...
 
   if [[ ${version_jbt} == *"Final" ]]; then
-    git commit -m "add ${version_jbt} and ${version_ds} to tools.jboss.org" .
+    git commit -s -m "add ${version_jbt} and ${version_ds} to tools.jboss.org" .
   else
-    git commit -m "add ${version_jbt} to tools.jboss.org" .
+    git commit -s -m "add ${version_jbt} to tools.jboss.org" .
   fi
 
   numCommits=$(git status | egrep "by [0-9]+ commit" | sed "s/.\+by \([0-9]\+\) commit.*/\1/")
@@ -259,7 +259,6 @@ ${lastCommitComment}" -b ${parentProject}:${github_branch} -h ${gituser}:${topic
   echo ""
 
 popd
-
 
 ----
 
@@ -374,7 +373,7 @@ cd ~/truu # ~
 version_jbt=4.5.1.AM1
 version_ds=11.1.0.AM1
 cd jbdevstudio-devdoc/release_guide/
-git commit -m "update release guide for ${version_jbt} and ${version_ds}" .
+git commit -s -m "update release guide for ${version_jbt} and ${version_ds}" .
 git push origin HEAD:master
 
 ----

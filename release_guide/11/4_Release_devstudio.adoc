@@ -327,14 +327,13 @@ Using the script below, you can trigger the job remotely.
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-blogURL=/blog/11.0.0.ga-for-oxygen.0.html
-pullrequestNum=741
-eclipseVersionSuffix=".0" # TODO: use .1 for Eclipse 4.7.1 Oxygen.1
-STAGE_DATE="2017-08-10"
-GOLIVEDATE="2017-08-14"
+blogURL=/blog/4.5.1.am2-for-oxygen.1.html
+pullrequestNum=755
+eclipseVersionSuffix=".1" # TODO: use .1 for Eclipse 4.7.1 Oxygen.1
+GOLIVEDATE="2017-09-20"
 
-versionWithRespin_jbt=4.5.0.Final
-versionWithRespin_ds=11.0.0.GA
+versionWithRespin_jbt=4.5.1.AM2
+versionWithRespin_ds=11.1.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # \) # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 
@@ -346,7 +345,7 @@ for j in jbosstools-releng-push-to-dev-stable-07-notification-emails; do
   prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
   sleep 3s
 
-  data="version_jbt=${version_jbt}&version_ds=${version_ds}&GOLIVEDATE=${GOLIVEDATE}&STAGE_DATE=${STAGE_DATE}\
+  data="version_jbt=${version_jbt}&version_ds=${version_ds}&GOLIVEDATE=${GOLIVEDATE}\
 &blogURL=${blogURL}&pullrequestNum=${pullrequestNum}&eclipseVersionSuffix=${eclipseVersionSuffix}&recipientOverride=${recipientOverride}"
   nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
   sleep 15s
@@ -370,8 +369,8 @@ done
 
 cd ~/truu # ~
 
-version_jbt=4.5.1.AM1
-version_ds=11.1.0.AM1
+version_jbt=4.5.1.AM2
+version_ds=11.1.0.AM2
 cd jbdevstudio-devdoc/release_guide/
 git commit -s -m "update release guide for ${version_jbt} and ${version_ds}" .
 git push origin HEAD:master

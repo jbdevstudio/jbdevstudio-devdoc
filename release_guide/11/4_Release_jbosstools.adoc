@@ -104,7 +104,7 @@ version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\
   stream_ds=master
 # fi
 TARGET_PLATFORM_VERSION_MAX=4.71.0.AM2-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.70.0.Final-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.71.0.AM3-SNAPSHOT
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh

@@ -197,7 +197,7 @@ version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\
   stream_jbt=master
 # fi
 TARGET_PLATFORM_VERSION_MAX=4.71.0.AM2-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.70.0.Final-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.71.0.AM3-SNAPSHOT
 version_jbt_IS=4.5.0.Final
 version_ds_IS=11.0.0.GA
 qual_IS=stable
@@ -270,7 +270,7 @@ versionWithRespin_ds=11.1.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 TARGET_PLATFORM_VERSION_MAX=4.71.0.AM2-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.70.0.Final-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.71.0.AM3-SNAPSHOT
 # if [[ ${version_jbt} == *".Final" ]]; then
 #   stream_jbt=4.5.oxygen
 #   stream_ds=11.0.oxygen
@@ -556,7 +556,7 @@ versionWithRespin_ds=11.1.0.AM2
 # fi
 TARGET_PLATFORM_VERSION_MIN=4.70.3.AM2-SNAPSHOT
 TARGET_PLATFORM_VERSION_MAX=4.71.0.AM2-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.70.0.Final-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.71.0.AM3-SNAPSHOT
 respinSuffix=""
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh

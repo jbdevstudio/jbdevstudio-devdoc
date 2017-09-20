@@ -82,11 +82,6 @@ These steps happens on filemgmt.jboss.org, in the jbosstools download area.
 
 Here are 2 jobs that performs the copy from /staging/ to /development/ and/or to /stable too:
 
-* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites-jbosstools/
-* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites-devstudio/
-
-And here are two experimental matrix jobs that do the same, but in many parallel steps:
-
 * https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites_jbt/
 * https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites_ds/
 
@@ -509,16 +504,14 @@ for j in \
   jbosstools-releng-push-to-dev-stable-00-releng-request-email \
   jbosstools-releng-push-to-dev-stable-00-rename-GA-artifacts \
   jbosstools-releng-push-to-dev-stable-02-copy-builds-and-rpms \
-  jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites-devstudio \
   jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites_ds \
-  jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites-jbosstools \
   jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites_jbt \
   jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites \
   jbosstools-releng-push-to-dev-stable-04-update-ide-config.properties \
   jbosstools-releng-push-to-dev-stable-04-update-merge-composites-html \
   jbosstools-releng-push-to-dev-stable-05-release-target-platforms \
   jbosstools-releng-push-to-dev-stable-07-notification-emails; do
-  ${JP} -s ${ccijenkins} -j ${j} -t disable
+  { ${JP} -s ${ccijenkins} -j ${j} -t disable & }
 done
 
 ----
@@ -532,7 +525,7 @@ Here's a script to do all the moving for you automatically.
 [source,bash]
 ----
 
-export userpass=nickboldt:PASSWORD
+export userpass=JIRAUSER:JIRAPWD
 
 # can filter out labels using --skipLabels "releasework, task, qa" etc.
 # can do a dry run (list issues, do not change them with -D
@@ -547,7 +540,7 @@ versionWithRespin_ds_NEXT=11.1.0.AM3
 python -W ignore /tmp/jbt.github/jbosstools-build-ci/util/checkUnresolvedIssues.py -S --jira https://issues.jboss.org \
   --jbt ${versionWithRespin_jbt} --jbt_NEXT ${versionWithRespin_jbt_NEXT} \
   --ds ${versionWithRespin_ds} --ds_NEXT ${versionWithRespin_ds_NEXT} \
-  --sprint "${sprint}" --sprint_NEXT "${sprint_NEXT}"
+  --sprint "${sprint}" --sprint_NEXT "${sprint_NEXT}" --skipLabels "task, releasework"
 
 ----
 

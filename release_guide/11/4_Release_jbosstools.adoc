@@ -617,8 +617,8 @@ Run this job:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt_NEXT=4.5.1.AM2
-versionWithRespin_ds_NEXT=11.1.0.AM2
+versionWithRespin_jbt_NEXT=4.5.1.AM3
+versionWithRespin_ds_NEXT=11.1.0.AM3
 #if [[ ${versionWithRespin_jbt_NEXT} == *".Final" ]]; then
 #  version_parent_NEXT=4.5.0.Final-SNAPSHOT
 #  createBranch=true

@@ -625,13 +625,13 @@ versionWithRespin_ds_NEXT=11.1.0.AM2
 #  github_branch=jbosstools-4.5.0.x
 #  github_branch_fallback=master # or jbosstools-4.5.x?
 #else
-  version_parent_NEXT=4.5.1.AM1-SNAPSHOT
+  version_parent_NEXT=4.5.1.AM3-SNAPSHOT
   createBranch=false
   github_branch=master
   github_branch_fallback=master # or jbosstools-4.5.x?
 #fi
-TARGET_PLATFORM_VERSION_MIN=4.70.3.AM2-SNAPSHOT
-TARGET_PLATFORM_VERSION_MAX=4.71.0.AM2-SNAPSHOT
+TARGET_PLATFORM_VERSION_MIN=4.70.3.AM3-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.71.0.AM3-SNAPSHOT
 JIRA_HOST="https://issues.jboss.org"
 TOrecipients="nboldt@redhat.com"
 

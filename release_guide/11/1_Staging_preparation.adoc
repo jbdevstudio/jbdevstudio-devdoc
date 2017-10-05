@@ -52,12 +52,12 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-rele
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-sprint="devex #137 September 2017"
-sprint_NEXT="devex #138 September 2017"
-versionWithRespin_jbt=4.5.1.AM2
-versionWithRespin_jbt_NEXT=4.5.1.AM3
-versionWithRespin_ds=11.1.0.AM2
-versionWithRespin_ds_NEXT=11.1.0.AM3
+sprint="devex #138 September 2017"
+sprint_NEXT="devex #139 October 2017"
+versionWithRespin_jbt=4.5.1.AM3
+versionWithRespin_jbt_NEXT=4.5.1.Final
+versionWithRespin_ds=11.1.0.AM3
+versionWithRespin_ds_NEXT=11.1.0.GA
 TOrecipients1="jmaury@redhat.com"
 TOrecipients2="jbosstools-dev@lists.jboss.org"
 CCrecipients="jmaury@redhat.com"

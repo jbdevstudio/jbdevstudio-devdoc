@@ -159,14 +159,14 @@ version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\
 # fi
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for p in aerogear arquillian base browsersim build-ci build.parent central discovery fabric8analytics forge fuse-extras hibernate integration-tests.aggregate \
+for p in aerogear arquillian base browsersim build-ci build.parent central discovery fabric8analytics forge fuse fuse-extras hibernate integration-tests.aggregate \
     javaee-tests-matrix javaee jst livereload openshift-restclient-java openshift server-Run-Unit-and-ITests server vpe webservices; do # fuse freemarker
     j=jbosstools-${p}_master
     { ${JP} -s ${ccijenkins} -j ${j} -t disable && ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep & }
 done
 echo ""
 for j in jbosstools-buildflow-force-publish_${stream_jbt} jbosstools-buildflow_${stream_jbt} jbosstools-build.parent_${stream_jbt} \
-    jbosstools-discovery_${stream_jbt} jbosstoolstargetplatform-central-4.70.x jbosstoolstargetplatform-4.70.x \
+    jbosstools-discovery_${stream_jbt} jbosstoolstargetplatform-central-4.71.x jbosstoolstargetplatform-4.71.x \
     devstudio.product_${stream_ds} devstudio.rpm_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} \
     jbosstools-composite-install_${stream_jbt} jbosstools-browsersim_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} \
     jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstools-build-sites.aggregate.child-sites_${stream_jbt}; do
@@ -237,7 +237,7 @@ You'll need this later for smoke testing. Start fetching it now to save time lat
 [source,bash]
 ----
 
-cd ~/tmp; wget http://download.eclipse.org/technology/epp/downloads/release/oxygen/R/eclipse-jee-oxygen-R-linux-gtk-x86_64.tar.gz &
+cd ~/tmp; wget http://download.eclipse.org/technology/epp/downloads/release/oxygen/1/eclipse-jee-oxygen-1-linux-gtk-x86_64.tar.gz &
 # or
 cd ~/tmp; wget https://hudson.eclipse.org/packaging/job/oxygen.epp-tycho-build/348/artifact/org.eclipse.epp.packages/archive/20170907-1650_eclipse-jee-oxygen-1-RC3-linux.gtk.x86_64.tar.gz &
 
@@ -514,14 +514,14 @@ version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\
 # fi
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for p in aerogear arquillian base browsersim build-ci build.parent central discovery fabric8analytics forge fuse-extras hibernate integration-tests.aggregate \
+for p in aerogear arquillian base browsersim build-ci build.parent central discovery fabric8analytics forge fuse fuse-extras hibernate integration-tests.aggregate \
     javaee-tests-matrix javaee jst livereload openshift-restclient-java openshift server-Run-Unit-and-ITests server vpe webservices; do # fuse freemarker
   j=jbosstools-${p}_master
   ${JP} -s ${ccijenkins} -j ${j} -t enable &
 done
 echo ""
 for j in jbosstools-buildflow-force-publish_${stream_jbt} jbosstools-buildflow_${stream_jbt} jbosstools-build.parent_${stream_jbt} \
-    jbosstools-discovery_${stream_jbt} jbosstoolstargetplatform-central-4.70.x jbosstoolstargetplatform-4.70.x \
+    jbosstools-discovery_${stream_jbt} jbosstoolstargetplatform-central-4.71.x jbosstoolstargetplatform-4.71.x \
     devstudio.product_${stream_ds} devstudio.rpm_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} \
     jbosstools-composite-install_${stream_jbt} jbosstools-browsersim_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} \
     jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstools-build-sites.aggregate.child-sites_${stream_jbt}; do
@@ -628,7 +628,7 @@ for j in \
   jbosstools-releng-push-to-staging-07-notification-emails \
   jbosstools-releng-push-to-staging-08-delete-builds-and-update-sites \
 ; do
-  ${JP} -s ${ccijenkins} -j ${j} -t disable
+  { ${JP} -s ${ccijenkins} -j ${j} -t disable & }
 done
 
 ----

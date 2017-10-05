@@ -203,6 +203,7 @@ for j in jbosstools-releng-push-to-staging-05-sign-rpm-request-email; do
   if [[ "${prevJob}" == "${nextJob}" ]]; then
     echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
     echo "[WARN] ${ccijenkins}/${j}"
+    google-chrome ${ccijenkins}/${j} &
   else
     ${JP} -s ${ccijenkins} -j ${j} -t disable
     ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
@@ -237,6 +238,7 @@ for j in jbosstools-releng-push-to-staging-06-sign-rpm-fetch; do
   if [[ "${prevJob}" == "${nextJob}" ]]; then
     echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
     echo "[WARN] ${ccijenkins}/${j}"
+    google-chrome ${ccijenkins}/${j} &
   else
     ${JP} -s ${ccijenkins} -j ${j} -t disable
     ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
@@ -343,6 +345,7 @@ if [[ ${versionWithRespin_ds} == *"GA" ]]; then
     if [[ "${prevJob}" != "${nextJob}" ]]; then
       echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
       echo "[WARN] ${ccijenkins}/${j}"
+    google-chrome ${ccijenkins}/${j} &
     else
       ${JP} -s ${ccijenkins} -j ${j} -t disable
       ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep

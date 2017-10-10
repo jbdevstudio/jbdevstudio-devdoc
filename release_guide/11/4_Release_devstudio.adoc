@@ -29,7 +29,7 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 export userpass=KERBUSER:PASSWORD
 
 versionWithRespin_jbt=4.5.0.Final
-versionWithRespin_ds=11.0.0.GA
+versionWithRespin_ds=11.1.0.GA
 
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then # GA only
   version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
@@ -124,6 +124,8 @@ Provide a PR to add the latest JBDS milestones to this listing:
 
 https://github.com/jbosstools/jbosstools-website/blob/master/_config/products.yml
 
+__
+
 For non-Final/GA releases, only JBT should be added. Examples:
 
 * https://github.com/jbosstools/jbosstools-website/pull/622 (JBT 4.4.1 / JBDS 10.1)
@@ -143,7 +145,7 @@ Run this:
 
 echo "" > /tmp/yml.txt
 
-versionWithRespin_ds=11.0.0.GA
+versionWithRespin_ds=11.1.0.GA
 # test with versionWithRespin_ds=11.0.0.GA, but only want this for GA
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # **
@@ -192,8 +194,8 @@ Then, back on your own machine...
 
 [source,bash]
 ----
-version_jbt=4.5.1.AM2
-version_ds=11.1.0.AM2
+version_jbt=4.5.1.AM3
+version_ds=11.1.0.AM3
 
 topic=release-${version_jbt}
 github_branch=master
@@ -212,8 +214,8 @@ pushd jbosstools-website/
   git stash pop
 
   # using your text editor of choice, vim, sublime, etc.
-  vim _config/products.yml
   st _config/products.yml
+  # vim _config/products.yml
 
   # make changes, using the generated content above, then...
 
@@ -284,13 +286,13 @@ Before notifying team of release, must check for obvious problems. Any failure t
 === Validate update site install (BYOE)
 
 1. Get a recent Eclipse (compatible with the target version of JBT)
-2. Install BYOE category from https://devstudio.redhat.com/11/development/updates/ and/or https://devstudio.redhat.com/11/stable/updates/
+2. Install BYOE category from https://devstudio.redhat.com/11/stable/updates/
 3. Restart. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
 4. Check log, start an example project, check log again
 
 === Validate installer install
 
-1. Download JBDS installer from https://devstudio.redhat.com/11/development/builds/ or https://devstudio.redhat.com/11/stable/builds/
+1. Download JBDS installer from https://devstudio.redhat.com/11/stable/builds/
 2. Install via UI or headlessly with
     java -jar devstudio-*.jar -console -options /dev/null
 3. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
@@ -300,12 +302,16 @@ Before notifying team of release, must check for obvious problems. Any failure t
 ----
 
 version_ds=11.0.0.GA
-if [[ ${version_ds} == *"GA" ]]; then
+if [[ ${version_ds} == *"GA" ]]; then # **
   qual="stable"
   cd ~/tmp # ~
   installerJar=$(wget -O - -q https://devstudio.redhat.com/static/11/${qual}/builds/devstudio-${version_ds}-build-product/latest/all/ | \
     grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
   echo "Installer jar: ${installerJar}"
+
+  # should have already downloaded this above
+  if [[ ! -f ${installerJar} ]]; then wget https://devstudio.redhat.com/11/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/${installerJar}; fi
+
   wget https://devstudio.redhat.com/static/11/${qual}/builds/devstudio-${version_ds}-build-product/latest/all/${installerJar}
   java -jar ~/tmp/${installerJar} # ~
 fi
@@ -327,13 +333,14 @@ Using the script below, you can trigger the job remotely.
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-blogURL=/blog/4.5.1.am2-for-oxygen.1.html
-pullrequestNum=755
+blogURL=/blog/4.5.1.am3-for-oxygen.1.html
+# Pull Request (PR)
+pullrequestNum=761
 eclipseVersionSuffix=".1" # TODO: use .1 for Eclipse 4.7.1 Oxygen.1
-GOLIVEDATE="2017-09-20"
+GOLIVEDATE="2017-10-10"
 
-versionWithRespin_jbt=4.5.1.AM2
-versionWithRespin_ds=11.1.0.AM2
+versionWithRespin_jbt=4.5.1.AM3
+versionWithRespin_ds=11.1.0.AM3
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # \) # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 
@@ -369,8 +376,8 @@ done
 
 cd ~/truu # ~
 
-version_jbt=4.5.1.AM2
-version_ds=11.1.0.AM2
+version_jbt=4.5.1.AM3
+version_ds=11.1.0.AM3
 cd jbdevstudio-devdoc/release_guide/
 git commit -s -m "update release guide for ${version_jbt} and ${version_ds}" .
 git push origin HEAD:master

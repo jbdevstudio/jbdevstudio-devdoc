@@ -93,8 +93,8 @@ Here are 2 jobs that performs the copy from /staging/ to /development/ and/or to
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.1.AM3
-versionWithRespin_ds=11.1.0.AM3
+versionWithRespin_jbt=4.5.1.Final
+versionWithRespin_ds=11.1.0.GA
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # if [[ ${version_jbt} == *".Final" ]]; then
@@ -104,8 +104,8 @@ version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\
   stream_jbt=master
   stream_ds=master
 # fi
-TARGET_PLATFORM_VERSION_MAX=4.71.0.AM3-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.71.0.AM3-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.71.0.Final
+TARGET_PLATFORM_CENTRAL_MAX=4.71.0.Final-SNAPSHOT
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
@@ -177,8 +177,8 @@ But you can run it again if you'd like:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.1.AM3
-versionWithRespin_ds=11.1.0.AM3
+versionWithRespin_jbt=4.5.1.Final
+versionWithRespin_ds=11.1.0.GA
 
 # buildType=development in this case, development will ALSO check stable URLs if we're pushing out a GA/Final release
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
@@ -247,8 +247,8 @@ https://devstudio.redhat.com/${devstudioReleaseVersion}/${qual_IS}/updates/integ
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.1.AM3
-versionWithRespin_ds=11.1.0.AM3
+versionWithRespin_jbt=4.5.1.Final
+versionWithRespin_ds=11.1.0.GA
 versionWithRespin_ds_PREV_GA=11.0.0.GA
 qual_IS="stable" # "development" or "stable" as applicable - see tip above
 earlyaccess_IS="" # "" or "earlyaccess/" as applicable - see tip above
@@ -331,7 +331,7 @@ IMPORTANT: This job also verifies that -SNAPSHOT content is properly populated o
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-TARGET_PLATFORM_VERSION_MAX=4.71.0.AM3-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.71.0.Final
 
 # run this for .Final and -SNAPSHOT target platforms, too
 
@@ -371,14 +371,14 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 export userpass=KERBUSER:PASSWORD
 
 version_jbt_PREV_GA=4.5.0.Final
-version_jbt_PREV=4.5.0.Final # previous RELEASED milestone as referenced in ide-config.properties
-version_jbt=4.5.1.AM3
-version_jbt_NEXT=4.5.1.Final
+version_jbt_PREV=4.5.1.AM3 # previous RELEASED milestone as referenced in ide-config.properties
+version_jbt=4.5.1.Final
+version_jbt_NEXT=4.5.2.AM1
 
 version_ds_PREV_GA=11.0.0.GA
-version_ds_PREV=11.0.0.GA # previous RELEASED milestone as referenced in ide-config.properties
-version_ds=11.1.0.AM3
-version_ds_NEXT=11.1.0.GA
+version_ds_PREV=11.0.0.GA # previous RELEASED GA as referenced in ide-config.properties
+version_ds=11.1.0.GA
+version_ds_NEXT=11.2.0.AM1
 
 version_jbt=$(echo ${version_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${version_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
@@ -428,14 +428,14 @@ Access it via +https://marketplace.eclipse.org/content/jboss-tools/edit+ and upd
 * Solution version number to match new version
 * Description to match new version & dependencies
 * Notes / warnings (if applicable, eg., JDK issues)
-* Update list of features, using content of http://download.jboss.org/jbosstools/static/oxygen/stable/updates/core/4.5.1.AM3/site.properties
+* Update list of features, using content of http://download.jboss.org/jbosstools/static/oxygen/stable/updates/core/4.5.1.Final/site.properties
 
 To diff if any new features have been added/removed:
 
 [source,bash]
 ----
 path_jbt_PREV_Mktplace=oxygen/stable/updates/core/4.5.0.Final
-version_jbt=4.5.1.AM3
+version_jbt=4.5.1.Final
 
 # for Final releases only, or for milestones prior to the first x.y.0.Final.
 if [[ ${version_jbt} == *"Final" ]] || [[ ${path_jbt_PREV_Mktplace} == *"AM"* ]]; then
@@ -532,12 +532,12 @@ export userpass=JIRAUSER:JIRAPWD
 # can do a dry run (list issues, do not change them with -D
 # skip verifying JIRA fixversions with -S
 
-sprint="devex #138 September 2017"
-sprint_NEXT="devex #139 October 2017"
-versionWithRespin_jbt=4.5.1.AM3
-versionWithRespin_jbt_NEXT=4.5.1.Final
-versionWithRespin_ds=11.1.0.AM3
-versionWithRespin_ds_NEXT=11.1.0.GA
+sprint="devex #139 October 2017"
+sprint_NEXT="devex #140 November 2017"
+versionWithRespin_jbt=4.5.1.Final
+versionWithRespin_jbt_NEXT=4.5.2.AM1
+versionWithRespin_ds=11.1.0.GA
+versionWithRespin_ds_NEXT=11.2.0.AM1
 python -W ignore /tmp/jbt.github/jbosstools-build-ci/util/checkUnresolvedIssues.py -S --jira https://issues.jboss.org \
   --jbt ${versionWithRespin_jbt} --jbt_NEXT ${versionWithRespin_jbt_NEXT} \
   --ds ${versionWithRespin_ds} --ds_NEXT ${versionWithRespin_ds_NEXT} \
@@ -570,8 +570,8 @@ export userpass=KERBUSER:PASSWORD
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru # ~
 pushd jbosstools-build/parent
-BUILD_ALIAS=AM3
-BUILD_ALIAS_NEXT=Final
+BUILD_ALIAS=Final
+BUILD_ALIAS_NEXT=AM1
 
 git fetch origin master # jbosstools-4.5.0.x
 git checkout FETCH_HEAD
@@ -623,21 +623,21 @@ Run this job:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt_NEXT=4.5.1.Final
-versionWithRespin_ds_NEXT=11.1.0.GA
+versionWithRespin_jbt_NEXT=4.5.2.AM1
+versionWithRespin_ds_NEXT=11.2.0.AM1
 #if [[ ${versionWithRespin_jbt_NEXT} == *".Final" ]]; then
 #  version_parent_NEXT=4.5.0.Final-SNAPSHOT
 #  createBranch=true
 #  github_branch=jbosstools-4.5.0.x
 #  github_branch_fallback=master # or jbosstools-4.5.x?
 #else
-  version_parent_NEXT=4.5.1.Final-SNAPSHOT
+  version_parent_NEXT=4.5.2.AM1-SNAPSHOT
   createBranch=false
   github_branch=master
   github_branch_fallback=master # or jbosstools-4.5.x?
 #fi
-TARGET_PLATFORM_VERSION_MIN=4.70.3.AM3-SNAPSHOT
-TARGET_PLATFORM_VERSION_MAX=4.71.0.AM3-SNAPSHOT
+TARGET_PLATFORM_VERSION_MIN=4.70.3.Final
+TARGET_PLATFORM_VERSION_MAX=4.71.0.Final
 JIRA_HOST="https://issues.jboss.org"
 TOrecipients="nboldt@redhat.com"
 

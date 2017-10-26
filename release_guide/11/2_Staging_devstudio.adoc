@@ -184,8 +184,6 @@ https://access.redhat.com/security/team/key
 [source,bash]
 ----
 
-# TODO: use ticket template https://mojo.redhat.com/docs/DOC-1096582 for request-email
-
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
@@ -212,7 +210,7 @@ done
 
 ----
 
-2. Chris signs it, and gives back a URL,eg., http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/devstudio-11.0.0/rpms/signed/
+2. Chris signs it, and gives back a URL,eg., http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/devstudio-11.1.0/rpms/signed/
 
 3. Fetch rpms, regen metadata
 
@@ -256,17 +254,17 @@ done
 
 cat <<EOF > /etc/yum.repos.d/rh-eclipse47-devstudio.repo
 
-[rh-eclipse47-devstudio-staging-11.0]
-name=rh-eclipse47-devstudio-staging-11.0
+[rh-eclipse47-devstudio-staging-11.1]
+name=rh-eclipse47-devstudio-staging-11.1
 baseurl=https://devstudio.redhat.com/11/staging/builds/devstudio-11.1.0.GA-build-rpm/latest/x86_64/
 enabled=1
 gpgcheck=1
 upgrade_requirements_on_install=1
 metadata_expire=2m
 
-[rh-eclipse47-devstudio-snapshots-11.0]
-name=rh-eclipse47-devstudio-snapshots-11.0
-baseurl=https://devstudio.redhat.com/11/snapshots/rpms/11.0.0/x86_64/
+[rh-eclipse47-devstudio-snapshots-11.1]
+name=rh-eclipse47-devstudio-snapshots-11.1
+baseurl=https://devstudio.redhat.com/11/snapshots/rpms/11.1.0/x86_64/
 enabled=0
 gpgcheck=0
 upgrade_requirements_on_install=1
@@ -291,7 +289,7 @@ yum install --nogpgcheck
 Installation should complete without any problems. Should NOT see an error like this:
 [source,bash]
 ----
-Error: Package rh-eclipse47-devstudio-11.0-0.20170809.1307.el7.x86_64.rpm is not signed
+Error: Package rh-eclipse47-devstudio-11.1-0.20170809.1307.el7.x86_64.rpm is not signed
 ----
 
 Alternatively, you could download the rpms from https://devstudio.redhat.com/11/staging/builds/devstudio-11.1.0.GA-build-rpm/latest/x86_64/
@@ -316,17 +314,15 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-rele
 [source,bash]
 ----
 
-# TODO: use ticket template https://mojo.redhat.com/docs/DOC-1096582 for request-email
-
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
 versionWithRespin_ds=11.1.0.GA
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   # signingTicket from https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-05-sign-rpm-request-email
-  signingTicket="https://projects.engineering.redhat.com/browse/RCM-19657"
-  STAGE_DATE="2017-08-10"
-  GOLIVEDATE="2017-08-14"
+  signingTicket="https://projects.engineering.redhat.com/browse/RCM-23772"
+  STAGE_DATE="2017-11-01"
+  GOLIVEDATE="2017-11-06"
   TOrecipients="release-engineering@redhat.com"
   CCrecipients="nboldt@redhat.com, rhartman@redhat.com, rzima@redhat.com, mat.booth@redhat.com, vkadlcik@redhat.com, timoran@redhat.com, bodavis@redhat.com, mbenitez@redhat.com"
   CCrecipients=${CCrecipients// /%20}

@@ -221,11 +221,11 @@ http://download.jboss.org/jbosstools/oxygen/stable/updates/integration-stack/dis
 
 Similarly for devstudio:
 
-https://devstudio.jboss.com/11/stable/updates/integration-stack/discovery/11.0.0.GA/ vs
-https://devstudio.jboss.com/11/development/updates/integration-stack/discovery/11.0.0.GA/
+https://devstudio.jboss.com/11/stable/updates/integration-stack/discovery/11.1.0.GA/ vs
+https://devstudio.jboss.com/11/development/updates/integration-stack/discovery/11.1.0.GA/
 and
-https://devstudio.jboss.com/11/stable/updates/integration-stack/discovery/11.0.0.GA/ vs
-https://devstudio.jboss.com/11/stable/updates/integration-stack/discovery/11.0.0.GA/earlyaccess/
+https://devstudio.jboss.com/11/stable/updates/integration-stack/discovery/11.1.0.GA/ vs
+https://devstudio.jboss.com/11/stable/updates/integration-stack/discovery/11.1.0.GA/earlyaccess/
 
 The URLs used to fetch IS content are as follows:
 

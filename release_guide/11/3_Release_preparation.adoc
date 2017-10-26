@@ -49,7 +49,7 @@ Configure, then run this job: https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_ds=11.0.0.GA
+versionWithRespin_ds=11.1.0.GA
 
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
@@ -77,7 +77,7 @@ fi
 
 == Verify install instructions are correct
 
-Look at the .txt and .html files in https://devstudio.redhat.com/11/staging/builds/devstudio-11.0.0.GA-build-product/latest/all/
+Look at the .txt and .html files in https://devstudio.redhat.com/11/staging/builds/devstudio-11.1.0.GA-build-product/latest/all/
 
 Verify that they contain correct install/usage instructions & versions.
 
@@ -89,7 +89,7 @@ https://github.com/jbdevstudio/jbdevstudio-product/commit/e6c2954207d1db7451f7ad
 
 == File bug to update http://developers.redhat.com/products/devstudio/
 
-TODO: fix this step so it reflects actual reality -- ping Mike Guerette & Erin Rooney a couple weeks in advance to get this stuff ready in in time for GA.
+Ping Mike Guerette & Erin Rooney a couple weeks in advance to get this stuff ready in in time for GA.
 
 Goal is to update the following pages to include links to guides and to set the correct latest GA release version:
 
@@ -97,17 +97,7 @@ Goal is to update the following pages to include links to guides and to set the 
 * http://developers.redhat.com/products/devstudio/hello-world/
 * http://developers.redhat.com/products/devstudio/docs-and-apis/
 
-The download page will be automatically updated when new downloads are uploaded into "Download Manager" and no further action is needed. For changes to the other pages that need making manually in Drupal, where they are managed, a bug must be filed. For example:
-
-* https://issues.jboss.org/browse/DEVELOPER-3908
-
-Once the release is completed and the download page reflects the latest GA version, the necessary changes will be made by someone who has the necessary permissions (currently Mike Guerette).
-
-Once you have the JIRA, you can link to it when sending the note to release-engineering@ below.
-
-NOTE: If we ever decide to drop the EAP-bundled installer, or there's a newer version of EAP than is bundled, we could add the EAP 7 zip / installer to list of devstudio artifacts on both developers.redhat.com and www.jboss.org. Explicit listing of files used to be done like this:
-* https://github.com/redhat-developer/developers.redhat.com/blob/25640af93a8d7d219c189d37c528534acda17483/products/devstudio/_common/product.yml and
-* https://github.com/redhat-developer/developers.redhat.com/blob/25640af93a8d7d219c189d37c528534acda17483/products/eap/_common/product.yml
+The download page will be automatically updated when new downloads are uploaded into "Download Manager" and no further action is needed.
 
 
 == Clone jbosstools-build-ci repo
@@ -137,17 +127,15 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-rele
 [source,bash]
 ----
 
-# TODO: use ticket template https://mojo.redhat.com/docs/DOC-1096582 for request-email
-
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_ds=11.0.0.GA
+versionWithRespin_ds=11.1.0.GA
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   # signingTicket from https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-05-sign-rpm-request-email
-  signingTicket="https://projects.engineering.redhat.com/browse/RCM-19657"
-  STAGE_DATE="2017-08-10"
-  GOLIVEDATE="2017-08-14"
+  signingTicket="https://projects.engineering.redhat.com/browse/RCM-23772"
+  STAGE_DATE="2017-11-01"
+  GOLIVEDATE="2017-11-06"
   TOrecipients="release-engineering@redhat.com"
   CCrecipients="cobrien@redhat.com, erooney@redhat.com, rkratky@redhat.com, sbharadw@redhat.com, nboldt@redhat.com, mat.booth@redhat.com, jmaury@redhat.com, mbenitez@redhat.com, timoran@redhat.com, bodavis@redhat.com"
   CCrecipients=${CCrecipients// /%20}

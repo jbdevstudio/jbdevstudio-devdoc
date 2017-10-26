@@ -616,7 +616,6 @@ for j in \
   jbosstools-releng-push-to-staging-00-parent-pom-update-task-jiras \
   jbosstools-releng-push-to-staging-01-check-copy-speed \
   jbosstools-releng-push-to-staging-01-check-versions-branches-root-poms \
-  jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites \
   jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites_jbt \
   jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites_ds \
   jbosstools-releng-push-to-staging-03-verify-builds-update-sites \

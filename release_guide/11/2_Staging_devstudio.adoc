@@ -221,7 +221,7 @@ done
 export userpass=KERBUSER:PASSWORD
 
 # NOTE: do not use http://download-node-02.eng.bos.redhat.com as it may not resolve from within Jenkins
-signedURL=http://download.devel.redhat.com/devel/candidates/jboss/devstudio/devstudio-11.1.0.GA/rpms/signed
+signedURL=http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/devstudio-11.1.0/rpms/signed/
 versionWithRespin_ds=11.1.0.GA
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
@@ -297,7 +297,28 @@ and test them like this to verify their signatures:
 
 [source,bash]
 ----
-rpm -K  *.rpm | grep pgp
+
+signedURL=https://devstudio.redhat.com/11/snapshots/builds/devstudio.rpm_master/latest/x86_64/ # unsigned
+signedURL=http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/devstudio-11.1.0/rpms/signed/
+signedURL=https://devstudio.redhat.com/11/staging/builds/devstudio-11.1.0.GA-build-rpm/latest/x86_64/
+
+theFiles=$(curl -s -S -k ${signedURL} | grep href=\" | grep rpm\" | sed -e "s#.\+href=\"\([^\"]\+\)\".\+#\1#")
+for theFile in ${theFiles}; do
+  echo "Downloading ${signedURL}${theFile} ..."
+  curl -S -k -# ${signedURL}${theFile} > /tmp/${theFile}
+  echo "Check pgp signature in /tmp/${theFile}.rpm ..."
+  gpgcheck=$(rpm -K  /tmp/${theFile} | grep "pgp md5 OK")
+  if [[ ! ${gpgcheck} ]]; then
+    echo "[ERROR] rpm is not signed!"
+    exit 1
+  else
+    echo "[INFO] ${gpgcheck}"
+  fi
+done
+
+#cleanup
+rm -fr /tmp/index.thml /tmp/rh-eclipse47-devstudio*.rpm
+
 ----
 ====
 

@@ -16,6 +16,19 @@ Once QE has signed off, and bits are staged to CSP, you can proceed w/ the rest 
 
 See link:4_Release_jbosstools.adoc[JBT Release]
 
+Note: if any step seems to fail, you can download all the zips from the destination server and check their sha256sum, eg.,
+
+[source,bash]
+----
+
+# devstudio-11.1.0.GA-target-platform-central.zip
+# devstudio-11.1.0.GA-target-platform-earlyaccess.zip
+# devstudio-11.1.0.GA-target-platform.zip
+# devstudio-11.1.0.GA-updatesite-core.zip
+for z in *.zip; do echo $z; unzip -tq $z; sha256sum ${z}; cat ${z}.sha256; echo ""; echo "-----"; done
+
+----
+
 == Copy RPM content to release directory
 
 If and only if we are releasing at the same the RPM version of Devstudio that is designed to work on RHSCL, then this job should also be run:
@@ -266,11 +279,10 @@ popd
 
 Commit changes and submit PR, eg.,
 
+* https://github.com/jbosstools/jbosstools-website/pull/765,
 * https://github.com/jbosstools/jbosstools-website/pull/741,
 * https://github.com/jbosstools/jbosstools-website/pull/729,
-* https://github.com/jbosstools/jbosstools-website/pull/720,
-* https://github.com/jbosstools/jbosstools-website/pull/709,
-* https://github.com/jbosstools/jbosstools-website/pull/703
+* https://github.com/jbosstools/jbosstools-website/pull/720
 
 == Tag Developer Studio
 
@@ -301,7 +313,7 @@ Before notifying team of release, must check for obvious problems. Any failure t
 [source,bash]
 ----
 
-version_ds=11.0.0.GA
+version_ds=11.1.0.GA
 if [[ ${version_ds} == *"GA" ]]; then # **
   qual="stable"
   cd ~/tmp # ~
@@ -310,7 +322,7 @@ if [[ ${version_ds} == *"GA" ]]; then # **
   echo "Installer jar: ${installerJar}"
 
   # should have already downloaded this above
-  if [[ ! -f ${installerJar} ]]; then wget https://devstudio.redhat.com/11/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/${installerJar}; fi
+  if [[ ! -f ${installerJar} ]]; then wget https://devstudio.redhat.com/11/${qual}/builds/devstudio-${version_ds}-build-product/latest/all/${installerJar}; fi
 
   wget https://devstudio.redhat.com/static/11/${qual}/builds/devstudio-${version_ds}-build-product/latest/all/${installerJar}
   java -jar ~/tmp/${installerJar} # ~
@@ -333,9 +345,9 @@ Using the script below, you can trigger the job remotely.
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-blogURL=/blog/4.5.1.am3-for-oxygen.1.html
+blogURL=/blog/11.1.0.ga-for-oxygen.1a.html
 # Pull Request (PR)
-pullrequestNum=761
+pullrequestNum=765
 eclipseVersionSuffix=".1a" # TODO: use .1a for Eclipse 4.7.1 Oxygen.1a
 GOLIVEDATE="2017-11-06"
 

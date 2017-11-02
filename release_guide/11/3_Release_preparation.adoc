@@ -100,11 +100,6 @@ Goal is to update the following pages to include links to guides and to set the 
 The download page will be automatically updated when new downloads are uploaded into "Download Manager" and no further action is needed.
 
 
-== Clone jbosstools-build-ci repo
-
-See link:2_Staging_jbosstools.adoc[JBoss Tools Staging]
-
-
 == Announce internally for push to CSP staging site
 
 Submit an RCM ticket to release-engineering@redhat.com to requet that the binaries be uploaded to the CSP (Red Hat Customer Portal) and Download Manager.

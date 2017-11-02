@@ -233,13 +233,18 @@ The URLs used to fetch IS content are as follows:
 ----
 eclipseReleaseName=oxygen
 devstudioReleaseVersion=11
+qual_IS="stable" # "development" or "stable" as applicable - see tip above
+earlyaccess_IS="" # "" or "earlyaccess/" as applicable - see tip above
+version_jbt_IS=4.5.0.Final
+version_ds_IS=11.0.0.GA
 
-http://download.jboss.org/jbosstools/${eclipseReleaseName}/${qual_IS}/updates/integration-stack/discovery/${version_jbt_IS}/${earlyaccess_IS}
+google-chrome \
+http://download.jboss.org/jbosstools/${eclipseReleaseName}/${qual_IS}/updates/integration-stack/discovery/${version_jbt_IS}/${earlyaccess_IS} \
 https://devstudio.redhat.com/${devstudioReleaseVersion}/${qual_IS}/updates/integration-stack/discovery/${version_ds_IS}/${earlyaccess_IS}
+
 ----
 
 ====
-
 
 [source,bash]
 ----
@@ -331,29 +336,30 @@ IMPORTANT: This job also verifies that -SNAPSHOT content is properly populated o
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-TARGET_PLATFORM_VERSION_MAX=4.71.0.Final
-
-# run this for .Final and -SNAPSHOT target platforms, too
+# run this for .Final and -SNAPSHOT target platforms, too... why for SNAPSHOTs ?
+# NOTE: if you released another TP at the same time (eg., 4.7x.0.Final and 4.7y.0.Final), repeat for that version too.
+TARGET_PLATFORM_VERSION_MAXes="4.71.0.Final 4.70.3.Final"
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for j in jbosstools-releng-push-to-dev-stable-05-release-target-platforms; do
-  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
 
-  sleep 3s
-  data="token=RELENG&TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}"
-  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
-  sleep 15s
-  if [[ "${prevJob}" == "${nextJob}" ]]; then
-    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
-    echo "[WARN] ${ccijenkins}/${j}"
-  else
-    ${JP} -s ${ccijenkins} -j ${j} -t disable
-    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
-  fi
+for TARGET_PLATFORM_VERSION_MAX in ${TARGET_PLATFORM_VERSION_MAXes}; do
+  for j in jbosstools-releng-push-to-dev-stable-05-release-target-platforms; do
+    prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+
+    sleep 3s
+    data="token=RELENG&TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}"
+    nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+    sleep 15s
+    if [[ "${prevJob}" == "${nextJob}" ]]; then
+      echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
+      echo "[WARN] ${ccijenkins}/${j}"
+    else
+      ${JP} -s ${ccijenkins} -j ${j} -t disable
+      ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+    fi
+  done
 done
-
-# NOTE: if you released another TP at the same time (eg., 4.7x.0.Final and 4.7y.0.Final), repeat for that version too.
 
 ----
 
@@ -434,8 +440,10 @@ To diff if any new features have been added/removed:
 
 [source,bash]
 ----
-path_jbt_PREV_Mktplace=oxygen/stable/updates/core/4.5.0.Final
+version_jbt_PREV_Mktplace=4.5.0.Final
 version_jbt=4.5.1.Final
+
+path_jbt_PREV_Mktplace=oxygen/stable/updates/core/${version_jbt_PREV_Mktplace}
 
 # for Final releases only, or for milestones prior to the first x.y.0.Final.
 if [[ ${version_jbt} == *"Final" ]] || [[ ${path_jbt_PREV_Mktplace} == *"AM"* ]]; then
@@ -519,6 +527,8 @@ done
 
 == Release JIRA
 
+# >> TODO CONTINUE HERE <<
+
 The new policy (@since 4.5.AM1) is to bump issues to the next fixversion if they're in the next sprint target (or if they're blocker/critical), or to the .x fixversion if they're not.
 
 Here's a script to do all the moving for you automatically.
@@ -532,7 +542,8 @@ export userpass=JIRAUSER:JIRAPWD
 # can do a dry run (list issues, do not change them with -D
 # skip verifying JIRA fixversions with -S
 
-sprint="devex #139 October 2017"
+# if previous sprint is done, use sprint=sprint_NEXT here
+sprint="devex #140 November 2017"
 sprint_NEXT="devex #140 November 2017"
 versionWithRespin_jbt=4.5.1.Final
 versionWithRespin_jbt_NEXT=4.5.2.AM1
@@ -551,6 +562,8 @@ Launch the config pages for JBIDE and JBDS and using the gear icons, release the
 
 [source,bash]
 ----
+
+# >> TODO CONTINUE HERE <<
 
 google-chrome && google-chrome https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
   https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions

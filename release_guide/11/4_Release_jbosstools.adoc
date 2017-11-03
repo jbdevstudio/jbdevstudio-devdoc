@@ -527,8 +527,6 @@ done
 
 == Release JIRA
 
-# >> TODO CONTINUE HERE <<
-
 The new policy (@since 4.5.AM1) is to bump issues to the next fixversion if they're in the next sprint target (or if they're blocker/critical), or to the .x fixversion if they're not.
 
 Here's a script to do all the moving for you automatically.
@@ -543,7 +541,7 @@ export userpass=JIRAUSER:JIRAPWD
 # skip verifying JIRA fixversions with -S
 
 # if previous sprint is done, use sprint=sprint_NEXT here
-sprint="devex #140 November 2017"
+sprint="devex #139 October 2017"
 sprint_NEXT="devex #140 November 2017"
 versionWithRespin_jbt=4.5.1.Final
 versionWithRespin_jbt_NEXT=4.5.2.AM1
@@ -562,8 +560,6 @@ Launch the config pages for JBIDE and JBDS and using the gear icons, release the
 
 [source,bash]
 ----
-
-# >> TODO CONTINUE HERE <<
 
 google-chrome && google-chrome https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
   https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
@@ -677,6 +673,49 @@ JIRA_HOST=${JIRA_HOST}&TOrecipients=${TOrecipients}&createBranch=${createBranch}
 done
 
 ----
+
+== Enable jobs
+
+You will need to re-enable the jobs once the bits are staged, so that CI builds can continue.
+
+If the next build WILL be a respin, you need to simply:
+
+* re-enable all the jobs that were disabled above. If you committed a change to jbdevstudio-ci, you can simply revert that commit to re-enable the jobs!
+
+[source,bash]
+----
+
+# kerberos login for the Jenkins server
+export userpass=KERBUSER:PASSWORD
+
+versionWithRespin_jbt=4.5.1.Final
+versionWithRespin_ds=11.1.0.GA
+version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
+version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
+# if [[ ${version_jbt} == *".Final" ]]; then # **
+#   stream_jbt=4.5.oxygen
+#   stream_ds=11.0.oxygen
+# else
+  stream_jbt=master
+  stream_ds=master
+# fi
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+for p in aerogear arquillian base browsersim build-ci build.parent central discovery fabric8analytics forge fuse fuse-extras hibernate integration-tests.aggregate \
+    javaee-tests-matrix javaee jst livereload openshift-restclient-java openshift server-Run-Unit-and-ITests server vpe webservices; do # fuse freemarker
+  j=jbosstools-${p}_master
+  ${JP} -s ${ccijenkins} -j ${j} -t enable &
+done
+echo ""
+for j in jbosstools-buildflow-force-publish_${stream_jbt} jbosstools-buildflow_${stream_jbt} jbosstools-build.parent_${stream_jbt} \
+    jbosstools-discovery_${stream_jbt} jbosstoolstargetplatform-central-4.71.x jbosstoolstargetplatform-4.71.x \
+    devstudio.product_${stream_ds} devstudio.rpm_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} \
+    jbosstools-composite-install_${stream_jbt} jbosstools-browsersim_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} \
+    jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstools-build-sites.aggregate.child-sites_${stream_jbt} \
+    jbosstools-maven-plugins.tycho-plugins_${stream_jbt}; do
+  ${JP} -s ${ccijenkins} -j ${j} -t enable &
+done
+echo ""
 
 == Commit updates to release guide (including this document):
 

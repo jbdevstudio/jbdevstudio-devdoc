@@ -381,6 +381,20 @@ done
 ----
 
 
+== Update rpm symlinks
+
+[source,bash]
+----
+
+cd ~/truu/ # ~
+cd jbdevstudio-website/content/11/snapshots/rpms
+rm -f 11; ln -s 11.2.0 11
+scpr 11 $JBDS/11/snapshots/rpms/
+ci "add symlinks for 11 -> 11.2.0" .
+git push origin master
+
+----
+
 == Commit updates to release guide (including this document):
 
 [source,bash]
@@ -395,7 +409,6 @@ git commit -s -m "update release guide for ${version_jbt} and ${version_ds}" .
 git push origin HEAD:master
 
 ----
-
 
 == Final release steps
 

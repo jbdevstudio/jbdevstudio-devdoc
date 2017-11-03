@@ -2,9 +2,11 @@ On Release Day (currently the Monday after the end of the GA sprint), there are 
 
 == Release latest JBoss Tools and Devstudio downloads and latest blog to tools.jboss.org
 
-Push the blog PR [0] and the update to include the latest JBT and devstudio versions [1] to both the master [2] and production [3] branches, then wait about 2 x 3 mins for Travis [4] to rebuild everything
+Push the blog PR [0] and the update to include the latest JBT and devstudio versions [1] to both the master [2] and production [3] branches, then wait about 2 x 3 mins for Travis [4] to rebuild everything.
 
-[0] https://github.com/jbosstools/jbosstools-website/pull/ ???
+Note that the merges to master have already happened, so that content can be viewed in stage. So you just have to cherry pick those commits in the master branch which are not in production branch over the production branch so that the commit histories are the same.
+
+[0] https://github.com/jbosstools/jbosstools-website/pull/764
 
 [1] https://github.com/jbosstools/jbosstools-website/pull/765
 

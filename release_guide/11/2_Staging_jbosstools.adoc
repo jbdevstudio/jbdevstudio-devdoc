@@ -87,9 +87,9 @@ Configure, then run this job:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-version_parent=4.5.1.Final-SNAPSHOT
-versionWithRespin_jbt=4.5.1.Final
-versionWithRespin_ds=11.1.0.GA
+version_parent=4.5.2.AM1-SNAPSHOT
+versionWithRespin_jbt=4.5.2.AM1
+versionWithRespin_ds=11.2.0.AM1
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # if [[ ${version_jbt} == *".Final" ]]; then # **
@@ -146,8 +146,8 @@ To prevent accidentally rebuilding something while you're copying it away, make 
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.1.Final
-versionWithRespin_ds=11.1.0.GA
+versionWithRespin_jbt=4.5.2.AM1
+versionWithRespin_ds=11.2.0.AM1
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # if [[ ${version_jbt} == *".Final" ]]; then # **
@@ -165,8 +165,9 @@ for p in aerogear arquillian base browsersim build-ci build.parent central disco
     { ${JP} -s ${ccijenkins} -j ${j} -t disable && ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep & }
 done
 echo ""
-for j in jbosstools-buildflow-force-publish_${stream_jbt} jbosstools-buildflow_${stream_jbt} jbosstools-build.parent_${stream_jbt} \
-    jbosstools-discovery_${stream_jbt} jbosstoolstargetplatform-central-4.71.x jbosstoolstargetplatform-4.71.x \
+
+# jbosstools-buildflow-force-publish_${stream_jbt} jbosstools-build.parent_${stream_jbt} jbosstoolstargetplatform-central-4.71.x jbosstoolstargetplatform-4.71.x
+for j in jbosstools-buildflow_${stream_jbt} jbosstools-discovery_${stream_jbt} \
     devstudio.product_${stream_ds} devstudio.rpm_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} \
     jbosstools-composite-install_${stream_jbt} jbosstools-browsersim_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} \
     jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstools-build-sites.aggregate.child-sites_${stream_jbt} \
@@ -191,8 +192,8 @@ Then respin the job:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.1.Final
-versionWithRespin_ds=11.1.0.GA
+versionWithRespin_jbt=4.5.2.AM1
+versionWithRespin_ds=11.2.0.AM1
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # if [[ ${version_jbt} == *".Final" ]]; then # **
@@ -202,9 +203,9 @@ version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\
 # fi
 TARGET_PLATFORM_VERSION_MAX=4.71.0.Final
 TARGET_PLATFORM_CENTRAL_MAX=4.71.0.Final-SNAPSHOT
-version_jbt_IS=4.5.0.Final
-version_ds_IS=11.0.0.GA
-qual_IS=stable
+version_jbt_IS=4.5.1.Beta1b
+version_ds_IS=11.1.0.Beta1b
+qual_IS=development # or stable
 earlyaccess_IS="" # or earlyaccess/
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
@@ -238,9 +239,9 @@ You'll need this later for smoke testing. Start fetching it now to save time lat
 [source,bash]
 ----
 
-cd ~/tmp; wget http://download.eclipse.org/technology/epp/downloads/release/oxygen/1/eclipse-jee-oxygen-1-linux-gtk-x86_64.tar.gz &
+cd ~/tmp; wget http://download.eclipse.org/technology/epp/downloads/release/oxygen/1a/eclipse-jee-oxygen-1a-linux-gtk-x86_64.tar.gz &
 # or
-cd ~/tmp; wget https://hudson.eclipse.org/packaging/job/oxygen.epp-tycho-build/348/artifact/org.eclipse.epp.packages/archive/20170907-1650_eclipse-jee-oxygen-1-RC3-linux.gtk.x86_64.tar.gz &
+cd ~/tmp; wget https://hudson.eclipse.org/packaging/job/oxygen.epp-tycho-build/389/artifact/org.eclipse.epp.packages/archive/20171116-1726_eclipse-jee-oxygen-2-rc1-linux.gtk.x86_64.tar.gz &
 
 ----
 
@@ -270,8 +271,8 @@ export userpass=KERBUSER:PASSWORD
 
 eclipseReleaseName=oxygen
 devstudioReleaseVersion=11
-versionWithRespin_jbt=4.5.1.Final
-versionWithRespin_ds=11.1.0.GA
+versionWithRespin_jbt=4.5.2.AM1
+versionWithRespin_ds=11.2.0.AM1
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 TARGET_PLATFORM_VERSION_MAX=4.71.0.Final
@@ -344,8 +345,8 @@ export userpass=KERBUSER:PASSWORD
 
 eclipseReleaseName=oxygen
 devstudioReleaseVersion=11
-versionWithRespin_jbt=4.5.1.Final
-versionWithRespin_ds=11.1.0.GA
+versionWithRespin_jbt=4.5.2.AM1
+versionWithRespin_ds=11.2.0.AM1
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
@@ -392,12 +393,12 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.1.Final
-versionWithRespin_ds=11.1.0.GA
-versionWithRespin_ds_PREV=11.1.0.AM3
-version_jbt_IS=4.5.0.Final
-version_ds_IS=11.0.0.GA
-qual_IS=stable
+versionWithRespin_jbt=4.5.2.AM1
+versionWithRespin_ds=11.2.0.AM1
+versionWithRespin_ds_PREV=11.1.0.GA
+version_jbt_IS=4.5.1.Beta1b
+version_ds_IS=11.1.0.Beta1b
+qual_IS=development # or stable
 earlyaccess_IS="" # "" or "earlyaccess/" as applicable - see tip above
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
@@ -435,15 +436,15 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt_PREV_GA=4.5.0.Final
-versionWithRespin_jbt_PREV=4.5.1.AM3
-versionWithRespin_jbt=4.5.1.Final
-versionWithRespin_jbt_NEXT=4.5.2.AM1
+versionWithRespin_jbt_PREV_GA=4.5.1.Final
+versionWithRespin_jbt_PREV=4.5.1.Final # milestones
+versionWithRespin_jbt=4.5.2.AM1
+versionWithRespin_jbt_NEXT=4.5.2.AM2
 
-versionWithRespin_ds_PREV_GA=11.0.0.GA
-versionWithRespin_ds_PREV=11.1.0.AM3
-versionWithRespin_ds=11.1.0.GA
-versionWithRespin_ds_NEXT=11.2.0.AM1
+versionWithRespin_ds_PREV_GA=11.1.0.GA
+versionWithRespin_ds_PREV=11.1.0.GA # GA only
+versionWithRespin_ds=11.2.0.AM1
+versionWithRespin_ds_NEXT=11.2.0.AM2
 
 buildType="staging"
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
@@ -502,8 +503,8 @@ If the next build WILL be a respin, you need to simply:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.1.Final
-versionWithRespin_ds=11.1.0.GA
+versionWithRespin_jbt=4.5.2.AM1
+versionWithRespin_ds=11.2.0.AM1
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # if [[ ${version_jbt} == *".Final" ]]; then # **
@@ -521,8 +522,8 @@ for p in aerogear arquillian base browsersim build-ci build.parent central disco
   ${JP} -s ${ccijenkins} -j ${j} -t enable &
 done
 echo ""
-for j in jbosstools-buildflow-force-publish_${stream_jbt} jbosstools-buildflow_${stream_jbt} jbosstools-build.parent_${stream_jbt} \
-    jbosstools-discovery_${stream_jbt} jbosstoolstargetplatform-central-4.71.x jbosstoolstargetplatform-4.71.x \
+# jbosstools-buildflow-force-publish_${stream_jbt} jbosstools-build.parent_${stream_jbt} jbosstoolstargetplatform-central-4.71.x jbosstoolstargetplatform-4.71.x
+for j in jbosstools-buildflow_${stream_jbt} jbosstools-discovery_${stream_jbt} \
     devstudio.product_${stream_ds} devstudio.rpm_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} \
     jbosstools-composite-install_${stream_jbt} jbosstools-browsersim_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} \
     jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstools-build-sites.aggregate.child-sites_${stream_jbt} \
@@ -554,8 +555,8 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-rele
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.1.Final
-versionWithRespin_ds=11.1.0.GA
+versionWithRespin_jbt=4.5.2.AM1
+versionWithRespin_ds=11.2.0.AM1
 # if [[ ${version_jbt} == *".Final" ]]; then # **
 #   stream_jbt=4.5.oxygen
 #   github_branch=jbosstools-4.5.0.x
@@ -599,8 +600,8 @@ You will need to disable the jobs once the bits are staged, so that they won't r
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.1.Final
-versionWithRespin_ds=11.1.0.GA
+versionWithRespin_jbt=4.5.2.AM1
+versionWithRespin_ds=11.2.0.AM1
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # if [[ ${version_jbt} == *".Final" ]]; then # **

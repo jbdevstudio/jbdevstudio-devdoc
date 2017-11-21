@@ -87,7 +87,7 @@ https://github.com/jbdevstudio/jbdevstudio-product/commit/3827045dca85e73c5ae339
 https://github.com/jbdevstudio/jbdevstudio-product/commit/e6c2954207d1db7451f7adfd2d89c7ceccd6adbe
 
 
-== File bug to update http://developers.redhat.com/products/devstudio/
+== Update http://developers.redhat.com/products/devstudio/
 
 Ping Mike Guerette & Erin Rooney a couple weeks in advance to get this stuff ready in in time for GA.
 

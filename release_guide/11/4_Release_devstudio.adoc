@@ -21,10 +21,10 @@ Note: if any step seems to fail, you can download all the zips from the destinat
 [source,bash]
 ----
 
-# devstudio-11.1.0.GA-target-platform-central.zip
-# devstudio-11.1.0.GA-target-platform-earlyaccess.zip
-# devstudio-11.1.0.GA-target-platform.zip
-# devstudio-11.1.0.GA-updatesite-core.zip
+# devstudio-11.2.0.AM1-target-platform-central.zip
+# devstudio-11.2.0.AM1-target-platform-earlyaccess.zip
+# devstudio-11.2.0.AM1-target-platform.zip
+# devstudio-11.2.0.AM1-updatesite-core.zip
 for z in *.zip; do echo $z; unzip -tq $z; sha256sum ${z}; cat ${z}.sha256; echo ""; echo "-----"; done
 
 ----
@@ -41,8 +41,8 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.0.Final
-versionWithRespin_ds=11.1.0.GA
+versionWithRespin_jbt=4.5.2.AM1
+versionWithRespin_ds=11.2.0.AM1
 
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then # GA only
   version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
@@ -154,12 +154,9 @@ Run this:
 [source,bash]
 ----
 
-# TODO make sure this works for GA release
-
 echo "" > /tmp/yml.txt
 
-versionWithRespin_ds=11.1.0.GA
-# test with versionWithRespin_ds=11.0.0.GA, but only want this for GA
+versionWithRespin_ds=11.2.0.AM1
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # **
   theURL=https://devstudio.redhat.com/11/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all
@@ -176,7 +173,6 @@ if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   done
 fi
 
-# test with versionWithRespin_ds=11.0.0.GA, but only want this for GA
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # **
   theURL=https://devstudio.redhat.com/static/11/stable/updates/core/
@@ -207,8 +203,8 @@ Then, back on your own machine...
 
 [source,bash]
 ----
-version_jbt=4.5.1.Final
-version_ds=11.1.0.GA
+version_jbt=4.5.2.AM1
+version_ds=11.2.0.AM1
 
 topic=release-${version_jbt}
 github_branch=master
@@ -279,10 +275,10 @@ popd
 
 Commit changes and submit PR, eg.,
 
+* https://github.com/jbosstools/jbosstools-website/pull/774,
 * https://github.com/jbosstools/jbosstools-website/pull/765,
 * https://github.com/jbosstools/jbosstools-website/pull/741,
-* https://github.com/jbosstools/jbosstools-website/pull/729,
-* https://github.com/jbosstools/jbosstools-website/pull/720
+* https://github.com/jbosstools/jbosstools-website/pull/729
 
 == Tag Developer Studio
 
@@ -313,7 +309,7 @@ Before notifying team of release, must check for obvious problems. Any failure t
 [source,bash]
 ----
 
-version_ds=11.1.0.GA
+version_ds=11.2.0.AM1
 if [[ ${version_ds} == *"GA" ]]; then # **
   qual="stable"
   cd ~/tmp # ~
@@ -345,14 +341,16 @@ Using the script below, you can trigger the job remotely.
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-blogURL=/blog/11.1.0.ga-for-oxygen.1a.html
-# Pull Request (PR)
-pullrequestNum=765
-eclipseVersionSuffix=".1a" # TODO: use .1a for Eclipse 4.7.1 Oxygen.1a
-GOLIVEDATE="2017-11-06"
+############ TODO HERE
 
-versionWithRespin_jbt=4.5.1.Final
-versionWithRespin_ds=11.1.0.GA
+blogURL=/blog/4.5.2.am1-for-oxygen.1a.html
+# Pull Request (PR)
+pullrequestNum=774
+eclipseVersionSuffix=".1a" # TODO: use .1a for Eclipse 4.7.1 Oxygen.1a
+GOLIVEDATE="2017-11-21"
+
+versionWithRespin_jbt=4.5.2.AM1
+versionWithRespin_ds=11.2.0.AM1
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # \) # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 
@@ -402,8 +400,8 @@ git push origin master
 
 cd ~/truu # ~
 
-version_jbt=4.5.1.Final
-version_ds=11.1.0.GA
+version_jbt=4.5.2.AM1
+version_ds=11.2.0.AM1
 cd jbdevstudio-devdoc/release_guide/
 git commit -s -m "update release guide for ${version_jbt} and ${version_ds}" .
 git push origin HEAD:master

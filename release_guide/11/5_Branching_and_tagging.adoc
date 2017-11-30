@@ -9,14 +9,14 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 [source,bash]
 ----
 # if not already cloned, the do this:
-git clone https://github.com/jbosstools/jbosstools-build
-git clone https://github.com/jbosstools/jbosstools-build-ci
-git clone https://github.com/jbosstools/jbosstools-build-sites
-git clone https://github.com/jbosstools/jbosstools-devdoc
-git clone https://github.com/jbosstools/jbosstools-discovery
-git clone https://github.com/jbosstools/jbosstools-download.jboss.org
-git clone https://github.com/jbosstools/jbosstools-maven-plugins
-git clone https://github.com/jbosstools/jbosstools-versionwatch
+git clone https://github.com/jbosstools/jbosstools-build &
+git clone https://github.com/jbosstools/jbosstools-build-ci &
+git clone https://github.com/jbosstools/jbosstools-build-sites &
+git clone https://github.com/jbosstools/jbosstools-devdoc &
+git clone https://github.com/jbosstools/jbosstools-discovery &
+git clone https://github.com/jbosstools/jbosstools-download.jboss.org &
+git clone https://github.com/jbosstools/jbosstools-maven-plugins &
+git clone https://github.com/jbosstools/jbosstools-versionwatch &
 ...
 
 github_branch=master
@@ -80,11 +80,11 @@ popd
 [source,bash]
 ----
 # if not already cloned, the do this:
-git clone https://github.com/jbdevstudio/jbdevstudio-product
-git clone https://github.com/jbdevstudio/jbdevstudio-ci
-git clone https://github.com/jbdevstudio/jbdevstudio-website
-git clone https://github.com/jbdevstudio/jbdevstudio-artwork
-git clone https://github.com/jbdevstudio/jbdevstudio-devdoc
+git clone https://github.com/jbdevstudio/jbdevstudio-product &
+git clone https://github.com/jbdevstudio/jbdevstudio-ci &
+git clone https://github.com/jbdevstudio/jbdevstudio-website &
+git clone https://github.com/jbdevstudio/jbdevstudio-artwork &
+git clone https://github.com/jbdevstudio/jbdevstudio-devdoc &
 
 github_branch=master
 for d in product ci website artwork devdoc; do

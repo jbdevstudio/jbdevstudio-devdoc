@@ -445,7 +445,7 @@ versionWithRespin_jbt=4.5.2.AM2
 versionWithRespin_jbt_NEXT=4.5.2.AM3
 
 versionWithRespin_ds_PREV_GA=11.1.0.GA
-versionWithRespin_ds_PREV=11.1.0.GA # GA only
+versionWithRespin_ds_PREV=11.1.0.AM1 # milestones
 versionWithRespin_ds=11.2.0.AM2
 versionWithRespin_ds_NEXT=11.2.0.AM3
 

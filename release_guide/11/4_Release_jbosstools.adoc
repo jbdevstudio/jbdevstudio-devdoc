@@ -248,7 +248,6 @@ https://devstudio.redhat.com/${devstudioReleaseVersion}/${qual_IS}/updates/integ
 
 [source,bash]
 ----
- # TODO Here
 
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
@@ -641,7 +640,7 @@ versionWithRespin_ds_NEXT=11.2.0.AM2
 #  github_branch=jbosstools-4.5.0.x
 #  github_branch_fallback=master # or jbosstools-4.5.x?
 #else
-  version_parent_NEXT=4.5.2.AM2-SNAPSHOT
+  version_parent_NEXT=4.5.2.AM3-SNAPSHOT
   createBranch=false
   github_branch=master
   github_branch_fallback=master # or jbosstools-4.5.x?

@@ -382,12 +382,17 @@ done
 [source,bash]
 ----
 
-cd ~/truu/ # ~
-cd jbdevstudio-website/content/11/snapshots/rpms
-rm -f 11; ln -s 11.2.0 11
-scpr 11 $JBDS/11/snapshots/rpms/
-ci "add symlinks for 11 -> 11.2.0" .
-git push origin master
+versionWithRespin_jbt=4.5.2.AM2
+versionWithRespin_ds=11.2.0.AM2
+
+if [[ ${versionWithRespin_ds} == *"GA" ]]; then # GA only **
+  cd ~/truu/ # ~
+  cd jbdevstudio-website/content/11/snapshots/rpms
+  rm -f 11; ln -s 11.2.0 11
+  scpr 11 $JBDS/11/snapshots/rpms/
+  ci "add symlinks for 11 -> 11.2.0" .
+  git push origin master
+fi
 
 ----
 

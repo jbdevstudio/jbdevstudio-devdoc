@@ -1,6 +1,90 @@
+
+= Tagging
+
+== Tagging JBoss Tools
+
+Create tags for build-related JBT repositories.
+
+Once cloned to disk, this script will create the tags if run from the location with your git clones. If tags exist, no new tag will be created.
+
+[source,bash]
+----
+
+# if not already cloned, the do this:
+git clone git@github.com:jbosstools/jbosstools-build.git
+git clone git@github.com:jbosstools/jbosstools-build-ci.git
+git clone git@github.com:jbosstools/jbosstools-build-sites.git
+git clone git@github.com:jbosstools/jbosstools-devdoc.git
+git clone git@github.com:jbosstools/jbosstools-discovery.git
+git clone git@github.com:jbosstools/jbosstools-download.jboss.org.git
+git clone git@github.com:jbosstools/jbosstools-maven-plugins.git
+git clone git@github.com:jbosstools/jbosstools-versionwatch.git
+
+# maven-plugins does not get released/branched the same as other projects, but tag it anyway
+# download.jboss.org tag might not be valid as tweaks to ide-config.properties happen frequently
+
+version_jbt=4.5.2.AM2
+# if [[ ${version_jbt} == *".Final" ]]; then
+#   github_branch=jbosstools-4.5.0.x
+# else
+  github_branch=master
+# fi
+cd ~/tru # ~
+for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins versionwatch; do
+  echo "====================================================================="
+  echo "Tagging jbosstools-${d} from branch ${github_branch} as tag ${version_jbt}..."
+  pushd jbosstools-${d}
+  git fetch origin ${github_branch}
+  git tag jbosstools-${version_jbt} FETCH_HEAD
+  git push origin jbosstools-${version_jbt}
+  echo ">>> https://github.com/jbosstools/jbosstools-${d}/tree/jbosstools-${version_jbt}"
+  popd >/dev/null
+  echo "====================================================================="
+  echo ""
+done
+
+----
+
+== Tagging Developer Studio
+
+Once cloned to disk, this script will create the tags if run from the location with your git clones. If tags exist, no new tag will be created.
+
+[source,bash]
+----
+
+# if not already cloned, the do this:
+git clone git@github.com:jbdevstudio/jbdevstudio-product.git
+git clone git@github.com:jbdevstudio/jbdevstudio-website.git
+git clone git@github.com:jbdevstudio/jbdevstudio-artwork.git
+git clone git@github.com:jbdevstudio/jbdevstudio-devdoc.git
+git clone git@github.com:jbdevstudio/jbdevstudio-ci.git
+
+version_ds=11.2.0.AM2
+# if [[ ${version_ds} == *".GA" ]]; then
+#   github_branch=jbosstools-4.5.0.x
+# else
+  github_branch=master
+# fi
+cd ~/truu # ~
+for d in product website artwork devdoc ci; do # note: ci repo is private
+  echo "====================================================================="
+  echo "Tagging jbdevstudio-${d} from branch ${github_branch} as tag ${version_ds}..."
+  pushd jbdevstudio-${d}
+  git fetch origin ${github_branch}
+  git tag jbdevstudio-${version_ds} FETCH_HEAD
+  git push origin jbdevstudio-${version_ds}
+  echo ">>> https://github.com/jbdevstudio/jbdevstudio-${d}/tree/jbdevstudio-${version_ds}"
+  popd >/dev/null
+  echo "====================================================================="
+  echo ""
+done
+
+----
+
+
 = Branching
 
-As of jbosstools 4.4.1.Final / 4.4.2.AM2, you can use these jobs to perform the above steps, including sending emails to project leads to speed up the branching and root pom repairs:
+As of jbosstools 4.4.1.Final, you can use these jobs to perform the above steps, including sending emails to project leads to speed up the branching and root pom repairs:
 
 https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-staging-00-parent-pom-update-task-jiras/
 
@@ -138,88 +222,5 @@ popd
 # ...
 
 popd
-
-----
-
-
-= Tagging
-
-== Tagging JBoss Tools
-
-Create tags for build-related JBT repositories.
-
-Once cloned to disk, this script will create the tags if run from the location with your git clones. If tags exist, no new tag will be created.
-
-[source,bash]
-----
-
-# if not already cloned, the do this:
-git clone git@github.com:jbosstools/jbosstools-build.git
-git clone git@github.com:jbosstools/jbosstools-build-ci.git
-git clone git@github.com:jbosstools/jbosstools-build-sites.git
-git clone git@github.com:jbosstools/jbosstools-devdoc.git
-git clone git@github.com:jbosstools/jbosstools-discovery.git
-git clone git@github.com:jbosstools/jbosstools-download.jboss.org.git
-git clone git@github.com:jbosstools/jbosstools-maven-plugins.git
-git clone git@github.com:jbosstools/jbosstools-versionwatch.git
-
-# maven-plugins does not get released/branched the same as other projects, but tag it anyway
-# download.jboss.org tag might not be valid as tweaks to ide-config.properties happen frequently
-
-version_jbt=4.5.2.AM1
-# if [[ ${version_jbt} == *".Final" ]]; then
-#   github_branch=jbosstools-4.5.0.x
-# else
-  github_branch=master
-# fi
-cd ~/tru # ~
-for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins versionwatch; do
-  echo "====================================================================="
-  echo "Tagging jbosstools-${d} from branch ${github_branch} as tag ${version_jbt}..."
-  pushd jbosstools-${d}
-  git fetch origin ${github_branch}
-  git tag jbosstools-${version_jbt} FETCH_HEAD
-  git push origin jbosstools-${version_jbt}
-  echo ">>> https://github.com/jbosstools/jbosstools-${d}/tree/jbosstools-${version_jbt}"
-  popd >/dev/null
-  echo "====================================================================="
-  echo ""
-done
-
-----
-
-== Tagging Developer Studio
-
-Once cloned to disk, this script will create the tags if run from the location with your git clones. If tags exist, no new tag will be created.
-
-[source,bash]
-----
-
-# if not already cloned, the do this:
-git clone git@github.com:jbdevstudio/jbdevstudio-product.git
-git clone git@github.com:jbdevstudio/jbdevstudio-website.git
-git clone git@github.com:jbdevstudio/jbdevstudio-artwork.git
-git clone git@github.com:jbdevstudio/jbdevstudio-devdoc.git
-git clone git@github.com:jbdevstudio/jbdevstudio-ci.git
-
-version_ds=11.2.0.AM1
-# if [[ ${version_ds} == *".GA" ]]; then
-#   github_branch=jbosstools-4.5.0.x
-# else
-  github_branch=master
-# fi
-cd ~/truu # ~
-for d in product website artwork devdoc ci; do # note: ci repo is private
-  echo "====================================================================="
-  echo "Tagging jbdevstudio-${d} from branch ${github_branch} as tag ${version_ds}..."
-  pushd jbdevstudio-${d}
-  git fetch origin ${github_branch}
-  git tag jbdevstudio-${version_ds} FETCH_HEAD
-  git push origin jbdevstudio-${version_ds}
-  echo ">>> https://github.com/jbdevstudio/jbdevstudio-${d}/tree/jbdevstudio-${version_ds}"
-  popd >/dev/null
-  echo "====================================================================="
-  echo ""
-done
 
 ----

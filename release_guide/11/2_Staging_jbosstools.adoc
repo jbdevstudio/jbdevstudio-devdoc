@@ -424,6 +424,10 @@ version_ds_IS=${version_ds_IS}"
   fi
 done
 
+########
+# TODO :: JBIDE-18743 use new job https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-00-validate-composites here
+########
+
 ----
 
 

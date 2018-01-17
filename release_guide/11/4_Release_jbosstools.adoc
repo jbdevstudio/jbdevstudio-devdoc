@@ -636,21 +636,21 @@ Run this job:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt_NEXT=4.5.2.AM2
-versionWithRespin_ds_NEXT=11.2.0.AM2
+versionWithRespin_jbt_NEXT=4.5.2.Final
+versionWithRespin_ds_NEXT=11.2.0.GA
 #if [[ ${versionWithRespin_jbt_NEXT} == *".Final" ]]; then
 #  version_parent_NEXT=4.5.0.Final-SNAPSHOT
 #  createBranch=true
 #  github_branch=jbosstools-4.5.0.x
 #  github_branch_fallback=master # or jbosstools-4.5.x?
 #else
-  version_parent_NEXT=4.5.2.AM3-SNAPSHOT
+  version_parent_NEXT=4.5.2.Final-SNAPSHOT
   createBranch=false
   github_branch=master
   github_branch_fallback=master # or jbosstools-4.5.x?
 #fi
-TARGET_PLATFORM_VERSION_MIN=4.70.3.Final
-TARGET_PLATFORM_VERSION_MAX=4.72.0.AM2-SNAPSHOT
+TARGET_PLATFORM_VERSION_MIN=4.71.0.Final
+TARGET_PLATFORM_VERSION_MAX=4.72.0.AM3-SNAPSHOT
 JIRA_HOST="https://issues.jboss.org"
 TOrecipients="nboldt@redhat.com"
 

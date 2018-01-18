@@ -342,6 +342,8 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-rele
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
+###### TODO ALREADY DONE
+
 versionWithRespin_ds=11.2.0.GA
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   # signingTicket from https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-05-sign-rpm-request-email

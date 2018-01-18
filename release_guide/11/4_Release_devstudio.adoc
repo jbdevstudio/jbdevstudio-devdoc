@@ -343,8 +343,8 @@ export userpass=KERBUSER:PASSWORD
 
 blogURL=/blog/11.2.0.GA-for-oxygen.2.html
 # Pull Request (PR)
-pullrequestNum=777
-eclipseVersionSuffix=".2" # TODO: use .2 for Eclipse 4.7.1 Oxygen.2
+pullrequestNum=xxx
+eclipseVersionSuffix=".2" # TODO: use .2 for Eclipse 4.7.2 Oxygen.2
 GOLIVEDATE="2018-01-29"
 
 versionWithRespin_jbt=4.5.2.Final

@@ -178,9 +178,7 @@ done
 
 0. This section only applies to GA builds. No need to sign AMx milestones!
 
-1. give URL link to Chris via RCM ticket, eg., https://projects.engineering.redhat.com/browse/RCM-12825
-
-TODO: switch to gold key, not dev key?
+1. give URL link to Chris via RCM ticket, eg., https://projects.engineering.redhat.com/browse/RCM-27209
 
 https://www.redhat.com/security/data/fd431d51.txt
 https://access.redhat.com/security/team/key
@@ -215,6 +213,8 @@ done
 ----
 
 2. Chris signs it, and gives back a URL,eg., http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/devstudio-11.2.0/rpms/signed/
+
+###### TODO HERE
 
 3. Fetch rpms, regen metadata
 
@@ -345,7 +345,7 @@ export userpass=KERBUSER:PASSWORD
 versionWithRespin_ds=11.2.0.GA
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   # signingTicket from https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-05-sign-rpm-request-email
-  signingTicket="https://projects.engineering.redhat.com/browse/RCM-23772"
+  signingTicket="https://projects.engineering.redhat.com/browse/RCM-27209"
   STAGE_DATE="2018-01-24"
   GOLIVEDATE="2018-01-29"
   TOrecipients="release-engineering@redhat.com"

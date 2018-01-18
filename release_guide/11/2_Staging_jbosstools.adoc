@@ -239,7 +239,7 @@ You'll need this later for smoke testing. Start fetching it now to save time lat
 [source,bash]
 ----
 
-cd ~/tmp; wget http://download.eclipse.org/technology/epp/downloads/release/oxygen/1a/eclipse-jee-oxygen-1a-linux-gtk-x86_64.tar.gz &
+cd ~/tmp; wget http://download.eclipse.org/technology/epp/downloads/release/oxygen/2/eclipse-jee-oxygen-2-linux-gtk-x86_64.tar.gz &
 # or
 cd ~/tmp; wget https://hudson.eclipse.org/packaging/job/oxygen.epp-tycho-build/389/artifact/org.eclipse.epp.packages/archive/20171116-1726_eclipse-jee-oxygen-2-rc1-linux.gtk.x86_64.tar.gz &
 
@@ -424,10 +424,6 @@ version_ds_IS=${version_ds_IS}"
   fi
 done
 
-########
-# TODO :: JBIDE-18743 use new job https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-00-validate-composites here
-########
-
 ----
 
 
@@ -481,6 +477,35 @@ versionWithRespin_ds_NEXT=${versionWithRespin_ds_NEXT}"
 done
 
 ----
+
+== Validate ide-config.properties - check composite sites
+
+Here's a job that verifies everything is updated:
+
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-00-validate-composites/
+
+[source,bash]
+----
+
+# kerberos login for the Jenkins server
+export userpass=KERBUSER:PASSWORD
+
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+for j in jbosstools-releng-push-to-staging-00-validate-composites; do
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+sleep 3s
+  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters"
+  sleep 15s
+
+  if [[ "${prevJob}" == "${nextJob}" ]]; then
+    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
+    echo "[WARN] ${ccijenkins}/${j}"
+    google-chrome ${ccijenkins}/${j} &
+  else
+    { ${JP} -s ${ccijenkins} -j ${j} -t disable && ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep & }
+  fi
+done
 
 
 == Smoke test the release (manually)
@@ -631,6 +656,7 @@ for j in \
   jbosstools-releng-push-to-staging-03-verify-builds-update-sites \
   jbosstools-releng-push-to-staging-04-update-ide-config.properties \
   jbosstools-releng-push-to-staging-04-update-merge-composites-html \
+  jbosstools-releng-push-to-staging-00-validate-composites \
   jbosstools-releng-push-to-staging-05-sign-rpm-request-email \
   jbosstools-releng-push-to-staging-06-publish-to-channel-request-email \
   jbosstools-releng-push-to-staging-06-sign-rpm-fetch \

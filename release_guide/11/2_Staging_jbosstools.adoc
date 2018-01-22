@@ -160,7 +160,8 @@ version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for p in aerogear arquillian base browsersim build-ci build.parent central discovery fabric8analytics forge fuse fuse-extras hibernate integration-tests.aggregate \
-    javaee-tests-matrix javaee jst livereload openshift-restclient-java openshift server-Run-Unit-and-ITests server vpe webservices; do # fuse freemarker
+    javaee-tests-matrix javaee jst livereload openshift-restclient-java openshift server-Run-Unit-and-ITests server vpe webservices fuse freemarker \
+    base.sonar fuse.sonar openshift.sonar server.sonar; do
     j=jbosstools-${p}_master
     { ${JP} -s ${ccijenkins} -j ${j} -t disable && ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep & }
 done
@@ -551,7 +552,8 @@ version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for p in aerogear arquillian base browsersim build-ci build.parent central discovery fabric8analytics forge fuse fuse-extras hibernate integration-tests.aggregate \
-    javaee-tests-matrix javaee jst livereload openshift-restclient-java openshift server-Run-Unit-and-ITests server vpe webservices; do # fuse freemarker
+    javaee-tests-matrix javaee jst livereload openshift-restclient-java openshift server-Run-Unit-and-ITests server vpe webservices fuse freemarker \
+    base.sonar fuse.sonar openshift.sonar server.sonar; do
   j=jbosstools-${p}_master
   ${JP} -s ${ccijenkins} -j ${j} -t enable &
 done

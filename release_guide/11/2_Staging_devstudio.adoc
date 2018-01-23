@@ -193,7 +193,7 @@ https://github.com/jbdevstudio/jbdevstudio-product/commit/e6c2954207d1db7451f7ad
 For GA releases only!
 
 To comply with Goldengate URL rules, we need to rename artifacts before they go to the CSP. For example
-`devstudio-10.4.0.GA-v20151002-2235-B124-installer-eap.jar` must be renamed to `devstudio-10.4.0.GA-installer-eap.jar`.
+`devstudio-10.4.0.GA-v20151002-2235-B124-installer-standalone.jar` must be renamed to `devstudio-10.4.0.GA-installer-standalone.jar`.
 
 Configure, then run this job: https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-staging-06-rename-GA-artifacts/
 
@@ -378,3 +378,141 @@ fi
 
 ----
 
+== Fetch signed RPMs
+
+Once signed, the RCM ticket above will include a URL,eg., http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/devstudio-11.2.0/rpms/signed/
+
+1. Fetch rpms, regen metadata.
+
+[source,bash]
+----
+
+# kerberos login for the Jenkins server
+export userpass=KERBUSER:PASSWORD
+
+signedURL=http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/devstudio-11.2.0/rpms/signed/
+versionWithRespin_ds=11.2.0.GA
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+for j in jbosstools-releng-push-to-staging-06-sign-rpm-fetch; do
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  sleep 3s
+
+  data="token=RELENG&versionWithRespin_ds=${versionWithRespin_ds}&signedURL=${signedURL}"
+  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+  sleep 15s
+
+  if [[ "${prevJob}" == "${nextJob}" ]]; then
+    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
+    echo "[WARN] ${ccijenkins}/${j}"
+    google-chrome ${ccijenkins}/${j} &
+  else
+    ${JP} -s ${ccijenkins} -j ${j} -t disable
+    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+  fi
+done
+
+----
+
+2. Download the rpms from https://devstudio.redhat.com/11/staging/builds/devstudio-11.2.0.GA-build-rpm/latest/x86_64/
+and test them like this to verify their signatures. You'll want to run these commands as ROOT
+
+[source,bash]
+----
+
+# if not already imported, as ROOT, you need to import the signing key:
+cd /tmp; wget -q https://www.redhat.com/security/data/a5787476.txt
+gpg --import /tmp/a5787476.txt
+rpm --import /tmp/a5787476.txt
+rm -f /tmp/a5787476.txt
+
+# now you can check the signature against the key
+
+signedURL=https://devstudio.redhat.com/11/snapshots/builds/devstudio.rpm_master/latest/x86_64/ # unsigned
+signedURL=http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/devstudio-11.2.0/rpms/signed/ # signed
+signedURL=https://devstudio.redhat.com/11/staging/builds/devstudio-11.2.0.GA-build-rpm/latest/x86_64/ # if updated from the step above, must be signed
+
+theFiles=$(curl -s -S -k ${signedURL} | grep href=\" | grep rpm\" | sed -e "s#.\+href=\"\([^\"]\+\)\".\+#\1#")
+for theFile in ${theFiles}; do
+  echo "Downloading ${signedURL}${theFile} ..."
+  curl -S -k -# ${signedURL}${theFile} > /tmp/${theFile}
+  echo "Check pgp signature in /tmp/${theFile}.rpm ..."
+  gpgcheck=$(rpm -K  /tmp/${theFile} | grep "signatures OK")
+  if [[ ! ${gpgcheck} ]]; then
+    echo "[ERROR] rpm is not signed (or you forgot to import the key)!"
+    rpm -K /tmp/${theFile}
+  else
+    echo "[INFO] ${gpgcheck}"
+  fi
+done
+
+#cleanup
+rm -fr /tmp/index.thml /tmp/rh-eclipse47-devstudio*.rpm
+
+----
+
+3. On a RHEL7 box (not Fedora), as ROOT, update your /etc/yum.repos.d/rh-eclipse47-devstudio.repo file like this:
+
+[source,bash]
+----
+
+cat <<EOF > /etc/yum.repos.d/rh-eclipse47-devstudio.repo
+[rh-eclipse47-devstudio-staging-11.2.0]
+name=rh-eclipse47-devstudio-staging-11.2.0
+baseurl=https://devstudio.redhat.com/11/staging/builds/devstudio-11.2.0.GA-build-rpm/latest/x86_64/
+enabled=1
+gpgcheck=1
+upgrade_requirements_on_install=1
+metadata_expire=2m
+
+[rh-eclipse47-devstudio-snapshots-11.2.0]
+name=rh-eclipse47-devstudio-snapshots-11.2.0
+baseurl=https://devstudio.redhat.com/11/snapshots/rpms/11.2.0/x86_64/
+enabled=0
+gpgcheck=0
+upgrade_requirements_on_install=1
+metadata_expire=120m
+EOF
+
+cat <<EOF > /etc/yum.repos.d/rh-eclipse47-build.repo
+[rh-eclipse47-build]
+name=rh-eclipse47-build
+baseurl=http://brewweb.engineering.redhat.com/brewroot/repos/devtools-2018.1-rh-eclipse47-rhel-7-build/latest/x86_64/
+enabled=1
+sslverify=0
+gpgcheck=0
+EOF
+
+----
+
+4. On a RHEL7 box (not Fedora), install the signing key and then devstudio:
+
+[source,bash]
+----
+
+# if not already imported, as ROOT, you need to import the signing key:
+cd /tmp; wget -q https://www.redhat.com/security/data/a5787476.txt
+gpg --import /tmp/a5787476.txt
+rpm --import /tmp/a5787476.txt
+rm -f /tmp/a5787476.txt
+
+# If you already have rh-eclipse47-devstudio installed (can add --best flag for Fedora install)
+yum update rh-eclipse47-devstudio -y
+
+# Or, if not already installed
+yum install rh-eclipse47-devstudio -y
+
+# note, if verifying unsigned rpms, use:
+yum update --nogpgcheck # or
+yum install --nogpgcheck
+
+----
+
+[WARNING]
+====
+Installation should complete without any problems. Should NOT see an error like this:
+[source,bash]
+----
+Error: Package rh-eclipse47-devstudio-11.2.0.20170809.1307.el7.x86_64.rpm is not signed
+----
+====

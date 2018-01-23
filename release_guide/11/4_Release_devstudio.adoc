@@ -101,6 +101,8 @@ WARNING: Only applies to Beta and better versions (but usually just GA).
 [source,bash]
 ----
 
+# TODO Here
+
 google-chrome && google-chrome http://marketplace.eclipse.org/content/red-hat-jboss-developer-studio/edit
 
 ----
@@ -329,7 +331,7 @@ fi
 
 == Notify Team Lead(s)
 
-Here's a job that notifies Jeff (or Matt) that the website is ready to be updated with a new blog post:
+Here's a job that notifies Jeff (or Matt) that the website is ready to be updated with a new blog post, and will provide  a script to tag the repos:
 
 https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-dev-stable-07-notification-emails/configure
 

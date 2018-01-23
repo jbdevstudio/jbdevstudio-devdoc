@@ -397,9 +397,11 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
+# TODO chain these next three jobs together into a single flow, so they all run in sequence
+
 versionWithRespin_jbt=4.5.2.Final
 versionWithRespin_ds=11.2.0.GA
-versionWithRespin_ds_PREV=11.2.0.AM2 # last staged build, not just GA
+versionWithRespin_ds_PREV=11.2.0.GA-prev-20180118 # last staged build, not just GA
 version_jbt_IS=4.5.1.Beta1b
 version_ds_IS=11.1.0.Beta1b
 qual_IS=development # or stable
@@ -441,19 +443,22 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 export userpass=KERBUSER:PASSWORD
 
 versionWithRespin_jbt_PREV_GA=4.5.1.Final
-versionWithRespin_jbt_PREV=4.5.2.AM2 # milestones
+versionWithRespin_jbt_PREV=4.5.2.Final-prev-20180118 # milestones
 versionWithRespin_jbt=4.5.2.Final
 versionWithRespin_jbt_NEXT=4.5.3.AM1
 
 versionWithRespin_ds_PREV_GA=11.1.0.GA
-versionWithRespin_ds_PREV=11.1.0.AM2 # milestones
+versionWithRespin_ds_PREV=11.2.0.GA-prev-20180118 # milestones
 versionWithRespin_ds=11.2.0.GA
 versionWithRespin_ds_NEXT=11.3.0.AM1
 
 buildType="staging"
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for j in jbosstools-releng-push-to-staging-04-update-ide-config.properties; do
+for j in jbosstools-releng-push-to-staging-00-validate-composites; do
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+done
+for j in jbosstools-releng-push-to-staging-00-validate-composites jbosstools-releng-push-to-staging-04-update-ide-config.properties; do
   prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
 sleep 3s
   data="token=RELENG&buildType=${buildType}&\
@@ -481,7 +486,7 @@ done
 
 == Validate ide-config.properties - check composite sites
 
-Here's a job that verifies everything is updated:
+Here's a job that verifies everything is updated - should automatically be triggered by the above step:
 
 https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-00-validate-composites/
 

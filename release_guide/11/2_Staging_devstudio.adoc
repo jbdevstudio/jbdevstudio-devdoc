@@ -60,6 +60,8 @@ TIP: Once the staging build folder exists, start fetching the devstudio installe
 [source,bash]
 ----
 
+# TODO HERE
+
 cd ~/tmp
 versionWithRespin_ds=11.2.0.GA
 installerJar=$(wget -O - -q https://devstudio.redhat.com/11/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
@@ -275,6 +277,8 @@ Once signed, the RCM ticket above will include a URL,eg., http://download-node-0
 
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
+
+# TODO HERE
 
 # NOTE: do not use http://download-node-02.eng.bos.redhat.com as it may not resolve from within Jenkins
 signedURL=http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/devstudio-11.2.0/rpms/signed/

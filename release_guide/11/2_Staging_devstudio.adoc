@@ -60,8 +60,6 @@ TIP: Once the staging build folder exists, start fetching the devstudio installe
 [source,bash]
 ----
 
-# TODO HERE
-
 cd ~/tmp
 versionWithRespin_ds=11.2.0.GA
 installerJar=$(wget -O - -q https://devstudio.redhat.com/11/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")

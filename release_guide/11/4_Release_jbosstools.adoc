@@ -734,13 +734,14 @@ version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for p in aerogear arquillian base browsersim build-ci build.parent central discovery fabric8analytics forge fuse fuse-extras hibernate integration-tests.aggregate \
-    javaee-tests-matrix javaee jst livereload openshift-restclient-java openshift server-Run-Unit-and-ITests server vpe webservices; do # fuse freemarker
+    javaee-tests-matrix javaee jst livereload openshift-restclient-java openshift server-Run-Unit-and-ITests server vpe webservices fuse freemarker \
+    base.sonar fuse.sonar openshift.sonar server.sonar; do
   j=jbosstools-${p}_master
   ${JP} -s ${ccijenkins} -j ${j} -t enable &
 done
 echo ""
-# jbosstoolstargetplatform-central-4.71.x jbosstoolstargetplatform-4.71.x jbosstools-build.parent_${stream_jbt} jbosstools-buildflow-force-publish_${stream_jbt}
-for j in jbosstools-buildflow_${stream_jbt} jbosstools-discovery_${stream_jbt}  \
+# jbosstools-buildflow-force-publish_${stream_jbt} jbosstools-build.parent_${stream_jbt} jbosstoolstargetplatform-central-4.72.x jbosstoolstargetplatform-4.72.x
+for j in jbosstools-buildflow_${stream_jbt} jbosstools-discovery_${stream_jbt} \
     devstudio.product_${stream_ds} devstudio.rpm_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} \
     jbosstools-composite-install_${stream_jbt} jbosstools-browsersim_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} \
     jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstools-build-sites.aggregate.child-sites_${stream_jbt} \

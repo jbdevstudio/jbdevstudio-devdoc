@@ -538,8 +538,6 @@ If the next build WILL be a respin, you need to simply:
 [source,bash]
 ----
 
-###### TODO HERE
-
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 

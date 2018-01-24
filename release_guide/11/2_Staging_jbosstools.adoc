@@ -67,14 +67,12 @@ Before running any of the jobs or scripts below, make sure to set the correct ve
 
 ====
 
-----
 
 == Enable pipeline jobs
 
 You will need to enable the pipeline.
 
 TODO: https://issues.jboss.org/browse/JBIDE-24182 wrap staging/release process with pipeline job
-
 
 
 == Verify correct versions, branches exist, and root poms are correct
@@ -137,6 +135,7 @@ git checkout jbosstools-4.5.x; git pull origin jbosstools-4.5.x; git checkout -b
 
 Once the above conditions have been met, you can proceed to the next steps.
 
+
 == Disable jobs
 
 To prevent accidentally rebuilding something while you're copying it away, make sure that all the stable branch jobs (4.5.oxygen, 11.0.oxygen) are disabled. These include all product, composite and aggregate jobs:
@@ -178,6 +177,7 @@ done
 echo ""
 
 ----
+
 
 == Update Discovery Sites and URLs
 
@@ -246,7 +246,9 @@ cd ~/tmp; wget https://hudson.eclipse.org/packaging/job/oxygen.epp-tycho-build/3
 
 ----
 
+
 == Stage to download.jboss.org
+
 
 === Copy & rename builds & update sites from "snapshots" to "staging"
 
@@ -329,6 +331,7 @@ Time passes...
 ```
 
 When done, it's time to verify everything was pushed correctly.
+
 
 === Verify builds and update sites correctly pushed
 
@@ -484,6 +487,7 @@ done
 
 ----
 
+
 == Validate ide-config.properties - check composite sites
 
 Here's a job that verifies everything is updated - should automatically be triggered by the above step:
@@ -512,6 +516,8 @@ sleep 3s
     { ${JP} -s ${ccijenkins} -j ${j} -t disable && ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep & }
   fi
 done
+
+----
 
 
 == Smoke test the release (manually)
@@ -629,6 +635,7 @@ done
 
 ----
 
+
 == Disable staging jobs
 
 You will need to disable the jobs once the bits are staged, so that they won't run accidentally.
@@ -674,3 +681,4 @@ for j in \
 done
 
 ----
+

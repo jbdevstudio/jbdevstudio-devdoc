@@ -101,8 +101,6 @@ WARNING: Only applies to Beta and better versions (but usually just GA).
 [source,bash]
 ----
 
-# TODO Here
-
 google-chrome && google-chrome http://marketplace.eclipse.org/content/red-hat-jboss-developer-studio/edit
 
 ----
@@ -277,10 +275,8 @@ popd
 
 Commit changes and submit PR, eg.,
 
-* https://github.com/jbosstools/jbosstools-website/pull/777,
-* https://github.com/jbosstools/jbosstools-website/pull/774,
-* https://github.com/jbosstools/jbosstools-website/pull/765,
-* https://github.com/jbosstools/jbosstools-website/pull/741
+* https://github.com/jbosstools/jbosstools-website/pull/790,
+* https://github.com/jbosstools/jbosstools-website/pull/777
 
 == Tag Developer Studio
 
@@ -343,9 +339,10 @@ Using the script below, you can trigger the job remotely.
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
+
 blogURL=/blog/11.2.0.GA-for-oxygen.2.html
 # Pull Request (PR)
-pullrequestNum=xxx
+pullrequestNum=790
 eclipseVersionSuffix=".2" # TODO: use .2 for Eclipse 4.7.2 Oxygen.2
 GOLIVEDATE="2018-01-29"
 
@@ -390,6 +387,7 @@ versionWithRespin_ds=11.2.0.GA
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then # GA only **
   cd ~/truu/ # ~
   cd jbdevstudio-website/content/11/snapshots/rpms
+  git pull origin master
   rm -f 11; ln -s 11.2.0 11
   scpr 11 $JBDS/11/snapshots/rpms/
   ci "add symlinks for 11 -> 11.2.0" .

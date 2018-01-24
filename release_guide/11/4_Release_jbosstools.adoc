@@ -394,6 +394,9 @@ buildType="development"; if [[ ${version_jbt} == *".Final" ]]; then buildType="s
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+for j in jbosstools-releng-push-to-staging-00-validate-composites; do
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+done
 for j in jbosstools-releng-push-to-dev-stable-04-update-ide-config.properties; do
   prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
   sleep 3s
@@ -420,9 +423,10 @@ done
 
 ----
 
+
 == Validate ide-config.properties - check composite sites
 
-Here's a job that verifies everything is updated:
+Here's a job that verifies everything is updated - should automatically be triggered by the above step:
 
 https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-00-validate-composites/
 
@@ -448,6 +452,8 @@ sleep 3s
     { ${JP} -s ${ccijenkins} -j ${j} -t disable && ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep & }
   fi
 done
+
+----
 
 
 == Update Eclipse Marketplace (add/remove features)
@@ -541,14 +547,14 @@ export userpass=KERBUSER:PASSWORD
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in \
-  jbosstools-releng-push-to-dev-stable-00-releng-request-email \
-  jbosstools-releng-push-to-dev-stable-00-rename-GA-artifacts \
+  jbosstools-releng-push-to-staging-06-releng-request-email \
+  jbosstools-releng-push-to-staging-06-rename-GA-artifacts \
+  jbosstools-releng-push-to-staging-00-validate-composites \
   jbosstools-releng-push-to-dev-stable-02-copy-builds-and-rpms \
   jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites_ds \
   jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites_jbt \
   jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites \
   jbosstools-releng-push-to-dev-stable-04-update-ide-config.properties \
-  jbosstools-releng-push-to-staging-00-validate-composites \
   jbosstools-releng-push-to-dev-stable-04-update-merge-composites-html \
   jbosstools-releng-push-to-dev-stable-05-release-target-platforms \
   jbosstools-releng-push-to-dev-stable-07-notification-emails; do
@@ -607,6 +613,9 @@ Once the current milestone is done, the BUILD_ALIAS in parent pom should be bump
 
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
+
+# TODO HERE
+
 
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru # ~

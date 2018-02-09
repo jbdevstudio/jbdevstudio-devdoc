@@ -419,11 +419,26 @@ earlyaccess_IS="" # "" or "earlyaccess/" as applicable - see tip above
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+
+for j in jbosstools-releng-push-to-staging-00-validate-composites \
+  jbosstools-releng-push-to-staging-04-update-merge-composites-html \
+  jbosstools-releng-push-to-staging-04-update-ide-config.properties; do
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+done
+
 for j in jbosstools-releng-push-to-staging-04-update-merge-composites-html; do
   prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
-  data="token=RELENG&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
-versionWithRespin_ds_PREV=${versionWithRespin_ds_PREV}&qual_IS=${qual_IS}&earlyaccess_IS=${earlyaccess_IS}&version_jbt_IS=${version_jbt_IS}&\
-version_ds_IS=${version_ds_IS}"
+  data="token=RELENG&buildType=${buildType}&\
+versionWithRespin_jbt_PREV_GA=${versionWithRespin_jbt_PREV_GA}&\
+versionWithRespin_jbt_PREV=${versionWithRespin_jbt_PREV}&\
+versionWithRespin_jbt=${versionWithRespin_jbt}&\
+versionWithRespin_jbt_NEXT=${versionWithRespin_jbt_NEXT}&\
+versionWithRespin_ds_PREV_GA=${versionWithRespin_ds_PREV_GA}&\
+versionWithRespin_ds_PREV=${versionWithRespin_ds_PREV}&\
+versionWithRespin_ds=${versionWithRespin_ds}&\
+versionWithRespin_ds_NEXT=${versionWithRespin_ds_NEXT}&\
+version_jbt_IS=${version_jbt_IS}&version_ds_IS=${version_ds_IS}&\
+qual_IS=${qual_IS}&earlyaccess_IS=${earlyaccess_IS}"
   nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
 
   sleep 15s
@@ -442,89 +457,16 @@ done
 
 == Release the latest staging site to ide-config.properties
 
-Here's a job that verifies everything is updated:
+Here's a job that updates the ide-config.properties. Should have triggered in the previous step automatically.
 
 https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-staging-04-update-ide-config.properties/
-
-[source,bash]
-----
-
-# kerberos login for the Jenkins server
-export userpass=KERBUSER:PASSWORD
-
-versionWithRespin_jbt_PREV_GA=4.5.2.Final
-versionWithRespin_jbt_PREV=4.5.2.Final # milestones
-versionWithRespin_jbt=4.5.3.AM1
-versionWithRespin_jbt_NEXT=4.5.3.AM2
-
-versionWithRespin_ds_PREV_GA=11.2.0.GA
-versionWithRespin_ds_PREV=11.2.0.GA # milestones
-versionWithRespin_ds=11.3.0.AM1
-versionWithRespin_ds_NEXT=11.3.0.AM2
-
-buildType="staging"
-ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for j in jbosstools-releng-push-to-staging-00-validate-composites; do
-  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
-done
-for j in jbosstools-releng-push-to-staging-00-validate-composites jbosstools-releng-push-to-staging-04-update-ide-config.properties; do
-  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
-sleep 3s
-  data="token=RELENG&buildType=${buildType}&\
-versionWithRespin_jbt_PREV_GA=${versionWithRespin_jbt_PREV_GA}&\
-versionWithRespin_jbt_PREV=${versionWithRespin_jbt_PREV}&\
-versionWithRespin_jbt=${versionWithRespin_jbt}&\
-versionWithRespin_jbt_NEXT=${versionWithRespin_jbt_NEXT}&\
-versionWithRespin_ds_PREV_GA=${versionWithRespin_ds_PREV_GA}&\
-versionWithRespin_ds_PREV=${versionWithRespin_ds_PREV}&\
-versionWithRespin_ds=${versionWithRespin_ds}&\
-versionWithRespin_ds_NEXT=${versionWithRespin_ds_NEXT}"
-  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
-  sleep 15s
-
-  if [[ "${prevJob}" == "${nextJob}" ]]; then
-    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
-    echo "[WARN] ${ccijenkins}/${j}"
-    google-chrome ${ccijenkins}/${j} &
-  else
-    { ${JP} -s ${ccijenkins} -j ${j} -t disable && ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep & }
-  fi
-done
-
-----
 
 
 == Validate ide-config.properties - check composite sites
 
-Here's a job that verifies everything is updated - should automatically be triggered by the above step:
+Here's a job that verifies everything is updated. Should have triggered in the previous step automatically.
 
 https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-00-validate-composites/
-
-[source,bash]
-----
-
-# kerberos login for the Jenkins server
-export userpass=KERBUSER:PASSWORD
-
-ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for j in jbosstools-releng-push-to-staging-00-validate-composites; do
-  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
-sleep 3s
-  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters"
-  sleep 15s
-
-  if [[ "${prevJob}" == "${nextJob}" ]]; then
-    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
-    echo "[WARN] ${ccijenkins}/${j}"
-    google-chrome ${ccijenkins}/${j} &
-  else
-    { ${JP} -s ${ccijenkins} -j ${j} -t disable && ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep & }
-  fi
-done
-
-----
 
 
 == Smoke test the release (manually)

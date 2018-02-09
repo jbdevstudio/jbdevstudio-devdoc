@@ -61,7 +61,7 @@ TIP: Once the staging build folder exists, start fetching the devstudio installe
 ----
 
 cd ~/tmp
-versionWithRespin_ds=11.2.0.GA
+versionWithRespin_ds=11.3.0.AM1
 installerJar=$(wget -O - -q https://devstudio.redhat.com/11/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 echo "Installer jar: ${installerJar}"
 if [[ ${installerJar} ]]; then
@@ -109,7 +109,7 @@ https://devstudio.redhat.com/11/staging/updates/
 [source,bash]
 ----
 
-versionWithRespin_ds=11.2.0.GA
+versionWithRespin_ds=11.3.0.AM1
 cd ~/tmp
 installerJar=$(wget -O - -q https://devstudio.redhat.com/11/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 echo "Installer jar: ${installerJar}"
@@ -153,7 +153,7 @@ Trigger the QE smoke tests in https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_ds=11.2.0.GA
+versionWithRespin_ds=11.3.0.AM1
 installerJar=$(wget -O - -q https://devstudio.redhat.com/11/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 version_ds_INST=${installerJar#devstudio-}
 version_ds_INST=${version_ds_INST%-installer*}
@@ -201,7 +201,7 @@ Configure, then run this job: https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_ds=11.2.0.GA
+versionWithRespin_ds=11.3.0.AM1
 
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
@@ -244,7 +244,7 @@ https://access.redhat.com/security/team/key
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_ds=11.2.0.GA
+versionWithRespin_ds=11.3.0.AM1
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-05-sign-rpm-request-email; do
@@ -283,7 +283,7 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-rele
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_ds=11.2.0.GA
+versionWithRespin_ds=11.3.0.AM1
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   # signingTicket from https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-05-sign-rpm-request-email
   signingTicket="https://projects.engineering.redhat.com/browse/RCM-27209"
@@ -342,7 +342,7 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-rele
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_ds=11.2.0.GA
+versionWithRespin_ds=11.3.0.AM1
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   # signingTicket from https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-05-sign-rpm-request-email
   signingTicket="https://projects.engineering.redhat.com/browse/RCM-27209"
@@ -389,7 +389,7 @@ Once signed, the RCM ticket above will include a URL,eg., http://download-node-0
 export userpass=KERBUSER:PASSWORD
 
 signedURL=http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/devstudio-11.2.0/rpms/signed/
-versionWithRespin_ds=11.2.0.GA
+versionWithRespin_ds=11.3.0.AM1
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-06-sign-rpm-fetch; do

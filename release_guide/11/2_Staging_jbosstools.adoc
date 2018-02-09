@@ -294,10 +294,7 @@ for j in jbosstools-releng-push-to-staging-03-verify-builds-update-sites; do
   prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
   google-chrome ${ccijenkins}/${j} &
 done
-jobs="jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites_jbt"
-if [[ ${version_ds} == *".GA" ]]; then # **
-  jobs="jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites_ds jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites_jbt"
-fi
+jobs="jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites_ds jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites_jbt"
 for j in ${jobs}; do
   prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
   sleep 3s
@@ -466,7 +463,7 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 
 Here's a job that verifies everything is updated. Should have triggered in the previous step automatically.
 
-https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-00-validate-composites/
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-staging-00-validate-composites/
 
 
 == Smoke test the release (manually)

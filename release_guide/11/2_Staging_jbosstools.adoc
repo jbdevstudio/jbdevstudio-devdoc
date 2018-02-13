@@ -259,13 +259,6 @@ Here is a pair of jobs that perform the copy (& rename) from /snapshots/ to /sta
 
 NOTE: To save time, you can run this in parallel with the above step to create the Red Hat Central discovery site.
 
-[IMPORTANT]
-====
-
-Use devstudio@wonka.mw.lab.eng.bos.redhat.com (10.16.89.81) instead of: dev90.hosts.mwqe.eng.bos.redhat.com (10.19.65.30) or www.qa.jboss.com (10.16.89.17) as can no longer ssh to hudson@www.qa and nfs mounted drive doesn't work anymore.
-
-====
-
 [source,bash]
 ----
 
@@ -424,7 +417,6 @@ for j in jbosstools-releng-push-to-staging-00-validate-composites \
 done
 
 for j in jbosstools-releng-push-to-staging-04-update-merge-composites-html; do
-  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
   data="token=RELENG&buildType=${buildType}&\
 versionWithRespin_jbt_PREV_GA=${versionWithRespin_jbt_PREV_GA}&\
 versionWithRespin_jbt_PREV=${versionWithRespin_jbt_PREV}&\
@@ -451,6 +443,7 @@ done
 
 ----
 
+TODO: Here
 
 == Release the latest staging site to ide-config.properties
 

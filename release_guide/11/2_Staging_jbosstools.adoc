@@ -369,16 +369,7 @@ done
 ----
 
 
-=== Cleanup OLD builds
-
-Optional step.
-
-Run this job to move any old builds into an OLD/ folder for later cleanup, or delete them immediately.
-
-https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-08-delete-builds-and-update-sites/
-
-
-=== Update /staging/updates/ sites and merge in Integration Stack content
+== Update /staging/updates/ sites and merge in Integration Stack content
 
 Here's a job that verifies everything is updated & merged:
 
@@ -415,6 +406,7 @@ for j in jbosstools-releng-push-to-staging-00-validate-composites \
   jbosstools-releng-push-to-staging-04-update-ide-config.properties; do
   prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
 done
+sleep 3s
 
 for j in jbosstools-releng-push-to-staging-04-update-merge-composites-html; do
   data="token=RELENG&buildType=${buildType}&\
@@ -443,20 +435,26 @@ done
 
 ----
 
-TODO: Here
-
-== Release the latest staging site to ide-config.properties
+=== Release the latest staging site to ide-config.properties
 
 Here's a job that updates the ide-config.properties. Should have triggered in the previous step automatically.
 
 https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-staging-04-update-ide-config.properties/
 
-
-== Validate ide-config.properties - check composite sites
+=== Validate ide-config.properties - check composite sites
 
 Here's a job that verifies everything is updated. Should have triggered in the previous step automatically.
 
 https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-staging-00-validate-composites/
+
+
+=== Cleanup OLD builds
+
+Optional step.
+
+Run this job to move any old builds into an OLD/ folder for later cleanup, or delete them immediately.
+
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-08-delete-builds-and-update-sites/
 
 
 == Smoke test the release (manually)

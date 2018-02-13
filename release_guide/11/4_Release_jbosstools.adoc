@@ -202,87 +202,6 @@ done
 
 ----
 
-=== Update /development/updates/ sites (and /stable/updates if Final)
-
-Here's a job that verifies everything is updated:
-
-https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-04-update-merge-composites-html/
-
-[IMPORTANT]
-====
-
-To know what values to use for merging in the Integration Stack content (IS-suffixed variables), contact Paul Leacu or compare these URLs:
-
-http://download.jboss.org/jbosstools/oxygen/stable/updates/integration-stack/discovery/4.5.2.Final/ vs
-http://download.jboss.org/jbosstools/oxygen/development/updates/integration-stack/discovery/4.5.2.Final/
-and
-http://download.jboss.org/jbosstools/oxygen/stable/updates/integration-stack/discovery/4.5.2.Final/ vs
-http://download.jboss.org/jbosstools/oxygen/stable/updates/integration-stack/discovery/4.5.2.Final/earlyaccess/
-
-Similarly for devstudio:
-
-https://devstudio.jboss.com/11/development/updates/integration-stack/discovery/11.2.0.GA/ vs
-https://devstudio.jboss.com/11/development/updates/integration-stack/discovery/11.2.0.GA/earlyaccess
-and
-https://devstudio.jboss.com/11/development/updates/integration-stack/discovery/11.2.0.GA/ vs
-https://devstudio.jboss.com/11/development/updates/integration-stack/discovery/11.2.0.GA/earlyaccess/
-
-The URLs used to fetch IS content are as follows:
-====
-
-[source,bash]
-----
-
-# TODO Here
-
-eclipseReleaseName=oxygen
-devstudioReleaseVersion=11
-qual_IS="stable" # "development" or "stable" as applicable - see tip above
-earlyaccess_IS="" # "" or "earlyaccess/" as applicable - see tip above
-version_jbt_IS=4.5.2.Final
-version_ds_IS=11.2.0.GA
-
-google-chrome \
-http://download.jboss.org/jbosstools/${eclipseReleaseName}/${qual_IS}/updates/integration-stack/discovery/${version_jbt_IS}/${earlyaccess_IS} \
-https://devstudio.redhat.com/${devstudioReleaseVersion}/${qual_IS}/updates/integration-stack/discovery/${version_ds_IS}/${earlyaccess_IS}
-
-----
-
-[source,bash]
-----
-
-# kerberos login for the Jenkins server
-export userpass=KERBUSER:PASSWORD
-
-versionWithRespin_jbt=4.5.3.AM1
-versionWithRespin_ds=11.3.0.AM1
-versionWithRespin_ds_PREV_GA=11.2.0.GA
-qual_IS="stable" # "development" or "stable" as applicable - see tip above
-earlyaccess_IS="" # "" or "earlyaccess/" as applicable - see tip above
-version_jbt_IS=4.5.2.Final
-version_ds_IS=11.2.0.GA
-ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for j in jbosstools-releng-push-to-dev-stable-04-update-merge-composites-html; do
-  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
-  sleep 3s
-  data="token=RELENG&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&versionWithRespin_ds_PREV_GA=${versionWithRespin_ds_PREV_GA}&\
-qual_IS=${qual_IS}&earlyaccess_IS=${earlyaccess_IS}&version_jbt_IS=${version_jbt_IS}&version_ds_IS=${version_ds_IS}"
-  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
-  sleep 15s
-
-  if [[ "${prevJob}" == "${nextJob}" ]]; then
-    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
-    echo "[WARN] ${ccijenkins}/${j}"
-  else
-    ${JP} -s ${ccijenkins} -j ${j} -t disable
-    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
-  fi
-done
-
-----
-
-
 === WebTools
 
 ==== Publish Site
@@ -366,17 +285,58 @@ done
 ----
 
 
-== Release the latest development and/or stable milestone to ide-config.properties
+== Update /development/updates/ (and /stable if Final) sites;  merge in Integration Stack content
 
 Here's a job that verifies everything is updated:
 
-https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-04-update-ide-config.properties/
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-04-update-merge-composites-html/
+
+[IMPORTANT]
+====
+
+To know what values to use for merging in the Integration Stack content (IS-suffixed variables), contact Paul Leacu or compare these URLs:
+
+http://download.jboss.org/jbosstools/oxygen/stable/updates/integration-stack/discovery/4.5.2.Final/ vs
+http://download.jboss.org/jbosstools/oxygen/development/updates/integration-stack/discovery/4.5.2.Final/
+and
+http://download.jboss.org/jbosstools/oxygen/stable/updates/integration-stack/discovery/4.5.2.Final/ vs
+http://download.jboss.org/jbosstools/oxygen/stable/updates/integration-stack/discovery/4.5.2.Final/earlyaccess/
+
+Similarly for devstudio:
+
+https://devstudio.jboss.com/11/development/updates/integration-stack/discovery/11.2.0.GA/ vs
+https://devstudio.jboss.com/11/development/updates/integration-stack/discovery/11.2.0.GA/earlyaccess
+and
+https://devstudio.jboss.com/11/development/updates/integration-stack/discovery/11.2.0.GA/ vs
+https://devstudio.jboss.com/11/development/updates/integration-stack/discovery/11.2.0.GA/earlyaccess/
+
+The URLs used to fetch IS content are as follows:
+====
+
+[source,bash]
+----
+
+# TODO Here
+
+eclipseReleaseName=oxygen
+devstudioReleaseVersion=11
+qual_IS="stable" # "development" or "stable" as applicable - see tip above
+earlyaccess_IS="" # "" or "earlyaccess/" as applicable - see tip above
+version_jbt_IS=4.5.2.Final
+version_ds_IS=11.2.0.GA
+
+google-chrome \
+http://download.jboss.org/jbosstools/${eclipseReleaseName}/${qual_IS}/updates/integration-stack/discovery/${version_jbt_IS}/${earlyaccess_IS} \
+https://devstudio.redhat.com/${devstudioReleaseVersion}/${qual_IS}/updates/integration-stack/discovery/${version_ds_IS}/${earlyaccess_IS}
+
+----
 
 [source,bash]
 ----
 
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
+
 
 versionWithRespin_jbt_PREV_GA=4.5.2.Final
 versionWithRespin_jbt_PREV=4.5.2.Final # previous RELEASED milestone as referenced in ide-config.properties
@@ -392,14 +352,22 @@ version_jbt=$(echo ${version_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') 
 version_ds=$(echo ${version_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 buildType="development"; if [[ ${version_jbt} == *".Final" ]]; then buildType="stable"; fi
 
+version_jbt_IS=4.5.2.Final
+version_ds_IS=11.2.0.GA
+qual_IS="stable" # "development" or "stable" as applicable - see tip above
+earlyaccess_IS="" # "" or "earlyaccess/" as applicable - see tip above
+
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for j in jbosstools-releng-push-to-staging-00-validate-composites; do
+
+for j in jbosstools-releng-push-to-staging-00-validate-composites \
+  jbosstools-releng-push-to-dev-stable-04-update-merge-composites-html \
+  jbosstools-releng-push-to-dev-stable-04-update-ide-config.properties; do
   prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
 done
-for j in jbosstools-releng-push-to-dev-stable-04-update-ide-config.properties; do
-  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
-  sleep 3s
+sleep 3s
+
+for j in jbosstools-releng-push-to-dev-stable-04-update-merge-composites-html; do
 
   data="token=RELENG&buildType=${buildType}&\
 versionWithRespin_jbt_PREV_GA=${versionWithRespin_jbt_PREV_GA}&\
@@ -409,7 +377,9 @@ versionWithRespin_jbt_NEXT=${versionWithRespin_jbt_NEXT}&\
 versionWithRespin_ds_PREV_GA=${versionWithRespin_ds_PREV_GA}&\
 versionWithRespin_ds_PREV=${versionWithRespin_ds_PREV}&\
 versionWithRespin_ds=${versionWithRespin_ds}&\
-versionWithRespin_ds_NEXT=${versionWithRespin_ds_NEXT}"
+versionWithRespin_ds_NEXT=${versionWithRespin_ds_NEXT}&\
+qual_IS=${qual_IS}&earlyaccess_IS=${earlyaccess_IS}&\
+version_jbt_IS=${version_jbt_IS}&version_ds_IS=${version_ds_IS}"
   nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
   sleep 15s
 
@@ -417,43 +387,24 @@ versionWithRespin_ds_NEXT=${versionWithRespin_ds_NEXT}"
     echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
     echo "[WARN] ${ccijenkins}/${j}"
   else
+    ${JP} -s ${ccijenkins} -j ${j} -t disable
     ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
   fi
 done
 
 ----
 
+=== Release the latest development and/or stable milestone to ide-config.properties
 
-== Validate ide-config.properties - check composite sites
+Here's a job that updates the ide-config.properties. Should have triggered in the previous step automatically.
 
-Here's a job that verifies everything is updated - should automatically be triggered by the above step:
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-04-update-ide-config.properties/
 
-https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-00-validate-composites/
+=== Validate ide-config.properties - check composite sites
 
-[source,bash]
-----
+Here's a job that verifies everything is updated. Should have triggered in the previous step automatically.
 
-# kerberos login for the Jenkins server
-export userpass=KERBUSER:PASSWORD
-
-ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for j in jbosstools-releng-push-to-staging-00-validate-composites; do
-  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
-sleep 3s
-  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters"
-  sleep 15s
-
-  if [[ "${prevJob}" == "${nextJob}" ]]; then
-    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
-    echo "[WARN] ${ccijenkins}/${j}"
-    google-chrome ${ccijenkins}/${j} &
-  else
-    { ${JP} -s ${ccijenkins} -j ${j} -t disable && ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep & }
-  fi
-done
-
-----
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-staging-00-validate-composites/
 
 
 == Update Eclipse Marketplace (add/remove features)
@@ -577,6 +528,7 @@ export userpass=JIRAUSER:JIRAPWD
 # can filter out labels using --skipLabels "releasework, task, qa" etc.
 # can do a dry run (list issues, do not change them with -D
 # skip verifying JIRA fixversions with -S
+# automatically apply changes with -A
 
 # if previous sprint is done, use sprint=sprint_NEXT here
 sprint="devex #144 January 2018"
@@ -588,7 +540,7 @@ versionWithRespin_ds_NEXT=11.3.0.AM2
 python -W ignore /tmp/jbt.github/jbosstools-build-ci/util/checkUnresolvedIssues.py -S --jira https://issues.jboss.org \
   --jbt ${versionWithRespin_jbt} --jbt_NEXT ${versionWithRespin_jbt_NEXT} \
   --ds ${versionWithRespin_ds} --ds_NEXT ${versionWithRespin_ds_NEXT} \
-  --sprint "${sprint}" --sprint_NEXT "${sprint_NEXT}" --skipLabels "task, releasework"
+  --sprint "${sprint}" --sprint_NEXT "${sprint_NEXT}" --skipLabels "task, releasework" -A
 
 ----
 
@@ -611,12 +563,6 @@ Once the current milestone is done, the BUILD_ALIAS in parent pom should be bump
 [source,bash]
 ----
 
-# kerberos login for the Jenkins server
-export userpass=KERBUSER:PASSWORD
-
-# TODO HERE
-
-
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru # ~
 pushd jbosstools-build/parent
@@ -636,10 +582,15 @@ st pom.xml
 # ...
 
 ci "bump parent pom to BUILD_ALIAS = ${BUILD_ALIAS_NEXT}" pom.xml
-git push origin HEAD:master # jbosstools-4.5.0.x
+git push origin HEAD:master # jbosstools-4.5.x
+
+###########
+
+# kerberos login for the Jenkins server
+export userpass=KERBUSER:PASSWORD
 
 # rebuild parent pom
-# https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-build.parent_master # jbosstools-4.5.0.x
+# https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-build.parent_master # jbosstools-4.5.x
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 stream_jbt=master

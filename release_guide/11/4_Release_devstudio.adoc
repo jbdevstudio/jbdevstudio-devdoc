@@ -389,9 +389,9 @@ if [[ ${versionWithRespin_ds} == *"GA" ]]; then # GA only **
   cd ~/truu/ # ~
   cd jbdevstudio-website/content/11/snapshots/rpms
   git pull origin master
-  rm -f 11; ln -s 11.2.0 11
+  rm -f 11; ln -s 11.3.0 11
   scpr 11 $JBDS/11/snapshots/rpms/
-  ci "add symlinks for 11 -> 11.2.0" .
+  ci "add symlinks for 11 -> 11.3.0" .
   git push origin master
 fi
 

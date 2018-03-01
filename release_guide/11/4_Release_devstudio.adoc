@@ -11,6 +11,23 @@ See link:3_Release_preparation.adoc[Pre-Release]
 
 Once QE has signed off, and bits are staged to CSP, you can proceed w/ the rest of the release.
 
+[IMPORTANT]
+====
+
+Before running any of the jobs or scripts below, make sure to set the correct versions to the values for the release you're staging or releasing.
+
+* look for versionWithRespin, update to version you're staging
+* look for PREV and NEXT variables; set to previous / next milestone (AM1, AM3, AM3, Final/GA)
+* check target platform versions are current w/ latest versions
+* check current/NEXT sprint values are correct
+* check parent pom version, version_parent, is current
+* check Integration Stack variables like earlyaccess_IS, version_jbt_IS, version_ds_IS are correct. Double-check best values with Paul Leacu (pleacu).
+
+Search for this regex:
+
+versionWithRespin_(jbt|ds)=[0-9]|version_(parent|jbt|ds|jbt_IS|ds_IS)=[0-9]|_PREV=[0-9]|_NEXT=[0-9]|TARGET_PLATFORM_.+(MIN|MAX)=[0-9]
+
+====
 
 == Copy content to release directory
 

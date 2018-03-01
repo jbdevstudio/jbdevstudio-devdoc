@@ -74,6 +74,10 @@ Before running any of the jobs or scripts below, make sure to set the correct ve
 * check parent pom version, version_parent, is current
 * check Integration Stack variables like earlyaccess_IS, version_jbt_IS, version_ds_IS are correct. Double-check best values with Paul Leacu (pleacu).
 
+Search for this regex:
+
+versionWithRespin_(jbt|ds)=[0-9]|version_(parent|jbt|ds|jbt_IS|ds_IS)=[0-9]|_PREV=[0-9]|_NEXT=[0-9]|TARGET_PLATFORM_.+(MIN|MAX)=[0-9]
+
 ====
 
 == Copy sites

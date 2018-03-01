@@ -30,9 +30,10 @@ Kick this job to send reminder emails to the team, in case some issues are not y
 export userpass=KERBUSER:PASSWORD
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+alias jp-crumb='jenkinsURL="${ccijenkins}"; wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${jenkinsURL//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#"'
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-jiralint-weekly; do
-  ${JP} -s ${ccijenkins} -j ${j} -t build
+  ${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t build
 done
 
 ----

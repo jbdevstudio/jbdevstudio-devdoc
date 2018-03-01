@@ -161,13 +161,14 @@ echo "Devstudio installer version: ${version_ds_INST}"
 
 # run the one buildflow job
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+alias jp-crumb='jenkinsURL="${ccijenkins}"; wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${jenkinsURL//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#"'
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in devstudio.buildflow.it.smoke; do
-  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  prevJob=$(${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
   sleep 3s
 
   data="DEVSTUDIO_VERSION=${version_ds_INST}"
-  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+  nextJob=$(${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
   sleep 15s
 done
 
@@ -205,21 +206,22 @@ versionWithRespin_ds=11.3.0.AM1
 
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-  JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+  alias jp-crumb='jenkinsURL="${ccijenkins}"; wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${jenkinsURL//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#"'
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
   for j in jbosstools-releng-push-to-staging-06-rename-GA-artifacts; do
-    prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+    prevJob=$(${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
     sleep 3s
 
     data="versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}"
-    nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+    nextJob=$(${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
     sleep 15s
 
     if [[ "${prevJob}" == "${nextJob}" ]]; then
       echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
       echo "[WARN] ${ccijenkins}/${j}"
     else
-      ${JP} -s ${ccijenkins} -j ${j} -t disable
-      ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+      ${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t disable
+      ${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t lastBuild/toggleLogKeep
     fi
   done
 fi
@@ -246,13 +248,14 @@ export userpass=KERBUSER:PASSWORD
 
 versionWithRespin_ds=11.3.0.AM1
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+alias jp-crumb='jenkinsURL="${ccijenkins}"; wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${jenkinsURL//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#"'
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-05-sign-rpm-request-email; do
-  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  prevJob=$(${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
   sleep 3s
 
   data="token=RELENG&versionWithRespin_ds=${versionWithRespin_ds}"
-  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+  nextJob=$(${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
   sleep 15s
 
   if [[ "${prevJob}" == "${nextJob}" ]]; then
@@ -260,8 +263,8 @@ for j in jbosstools-releng-push-to-staging-05-sign-rpm-request-email; do
     echo "[WARN] ${ccijenkins}/${j}"
     google-chrome ${ccijenkins}/${j} &
   else
-    ${JP} -s ${ccijenkins} -j ${j} -t disable
-    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+    ${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t disable
+    ${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t lastBuild/toggleLogKeep
   fi
 done
 
@@ -294,14 +297,15 @@ if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   CCrecipients=${CCrecipients// /%20}
   recipientOverride="" # or "nboldt@redhat.com"
   ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-  JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+  alias jp-crumb='jenkinsURL="${ccijenkins}"; wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${jenkinsURL//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#"'
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
   for j in jbosstools-releng-push-to-staging-06-publish-to-channel-request-email; do
-    prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+    prevJob=$(${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
     sleep 3s
 
     data="token=RELENG&versionWithRespin_ds=${versionWithRespin_ds}&GOLIVEDATE=${GOLIVEDATE}&STAGE_DATE=${STAGE_DATE}\
 &TOrecipients=${TOrecipients}&CCrecipients=${CCrecipients}&recipientOverride=${recipientOverride}&signingTicket=${signingTicket}"
-    nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+    nextJob=$(${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
     sleep 15s
 
     if [[ "${prevJob}" != "${nextJob}" ]]; then
@@ -309,8 +313,8 @@ if [[ ${versionWithRespin_ds} == *"GA" ]]; then
       echo "[WARN] ${ccijenkins}/${j}"
     google-chrome ${ccijenkins}/${j} &
     else
-      ${JP} -s ${ccijenkins} -j ${j} -t disable
-      ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+      ${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t disable
+      ${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t lastBuild/toggleLogKeep
     fi
   done
 fi
@@ -354,22 +358,23 @@ if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   CCrecipients=${CCrecipients// /%20}
   recipientOverride="" # or "nboldt@redhat.com"
   ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-  JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+  alias jp-crumb='jenkinsURL="${ccijenkins}"; wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${jenkinsURL//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#"'
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
   for j in jbosstools-releng-push-to-staging-06-releng-request-email; do
-    prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+    prevJob=$(${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
     sleep 3s
 
     data="token=RELENG&versionWithRespin_ds=${versionWithRespin_ds}&GOLIVEDATE=${GOLIVEDATE}&STAGE_DATE=${STAGE_DATE}\
 &TOrecipients=${TOrecipients}&CCrecipients=${CCrecipients}&recipientOverride=${recipientOverride}&signingTicket=${signingTicket}&errataTicket=${signingTicket}"
-    nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+    nextJob=$(${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
     sleep 15s
 
     if [[ "${prevJob}" != "${nextJob}" ]]; then
       echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
       echo "[WARN] ${ccijenkins}/${j}"
     else
-      ${JP} -s ${ccijenkins} -j ${j} -t disable
-      ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+      ${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t disable
+      ${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t lastBuild/toggleLogKeep
     fi
   done
 fi
@@ -391,13 +396,14 @@ export userpass=KERBUSER:PASSWORD
 signedURL=http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/devstudio-11.2.0/rpms/signed/
 versionWithRespin_ds=11.3.0.AM1
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+alias jp-crumb='jenkinsURL="${ccijenkins}"; wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${jenkinsURL//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#"'
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-06-sign-rpm-fetch; do
-  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  prevJob=$(${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
   sleep 3s
 
   data="token=RELENG&versionWithRespin_ds=${versionWithRespin_ds}&signedURL=${signedURL}"
-  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+  nextJob=$(${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
   sleep 15s
 
   if [[ "${prevJob}" == "${nextJob}" ]]; then
@@ -405,8 +411,8 @@ for j in jbosstools-releng-push-to-staging-06-sign-rpm-fetch; do
     echo "[WARN] ${ccijenkins}/${j}"
     google-chrome ${ccijenkins}/${j} &
   else
-    ${JP} -s ${ccijenkins} -j ${j} -t disable
-    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+    ${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t disable
+    ${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t lastBuild/toggleLogKeep
   fi
 done
 

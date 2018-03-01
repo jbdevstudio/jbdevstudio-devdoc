@@ -38,9 +38,10 @@ Kick this job to send reminder emails to the team, in case some issues are not y
 export userpass=KERBUSER:PASSWORD
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+alias jp-crumb='jenkinsURL="${ccijenkins}"; wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${jenkinsURL//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#"'
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-jiralint-weekly; do
-  ${JP} -s ${ccijenkins} -j ${j} -t build
+  ${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t build
 done
 
 ----
@@ -108,26 +109,27 @@ TARGET_PLATFORM_VERSION_MAX=4.72.0.Final
 TARGET_PLATFORM_CENTRAL_MAX=4.72.0.Final-SNAPSHOT
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+alias jp-crumb='jenkinsURL="${ccijenkins}"; wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${jenkinsURL//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#"'
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites; do
-  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  prevJob=$(${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
 done
 for j in jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites_jbt \
   jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites_ds; do
-  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  prevJob=$(${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
   sleep 3s
 
   data="stream_jbt=${stream_jbt}&stream_ds=${stream_ds}&\
 versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
 TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&TARGET_PLATFORM_CENTRAL_MAX=${TARGET_PLATFORM_CENTRAL_MAX}"
-  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+  nextJob=$(${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
   sleep 15s
 
   if [[ "${prevJob}" == "${nextJob}" ]]; then
     echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
     echo "[WARN] ${ccijenkins}/${j}"
   else
-    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+    ${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t lastBuild/toggleLogKeep
   fi
 done
 
@@ -182,21 +184,22 @@ versionWithRespin_ds=11.3.0.AM1
 
 # buildType=development in this case, development will ALSO check stable URLs if we're pushing out a GA/Final release
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+alias jp-crumb='jenkinsURL="${ccijenkins}"; wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${jenkinsURL//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#"'
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites; do
-  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  prevJob=$(${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
   sleep 3s
   data="versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
 skipdiscovery=false&onlydiscovery=false&buildType=development"
-  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+  nextJob=$(${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
   sleep 15s
 
   if [[ "${prevJob}" == "${nextJob}" ]]; then
     echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
     echo "[WARN] ${ccijenkins}/${j}"
   else
-    ${JP} -s ${ccijenkins} -j ${j} -t disable
-    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+    ${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t disable
+    ${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t lastBuild/toggleLogKeep
   fi
 done
 
@@ -262,22 +265,23 @@ export userpass=KERBUSER:PASSWORD
 TARGET_PLATFORM_VERSION_MAXes="4.72.0.Final 4.71.1.Final"
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+alias jp-crumb='jenkinsURL="${ccijenkins}"; wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${jenkinsURL//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#"'
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 
 for TARGET_PLATFORM_VERSION_MAX in ${TARGET_PLATFORM_VERSION_MAXes}; do
   for j in jbosstools-releng-push-to-dev-stable-05-release-target-platforms; do
-    prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+    prevJob=$(${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
 
     sleep 3s
     data="token=RELENG&TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}"
-    nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+    nextJob=$(${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
     sleep 15s
     if [[ "${prevJob}" == "${nextJob}" ]]; then
       echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
       echo "[WARN] ${ccijenkins}/${j}"
     else
-      ${JP} -s ${ccijenkins} -j ${j} -t disable
-      ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+      ${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t disable
+      ${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t lastBuild/toggleLogKeep
     fi
   done
 done
@@ -358,12 +362,13 @@ qual_IS="stable" # "development" or "stable" as applicable - see tip above
 earlyaccess_IS="" # "" or "earlyaccess/" as applicable - see tip above
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+alias jp-crumb='jenkinsURL="${ccijenkins}"; wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${jenkinsURL//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#"'
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 
 for j in jbosstools-releng-push-to-staging-00-validate-composites \
   jbosstools-releng-push-to-dev-stable-04-update-merge-composites-html \
   jbosstools-releng-push-to-dev-stable-04-update-ide-config.properties; do
-  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  prevJob=$(${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
 done
 sleep 3s
 
@@ -380,15 +385,15 @@ versionWithRespin_ds=${versionWithRespin_ds}&\
 versionWithRespin_ds_NEXT=${versionWithRespin_ds_NEXT}&\
 qual_IS=${qual_IS}&earlyaccess_IS=${earlyaccess_IS}&\
 version_jbt_IS=${version_jbt_IS}&version_ds_IS=${version_ds_IS}"
-  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+  nextJob=$(${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
   sleep 15s
 
   if [[ "${prevJob}" == "${nextJob}" ]]; then
     echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
     echo "[WARN] ${ccijenkins}/${j}"
   else
-    ${JP} -s ${ccijenkins} -j ${j} -t disable
-    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+    ${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t disable
+    ${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t lastBuild/toggleLogKeep
   fi
 done
 
@@ -496,6 +501,7 @@ You will need to disable the jobs once the bits are released, so that they won't
 export userpass=KERBUSER:PASSWORD
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+alias jp-crumb='jenkinsURL="${ccijenkins}"; wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${jenkinsURL//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#"'
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in \
   jbosstools-releng-push-to-staging-06-releng-request-email \
@@ -509,7 +515,7 @@ for j in \
   jbosstools-releng-push-to-dev-stable-04-update-merge-composites-html \
   jbosstools-releng-push-to-dev-stable-05-release-target-platforms \
   jbosstools-releng-push-to-dev-stable-07-notification-emails; do
-  { ${JP} -s ${ccijenkins} -j ${j} -t disable & }
+  { ${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t disable & }
 done
 
 ----
@@ -592,13 +598,14 @@ export userpass=KERBUSER:PASSWORD
 # rebuild parent pom
 # https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-build.parent_master # jbosstools-4.5.x
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+alias jp-crumb='jenkinsURL="${ccijenkins}"; wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${jenkinsURL//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#"'
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 stream_jbt=master
 for j in jbosstools-build.parent_${stream_jbt}; do
-  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  prevJob=$(${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
   sleep 3s
 
-  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t build -q); echo "[${nextJob}] ${ccijenkins}/${j} build"
+  nextJob=$(${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t build -q); echo "[${nextJob}] ${ccijenkins}/${j} build"
   sleep 15s
 
   if [[ "${prevJob}" == "${nextJob}" ]]; then
@@ -606,7 +613,7 @@ for j in jbosstools-build.parent_${stream_jbt}; do
     echo "[WARN] ${ccijenkins}/${j}"
     google-chrome ${ccijenkins}/${j} &
   else
-    { ${JP} -s ${ccijenkins} -j ${j} -t disable && ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep & }
+    { ${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t disable && ${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t lastBuild/toggleLogKeep & }
   fi
 done
 
@@ -643,24 +650,25 @@ JIRA_HOST="https://issues.jboss.org"
 TOrecipients="nboldt@redhat.com"
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+alias jp-crumb='jenkinsURL="${ccijenkins}"; wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${jenkinsURL//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#"'
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-00-parent-pom-update-task-jiras; do
-  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  prevJob=$(${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
   sleep 3s
 
   data="versionWithRespin_jbt_NEXT=${versionWithRespin_jbt_NEXT}&versionWithRespin_ds_NEXT=${versionWithRespin_ds_NEXT}&\
 version_parent_NEXT=${version_parent_NEXT}&github_branch=${github_branch}&github_branch_fallback=${github_branch_fallback}&\
 TARGET_PLATFORM_VERSION_MIN=${TARGET_PLATFORM_VERSION_MIN}&TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&\
 JIRA_HOST=${JIRA_HOST}&TOrecipients=${TOrecipients}&createBranch=${createBranch}"
-  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+  nextJob=$(${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
   sleep 15s
 
   if [[ "${prevJob}" == "${nextJob}" ]]; then
     echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
     echo "[WARN] ${ccijenkins}/${j}"
   else
-    ${JP} -s ${ccijenkins} -j ${j} -t disable
-    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
+    ${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t disable
+    ${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t lastBuild/toggleLogKeep
   fi
 done
 
@@ -692,12 +700,13 @@ version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\
   stream_ds=master
 # fi
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+alias jp-crumb='jenkinsURL="${ccijenkins}"; wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${jenkinsURL//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#"'
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for p in aerogear base browsersim build-ci build.parent central discovery fabric8analytics forge fuse fuse-extras hibernate integration-tests.aggregate \
     javaee-tests-matrix javaee jst livereload openshift-restclient-java openshift server-Run-Unit-and-ITests server vpe webservices fuse \
     base.sonar fuse.sonar openshift.sonar server.sonar; do
   j=jbosstools-${p}_master
-  ${JP} -s ${ccijenkins} -j ${j} -t enable &
+  ${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t enable &
 done
 echo ""
 # jbosstools-buildflow-force-publish_${stream_jbt} jbosstools-build.parent_${stream_jbt} jbosstoolstargetplatform-central-4.72.x jbosstoolstargetplatform-4.72.x
@@ -706,7 +715,7 @@ for j in jbosstools-buildflow_${stream_jbt} jbosstools-discovery_${stream_jbt} \
     jbosstools-composite-install_${stream_jbt} jbosstools-browsersim_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} \
     jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstools-build-sites.aggregate.child-sites_${stream_jbt} \
     jbosstools-maven-plugins.tycho-plugins_${stream_jbt}; do
-  ${JP} -s ${ccijenkins} -j ${j} -t enable &
+  ${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t enable &
 done
 echo ""
 

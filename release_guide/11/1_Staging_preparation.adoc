@@ -67,24 +67,24 @@ sprint=${sprint// /%20}
 sprint_NEXT=${sprint_NEXT// /%20}
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-alias jp-crumb='jenkinsURL="${ccijenkins}"; wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${jenkinsURL//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#"'
+jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-00-sprint-creation-and-jira-triage-request-emails; do
-  prevJob=$(${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  prevJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
   sleep 3s
 
   data="recipientOverride=${recipientOverride}&sprint=${sprint}&sprint_NEXT=${sprint_NEXT}&\
 versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_jbt_NEXT=${versionWithRespin_jbt_NEXT}&\
 versionWithRespin_ds=${versionWithRespin_ds}&versionWithRespin_ds_NEXT=${versionWithRespin_ds_NEXT}&\
 TOrecipients1=${TOrecipients1}&TOrecipients2=${TOrecipients2}&CCrecipients=${CCrecipients}&"
-  nextJob=$(${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+  nextJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
   sleep 15s
 
   if [[ "${prevJob}" == "${nextJob}" ]]; then
     echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
     echo "[WARN] ${ccijenkins}/${j}"
   else
-    { ${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t disable && ${JP} -s ${ccijenkins} -c $(jp-crumb) -j ${j} -t lastBuild/toggleLogKeep & }
+    { ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t disable && ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t lastBuild/toggleLogKeep & }
   fi
 done
 

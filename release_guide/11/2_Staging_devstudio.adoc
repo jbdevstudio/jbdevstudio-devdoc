@@ -181,7 +181,7 @@ done
 
 == Verify install instructions are correct
 
-Look at the .txt and .html files in https://devstudio.redhat.com/11/staging/builds/devstudio-11.2.0.GA-build-product/latest/all/
+Look at the .txt and .html files in https://devstudio.redhat.com/11/staging/builds/devstudio-11.3.0.GA-build-product/latest/all/
 
 Verify that they contain correct install/usage instructions & versions.
 
@@ -387,7 +387,7 @@ fi
 
 == Fetch signed RPMs
 
-Once signed, the RCM ticket above will include a URL,eg., http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/devstudio-11.2.0/rpms/signed/
+Once signed, the RCM ticket above will include a URL,eg., http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/devstudio-11.3.0/rpms/signed/
 
 1. Fetch rpms, regen metadata.
 
@@ -397,7 +397,7 @@ Once signed, the RCM ticket above will include a URL,eg., http://download-node-0
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-signedURL=http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/devstudio-11.2.0/rpms/signed/
+signedURL=http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/devstudio-11.3.0/rpms/signed/
 versionWithRespin_ds=11.3.0.AM2
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
@@ -422,7 +422,7 @@ done
 
 ----
 
-2. Download the rpms from https://devstudio.redhat.com/11/staging/builds/devstudio-11.2.0.GA-build-rpm/latest/x86_64/
+2. Download the rpms from https://devstudio.redhat.com/11/staging/builds/devstudio-11.3.0.GA-build-rpm/latest/x86_64/
 and test them like this to verify their signatures. You'll want to run these commands as ROOT
 
 [source,bash]
@@ -437,8 +437,8 @@ rm -f /tmp/a5787476.txt
 # now you can check the signature against the key
 
 signedURL=https://devstudio.redhat.com/11/snapshots/builds/devstudio.rpm_master/latest/x86_64/ # unsigned
-signedURL=http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/devstudio-11.2.0/rpms/signed/ # signed
-signedURL=https://devstudio.redhat.com/11/staging/builds/devstudio-11.2.0.GA-build-rpm/latest/x86_64/ # if updated from the step above, must be signed
+signedURL=http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/devstudio-11.3.0/rpms/signed/ # signed
+signedURL=https://devstudio.redhat.com/11/staging/builds/devstudio-11.3.0.GA-build-rpm/latest/x86_64/ # if updated from the step above, must be signed
 
 theFiles=$(curl -s -S -k ${signedURL} | grep href=\" | grep rpm\" | sed -e "s#.\+href=\"\([^\"]\+\)\".\+#\1#")
 for theFile in ${theFiles}; do
@@ -465,16 +465,16 @@ rm -fr /tmp/index.thml /tmp/rh-eclipse47-devstudio*.rpm
 ----
 
 cat <<EOF > /etc/yum.repos.d/rh-eclipse47-devstudio.repo
-[rh-eclipse47-devstudio-staging-11.2.0]
-name=rh-eclipse47-devstudio-staging-11.2.0
-baseurl=https://devstudio.redhat.com/11/staging/builds/devstudio-11.2.0.GA-build-rpm/latest/x86_64/
+[rh-eclipse47-devstudio-staging-11.3.0]
+name=rh-eclipse47-devstudio-staging-11.3.0
+baseurl=https://devstudio.redhat.com/11/staging/builds/devstudio-11.3.0.GA-build-rpm/latest/x86_64/
 enabled=1
 gpgcheck=1
 upgrade_requirements_on_install=1
 metadata_expire=2m
 
-[rh-eclipse47-devstudio-snapshots-11.2.0]
-name=rh-eclipse47-devstudio-snapshots-11.2.0
+[rh-eclipse47-devstudio-snapshots-11.3.0]
+name=rh-eclipse47-devstudio-snapshots-11.3.0
 baseurl=https://devstudio.redhat.com/11/snapshots/rpms/11.2.0/x86_64/
 enabled=0
 gpgcheck=0
@@ -521,6 +521,6 @@ yum install --nogpgcheck
 Installation should complete without any problems. Should NOT see an error like this:
 [source,bash]
 ----
-Error: Package rh-eclipse47-devstudio-11.2.0.20170809.1307.el7.x86_64.rpm is not signed
+Error: Package rh-eclipse47-devstudio-11.3.0.20170809.1307.el7.x86_64.rpm is not signed
 ----
 ====

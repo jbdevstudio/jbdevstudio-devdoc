@@ -421,15 +421,9 @@ sleep 3s
 
 for j in jbosstools-releng-push-to-staging-04-update-merge-composites-html; do
   data="token=RELENG&buildType=${buildType}&\
-versionWithRespin_jbt_PREV_GA=${versionWithRespin_jbt_PREV_GA}&\
-versionWithRespin_jbt_PREV=${versionWithRespin_jbt_PREV}&\
-versionWithRespin_jbt=${versionWithRespin_jbt}&\
-versionWithRespin_jbt_NEXT=${versionWithRespin_jbt_NEXT}&\
-versionWithRespin_ds_PREV_GA=${versionWithRespin_ds_PREV_GA}&\
-versionWithRespin_ds_PREV=${versionWithRespin_ds_PREV}&\
-versionWithRespin_ds=${versionWithRespin_ds}&\
-versionWithRespin_ds_NEXT=${versionWithRespin_ds_NEXT}&\
-version_jbt_IS=${version_jbt_IS}&version_ds_IS=${version_ds_IS}&\
+versionWithRespin_jbt_PREV_GA=${versionWithRespin_jbt_PREV_GA}&versionWithRespin_jbt_PREV=${versionWithRespin_jbt_PREV}&versionWithRespin_jbt=${versionWithRespin_jbt}&\
+versionWithRespin_jbt_NEXT=${versionWithRespin_jbt_NEXT}&versionWithRespin_ds_PREV_GA=${versionWithRespin_ds_PREV_GA}&versionWithRespin_ds_PREV=${versionWithRespin_ds_PREV}&\
+versionWithRespin_ds=${versionWithRespin_ds}&versionWithRespin_ds_NEXT=${versionWithRespin_ds_NEXT}&version_jbt_IS=${version_jbt_IS}&version_ds_IS=${version_ds_IS}&\
 qual_IS=${qual_IS}&earlyaccess_IS=${earlyaccess_IS}"
   nextJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
 

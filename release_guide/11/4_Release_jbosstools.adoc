@@ -575,8 +575,8 @@ Once the current milestone is done, the BUILD_ALIAS in parent pom should be bump
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru # ~
 pushd jbosstools-build/parent
-BUILD_ALIAS=AM1
-BUILD_ALIAS_NEXT=AM2
+BUILD_ALIAS=AM2
+BUILD_ALIAS_NEXT=AM3
 
 git fetch origin master # jbosstools-4.5.0.x
 git checkout FETCH_HEAD

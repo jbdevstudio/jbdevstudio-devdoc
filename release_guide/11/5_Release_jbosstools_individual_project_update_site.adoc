@@ -5,9 +5,10 @@ This document describes how to publish a JBoss Tools build to production after b
 These asynchronous releases can be done for two reasons:
 
 a) a bug fix is urgently needed, and waiting up to 12 weeks for the next release train GA is unacceptable
+
 b) a JBoss Tools component is deemed deprecated or no longer being developed, so the most recent CI build aggregated into JBoss Tools and Red Hat JBoss Developer Studio can be stored as a stable release, to prevent its loss and allow it to be used for future release trains.
 
-The most common of these two scenarios is (a), as Red Deer releases its test framework plugins on a schedule that only loosely follows that of JBoss Tols.
+The most common of these two scenarios is (a), as RHAMT (Windup) releases on a schedule that only loosely follows that of JBoss Tools. Before it moved to Eclipse.org, Red Deer also used this process. 
 
 The second scenario, (b), is has been used a few times in the past as old projects such as Portlet, Freemarker, or Arquillian are deprecated.
 

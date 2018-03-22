@@ -1,4 +1,4 @@
-= Staging devstudio Installers & update sites for QE
+= Staging milestone devstudio Installers & update sites for QE
 
 This document describe how to provide a valid JBoss Developer Studio build to QE so they can test us.
 
@@ -64,8 +64,10 @@ TIP: Once the staging build folder exists, start fetching the devstudio installe
 [source,bash]
 ----
 
+## TODO CONTINUE HERE ##
+
 cd ~/tmp
-versionWithRespin_ds=11.3.0.AM2
+versionWithRespin_ds=11.3.0.AM3
 installerJar=$(wget -O - -q https://devstudio.redhat.com/11/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 echo "Installer jar: ${installerJar}"
 if [[ ${installerJar} ]]; then
@@ -113,7 +115,7 @@ https://devstudio.redhat.com/11/staging/updates/
 [source,bash]
 ----
 
-versionWithRespin_ds=11.3.0.AM2
+versionWithRespin_ds=11.3.0.AM3
 cd ~/tmp
 installerJar=$(wget -O - -q https://devstudio.redhat.com/11/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 echo "Installer jar: ${installerJar}"
@@ -157,7 +159,7 @@ Trigger the QE smoke tests in https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_ds=11.3.0.AM2
+versionWithRespin_ds=11.3.0.AM3
 installerJar=$(wget -O - -q https://devstudio.redhat.com/11/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 version_ds_INST=${installerJar#devstudio-}
 version_ds_INST=${version_ds_INST%-installer*}
@@ -191,6 +193,12 @@ https://github.com/jbdevstudio/jbdevstudio-product/commit/3827045dca85e73c5ae339
 https://github.com/jbdevstudio/jbdevstudio-product/commit/e6c2954207d1db7451f7adfd2d89c7ceccd6adbe
 
 
+NOTE: If you're staging a non-GA release, you can ignore everything below this line!
+
+---
+
+= Staging GA devstudio Installers & update sites for QE
+
 == Rename GA artifacts to remove timestamp and buildID
 
 For GA releases only!
@@ -206,7 +214,7 @@ Configure, then run this job: https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_ds=11.3.0.AM2
+versionWithRespin_ds=11.3.0.AM3
 
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
@@ -250,7 +258,7 @@ https://access.redhat.com/security/team/key
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_ds=11.3.0.AM2
+versionWithRespin_ds=11.3.0.AM3
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
@@ -290,7 +298,7 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-rele
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_ds=11.3.0.AM2
+versionWithRespin_ds=11.3.0.AM3
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   # signingTicket from https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-05-sign-rpm-request-email
   signingTicket="https://projects.engineering.redhat.com/browse/RCM-27209"
@@ -350,7 +358,7 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-rele
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_ds=11.3.0.AM2
+versionWithRespin_ds=11.3.0.AM3
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   # signingTicket from https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-05-sign-rpm-request-email
   signingTicket="https://projects.engineering.redhat.com/browse/RCM-27209"
@@ -398,7 +406,7 @@ Once signed, the RCM ticket above will include a URL,eg., http://download-node-0
 export userpass=KERBUSER:PASSWORD
 
 signedURL=http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/devstudio-11.3.0/rpms/signed/
-versionWithRespin_ds=11.3.0.AM2
+versionWithRespin_ds=11.3.0.AM3
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh

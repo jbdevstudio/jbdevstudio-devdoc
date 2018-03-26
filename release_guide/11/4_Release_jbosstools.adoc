@@ -540,8 +540,8 @@ export userpass=JIRAUSER:JIRAPWD
 # automatically apply changes with -A
 
 # if previous sprint is done, use sprint=sprint_NEXT here
-sprint="devex #145 February 2018"
-sprint_NEXT="devex #146 March 2018"
+sprint="devex #146 March 2018"
+sprint_NEXT="devex #147 April 2018"
 versionWithRespin_jbt=4.5.3.AM2
 versionWithRespin_jbt_NEXT=4.5.3.AM3
 versionWithRespin_ds=11.3.0.AM2

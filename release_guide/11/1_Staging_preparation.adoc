@@ -53,7 +53,7 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-rele
 export userpass=KERBUSER:PASSWORD
 
 sprint="devex #146 March 2018"
-sprint_NEXT="devex #147 March 2018"
+sprint_NEXT="devex #147 April 2018"
 versionWithRespin_jbt=4.5.3.AM3
 versionWithRespin_jbt_NEXT=4.5.3.Final
 versionWithRespin_ds=11.3.0.AM3

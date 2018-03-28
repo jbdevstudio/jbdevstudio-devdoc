@@ -58,8 +58,8 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.3.AM2
-versionWithRespin_ds=11.3.0.AM2
+versionWithRespin_jbt=4.5.3.AM3
+versionWithRespin_ds=11.3.0.AM3
 
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then # GA only
   version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
@@ -172,9 +172,11 @@ Run this:
 [source,bash]
 ----
 
+## TODO CONTINUE HERE ##
+
 echo "" > /tmp/yml.txt
 
-versionWithRespin_ds=11.3.0.AM2
+versionWithRespin_ds=11.3.0.AM3
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # **
   theURL=https://devstudio.redhat.com/11/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all
@@ -221,8 +223,8 @@ Then, back on your own machine...
 
 [source,bash]
 ----
-version_jbt=4.5.3.AM2
-version_ds=11.3.0.AM2
+version_jbt=4.5.3.AM3
+version_ds=11.3.0.AM3
 
 topic=release-${version_jbt}
 github_branch=master
@@ -320,14 +322,14 @@ Before notifying team of release, must check for obvious problems. Any failure t
 
 1. Download JBDS installer from https://devstudio.redhat.com/11/stable/builds/
 2. Install via UI or headlessly with
-    java -jar devstudio-*.jar -console -options /dev/null
+    java -jar devstudio-*.jar -console -options /dev/null # **
 3. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
 4. Check log, start an example project, check log again
 
 [source,bash]
 ----
 
-version_ds=11.3.0.AM2
+version_ds=11.3.0.AM3
 if [[ ${version_ds} == *"GA" ]]; then # **
   qual="stable"
   cd ~/tmp # ~
@@ -361,14 +363,14 @@ export userpass=KERBUSER:PASSWORD
 
 # TODO Continue here
 
-blogURL=/blog/4.5.3.am2-for-oxygen.3.html
+blogURL=/blog/4.5.3.am3-for-oxygen.3.html
 # Pull Request (PR)
-pullrequestNum=803
-eclipseVersionSuffix=".3" # TODO: use .2 for Eclipse 4.7.2 Oxygen.2
-GOLIVEDATE="2018-03-06"
+pullrequestNum=810
+eclipseVersionSuffix=".3" # TODO: use .3 for Eclipse 4.7.2 Oxygen.3
+GOLIVEDATE="2018-03-28"
 
-versionWithRespin_jbt=4.5.3.AM2
-versionWithRespin_ds=11.3.0.AM2
+versionWithRespin_jbt=4.5.3.AM3
+versionWithRespin_ds=11.3.0.AM3
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # \) # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 
@@ -403,8 +405,8 @@ done
 [source,bash]
 ----
 
-versionWithRespin_jbt=4.5.3.AM2
-versionWithRespin_ds=11.3.0.AM2
+versionWithRespin_jbt=4.5.3.AM3
+versionWithRespin_ds=11.3.0.AM3
 
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then # GA only **
   cd ~/truu/ # ~
@@ -425,8 +427,8 @@ fi
 
 cd ~/truu # ~
 
-version_jbt=4.5.3.AM2
-version_ds=11.3.0.AM2
+version_jbt=4.5.3.AM3
+version_ds=11.3.0.AM3
 cd jbdevstudio-devdoc/release_guide/
 git commit -s -m "update release guide for ${version_jbt} and ${version_ds}" .
 git push origin HEAD:master

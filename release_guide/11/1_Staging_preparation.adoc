@@ -52,12 +52,12 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-rele
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-sprint="devex #146 March 2018"
-sprint_NEXT="devex #147 April 2018"
-versionWithRespin_jbt=4.5.3.AM3
-versionWithRespin_jbt_NEXT=4.5.3.Final
-versionWithRespin_ds=11.3.0.AM3
-versionWithRespin_ds_NEXT=11.3.0.GA
+sprint="devex #147 April 2018"
+sprint_NEXT="devex #148 April 2018"
+versionWithRespin_jbt=4.5.3.Final
+versionWithRespin_jbt_NEXT=4.6.0.AM1
+versionWithRespin_ds=11.3.0.GA
+versionWithRespin_ds_NEXT=12.0.0.AM1
 TOrecipients1="jmaury@redhat.com, scela@redhat.com"
 TOrecipients2="jbosstools-dev@lists.jboss.org"
 CCrecipients="jmaury@redhat.com, scela@redhat.com"
@@ -65,6 +65,9 @@ recipientOverride="" # or "nboldt@redhat.com"
 # encode spaces
 sprint=${sprint// /%20}
 sprint_NEXT=${sprint_NEXT// /%20}
+TOrecipients1=${TOrecipients1// /%20}
+TOrecipients2=${TOrecipients2// /%20}
+CCrecipients=${CCrecipients// /%20}
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")

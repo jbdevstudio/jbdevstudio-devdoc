@@ -29,11 +29,10 @@ org.jboss.tools.targetplatforms
 |
 * https://repository.jboss.org/nexus/#stagingRepositories[Close then release]
 |
-* 4.70.3.Final
 * 4.71.1.Final
-* 4.72.0.Final
+* 4.73.1.Final
 |
-* 4.73.0.AM1-SNAPSHOT
+* 4.80.0.AM1-SNAPSHOT
 
 | ###### *Tycho Plugins & Rules*
 |
@@ -55,8 +54,9 @@ org.jboss.tools.releng
 * https://repository.jboss.org/nexus/#stagingRepositories[Close then release]
 |
 * 1.0.0
+* 1.1.0
 |
-* 1.0.1-SNAPSHOT
+* 1.2.0-SNAPSHOT
 
 | ###### *Releng Scripts & Tools*
 |
@@ -70,9 +70,9 @@ org.jboss.tools.releng
 |
 * https://repository.jboss.org/nexus/#stagingRepositories[Close then release]
 |
-* 4.5.2.Final
+* 4.5.3.Final
 |
-* 4.5.3.AM1-SNAPSHOT
+* 4.6.0-SNAPSHOT
 
 | ###### *Parent Pom*
 |
@@ -86,9 +86,9 @@ org.jboss.tools
 |
 * https://repository.jboss.org/nexus/#stagingRepositories[Close then release]
 |
-* 4.5.2.Final-SNAPSHOT
+* 4.5.3.Final-SNAPSHOT
 |
-* 4.5.3.AM1-SNAPSHOT
+* 4.6.0.AM1-SNAPSHOT
 
 |===
 

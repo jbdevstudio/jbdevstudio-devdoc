@@ -165,9 +165,9 @@ version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for p in aerogear base browsersim build-ci build.parent central discovery fabric8analytics forge fuse fuse-extras hibernate integration-tests.aggregate \
-    javaee-tests-matrix javaee jst livereload openshift-restclient-java openshift server-Run-Unit-and-ITests server vpe webservices fuse \
-    base.sonar fuse.sonar openshift.sonar server.sonar; do
+for p in aerogear base browsersim build-ci build.parent central discovery fabric8analytics forge fuse-extras hibernate integration-tests.aggregate \
+    javaee-tests-matrix javaee jst livereload openshift-restclient-java openshift server-Run-Unit-and-ITests server vpe webservices \
+    base.sonar openshift.sonar server.sonar; do
     j=jbosstools-${p}_master
     { ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t disable && ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t lastBuild/toggleLogKeep & }
 done
@@ -505,9 +505,9 @@ version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for p in aerogear base browsersim build-ci build.parent central discovery fabric8analytics forge fuse fuse-extras hibernate integration-tests.aggregate \
-    javaee-tests-matrix javaee jst livereload openshift-restclient-java openshift server-Run-Unit-and-ITests server vpe webservices fuse \
-    base.sonar fuse.sonar openshift.sonar server.sonar; do
+for p in aerogear base browsersim build-ci build.parent central discovery fabric8analytics forge fuse-extras hibernate integration-tests.aggregate \
+    javaee-tests-matrix javaee jst livereload openshift-restclient-java openshift server-Run-Unit-and-ITests server vpe webservices \
+    base.sonar openshift.sonar server.sonar; do
   j=jbosstools-${p}_master
   ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable &
 done

@@ -367,7 +367,7 @@ blogURL=/blog/4.5.3.am3-for-oxygen.3.html
 # Pull Request (PR)
 pullrequestNum=810
 eclipseVersionSuffix=".3" # TODO: use .3 for Eclipse 4.7.2 Oxygen.3
-GOLIVEDATE="2018-03-28"
+GOLIVEDATE="2018-04-23"
 
 versionWithRespin_jbt=4.5.3.Final
 versionWithRespin_ds=11.3.0.GA

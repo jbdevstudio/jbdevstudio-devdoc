@@ -252,6 +252,10 @@ Give URL link to Chris via RCM ticket, eg., https://projects.engineering.redhat.
 https://www.redhat.com/security/data/a5787476.txt
 https://access.redhat.com/security/team/key
 
+Previous tickets:
+
+* https://projects.engineering.redhat.com/browse/RCM-31843
+
 [source,bash]
 ----
 
@@ -292,6 +296,10 @@ Here is a job that creates the RCM ticket to push the signed RPMs to the DevTool
 
 https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-06-publish-to-channel-request-email/configure
 
+Previous tickets:
+
+* https://projects.engineering.redhat.com/browse/RCM-31847
+
 [source,bash]
 ----
 
@@ -301,9 +309,9 @@ export userpass=KERBUSER:PASSWORD
 versionWithRespin_ds=11.3.0.GA
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   # signingTicket from https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-05-sign-rpm-request-email
-  signingTicket="https://projects.engineering.redhat.com/browse/RCM-27209"
-  STAGE_DATE="2018-01-24"
-  GOLIVEDATE="2018-01-29"
+  signingTicket="https://projects.engineering.redhat.com/browse/RCM-31843"
+  STAGE_DATE="2018-04-18"
+  GOLIVEDATE="2018-04-23"
   TOrecipients="release-engineering@redhat.com"
   CCrecipients="nboldt@redhat.com, rhartman@redhat.com, rzima@redhat.com, mat.booth@redhat.com, vkadlcik@redhat.com, timoran@redhat.com, bodavis@redhat.com, mbenitez@redhat.com, scela@redhat.com"
   CCrecipients=${CCrecipients// /%20}
@@ -339,8 +347,9 @@ Submit an RCM ticket to release-engineering@redhat.com to requet that the binari
 
 IMPORTANT: As this takes some time and requires coordination with other teams, this step should be initiated a few days before release to allow processing time.
 
-Previous ticket:
+Previous tickets:
 
+* https://projects.engineering.redhat.com/browse/RCM-31845
 * https://projects.engineering.redhat.com/browse/RCM-20050
 * https://projects.engineering.redhat.com/browse/RCM-12959
 
@@ -360,11 +369,12 @@ export userpass=KERBUSER:PASSWORD
 
 versionWithRespin_ds=11.3.0.GA
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
+  # TODO set these ticket URL values for this release!
   # signingTicket from https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-05-sign-rpm-request-email
-  signingTicket="https://projects.engineering.redhat.com/browse/RCM-27209"
-  errataTicket="https://errata.devel.redhat.com/advisory/31862"
-  STAGE_DATE="2018-01-24"
-  GOLIVEDATE="2018-01-29"
+  signingTicket="https://projects.engineering.redhat.com/browse/RCM-31843"
+  errataTicket="https://errata.devel.redhat.com/advisory/33102"
+  STAGE_DATE="2018-04-18"
+  GOLIVEDATE="2018-04-23"
   TOrecipients="release-engineering@redhat.com"
   CCrecipients="cobrien@redhat.com, erooney@redhat.com, rkratky@redhat.com, sbharadw@redhat.com, nboldt@redhat.com, mat.booth@redhat.com, jmaury@redhat.com, mbenitez@redhat.com, scela@redhat.com, timoran@redhat.com, bodavis@redhat.com"
   CCrecipients=${CCrecipients// /%20}
@@ -401,6 +411,8 @@ Once signed, the RCM ticket above will include a URL,eg., http://download-node-0
 
 [source,bash]
 ----
+
+## TODO CONTINUE HERE ##
 
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
@@ -463,7 +475,7 @@ for theFile in ${theFiles}; do
 done
 
 #cleanup
-rm -fr /tmp/index.thml /tmp/rh-eclipse47-devstudio*.rpm
+rm -fr /tmp/index.html /tmp/rh-eclipse47-devstudio*.rpm
 
 ----
 
@@ -529,6 +541,6 @@ yum install --nogpgcheck
 Installation should complete without any problems. Should NOT see an error like this:
 [source,bash]
 ----
-Error: Package rh-eclipse47-devstudio-11.3.0.20170809.1307.el7.x86_64.rpm is not signed
+Error: Package rh-eclipse47-devstudio-11.3.0.20180413.0814.el7.x86_64.rpm is not signed
 ----
 ====

@@ -248,7 +248,7 @@ You'll need this later for smoke testing. Start fetching it now to save time lat
 [source,bash]
 ----
 
-cd ~/tmp; wget http://download.eclipse.org/technology/epp/downloads/release/oxygen/2/eclipse-jee-oxygen-2-linux-gtk-x86_64.tar.gz &
+cd ~/tmp; wget http://download.eclipse.org/technology/epp/downloads/release/oxygen/3a/eclipse-jee-oxygen-3a-linux-gtk-x86_64.tar.gz &
 # or
 cd ~/tmp; wget https://hudson.eclipse.org/packaging/job/oxygen.epp-tycho-build/389/artifact/org.eclipse.epp.packages/archive/20171116-1726_eclipse-jee-oxygen-2-rc1-linux.gtk.x86_64.tar.gz &
 
@@ -480,6 +480,8 @@ http://download.jboss.org/jbosstools/oxygen/staging/updates/
 == Enable jobs
 
 You will need to re-enable the jobs once the bits are staged, so that CI builds can continue.
+
+However, you might want to NOT do this until after QE approves.
 
 If the next build WILL be a respin, you need to simply:
 

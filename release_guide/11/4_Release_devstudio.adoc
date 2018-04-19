@@ -119,6 +119,8 @@ WARNING: Only applies to Beta and better versions (but usually just GA).
 [source,bash]
 ----
 
+## TODO CONTINUE HERE FOR GA ##
+
 google-chrome && google-chrome http://marketplace.eclipse.org/content/red-hat-jboss-developer-studio/edit
 
 ----
@@ -295,10 +297,11 @@ popd
 
 Commit changes and submit PR, eg.,
 
+* https://github.com/jbosstools/jbosstools-website/pull/814,
 * https://github.com/jbosstools/jbosstools-website/pull/803,
 * https://github.com/jbosstools/jbosstools-website/pull/794,
-* https://github.com/jbosstools/jbosstools-website/pull/790,
-* https://github.com/jbosstools/jbosstools-website/pull/777
+* https://github.com/jbosstools/jbosstools-website/pull/790
+
 
 == Tag Developer Studio
 
@@ -349,7 +352,8 @@ fi
 
 == Notify Team Lead(s)
 
-Here's a job that notifies Jeff (or Matt) that the website is ready to be updated with a new blog post, and will provide  a script to tag the repos:
+Here's a job that notifies Jeff (or Matt) that the website is ready to be updated with a new blog post, and will provide a script
+to perform tagging of the jbosstools-* and jbdevstudio-* repos:
 
 https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-dev-stable-07-notification-emails/configure
 
@@ -361,12 +365,14 @@ Using the script below, you can trigger the job remotely.
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-# TODO Continue here
+## TODO CONTINUE HERE  ##
 
-blogURL=/blog/4.5.3.am3-for-oxygen.3.html
+# for AMx milestones, use file like 4.5.3.am3-for-oxygen.3.html
+# for GA releases, use file like 11.3.0.ga-for-oxygen.3a.html
+blogURL=/blog/11.3.0.ga-for-oxygen.3a.html
 # Pull Request (PR)
-pullrequestNum=810
-eclipseVersionSuffix=".3" # TODO: use .3 for Eclipse 4.7.2 Oxygen.3
+pullrequestNum=814
+eclipseVersionSuffix=".3a" # TODO: use .3 for Eclipse 4.7.3a Oxygen.3a
 GOLIVEDATE="2018-04-23"
 
 versionWithRespin_jbt=4.5.3.Final

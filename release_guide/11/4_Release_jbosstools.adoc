@@ -242,13 +242,11 @@ For Final or GA releases, the target platform folders should be moved to /static
 
 Thus for example,
 
-http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/4.*.*.Final/
-http://download.jboss.org/jbosstools/targetplatforms/devstudiotarget/4.*.*.Final/
+http://download.jboss.org/jbosstools/targetplatforms/jbosstoolstarget/?C=M;O=D
 
 should be moved to:
 
-http://download.jboss.org/jbosstools/static/targetplatforms/jbosstoolstarget/4.*.*.Final/
-http://download.jboss.org/jbosstools/static/targetplatforms/devstudiotarget/4.*.*.Final/
+http://download.jboss.org/jbosstools/static/targetplatforms/jbosstoolstarget/?C=M;O=D
 
 Then you can create composites in the old locations pointing to the new one, like this:
 
@@ -266,7 +264,7 @@ export userpass=KERBUSER:PASSWORD
 
 # run this for .Final and -SNAPSHOT target platforms, too... why for SNAPSHOTs ?
 # NOTE: if you released another TP at the same time (eg., 4.7x.0.Final and 4.7y.0.Final), repeat for that version too.
-TARGET_PLATFORM_VERSION_MAXes="4.72.0.Final 4.71.1.Final"
+TARGET_PLATFORM_VERSION_MAXes="4.73.1.Final" # space separated list if more than one to release
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
@@ -324,8 +322,6 @@ The URLs used to fetch IS content are as follows:
 [source,bash]
 ----
 
-## TODO CONTINUE HERE ##
-
 eclipseReleaseName=oxygen
 devstudioReleaseVersion=11
 qual_IS="stable" # "development" or "stable" as applicable - see tip above
@@ -345,7 +341,7 @@ https://devstudio.redhat.com/${devstudioReleaseVersion}/${qual_IS}/updates/integ
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-# TODO Continue here
+## TODO CONTINUE HERE  ##
 
 versionWithRespin_jbt_PREV_GA=4.5.2.Final
 versionWithRespin_jbt_PREV=4.5.3.AM3 # previous RELEASED milestone as referenced in ide-config.properties
@@ -649,8 +645,8 @@ versionWithRespin_ds_NEXT=12.0.0.AM1
   github_branch=master
   github_branch_fallback=master # or jbosstools-4.5.x?
 #fi
-TARGET_PLATFORM_VERSION_MIN=4.71.1.Final
-TARGET_PLATFORM_VERSION_MAX=4.73.1.Final
+TARGET_PLATFORM_VERSION_MIN=4.80.0.AM1-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.80.0.AM1-SNAPSHOT
 JIRA_HOST="https://issues.jboss.org"
 TOrecipients="nboldt@redhat.com"
 

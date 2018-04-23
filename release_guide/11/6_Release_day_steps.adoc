@@ -6,9 +6,9 @@ Push the blog PR [0] and the update to include the latest JBT and devstudio vers
 
 Note that the merges to master have already happened, so that content can be viewed in stage. So you just have to cherry pick those commits in the master branch which are not in production branch over the production branch so that the commit histories are the same.
 
-[0] https://github.com/jbosstools/jbosstools-website/pull/764
+[0] https://github.com/jbosstools/jbosstools-website/pull/813
 
-[1] https://github.com/jbosstools/jbosstools-website/pull/765
+[1] https://github.com/jbosstools/jbosstools-website/pull/814/
 
 [2] http://tools.stage.jboss.org/downloads/overview.html and http://tools.stage.jboss.org/blog/
 
@@ -29,20 +29,20 @@ google-chrome http://tools.jboss.org/downloads/overview.html http://tools.jboss.
 
 * Tell RCM (Chris O'Brien / siege on IRC) to release the staged stuff in the customer portal to production, via the RCM tickets [5], [6].
 
-[5] https://projects.engineering.redhat.com/browse/RCM-23773
+[5] https://projects.engineering.redhat.com/browse/RCM-31845
 
-[6] https://projects.engineering.redhat.com/browse/RCM-23774 + all linked RCM tickets for stage and production
+[6] https://projects.engineering.redhat.com/browse/RCM-31847 + all linked RCM tickets for stage and production
 
 
 == Announce releases to mailing lists
 
 Send email announcements to the mailing lists (one for jBT, one for devstudio) - see details in these emails, usually sent on the Wed or Thursday after the end of the sprint:
 
-* Ready for JBoss Developer Studio 11.2.0.GA blog & announcement
-* Ready for JBoss Tools 4.5.2.Final blog & announcement
+* Ready for JBoss Developer Studio 11.3.0.GA blog & announcement
+* Ready for JBoss Tools 4.5.3.Final blog & announcement
 
 
-== Check Devstudio marketing materials are updated to include latest devstudio 11.2.0.GA release
+== Check Devstudio marketing materials are updated to include latest devstudio 11.3.0.GA release
 
 [source,bash]
 ----

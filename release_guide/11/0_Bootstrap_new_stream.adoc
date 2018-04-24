@@ -1,64 +1,131 @@
-Before you can build anything in JBoss Tools / Devstudio release for a new release stream (eg. Neon -> Oxygen, Oxygen -> Photon) you need to do some initial bootstrapping.
+Before you can build anything in JBoss Tools / Devstudio release for a new release stream (eg. Oxygen -> Photon) you need to do some initial bootstrapping.
 
 == Create JBoss Tools composite sites
 
 Every year we need a new pair of composite sites. These are used to determine when a new JBoss Tools aggregate must be built, based on polling the p2 metadata of the composite.
 
-Latest versions are here:
+Latest version is here:
 
-* http://download.jboss.org/jbosstools/neon/snapshots/builds/_composite_/core/
-* http://download.jboss.org/jbosstools/oxygen/snapshots/builds/_composite_/core/
+* http://download.jboss.org/jbosstools/photon/snapshots/builds/_composite_/core/
+
+This should be created by copying from the old year's URL and then updating URLs inside the composite*.xml files to remove anything we no longer include in JBT/devstudio.
 
 == Create Stable, Development, Staging, Snapshots placeholder update sites & build folders
 
 Every year we need to create placeholder URLs for these locations:
 
-* http://download.jboss.org/jbosstools/oxygen/snapshots/builds/
-* http://download.jboss.org/jbosstools/oxygen/snapshots/updates/
-* http://download.jboss.org/jbosstools/oxygen/staging/builds/
-* http://download.jboss.org/jbosstools/oxygen/staging/updates/
+* http://download.jboss.org/jbosstools/photon/snapshots/builds/
+* http://download.jboss.org/jbosstools/photon/snapshots/updates/
+* http://download.jboss.org/jbosstools/photon/staging/builds/
+* http://download.jboss.org/jbosstools/photon/staging/updates/
 
 (copy content from previous year's URLs)
-* http://download.jboss.org/jbosstools/oxygen/development/updates/
-* http://download.jboss.org/jbosstools/oxygen/development/updates/core/
-* http://download.jboss.org/jbosstools/oxygen/development/updates/coretests/
-* http://download.jboss.org/jbosstools/oxygen/development/updates/fuse-extras/
-* http://download.jboss.org/jbosstools/oxygen/stable/updates/
-* http://download.jboss.org/jbosstools/oxygen/stable/updates/core/
-* http://download.jboss.org/jbosstools/oxygen/stable/updates/coretests/
-* http://download.jboss.org/jbosstools/oxygen/stable/updates/fuse-extras/
+* http://download.jboss.org/jbosstools/photon/development/updates/
+* http://download.jboss.org/jbosstools/photon/development/updates/core/
+* http://download.jboss.org/jbosstools/photon/development/updates/coretests/
+* http://download.jboss.org/jbosstools/photon/development/updates/fuse-extras/
+* http://download.jboss.org/jbosstools/photon/stable/updates/
+* http://download.jboss.org/jbosstools/photon/stable/updates/core/
+* http://download.jboss.org/jbosstools/photon/stable/updates/coretests/
+* http://download.jboss.org/jbosstools/photon/stable/updates/fuse-extras/
 
-* http://download.jboss.org/jbosstools/static/oxygen/development/builds/
-* http://download.jboss.org/jbosstools/static/oxygen/development/updates/coretests/
-* http://download.jboss.org/jbosstools/static/oxygen/development/updates/fuse-extras/
-* http://download.jboss.org/jbosstools/static/oxygen/stable/builds/
-* http://download.jboss.org/jbosstools/static/oxygen/stable/updates/coretests/
-* http://download.jboss.org/jbosstools/static/oxygen/stable/updates/fuse-extras/
+* http://download.jboss.org/jbosstools/static/photon/development/builds/
+* http://download.jboss.org/jbosstools/static/photon/development/updates/coretests/
+* http://download.jboss.org/jbosstools/static/photon/development/updates/fuse-extras/
+* http://download.jboss.org/jbosstools/static/photon/stable/builds/
+* http://download.jboss.org/jbosstools/static/photon/stable/updates/coretests/
+* http://download.jboss.org/jbosstools/static/photon/stable/updates/fuse-extras/
 
 And for devstudio:
 
-* https://devstudio.redhat.com/11/snapshots/builds/
-* https://devstudio.redhat.com/11/snapshots/updates/
-* https://devstudio.redhat.com/11/snapshots/rpms/ (update 'latest' symlink to point to the most recent 11.x.0 folder)
-* https://devstudio.redhat.com/11/staging/builds/
-* https://devstudio.redhat.com/11/staging/updates/
+* https://devstudio.redhat.com/12/snapshots/builds/
+* https://devstudio.redhat.com/12/snapshots/updates/
+* https://devstudio.redhat.com/12/staging/builds/
+* https://devstudio.redhat.com/12/staging/updates/
 
 (copy content from previous year's URLs)
-* https://devstudio.redhat.com/11/development/builds/
-* https://devstudio.redhat.com/11/development/updates/
-* https://devstudio.redhat.com/11/development/updates/fuse-extras/
-* https://devstudio.redhat.com/11/stable/builds/
-* https://devstudio.redhat.com/11/index.html
-* https://devstudio.redhat.com/11/stable/index.html
-* https://devstudio.redhat.com/11/stable/updates/
-* https://devstudio.redhat.com/11/stable/updates/fuse-extras/
+* https://devstudio.redhat.com/12/development/builds/
+* https://devstudio.redhat.com/12/development/updates/
+* https://devstudio.redhat.com/12/development/updates/fuse-extras/
+* https://devstudio.redhat.com/12/stable/builds/
+* https://devstudio.redhat.com/12/index.html
+* https://devstudio.redhat.com/12/stable/index.html
+* https://devstudio.redhat.com/12/stable/updates/
+* https://devstudio.redhat.com/12/stable/updates/fuse-extras/
 
-* https://devstudio.redhat.com/static/11/development/builds/
-* https://devstudio.redhat.com/static/11/development/updates/
-* https://devstudio.redhat.com/static/11/development/updates/fuse-extras/
-* https://devstudio.redhat.com/static/11/stable/builds/
-* https://devstudio.redhat.com/static/11/stable/updates/
-* https://devstudio.redhat.com/static/11/stable/updates/fuse-extras/
+* https://devstudio.redhat.com/static/12/development/builds/
+* https://devstudio.redhat.com/static/12/development/updates/
+* https://devstudio.redhat.com/static/12/development/updates/fuse-extras/
+* https://devstudio.redhat.com/static/12/stable/builds/
+* https://devstudio.redhat.com/static/12/stable/updates/
+* https://devstudio.redhat.com/static/12/stable/updates/fuse-extras/
+
+
+This script should do most of the steps needed to create the folders above.
+
+[source,bash]
+----
+
+# ssh mount the volumes
+TOOLS=tools@10.5.105.197:/downloads_htdocs/tools
+JBDS=devstudio@10.5.105.197:/www_htdocs/devstudio
+WORKSPACE=${HOME}
+
+for mnt in TOOLS JBDS; do
+  mkdir -p ${WORKSPACE}/${mnt}-ssh
+  if [[ $(file ${WORKSPACE}/${mnt}-ssh 2>&1) == *"Transport endpoint is not connected"* ]]; then
+    echo "Unmount: ${WORKSPACE}/${mnt}-ssh"; fusermount -uz ${WORKSPACE}/${mnt}-ssh
+  fi
+  if [[ ! "$(ls -A ${WORKSPACE}/${mnt}-ssh)" ]]; then
+    echo "Mount: ${WORKSPACE}/${mnt}-ssh"; sshfs ${!mnt} ${WORKSPACE}/${mnt}-ssh
+  else
+    echo "Already mounted: ${WORKSPACE}/${mnt}-ssh"
+  fi
+done
+
+# create empty folders
+for d in snapshots staging development stable; do
+  for dtype in builds updates; do
+    mkdir -p ~/TOOLS-ssh/photon/${d}/${dtype} &
+  done
+done
+for d in core coretests discovery.central discovery.earlyaccess fuse-extras; do
+  for qual in staging development stable; do
+    mkdir -p ~/TOOLS-ssh/photon/${qual}/updates/${d} &
+  done
+done
+for d in core coretests discovery.central discovery.earlyaccess fuse-extras; do
+  for qual in development stable; do
+    mkdir -p ~/TOOLS-ssh/static/photon/${qual}/updates/${d} &
+  done
+done
+for d in snapshots staging development stable; do
+  for dtype in builds updates; do
+    mkdir -p ~/JBDS-ssh/12/${d}/${dtype} &
+  done
+done
+for d in core coretests discovery.central discovery.earlyaccess fuse-extras; do
+  for qual in staging development stable; do
+    mkdir -p ~/JBDS-ssh/12/${qual}/updates/${d} &
+  done
+done
+for d in core coretests discovery.central discovery.earlyaccess fuse-extras; do
+  for qual in development stable; do
+    mkdir -p ~/JBDS-ssh/static/12/${qual}/updates/${d} &
+  done
+done
+wait
+
+# bootstrap by copying old stuff to new folder
+for d in central core coretests discovery.central discovery.earlyaccess earlyaccess.properties integration-tests; do
+  scpr ~/TOOLS-ssh/oxygen/snapshots/updates/${d} $TOOLS/photon/snapshots/updates &
+done
+for d in central core discovery.central discovery.earlyaccess earlyaccess.properties; do
+  scpr ~/TOOLS-ssh/oxygen/snapshots/updates/${d} $TOOLS/photon/snapshots/updates &
+done
+wait
+
+----
 
 == Update Web Tools Server Adapter Discovery plugin w/ link to new URL
 
@@ -68,36 +135,39 @@ See https://issues.jboss.org/browse/JBIDE-24080 and https://bugs.eclipse.org/513
 
 In addition to making the change in the webtools project, the destination folder must also ezist as a valid update site.
 
-Initially, this will be a symlink to the latest CI build or last year's stable site (if no CI available). Once a stable is available, the symlink then needs to be updated. So in order, the symlinks from http://download.jboss.org/jbosstools/updates/webtools/oxygen/ could be:
+Initially, this will be a symlink to the latest CI build or last year's stable site (if no CI available). Once a stable is available, the symlink then needs to be updated. So in order, the symlinks from http://download.jboss.org/jbosstools/updates/webtools/photon/ could be:
 
-* http://download.jboss.org/jbosstools/neon/stable/updates/
-* http://download.jboss.org/jbosstools/oxygen/snapshots/updates/ (once available)
-* http://download.jboss.org/jbosstools/oxygen/development/updates/ (once first AM milestone is released)
-* http://download.jboss.org/jbosstools/oxygen/stable/updates/ (once first GA/Final is released)
+* http://download.jboss.org/jbosstools/photon/snapshots/updates/ (once available)
+* http://download.jboss.org/jbosstools/photon/development/updates/ (once first AM milestone is released)
+* http://download.jboss.org/jbosstools/photon/stable/updates/ (once first GA/Final is released)
+
+This script should create the required symlinks for webtools.
 
 [source,bash]
 ----
+
 # mount TOOLS first, then
-cd ~/TOOLS-ssh/oxygen/development/updates; ln -s ../../../updates/webtools/oxygen/ webtools
-cd ~/TOOLS-ssh/oxygen/stable/updates; ln -s ../../../updates/webtools/oxygen/ webtools
+cd ~/TOOLS-ssh/photon/development/updates; ln -s ../../../updates/webtools/photon/ webtools
+cd ~/TOOLS-ssh/photon/stable/updates; ln -s ../../../updates/webtools/photon/ webtools
 
 # to switch from CI to dev milestone, or stable release
-cd ~/TOOLS-ssh/updates/webtools; rm -f oxygen; ln -s ../../oxygen/snapshots/updates/ oxygen
-cd ~/TOOLS-ssh/updates/webtools; rm -f oxygen; ln -s ../../oxygen/development/updates/ oxygen
-cd ~/TOOLS-ssh/updates/webtools; rm -f oxygen; ln -s ../../oxygen/stable/updates/ oxygen
+cd ~/TOOLS-ssh/updates/webtools; rm -f photon; ln -s ../../photon/snapshots/updates/ photon
+cd ~/TOOLS-ssh/updates/webtools; rm -f photon; ln -s ../../photon/development/updates/ photon
+cd ~/TOOLS-ssh/updates/webtools; rm -f photon; ln -s ../../photon/stable/updates/ photon
+
 ----
 
 == Update ide-config.properties
 
-With the maintenance branch moving from master to 4.4.x links need to be updated.
+With the maintenance branch moving from master to 4.6.x links need to be updated.
 
 Eg., https://github.com/jbosstools/jbosstools-download.jboss.org/pull/623
 
-We then also need to add entries for 4.5/11 snapshots.
+We then also need to add entries for 4.6/12 snapshots.
 
 Eg., https://github.com/jbosstools/jbosstools-download.jboss.org/commit/ce5c4c29a8dfdf809643dbe03746250591894800
 
-Once 4.4.4.Final/10.4.0.GA are done, we can then update ide-config.*-fragment.properties to include staging and development URLs for 4.5/11.
+Once 4.5.3.Final/11.3.0.GA are done, we can then update ide-config.*-fragment.properties to include staging and development URLs for 4.6/12.
 
 == More?
 

@@ -116,7 +116,7 @@ for d in core coretests discovery.central discovery.earlyaccess fuse-extras; do
 done
 wait
 
-# bootstrap by copying old stuff to new folder
+# bootstrap snapshots by copying old stuff to new folder
 for d in central core coretests discovery.central discovery.earlyaccess earlyaccess.properties integration-tests; do
   scpr ~/TOOLS-ssh/oxygen/snapshots/updates/${d} $TOOLS/photon/snapshots/updates &
 done
@@ -124,6 +124,20 @@ for d in central core discovery.central discovery.earlyaccess earlyaccess.proper
   scpr ~/TOOLS-ssh/oxygen/snapshots/updates/${d} $TOOLS/photon/snapshots/updates &
 done
 wait
+
+# bootstrap staging by copying old stuff to new folder
+versionWithRespin_jbt=4.5.3.Final
+versionWithRespin_ds=11.3.0.GA
+
+for d in core central discovery.central discovery.earlyaccess fuse-extras integration-tests; do
+  scpr ~/TOOLS-ssh/oxygen/staging/updates/${d}/${versionWithRespin_jbt} $TOOLS/photon/staging/updates/${d}/ &
+done
+for d in core central discovery.central discovery.earlyaccess fuse-extras integration-tests; do
+  scpr ~/JBDS-ssh/11/staging/updates/${d}/${versionWithRespin_ds} $JBDS/12/staging/updates/${d}/ &
+done
+wait
+scpr ~/TOOLS-ssh/oxygen/staging/updates/composite* ~/TOOLS-ssh/oxygen/staging/updates/*index* $TOOLS/photon/staging/updates/ &
+scpr ~/JBDS-ssh/11/staging/updates/composite*      ~/JBDS-ssh/11/staging/updates/*index*      $JBDS/12/staging/updates/ &
 
 ----
 

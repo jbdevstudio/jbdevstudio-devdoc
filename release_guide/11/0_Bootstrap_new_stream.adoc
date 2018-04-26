@@ -129,7 +129,7 @@ wait
 versionWithRespin_jbt=4.5.3.Final
 versionWithRespin_ds=11.3.0.GA
 
-for d in core central discovery.central discovery.earlyaccess fuse-extras integration-tests; do
+for d in core coretests central discovery.central discovery.earlyaccess fuse-extras integration-tests; do
   scpr ~/TOOLS-ssh/oxygen/staging/updates/${d}/${versionWithRespin_jbt} $TOOLS/photon/staging/updates/${d}/ &
 done
 for d in core central discovery.central discovery.earlyaccess fuse-extras integration-tests; do

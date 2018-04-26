@@ -1,0 +1,121 @@
+= Nexus Releases
+
+For GA releases, there are a number of artifacts that need to be released to Nexus.
+
+Once released to Nexus, downstream Jenkins jobs can then be updated to use the released versions rather than SNAPSHOT versions.
+
+
+[cols="3a,3a,3a,3a,3a,2a,2a", options="header"]
+|===
+|Artifact
+|Github Project
+|GAV(s)
+|Jenkins Job
+|link:https://developer.jboss.org/wiki/MavenDeployingARelease[Nexus Staging]
+|Latest Release
+|Next Version
+
+| ###### *Target Platforms*
+|
+* https://github.com/jbosstools/jbosstools-target-platforms[jbosstools-target-platforms]
+|
+org.jboss.tools.targetplatforms
+
+* https://repository.jboss.org/nexus/#nexus-search;gav%7Eorg.jboss.tools.targetplatforms%7Ejbosstools-multiple%7E4.6*%7E%7E[jbosstools-multiple]
+* https://repository.jboss.org/nexus/#nexus-search;gav%7Eorg.jboss.tools.targetplatforms%7Ejbosstools-unified%7E4.6*%7E%7E[jbosstools-unified]
+|
+* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstoolstargetplatform-4.73.x/[jbosstoolstargetplatform-4.73.x]
+* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstoolstargetplatform-4.71.x/[jbosstoolstargetplatform-4.71.x]
+|
+* https://repository.jboss.org/nexus/#stagingRepositories[Close then release]
+|
+* 4.71.1.Final
+* 4.73.1.Final
+|
+* 4.80.0.AM1-SNAPSHOT
+
+| ###### *Tycho Plugins & Rules*
+|
+* https://github.com/jbosstools/jbosstools-maven-plugins[jbosstools-maven-plugins]
+|
+org.jboss.tools.tycho-plugins
+
+* https://repository.jboss.org/nexus/#nexus-search;gav%7Eorg.jboss.tools.tycho-plugins%7Etycho-dependency-plugin%7E0.26*%7E%7E[tycho-dependency-plugin]
+* https://repository.jboss.org/nexus/#nexus-search;gav%7Eorg.jboss.tools.tycho-plugins%7Etarget-platform-utils%7E0.26*%7E%7E[target-platform-utils]
+* https://repository.jboss.org/nexus/#nexus-search;gav%7Eorg.jboss.tools.tycho-plugins%7Erepository-utils%7E0.26*%7E%7E[repository-utils]
+* https://repository.jboss.org/nexus/#nexus-search;gav%7Eorg.jboss.tools.tycho-plugins%7Ediscovery-utils%7E0.26*%7E%7E[discovery-utils]
+
+org.jboss.tools.releng
+
+* https://repository.jboss.org/nexus/#nexus-search;gav%7Eorg.jboss.tools.releng%7Eenforcer-rules%7E0.26*%7E%7E[enforcer-rules]
+|
+* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-maven-plugins.tycho-plugins_master/[jbosstools-maven-plugins.tycho-plugins_master]
+|
+* https://repository.jboss.org/nexus/#stagingRepositories[Close then release]
+|
+* 1.0.0
+* 1.1.0
+|
+* 1.2.0-SNAPSHOT
+
+| ###### *Releng Scripts & Tools*
+|
+* https://github.com/jbosstools/jbosstools-build-ci[jbosstools-build-ci]
+|
+org.jboss.tools.releng
+
+* https://repository.jboss.org/nexus/#nexus-search;gav%7Eorg.jboss.tools.releng%7Ejbosstools-releng-publish%7E4.4.*%7E%7E[jbosstools-releng-publish]
+|
+* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-build-ci_master/[jbosstools-build-ci_master]
+|
+* https://repository.jboss.org/nexus/#stagingRepositories[Close then release]
+|
+* 4.5.3.Final
+|
+* 4.6.0-SNAPSHOT
+
+| ###### *Parent Pom*
+|
+* https://github.com/jbosstools/jbosstools-build[jbosstools-build]
+|
+org.jboss.tools
+
+* https://repository.jboss.org/nexus/#nexus-search;gav%7Eorg.jboss.tools%7Eparent%7E4.4.*%7E%7E[parent]
+|
+* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-build.parent_master/[jbosstools-build.parent_master]
+|
+* https://repository.jboss.org/nexus/#stagingRepositories[Close then release]
+|
+* 4.5.3.Final-SNAPSHOT
+|
+* 4.6.0.AM1-SNAPSHOT
+
+|===
+
+
+[NOTE]
+====
+The jobs above have been configured to deploy to Nexus snapshots repo for SNAPSHOTS, and for releases, will automatically deploy to Nexus staging, close, and perform the release.
+
+Here's how:
+
+[source,bash]
+----
+
+pom=${WORKSPACE}/path/to/pom.xml
+pomVersion=$(grep "<version>" ${pom} | head -1 | sed -e "s#.*<version>\(.\+\)</version>.*#\1#")
+MVN="/qa/tools/opt/maven3-latest/bin/mvn -Dmaven.repo.local=${WORKSPACE}/.repository/"
+if [[ ${pomVersion} == *"-SNAPSHOT" ]]; then
+  ${MVN} deploy -f ${pom}
+else
+  ${MVN} clean deploy -DskipRemoteStaging=true  -f ${pom} \
+    -DstagingDescription="[${JOB_NAME} ${BUILD_TIMESTAMP} ${BUILD_NUMBER}] :: ${pomVersion} :: deploy to local"
+  ${MVN} nexus-staging:deploy-staged -f ${pom} \
+    -DstagingDescription="[${JOB_NAME} ${BUILD_TIMESTAMP} ${BUILD_NUMBER}] :: ${pomVersion} :: deploy to stage + close"
+  ${MVN} nexus-staging:release -f ${pom} \
+    -DstagingDescription="[${JOB_NAME} ${BUILD_TIMESTAMP} ${BUILD_NUMBER}] :: ${pomVersion} :: release"
+fi
+
+----
+
+====

@@ -1,0 +1,66 @@
+= Release JBoss Tools Individual Project Site
+
+This document describes how to publish a JBoss Tools build to production after being verified by QE, but not as part of a regular JBoss Tools release train release.
+
+These asynchronous releases can be done for two reasons:
+
+a) a bug fix is urgently needed, and waiting up to 12 weeks for the next release train GA is unacceptable
+
+b) a JBoss Tools component is deemed deprecated or no longer being developed, so the most recent CI build aggregated into JBoss Tools and Red Hat JBoss Developer Studio can be stored as a stable release, to prevent its loss and allow it to be used for future release trains.
+
+The most common of these two scenarios is (a), as RHAMT (Windup) releases on a schedule that only loosely follows that of JBoss Tools. Before it moved to Eclipse.org, Red Deer also used this process. 
+
+The second scenario, (b), is has been used a few times in the past as old projects such as Portlet, Freemarker, or Arquillian are deprecated.
+
+== Pre-Release Steps
+
+Regardless of the motivation for the async release, you need to ensure your release has passed some amount of QE verification. So, the first step is to copy the CI build to staging so it won't be overwritten by another CI build.
+
+Copying the site can most easily be done using this job:
+
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-rsync/
+
+By passing in parameters such as these:
+
+* SOURCE_PATH = neon/snapshots/builds/jbosstools-freemarker_4.4.neon/latest/all/repo/
+* TARGET_PATH = neon/stable/updates/core/freemarker/1.5.300.v20161214-1103
+
+The resulting site is created here:
+
+http://download.jboss.org/jbosstools/neon/stable/updates/core/freemarker/1.5.300.v20161214-1103
+
+== Release Steps
+
+=== Copy staging to development or stable
+
+Once approved, the staged build can be copied to a /development/ or /stable/ URL and can then be linked from Central so users can discover the update. See example above and use the jbostools-rsync job to copy the bits.
+
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-rsync/
+
+=== Update composite sites
+
+Since the URLs for Central are fixed at the time of the release train releases, the only way to append this new release it so update the composite*.xml files for the site. Affected files:
+
+* http://download.jboss.org/jbosstools/oxygen/development/updates/compositeArtifacts.xml
+* http://download.jboss.org/jbosstools/oxygen/development/updates/compositeContent.xml
+* https://devstudio.redhat.com/11/development/updates/compositeArtifacts.xml
+* https://devstudio.redhat.com/11/development/updates/compositeContent.xml
+
+To acheive this change, you will need to submit a PR against these repos:
+
+* https://github.com/jbosstools/jbosstools-download.jboss.org/blob/master/jbosstools/oxygen/development/updates/
+* https://github.com/jbdevstudio/jbdevstudio-website/tree/master/content/11/development/updates
+
+=== Smoke test the release
+
+Verify that the new version of Fuse Tools (for example) can be accessed from the above JBoss Tools and Devstudio update sites.
+
+You may also want to test these scenarios, as appropriate:
+
+* install from update site directly
+* install from marketplace
+* install from Central (after first installing JBoss Tools)
+* install from Central (after first installing Devstudio)
+* update from Central (if older version already installed)
+* Help > Check for updates (if older version already installed)
+

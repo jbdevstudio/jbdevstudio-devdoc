@@ -1,0 +1,448 @@
+= Release JBoss Developer Studio Development Milestone
+
+This document describes how to publish a valid JBoss Developer Studio build to production after being verified by QE.
+
+= Pre-Release Steps
+
+See link:3_Release_preparation.adoc[Pre-Release]
+
+
+= Release steps
+
+Once QE has signed off, and bits are staged to CSP, you can proceed w/ the rest of the release.
+
+[IMPORTANT]
+====
+
+Before running any of the jobs or scripts below, make sure to set the correct versions to the values for the release you're staging or releasing.
+
+* look for versionWithRespin, update to version you're staging
+* look for PREV and NEXT variables; set to previous / next milestone (AM4, AM5, AM6, Final/GA)
+* check target platform versions are current w/ latest versions
+* check current/NEXT sprint values are correct
+* check parent pom version, version_parent, is current
+* check Integration Stack variables like earlyaccess_IS, version_jbt_IS, version_ds_IS are correct. Double-check best values with Paul Leacu (pleacu).
+
+Search for this regex:
+
+versionWithRespin_(jbt|ds)=[0-9]|version_(parent|jbt|ds|jbt_IS|ds_IS)=[0-9]|_PREV=[0-9]|_NEXT=[0-9]|TARGET_PLATFORM_.+(MIN|MAX)=[0-9]
+
+====
+
+== Copy content to release directory
+
+See link:4_Release_jbosstools.adoc[JBT Release]
+
+Note: if any step seems to fail, you can download all the zips from the destination server and check their sha256sum, eg.,
+
+[source,bash]
+----
+
+# devstudio-11.2.0.GA-target-platform-central.zip
+# devstudio-11.2.0.GA-target-platform-earlyaccess.zip
+# devstudio-11.2.0.GA-target-platform.zip
+# devstudio-11.2.0.GA-updatesite-core.zip
+for z in *.zip; do echo $z; unzip -tq $z; sha256sum ${z}; cat ${z}.sha256; echo ""; echo "-----"; done
+
+----
+
+== Copy RPM content to release directory
+
+If and only if we are releasing at the same the RPM version of Devstudio that is designed to work on RHSCL, then this job should also be run:
+
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-02-copy-builds-and-rpms/
+
+[source,bash]
+----
+
+# kerberos login for the Jenkins server
+export userpass=KERBUSER:PASSWORD
+
+versionWithRespin_jbt=4.5.3.Final
+versionWithRespin_ds=11.3.0.GA
+
+if [[ ${versionWithRespin_ds} == *"GA" ]]; then # GA only
+  version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
+  version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
+  # TODO: later, we will beforking from 4.5.x all jobs will run from 4.5.oxygen stream
+  # if [[ ${version_jbt} == *".Final" ]]; then
+  #   stream_jbt=4.5.oxygen
+  #   stream_ds=11.0.oxygen
+  # else
+    stream_jbt=master
+    stream_ds=master
+  # fi
+
+  ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+  jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+  for j in jbosstools-releng-push-to-dev-stable-02-copy-builds-and-rpms; do
+    prevJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+    sleep 3s
+
+    data="stream_jbt=${stream_jbt}&stream_ds=${stream_ds}&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}"
+    nextJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+    sleep 15s
+
+    if [[ "${prevJob}" == "${nextJob}" ]]; then
+      echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
+      echo "[WARN] ${ccijenkins}/${j}"
+    else
+      ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t disable
+      ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t lastBuild/toggleLogKeep
+    fi
+  done
+fi
+
+----
+
+
+== Update /development/updates/ sites (and /stable/updates if Final)
+
+See link:4_Release_jbosstools.adoc[JBT Release]
+
+
+== Update Target Platforms
+
+See link:4_Release_jbosstools.adoc[JBT Release]
+
+
+== Release the latest milestone to ide-config.properties
+
+See link:4_Release_jbosstools.adoc[JBT Release]
+
+
+== Update Marketplace entry
+
+WARNING: Only applies to Beta and better versions (but usually just GA).
+
+[source,bash]
+----
+
+## TODO CONTINUE HERE FOR GA ##
+
+google-chrome && google-chrome http://marketplace.eclipse.org/content/red-hat-jboss-developer-studio/edit
+
+----
+
+
+=== If node doesn't exist yet
+
+For the first Beta, create a new node on Marketplace, using single feature, com.jboss.devstudio.core.feature
+
+=== If node already exists
+
+Access it via +http://marketplace.eclipse.org/content/red-hat-jboss-developer-studio/edit+ and update the following things:
+
+* Solution version number to match new version
+* Description to match new version & dependencies
+* Notes / warnings (if applicable, eg., JDK issues)
+
+=== Validate Marketplace install
+
+1. Get a compatible Eclipse
+2. Install from Marketplace
+3. Install everything from Central + Earlyaccess
+4. Test a project example
+
+
+== Release JIRA
+
+See link:4_Release_jbosstools.adoc[JBT Release]
+
+
+== Submit PR to update tools.jboss.org
+
+Provide a PR to add the latest JBDS milestones to this listing:
+
+https://github.com/jbosstools/jbosstools-website/blob/master/_config/products.yml
+
+__
+
+For non-Final/GA releases, only JBT should be added. Examples:
+
+* https://github.com/jbosstools/jbosstools-website/pull/622 (JBT 4.4.1 / JBDS 10.1)
+* https://github.com/jbosstools/jbosstools-website/pull/651 (JBT 4.4.2.AM3)
+
+=== SHA256 values
+
+To get the SHA256 values for easy pasting into the product.yml file, fetch & parse the staging build page, eg.
+  https://devstudio.redhat.com/11/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
+
+Run this:
+
+[source,bash]
+----
+
+## TODO CONTINUE HERE ##
+
+echo "" > /tmp/yml.txt
+
+versionWithRespin_ds=11.3.0.GA
+if [[ ${versionWithRespin_ds} == *"GA" ]]; then
+  version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # **
+  theURL=https://devstudio.redhat.com/11/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all
+  searchPattern="jar|zip"
+
+  rm -f /tmp/index.html
+  wget --no-check-certificate -q ${theURL}/ -O /tmp/index.html
+  for f in $(cat /tmp/index.html | egrep "${searchPattern}" | egrep -v "sha256|TXT|latest" | sed -e "s#.\+>\(.\+\(.zip\|.jar\)\)<.\+#\1#"); do
+    size=$(cat /tmp/index.html | egrep "${searchPattern}" | egrep -v "sha256|TXT|latest" | grep $f | sed -e "s#.\+>\(.\+\(.zip\|.jar\)\)<.\+<td align=\"right\">\([ 0-9MK]\+\)</td>.\+#\3#"); echo "$f: $size"
+    sha=$(wget --no-check-certificate -q ${theURL}/${f}.sha256 -O -); sh=${sha:0:2}; # echo $sha :: $sh
+    echo "            url: http://www.jboss.org/download-manager/content/origin/files/sha256/${sh}/${sha}/${f}" >> /tmp/yml.txt
+    echo "            file_size: ${size}B" >> /tmp/yml.txt
+    echo "" >> /tmp/yml.txt
+  done
+fi
+
+if [[ ${versionWithRespin_ds} == *"GA" ]]; then
+  version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # **
+  theURL=https://devstudio.redhat.com/static/11/stable/updates/core/
+  searchPattern="${versionWithRespin_ds}-.*.zip"
+
+  rm -f /tmp/index.html
+  wget --no-check-certificate -q ${theURL}/ -O /tmp/index.html
+  for f in $(cat /tmp/index.html | egrep "${searchPattern}" | egrep -v "sha256|TXT|latest" | sed -e "s#.\+>\(.\+\(.zip\|.jar\)\)<.\+#\1#"); do
+    size=$(cat /tmp/index.html | egrep "${searchPattern}" | egrep -v "sha256|TXT|latest" | grep $f | sed -e "s#.\+>\(.\+\(.zip\|.jar\)\)<.\+<td align=\"right\">\([ 0-9MK]\+\)</td>.\+#\3#"); echo "$f: $size"
+    sha=$(wget --no-check-certificate -q ${theURL}/${f}.sha256 -O -); sh=${sha:0:2}; # echo $sha :: $sh
+    echo "            url: http://www.jboss.org/download-manager/content/origin/files/sha256/${sh}/${sha}/${f}" >> /tmp/yml.txt
+    echo "            file_size: ${size}B" >> /tmp/yml.txt
+    echo "" >> /tmp/yml.txt
+  done
+fi
+cat /tmp/yml.txt; rm -f /tmp/yml.txt
+
+----
+
+[IMPORTANT]
+====
+You will need hub installed to generate a PR via commandline script below. You can get it here:
+
+https://hub.github.com/
+====
+
+Then, back on your own machine...
+
+[source,bash]
+----
+version_jbt=4.5.3.Final
+version_ds=11.3.0.GA
+
+topic=release-${version_jbt}
+github_branch=master
+gituser=${GITUSER} # your github username
+
+# where you have https://github.com/jbosstools/jbosstools-website checked out
+cd ${HOME}/tru
+pushd jbosstools-website/
+
+  git stash
+  git checkout ${github_branch}
+  git pull origin ${github_branch}
+  git pull origin
+  git checkout origin/${github_branch} -b ${topic}
+  git checkout ${topic}
+  git stash pop
+
+  # using your text editor of choice, vim, sublime, etc.
+  st _config/products.yml
+  # vim _config/products.yml
+
+  # make changes, using the generated content above, then...
+
+  if [[ ${version_jbt} == *"Final" ]]; then
+    git commit -s -m "add ${version_jbt} and ${version_ds} to tools.jboss.org" .
+  else
+    git commit -s -m "add ${version_jbt} to tools.jboss.org" .
+  fi
+
+  numCommits=$(git status | egrep "by [0-9]+ commit" | sed "s/.\+by \([0-9]\+\) commit.*/\1/")
+  if [[ $numCommits -gt 1 ]]; then
+    #squash commits ##
+    echo ""
+    echo "Squash commits:"
+    echo "  git rebase -i HEAD~$numCommits" # ~
+    echo ""
+    git rebase -i HEAD~$numCommits # ~
+    if [[ "$?" != "0" ]]; then break 2; fi
+  fi
+  git pull --rebase origin ${github_branch}
+  git push ${gituser} ${topic}
+  parentProject=$(git remote -v | grep origin | grep push | sed "s/.\+github.com\(:\|\/\)\(.\+\)\/.\+/\2/")
+  thisProject=$(git remote -v | grep origin | grep push | sed "s/.\+github.com\(:\|\/\)\(.\+\)\/\(.\+\)\.git.\+/\3/")
+  # to do a 'hub pull-request' you must install hub first: https://github.com/defunkt/hub#readme
+  # alternatively, you can do a pull request in your browser from https://github.com/${gituser}/devstudio-<component>
+  lastCommitComment="$(git log -1 --pretty=%B)"
+  if [[ ${lastCommitComment:45} ]]; then
+    msgTitle=${lastCommitComment:0:45} # first 45 chars
+    msgTitle=${msgTitle% *} # no partial words
+    hub pull-request -o -f -m "${msgTitle}...
+
+${lastCommitComment}" -b ${parentProject}:${github_branch} -h ${gituser}:${topic}
+  else
+    hub pull-request -o -f -m "${lastCommitComment}
+
+${lastCommitComment}" -b ${parentProject}:${github_branch} -h ${gituser}:${topic}
+  fi
+  echo ""
+  echo "  >> Pull Request: https://github.com/${parentProject}/${thisProject}/pulls/${gituser}"
+  echo "  >> Topic Branch: https://github.com/${gituser}/${thisProject}/commits/${topic}"
+  echo "  >> Origin Branch: https://github.com/${parentProject}/${thisProject}/commits/${github_branch}"
+  echo "  >> JIRA / Topic: https://issues.jboss.org/browse/${topic}"
+  echo ""
+
+popd
+
+----
+
+Commit changes and submit PR, eg.,
+
+* https://github.com/jbosstools/jbosstools-website/pull/814,
+* https://github.com/jbosstools/jbosstools-website/pull/803,
+* https://github.com/jbosstools/jbosstools-website/pull/794,
+* https://github.com/jbosstools/jbosstools-website/pull/790
+
+
+== Tag Developer Studio
+
+See link:4_Tag_and_branch.adoc[Tag and branch]
+
+
+== Smoke test the release
+
+For a GA release only. AMx milestones are not released so there's nothing to smoke test.
+
+Before notifying team of release, must check for obvious problems. Any failure there should be fixed with highest priority. In general, it could be wrong URLs in a composite site.
+
+=== Validate update site install (BYOE)
+
+1. Get a recent Eclipse (compatible with the target version of JBT)
+2. Install BYOE category from https://devstudio.redhat.com/11/stable/updates/
+3. Restart. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
+4. Check log, start an example project, check log again
+
+=== Validate installer install
+
+1. Download JBDS installer from https://devstudio.redhat.com/11/stable/builds/
+2. Install via UI or headlessly with
+    java -jar devstudio-*.jar -console -options /dev/null # **
+3. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
+4. Check log, start an example project, check log again
+
+[source,bash]
+----
+
+version_ds=11.3.0.GA
+if [[ ${version_ds} == *"GA" ]]; then # **
+  qual="stable"
+  cd ~/tmp # ~
+  installerJar=$(wget -O - -q https://devstudio.redhat.com/static/11/${qual}/builds/devstudio-${version_ds}-build-product/latest/all/ | \
+    grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
+  echo "Installer jar: ${installerJar}"
+
+  # should have already downloaded this above
+  if [[ ! -f ${installerJar} ]]; then wget https://devstudio.redhat.com/11/${qual}/builds/devstudio-${version_ds}-build-product/latest/all/${installerJar}; fi
+
+  wget https://devstudio.redhat.com/static/11/${qual}/builds/devstudio-${version_ds}-build-product/latest/all/${installerJar}
+  java -jar ~/tmp/${installerJar} # ~
+fi
+
+----
+
+
+== Notify Team Lead(s)
+
+Here's a job that notifies Jeff (or Matt) that the website is ready to be updated with a new blog post, and will provide a script
+to perform tagging of the jbosstools-* and jbdevstudio-* repos:
+
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-dev-stable-07-notification-emails/configure
+
+Using the script below, you can trigger the job remotely.
+
+[source,bash]
+----
+
+# kerberos login for the Jenkins server
+export userpass=KERBUSER:PASSWORD
+
+## TODO CONTINUE HERE  ##
+
+# for AMx milestones, use file like 4.5.3.am3-for-oxygen.3.html
+# for GA releases, use file like 11.3.0.ga-for-oxygen.3a.html
+blogURL=/blog/11.3.0.ga-for-oxygen.3a.html
+# Pull Request (PR)
+pullrequestNum=814
+eclipseVersionSuffix=".3a" # TODO: use .3 for Eclipse 4.7.3a Oxygen.3a
+GOLIVEDATE="2018-04-23"
+
+versionWithRespin_jbt=4.5.3.Final
+versionWithRespin_ds=11.3.0.GA
+version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # \) # ***
+version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
+
+recipientOverride="" # or "nboldt@redhat.com"
+
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+for j in jbosstools-releng-push-to-dev-stable-07-notification-emails; do
+  prevJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  sleep 3s
+
+  data="version_jbt=${version_jbt}&version_ds=${version_ds}&GOLIVEDATE=${GOLIVEDATE}\
+&blogURL=${blogURL}&pullrequestNum=${pullrequestNum}&eclipseVersionSuffix=${eclipseVersionSuffix}&recipientOverride=${recipientOverride}"
+  nextJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+  sleep 15s
+
+  if [[ "${prevJob}" == "${nextJob}" ]]; then
+    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
+    echo "[WARN] ${ccijenkins}/${j}"
+  else
+    ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t disable
+    ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t lastBuild/toggleLogKeep
+  fi
+done
+
+----
+
+
+== Update rpm symlinks
+
+[source,bash]
+----
+
+versionWithRespin_jbt=4.5.3.Final
+versionWithRespin_ds=11.3.0.GA
+
+if [[ ${versionWithRespin_ds} == *"GA" ]]; then # GA only **
+  cd ~/truu/ # ~
+  cd jbdevstudio-website/content/11/snapshots/rpms
+  git pull origin master
+  rm -f 11; ln -s 11.3.0 11
+  scpr 11 $JBDS/11/snapshots/rpms/
+  ci "add symlinks for 11 -> 11.3.0" .
+  git push origin master
+fi
+
+----
+
+== Commit updates to release guide (including this document):
+
+[source,bash]
+----
+
+cd ~/truu # ~
+
+version_jbt=4.5.3.Final
+version_ds=11.3.0.GA
+cd jbdevstudio-devdoc/release_guide/
+git commit -s -m "update release guide for ${version_jbt} and ${version_ds}" .
+git push origin HEAD:master
+
+----
+
+== Final release steps
+
+On Release Day (currently the Monday after the end of the GA sprint), there are a few remaining TODOs to do.
+
+See link:6_Release_day_steps.adoc[JBoss Tools and Devstudio Release Day Steps]

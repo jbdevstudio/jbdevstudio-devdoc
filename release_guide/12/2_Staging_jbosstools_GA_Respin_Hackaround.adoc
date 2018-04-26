@@ -1,0 +1,50 @@
+# This script was used to work around some limitations in the 2_Staging_jbosstools.adoc scripts caused by the need for a respin.
+# 20180122 nboldt
+
+
+# globals
+eclipseReleaseName=oxygen
+devstudioReleaseVersion=11
+
+quals=staging
+
+JBDS="devstudio@10.5.105.197:/www_htdocs/devstudio" # use filemgmt IP
+TOOLS="tools@10.5.105.197:/downloads_htdocs/tools"
+
+############
+
+versionWithRespin_ds_PREV=11.2.0.GA-prev-20180118 # milestones
+versionWithRespin_ds=11.2.0.GA
+
+cd ~/truu/jbdevstudio-website/content/${devstudioReleaseVersion}/staging/updates # ~
+git pull origin master
+for d in core discovery.earlyaccess discovery.central .; do
+  echo " == ${d} =="
+  mkdir -p ${d}; cd ${d}; scpr -q $JBDS/${devstudioReleaseVersion}/${quals}/updates/${d}/composite*.xml .
+  sed -i -e "s#${versionWithRespin_ds_PREV}#${versionWithRespin_ds}#" compositeArtifacts.xml compositeContent.xml
+  git add compositeArtifacts.xml compositeContent.xml
+  scpr composite*.xml $JBDS/${devstudioReleaseVersion}/${quals}/updates/${d}/
+  git commit -s -m "Fix ${devstudioReleaseVersion}/${quals}/updates/${d}/: s#${versionWithRespin_ds_PREV}#${versionWithRespin_ds}#" composite*.xml
+  cd - >/dev/null
+  echo ""
+done
+git push origin master
+
+############
+
+versionWithRespin_jbt_PREV=4.5.2.Final-prev-20180118 # milestones
+versionWithRespin_jbt=4.5.2.Final
+
+cd ~/tru/jbosstools-download.jboss.org/jbosstools/${eclipseReleaseName}/staging/updates # ~
+git pull origin master
+for d in browsersim central core coretests discovery.earlyaccess discovery.central earlyaccess fuse-extras integration-tests .; do
+  echo " == ${d} =="
+  mkdir -p ${d}; cd ${d}; scpr -q $TOOLS/${eclipseReleaseName}/${quals}/updates/${d}/composite*.xml .
+  sed -i -e "s#${versionWithRespin_jbt_PREV}#${versionWithRespin_jbt}#" compositeArtifacts.xml compositeContent.xml
+  git add compositeArtifacts.xml compositeContent.xml
+  scpr composite*.xml $TOOLS/${eclipseReleaseName}/${quals}/updates/${d}/
+  git commit -s -m "Fix ${eclipseReleaseName}/${quals}/updates/${d}/: s#${versionWithRespin_jbt_PREV}#${versionWithRespin_jbt}#" composite*.xml
+  cd - >/dev/null
+  echo ""
+done
+git push origin master

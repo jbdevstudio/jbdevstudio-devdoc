@@ -1,0 +1,53 @@
+= Pre-Release Steps
+
+These steps can be done before the actual release (eg., on the Thurs or Fri before the Monday release, as long as QE has more-or-less signed off). Check with QE before proceeding.
+
+
+== Clone jbosstools-build-ci repo or link to it from elsewhere on disk
+
+[source,bash]
+----
+
+mkdir -p /tmp/jbt.github
+cd /tmp/jbt.github
+if [[ -d ~/tru/jbosstools-build-ci ]]; then ln -s ~/tru/jbosstools-build-ci; fi
+if [[ ! -d jbosstools-build-ci ]] && [[ -L jbosstools-build-ci ]]; then git clone git@github.com:jbosstools/jbosstools-build-ci.git; fi
+cd jbosstools-build-ci
+git checkout master # later jbosstools-4.5.x
+chmod +x -R */*.sh */*/*.sh
+
+----
+
+
+== Remind devs about JIRA triage
+
+Kick this job to send reminder emails to the team, in case some issues are not yet resolved.
+
+[source,bash]
+----
+
+# kerberos login for the Jenkins server
+export userpass=KERBUSER:PASSWORD
+
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+for j in jbosstools-jiralint-weekly; do
+  ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t build
+done
+
+----
+
+== Update http://developers.redhat.com/products/devstudio/
+
+Ping Mike Guerette & Erin Rooney a couple weeks in advance to get this stuff ready in in time for GA.
+
+Goal is to update the following pages to include links to guides and to set the correct latest GA release version:
+
+* http://developers.redhat.com/products/devstudio/download/
+* http://developers.redhat.com/products/devstudio/hello-world/
+* http://developers.redhat.com/products/devstudio/docs-and-apis/
+
+The download page will be automatically updated when new downloads are uploaded into "Download Manager" and no further action is needed.
+
+

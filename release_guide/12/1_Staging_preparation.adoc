@@ -1,0 +1,109 @@
+= Pre-Staging steps
+
+Before beginning a stage at the end of a sprint, a number of things need to be done:
+
+* Clone jbosstools-build-ci repo
+
+* Email jbosstools-dev@lists.jboss.org re: upcoming target platform and code freezes (usually the last Wed of sprint)
+
+* Email jmaury@redhat.com & scela@redhat.com re: creation of next sprint, and jbosstools-dev@lists.jboss.org to remind about JIRA triage
+
+* Confirm latest Integration Stack (IS) release & URLs
+
+
+== Clone jbosstools-build-ci repo or link to it from elsewhere on disk
+
+[source,bash]
+----
+
+mkdir -p /tmp/jbt.github
+cd /tmp/jbt.github
+if [[ -d ~/tru/jbosstools-build-ci ]]; then ln -s ~/tru/jbosstools-build-ci; fi
+if [[ ! -d jbosstools-build-ci ]] && [[ -L jbosstools-build-ci ]]; then git clone git@github.com:jbosstools/jbosstools-build-ci.git; fi
+cd jbosstools-build-ci
+git checkout master # later jbosstools-4.5.x
+chmod +x -R */*.sh */*/*.sh
+
+----
+
+
+== Email jbosstools-dev@lists.jboss.org re: upcoming target platform and code freezes
+
+1. If there have been significant changes to target platforms this sprint, on the Monday prior to the last Wednesday of the sprint, send a note to jbosstools-dev@lists.jboss.org reminding people of these changes and calling for any last minute updates that might be needed to be done to the TARGET PLATFORMS before code freeze. Changes must be committed, built, and live by EOD Tuesday, one day before code freeze.
+
+This will also serve as a reminder of the upcoming CODE FREEZE on the last Wednesday of the sprint.
+
+2. For GA releases, the target plaform must also be link:5_Release_nexus.adoc[released to Nexus].
+
+3. If there has not been a change to the target platform for this sprint, you should still send a reminder about the upcoming code freeze.
+
+TODO: script this via a Jenkins job
+
+
+== Email jmaury@redhat.com & scela@redhat.com re: creation of next sprint, and jbosstools-dev@lists.jboss.org to remind about JIRA triage
+
+Run this build:
+
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-00-sprint-creation-and-jira-triage-request-emails/
+
+[source,bash]
+----
+
+# kerberos login for the Jenkins server
+export userpass=KERBUSER:PASSWORD
+
+sprint="devex #147 April 2018"
+sprint_NEXT="devex #148 April 2018"
+versionWithRespin_jbt=4.5.3.Final
+versionWithRespin_jbt_NEXT=4.6.0.AM1
+versionWithRespin_ds=11.3.0.GA
+versionWithRespin_ds_NEXT=12.0.0.AM1
+TOrecipients1="jmaury@redhat.com, scela@redhat.com"
+TOrecipients2="jbosstools-dev@lists.jboss.org"
+CCrecipients="jmaury@redhat.com, scela@redhat.com"
+recipientOverride="" # or "nboldt@redhat.com"
+# encode spaces
+sprint=${sprint// /%20}
+sprint_NEXT=${sprint_NEXT// /%20}
+TOrecipients1=${TOrecipients1// /%20}
+TOrecipients2=${TOrecipients2// /%20}
+CCrecipients=${CCrecipients// /%20}
+
+ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
+jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
+JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+for j in jbosstools-releng-push-to-staging-00-sprint-creation-and-jira-triage-request-emails; do
+  prevJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  sleep 3s
+
+  data="recipientOverride=${recipientOverride}&sprint=${sprint}&sprint_NEXT=${sprint_NEXT}&\
+versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_jbt_NEXT=${versionWithRespin_jbt_NEXT}&\
+versionWithRespin_ds=${versionWithRespin_ds}&versionWithRespin_ds_NEXT=${versionWithRespin_ds_NEXT}&\
+TOrecipients1=${TOrecipients1}&TOrecipients2=${TOrecipients2}&CCrecipients=${CCrecipients}&"
+  nextJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+  sleep 15s
+
+  if [[ "${prevJob}" == "${nextJob}" ]]; then
+    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
+    echo "[WARN] ${ccijenkins}/${j}"
+  else
+    { ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t disable && ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t lastBuild/toggleLogKeep & }
+  fi
+done
+
+----
+
+
+== Confirm latest Integration Stack (IS) release & URLs
+
+Contact Paul Leacu (pleacu@redhat.com) to ask what the latest IS releases are (4.5.x, 11.x) and the URLs to use when merging this content into the Central Discovery sites.
+
+The job that will handles this merge step is:
+
+https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-staging-04-update-merge-composites-html/
+
+Currently:
+
+version_jbt_IS=4.5.2.Final
+version_ds_IS=11.2.0.GA
+

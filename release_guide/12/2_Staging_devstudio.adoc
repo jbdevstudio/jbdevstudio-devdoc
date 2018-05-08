@@ -16,7 +16,7 @@ cd /tmp/jbt.github
 if [[ -d ~/tru/jbosstools-build-ci ]]; then ln -s ~/tru/jbosstools-build-ci; fi
 if [[ ! -d jbosstools-build-ci ]] && [[ -L jbosstools-build-ci ]]; then git clone git@github.com:jbosstools/jbosstools-build-ci.git; fi
 cd jbosstools-build-ci
-git checkout master # later jbosstools-4.5.x
+git checkout master # later jbosstools-4.6.x
 chmod +x -R */*.sh */*/*.sh
 
 ----
@@ -67,11 +67,11 @@ TIP: Once the staging build folder exists, start fetching the devstudio installe
 ## TODO CONTINUE HERE ##
 
 cd ~/tmp
-versionWithRespin_ds=11.3.0.GA
-installerJar=$(wget -O - -q https://devstudio.redhat.com/11/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
+versionWithRespin_ds=12.0.0.AM1
+installerJar=$(wget -O - -q https://devstudio.redhat.com/12/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 echo "Installer jar: ${installerJar}"
 if [[ ${installerJar} ]]; then
-  time wget https://devstudio.redhat.com/11/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/${installerJar}
+  time wget https://devstudio.redhat.com/12/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/${installerJar}
 else
   echo ""; echo "[ERROR] No installer found! Try again later!"
 fi
@@ -107,7 +107,7 @@ Before notifying team of staged release, must check for obvious problems.
 1. Get a recent Eclipse (compatible with the target version of JBT)
 2. Install Bring Your Own Eclipse category from
 
-https://devstudio.redhat.com/11/staging/updates/
+https://devstudio.redhat.com/12/staging/updates/
 
 3. Restart when prompted. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
 4. Check log, start an example project, check log again
@@ -115,13 +115,13 @@ https://devstudio.redhat.com/11/staging/updates/
 [source,bash]
 ----
 
-versionWithRespin_ds=11.3.0.GA
+versionWithRespin_ds=12.0.0.AM1
 cd ~/tmp
-installerJar=$(wget -O - -q https://devstudio.redhat.com/11/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
+installerJar=$(wget -O - -q https://devstudio.redhat.com/12/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 echo "Installer jar: ${installerJar}"
 
 # should have already downloaded this above
-if [[ ! -f ${installerJar} ]]; then wget https://devstudio.redhat.com/11/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/${installerJar}; fi
+if [[ ! -f ${installerJar} ]]; then wget https://devstudio.redhat.com/12/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/${installerJar}; fi
 
 if [[ -d ~/devstudio ]]; then mv ~/devstudio{,_BAK}; fi
 echo 1 | java -jar ~/tmp/${installerJar} -console # install headlessly to ~/devstudio
@@ -159,8 +159,8 @@ Trigger the QE smoke tests in https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_ds=11.3.0.GA
-installerJar=$(wget -O - -q https://devstudio.redhat.com/11/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
+versionWithRespin_ds=12.0.0.AM1
+installerJar=$(wget -O - -q https://devstudio.redhat.com/12/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 version_ds_INST=${installerJar#devstudio-}
 version_ds_INST=${version_ds_INST%-installer*}
 echo "Devstudio installer version: ${version_ds_INST}"
@@ -183,7 +183,7 @@ done
 
 == Verify install instructions are correct
 
-Look at the .txt and .html files in https://devstudio.redhat.com/11/staging/builds/devstudio-11.3.0.GA-build-product/latest/all/
+Look at the .txt and .html files in https://devstudio.redhat.com/12/staging/builds/devstudio-12.0.0.GA-build-product/latest/all/
 
 Verify that they contain correct install/usage instructions & versions.
 
@@ -214,7 +214,7 @@ Configure, then run this job: https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_ds=11.3.0.GA
+versionWithRespin_ds=12.0.0.AM1
 
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
@@ -240,107 +240,6 @@ fi
 
 ----
 
-
-== Submit RCM ticket to sign RPM
-
-@since 11.0
-
-For GA builds only.
-
-Give URL link to Chris via RCM ticket, eg., https://projects.engineering.redhat.com/browse/RCM-27209
-
-https://www.redhat.com/security/data/a5787476.txt
-https://access.redhat.com/security/team/key
-
-Previous tickets:
-
-* https://projects.engineering.redhat.com/browse/RCM-31843
-
-[source,bash]
-----
-
-# kerberos login for the Jenkins server
-export userpass=KERBUSER:PASSWORD
-
-versionWithRespin_ds=11.3.0.GA
-ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
-JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for j in jbosstools-releng-push-to-staging-05-sign-rpm-request-email; do
-  prevJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
-  sleep 3s
-
-  data="token=RELENG&versionWithRespin_ds=${versionWithRespin_ds}"
-  nextJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
-  sleep 15s
-
-  if [[ "${prevJob}" == "${nextJob}" ]]; then
-    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
-    echo "[WARN] ${ccijenkins}/${j}"
-    google-chrome ${ccijenkins}/${j} &
-  else
-    ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t disable
-    ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t lastBuild/toggleLogKeep
-  fi
-done
-
-----
-
-== Submit RCM ticket to push RPM to DevTools channel (once signed)
-
-@since 11.0
-
-For GA builds only.
-
-Here is a job that creates the RCM ticket to push the signed RPMs to the DevTools channel:
-
-https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-06-publish-to-channel-request-email/configure
-
-Previous tickets:
-
-* https://projects.engineering.redhat.com/browse/RCM-31847
-
-[source,bash]
-----
-
-# kerberos login for the Jenkins server
-export userpass=KERBUSER:PASSWORD
-
-versionWithRespin_ds=11.3.0.GA
-if [[ ${versionWithRespin_ds} == *"GA" ]]; then
-  # signingTicket from https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-05-sign-rpm-request-email
-  signingTicket="https://projects.engineering.redhat.com/browse/RCM-31843"
-  STAGE_DATE="2018-04-18"
-  GOLIVEDATE="2018-04-23"
-  TOrecipients="release-engineering@redhat.com"
-  CCrecipients="nboldt@redhat.com, rhartman@redhat.com, rzima@redhat.com, mat.booth@redhat.com, vkadlcik@redhat.com, timoran@redhat.com, bodavis@redhat.com, mbenitez@redhat.com, scela@redhat.com"
-  CCrecipients=${CCrecipients// /%20}
-  recipientOverride="" # or "nboldt@redhat.com"
-  ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-  jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
-JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-  for j in jbosstools-releng-push-to-staging-06-publish-to-channel-request-email; do
-    prevJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
-    sleep 3s
-
-    data="token=RELENG&versionWithRespin_ds=${versionWithRespin_ds}&GOLIVEDATE=${GOLIVEDATE}&STAGE_DATE=${STAGE_DATE}\
-&TOrecipients=${TOrecipients}&CCrecipients=${CCrecipients}&recipientOverride=${recipientOverride}&signingTicket=${signingTicket}"
-    nextJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
-    sleep 15s
-
-    if [[ "${prevJob}" != "${nextJob}" ]]; then
-      echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
-      echo "[WARN] ${ccijenkins}/${j}"
-    google-chrome ${ccijenkins}/${j} &
-    else
-      ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t disable
-      ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t lastBuild/toggleLogKeep
-    fi
-  done
-fi
-
-----
-
 == Announce internally for push to CSP staging site
 
 Submit an RCM ticket to release-engineering@redhat.com to requet that the binaries be uploaded to the CSP (Red Hat Customer Portal) and Download Manager.
@@ -355,8 +254,6 @@ Previous tickets:
 
 Communicate with Chris O'Brien (internal IRC: siege) to coordinate the release. All the above can happen in parallel / before the updates below.
 
-For a GA build, you'll have requested RPM signing via here: link:2_Staging_devstudio.adoc[Sign RPM]. Use that signingTicket value below.
-
 Here is a job that creates the RCM ticket:
 
 https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-06-releng-request-email/configure
@@ -367,11 +264,9 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-rele
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_ds=11.3.0.GA
+versionWithRespin_ds=12.0.0.AM1
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   # TODO set these ticket URL values for this release!
-  # signingTicket from https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-05-sign-rpm-request-email
-  signingTicket="https://projects.engineering.redhat.com/browse/RCM-31843"
   errataTicket="https://errata.devel.redhat.com/advisory/33102"
   STAGE_DATE="2018-04-18"
   GOLIVEDATE="2018-04-23"
@@ -387,7 +282,7 @@ JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
     sleep 3s
 
     data="token=RELENG&versionWithRespin_ds=${versionWithRespin_ds}&GOLIVEDATE=${GOLIVEDATE}&STAGE_DATE=${STAGE_DATE}\
-&TOrecipients=${TOrecipients}&CCrecipients=${CCrecipients}&recipientOverride=${recipientOverride}&signingTicket=${signingTicket}&errataTicket=${signingTicket}"
+&TOrecipients=${TOrecipients}&CCrecipients=${CCrecipients}&recipientOverride=${recipientOverride}&errataTicket=${errataTicket}"
     nextJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
     sleep 15s
 
@@ -403,144 +298,3 @@ fi
 
 ----
 
-== Fetch signed RPMs
-
-Once signed, the RCM ticket above will include a URL,eg., http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/devstudio-11.3.0/rpms/signed/
-
-1. Fetch rpms, regen metadata.
-
-[source,bash]
-----
-
-## TODO CONTINUE HERE ##
-
-# kerberos login for the Jenkins server
-export userpass=KERBUSER:PASSWORD
-
-signedURL=http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/devstudio-11.3.0/rpms/signed/
-versionWithRespin_ds=11.3.0.GA
-ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
-JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for j in jbosstools-releng-push-to-staging-06-sign-rpm-fetch; do
-  prevJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
-  sleep 3s
-
-  data="token=RELENG&versionWithRespin_ds=${versionWithRespin_ds}&signedURL=${signedURL}"
-  nextJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
-  sleep 15s
-
-  if [[ "${prevJob}" == "${nextJob}" ]]; then
-    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
-    echo "[WARN] ${ccijenkins}/${j}"
-    google-chrome ${ccijenkins}/${j} &
-  else
-    ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t disable
-    ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t lastBuild/toggleLogKeep
-  fi
-done
-
-----
-
-2. Download the rpms from https://devstudio.redhat.com/11/staging/builds/devstudio-11.3.0.GA-build-rpm/latest/x86_64/
-and test them like this to verify their signatures. You'll want to run these commands as ROOT
-
-[source,bash]
-----
-
-# if not already imported, as ROOT, you need to import the signing key:
-cd /tmp; wget -q https://www.redhat.com/security/data/a5787476.txt
-gpg --import /tmp/a5787476.txt
-rpm --import /tmp/a5787476.txt
-rm -f /tmp/a5787476.txt
-
-# now you can check the signature against the key
-
-signedURL=https://devstudio.redhat.com/11/snapshots/builds/devstudio.rpm_master/latest/x86_64/ # unsigned
-signedURL=http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/devstudio-11.3.0/rpms/signed/ # signed
-signedURL=https://devstudio.redhat.com/11/staging/builds/devstudio-11.3.0.GA-build-rpm/latest/x86_64/ # if updated from the step above, must be signed
-
-theFiles=$(curl -s -S -k ${signedURL} | grep href=\" | grep rpm\" | sed -e "s#.\+href=\"\([^\"]\+\)\".\+#\1#")
-for theFile in ${theFiles}; do
-  echo "Downloading ${signedURL}${theFile} ..."
-  curl -S -k -# ${signedURL}${theFile} > /tmp/${theFile}
-  echo "Check pgp signature in /tmp/${theFile}.rpm ..."
-  gpgcheck=$(rpm -K  /tmp/${theFile} | grep "signatures OK")
-  if [[ ! ${gpgcheck} ]]; then
-    echo "[ERROR] rpm is not signed (or you forgot to import the key)!"
-    rpm -K /tmp/${theFile}
-  else
-    echo "[INFO] ${gpgcheck}"
-  fi
-done
-
-#cleanup
-rm -fr /tmp/index.html /tmp/rh-eclipse47-devstudio*.rpm
-
-----
-
-3. On a RHEL7 box (not Fedora), as ROOT, update your /etc/yum.repos.d/rh-eclipse47-devstudio.repo file like this:
-
-[source,bash]
-----
-
-cat <<EOF > /etc/yum.repos.d/rh-eclipse47-devstudio.repo
-[rh-eclipse47-devstudio-staging-11.3.0]
-name=rh-eclipse47-devstudio-staging-11.3.0
-baseurl=https://devstudio.redhat.com/11/staging/builds/devstudio-11.3.0.GA-build-rpm/latest/x86_64/
-enabled=1
-gpgcheck=1
-upgrade_requirements_on_install=1
-metadata_expire=2m
-
-[rh-eclipse47-devstudio-snapshots-11.3.0]
-name=rh-eclipse47-devstudio-snapshots-11.3.0
-baseurl=https://devstudio.redhat.com/11/snapshots/rpms/11.2.0/x86_64/
-enabled=0
-gpgcheck=0
-upgrade_requirements_on_install=1
-metadata_expire=120m
-EOF
-
-cat <<EOF > /etc/yum.repos.d/rh-eclipse47-build.repo
-[rh-eclipse47-build]
-name=rh-eclipse47-build
-baseurl=http://brewweb.engineering.redhat.com/brewroot/repos/devtools-2018.1-rh-eclipse47-rhel-7-build/latest/x86_64/
-enabled=1
-sslverify=0
-gpgcheck=0
-EOF
-
-----
-
-4. On a RHEL7 box (not Fedora), install the signing key and then devstudio:
-
-[source,bash]
-----
-
-# if not already imported, as ROOT, you need to import the signing key:
-cd /tmp; wget -q https://www.redhat.com/security/data/a5787476.txt
-gpg --import /tmp/a5787476.txt
-rpm --import /tmp/a5787476.txt
-rm -f /tmp/a5787476.txt
-
-# If you already have rh-eclipse47-devstudio installed (can add --best flag for Fedora install)
-yum update rh-eclipse47-devstudio -y
-
-# Or, if not already installed
-yum install rh-eclipse47-devstudio -y
-
-# note, if verifying unsigned rpms, use:
-yum update --nogpgcheck # or
-yum install --nogpgcheck
-
-----
-
-[WARNING]
-====
-Installation should complete without any problems. Should NOT see an error like this:
-[source,bash]
-----
-Error: Package rh-eclipse47-devstudio-11.3.0.20180413.0814.el7.x86_64.rpm is not signed
-----
-====

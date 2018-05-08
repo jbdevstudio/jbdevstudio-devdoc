@@ -16,7 +16,7 @@ cd /tmp/jbt.github
 if [[ -d ~/tru/jbosstools-build-ci ]]; then ln -s ~/tru/jbosstools-build-ci; fi
 if [[ ! -d jbosstools-build-ci ]] && [[ -L jbosstools-build-ci ]]; then git clone git@github.com:jbosstools/jbosstools-build-ci.git; fi
 cd jbosstools-build-ci
-git checkout master # later jbosstools-4.5.x
+git checkout master # later jbosstools-4.6.x
 chmod +x -R */*.sh */*/*.sh
 
 ----
@@ -90,17 +90,17 @@ Configure, then run this job:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-version_parent=4.5.3.Final-SNAPSHOT
-versionWithRespin_jbt=4.5.3.Final
-versionWithRespin_ds=11.3.0.GA
+version_parent=4.6.0.AM1-SNAPSHOT
+versionWithRespin_jbt=4.6.0.AM1
+versionWithRespin_ds=12.0.0.AM1
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # if [[ ${version_jbt} == *".Final" ]]; then # **
-#   stream_jbt=4.5.oxygen
-#   github_branch=jbosstools-4.5.0.x
+#   stream_jbt=4.6.photon
+#   github_branch=jbosstools-4.6.0.x
 # else
-  stream_jbt=master # later 4.5.oxygen
-  github_branch=master # later jbosstools-4.5.0.x
+  stream_jbt=master # later 4.6.photon
+  github_branch=master # later jbosstools-4.6.0.x
 # fi
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
@@ -133,9 +133,9 @@ If any branches have not yet been created, you can either:
 [source,bash]
 ----
 # for master branch
-git checkout master; git pull origin master; git checkout -b jbosstools-4.5.0.x; git push origin jbosstools-4.5.0.x
-# or, 4.5.x branch
-git checkout jbosstools-4.5.x; git pull origin jbosstools-4.5.x; git checkout -b jbosstools-4.5.0.x; git push origin jbosstools-4.5.0.x
+git checkout master; git pull origin master; git checkout -b jbosstools-4.6.0.x; git push origin jbosstools-4.6.0.x
+# or, 4.6.x branch
+git checkout jbosstools-4.6.x; git pull origin jbosstools-4.6.x; git checkout -b jbosstools-4.6.0.x; git push origin jbosstools-4.6.0.x
 
 ----
 
@@ -144,29 +144,29 @@ Once the above conditions have been met, you can proceed to the next steps.
 
 == Disable jobs
 
-To prevent accidentally rebuilding something while you're copying it away, make sure that all the stable branch jobs (4.5.oxygen, 11.0.oxygen) are disabled. These include all product, composite and aggregate jobs:
+To prevent accidentally rebuilding something while you're copying it away, make sure that all the stable branch jobs (4.6.photon, 12.0.photon) are disabled. These include all product, composite and aggregate jobs:
 
 [source,bash]
 ----
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.3.Final
-versionWithRespin_ds=11.3.0.GA
+versionWithRespin_jbt=4.6.0.AM1
+versionWithRespin_ds=12.0.0.AM1
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # if [[ ${version_jbt} == *".Final" ]]; then # **
-#  stream_jbt=4.5.oxygen
-#  stream_ds=11.0.oxygen
+#  stream_jbt=4.6.photon
+#  stream_ds=12.0.photon
 # else
-  stream_jbt=master # later 4.5.oxygen
-  stream_ds=master # later 11.0.oxygen
+  stream_jbt=master # later 4.6.photon
+  stream_ds=master # later 12.0.photon
 # fi
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for p in aerogear base browsersim build-ci build.parent central discovery fabric8analytics forge fuse-extras hibernate integration-tests.aggregate \
-    javaee-tests-matrix javaee jst livereload openshift-restclient-java openshift server-Run-Unit-and-ITests server vpe webservices \
+for p in base build-ci build.parent central discovery fabric8analytics forge fuse-extras hibernate integration-tests.aggregate \
+    javaee-tests-matrix javaee jst openshift-restclient-java openshift server-Run-Unit-and-ITests server vpe webservices \
     base.sonar openshift.sonar server.sonar; do
     j=jbosstools-${p}_master
     { ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t disable && ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t lastBuild/toggleLogKeep & }
@@ -175,8 +175,8 @@ echo ""
 
 # jbosstools-buildflow-force-publish_${stream_jbt} jbosstools-build.parent_${stream_jbt} jbosstoolstargetplatform-central-4.71.x jbosstoolstargetplatform-4.71.x
 for j in jbosstools-buildflow_${stream_jbt} jbosstools-discovery_${stream_jbt} \
-    devstudio.product_${stream_ds} devstudio.rpm_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} \
-    jbosstools-composite-install_${stream_jbt} jbosstools-browsersim_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} \
+    devstudio.product_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} \
+    jbosstools-composite-install_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} \
     jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstools-build-sites.aggregate.child-sites_${stream_jbt} \
     jbosstools-maven-plugins.tycho-plugins_${stream_jbt}; do
     { ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t disable && ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t lastBuild/toggleLogKeep & }
@@ -189,7 +189,7 @@ echo ""
 == Update Discovery Sites and URLs
 
 [[update-discovery-urls]]
-Update the *stable branch* (or master) discovery job ( https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-discovery_4.5.oxygen/configure (or jbosstools-discovery_master)) to use the correct source URLs and versions +
+Update the *stable branch* (or master) discovery job ( https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-discovery_4.6.photon/configure (or jbosstools-discovery_master)) to use the correct source URLs and versions +
 
 
 Then respin the job:
@@ -200,17 +200,17 @@ Then respin the job:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.3.Final
-versionWithRespin_ds=11.3.0.GA
+versionWithRespin_jbt=4.6.0.AM1
+versionWithRespin_ds=12.0.0.AM1
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # if [[ ${version_jbt} == *".Final" ]]; then # **
-#   stream_jbt=4.5.oxygen
+#   stream_jbt=4.6.photon
 # else
   stream_jbt=master
 # fi
-TARGET_PLATFORM_VERSION_MAX=4.73.1.Final
-TARGET_PLATFORM_CENTRAL_MAX=4.73.0.Final-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.80.0.AM1-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.80.0.AM1-SNAPSHOT
 version_jbt_IS=4.5.2.Final
 version_ds_IS=11.2.0.GA
 qual_IS=stable # or development
@@ -248,9 +248,9 @@ You'll need this later for smoke testing. Start fetching it now to save time lat
 [source,bash]
 ----
 
-cd ~/tmp; wget http://download.eclipse.org/technology/epp/downloads/release/oxygen/3a/eclipse-jee-oxygen-3a-linux-gtk-x86_64.tar.gz &
+cd ~/tmp; wget http://download.eclipse.org/technology/epp/downloads/release/photon/M6/eclipse-jee-photon-M6-linux-gtk-x86_64.tar.gz &
 # or
-cd ~/tmp; wget https://hudson.eclipse.org/packaging/job/oxygen.epp-tycho-build/389/artifact/org.eclipse.epp.packages/archive/20171116-1726_eclipse-jee-oxygen-2-rc1-linux.gtk.x86_64.tar.gz &
+cd ~/tmp; wget https://hudson.eclipse.org/packaging/job/photon.epp-tycho-build/lastSuccessfulBuild/artifact/org.eclipse.epp.packages/archive/20180507-2024_eclipse-jee-photon-M6-linux.gtk.x86_64.tar.gz &
 
 ----
 
@@ -273,17 +273,17 @@ NOTE: To save time, you can run this in parallel with the above step to create t
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-eclipseReleaseName=oxygen
-devstudioReleaseVersion=11
-versionWithRespin_jbt=4.5.3.Final
-versionWithRespin_ds=11.3.0.GA
+eclipseReleaseName=photon
+devstudioReleaseVersion=12
+versionWithRespin_jbt=4.6.0.AM1
+versionWithRespin_ds=12.0.0.AM1
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
-TARGET_PLATFORM_VERSION_MAX=4.73.1.Final
-TARGET_PLATFORM_CENTRAL_MAX=4.73.0.Final-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.80.0.AM1-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.80.0.AM1-SNAPSHOT
 # if [[ ${version_jbt} == *".Final" ]]; then # **
-#   stream_jbt=4.5.oxygen
-#   stream_ds=11.0.oxygen
+#   stream_jbt=4.6.photon
+#   stream_ds=12.0.photon
 # else
   stream_jbt=master
   stream_ds=master
@@ -349,10 +349,10 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-rele
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-eclipseReleaseName=oxygen
-devstudioReleaseVersion=11
-versionWithRespin_jbt=4.5.3.Final
-versionWithRespin_ds=11.3.0.GA
+eclipseReleaseName=photon
+devstudioReleaseVersion=12
+versionWithRespin_jbt=4.6.0.AM1
+versionWithRespin_ds=12.0.0.AM1
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
@@ -393,15 +393,15 @@ export userpass=KERBUSER:PASSWORD
 
 ## TODO CONTINUE HERE ##
 
-versionWithRespin_jbt_PREV_GA=4.5.2.Final
-versionWithRespin_jbt_PREV=4.5.3.AM3 # milestones
-versionWithRespin_jbt=4.5.3.Final
-versionWithRespin_jbt_NEXT=4.6.0.AM1
+versionWithRespin_jbt_PREV_GA=4.5.3.Final
+versionWithRespin_jbt_PREV=4.5.3.Final # milestones
+versionWithRespin_jbt=4.6.0.AM1
+versionWithRespin_jbt_NEXT=4.6.0.AM2
 
-versionWithRespin_ds_PREV_GA=11.2.0.GA
-versionWithRespin_ds_PREV=11.3.0.AM3 # milestones
-versionWithRespin_ds=11.3.0.GA
-versionWithRespin_ds_NEXT=12.0.0.AM1
+versionWithRespin_ds_PREV_GA=11.3.0.GA
+versionWithRespin_ds_PREV=11.3.0.GA # milestones
+versionWithRespin_ds=12.0.0.AM1
+versionWithRespin_ds_NEXT=12.0.0.AM2
 
 buildType="staging"
 
@@ -471,7 +471,7 @@ Before notifying team of staged release, must check for obvious problems.
 1. Get a recent Eclipse (compatible with the target version of JBT)
 2. Install Abridged category from
 
-http://download.jboss.org/jbosstools/oxygen/staging/updates/
+http://download.jboss.org/jbosstools/photon/staging/updates/
 
 3. Restart when prompted. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
 4. Check log, start an example project, check log again
@@ -493,13 +493,13 @@ If the next build WILL be a respin, you need to simply:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.3.Final
-versionWithRespin_ds=11.3.0.GA
+versionWithRespin_jbt=4.6.0.AM1
+versionWithRespin_ds=12.0.0.AM1
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # if [[ ${version_jbt} == *".Final" ]]; then # **
-#   stream_jbt=4.5.oxygen
-#   stream_ds=11.0.oxygen
+#   stream_jbt=4.6.photon
+#   stream_ds=12.0.photon
 # else
   stream_jbt=master
   stream_ds=master
@@ -507,8 +507,8 @@ version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for p in aerogear base browsersim build-ci build.parent central discovery fabric8analytics forge fuse-extras hibernate integration-tests.aggregate \
-    javaee-tests-matrix javaee jst livereload openshift-restclient-java openshift server-Run-Unit-and-ITests server vpe webservices \
+for p in base build-ci build.parent central discovery fabric8analytics forge fuse-extras hibernate integration-tests.aggregate \
+    javaee-tests-matrix javaee jst openshift-restclient-java openshift server-Run-Unit-and-ITests server vpe webservices \
     base.sonar openshift.sonar server.sonar; do
   j=jbosstools-${p}_master
   ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable &
@@ -516,8 +516,8 @@ done
 echo ""
 # jbosstools-buildflow-force-publish_${stream_jbt} jbosstools-build.parent_${stream_jbt} jbosstoolstargetplatform-central-4.72.x jbosstoolstargetplatform-4.72.x
 for j in jbosstools-buildflow_${stream_jbt} jbosstools-discovery_${stream_jbt} \
-    devstudio.product_${stream_ds} devstudio.rpm_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} \
-    jbosstools-composite-install_${stream_jbt} jbosstools-browsersim_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} \
+    devstudio.product_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} \
+    jbosstools-composite-install_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} \
     jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstools-build-sites.aggregate.child-sites_${stream_jbt} \
     jbosstools-maven-plugins.tycho-plugins_${stream_jbt}; do
   ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable &
@@ -526,11 +526,11 @@ echo ""
 
 ----
 
-IMPORTANT: TODO: if you switched the master branch jobs to run from origin/jbosstools-4.5.x or some other branch, make sure that the jobs are once again building from the correct branch.
+IMPORTANT: TODO: if you switched the master branch jobs to run from origin/jbosstools-4.6.x or some other branch, make sure that the jobs are once again building from the correct branch.
 
 If the next build will NOT be a respin, you will also need to ALSO make these changes to jobs, and upversion/release artifacts such as releng scripts or target platforms if you haven't done so already:
 
-* set correct github branch, eg., switch from 4.5.3.x to 4.5.x
+* set correct github branch, eg., switch from 4.5.3.x to 4.6.x
 * upversion dependencies, eg., releng scripts move from version CR1 to CR1 (if that's been released)
 * upversion target platforms / Central version (if those have been released)
 
@@ -547,18 +547,18 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-rele
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.3.Final
-versionWithRespin_ds=11.3.0.GA
+versionWithRespin_jbt=4.6.0.AM1
+versionWithRespin_ds=12.0.0.AM1
 # if [[ ${version_jbt} == *".Final" ]]; then # **
-#   stream_jbt=4.5.oxygen
-#   github_branch=jbosstools-4.5.0.x
+#   stream_jbt=4.6.photon
+#   github_branch=jbosstools-4.6.0.x
 # else
   stream_jbt=master
-  github_branch=master # later jbosstools-4.5.0.x
+  github_branch=master # later jbosstools-4.6.0.x
 # fi
-TARGET_PLATFORM_VERSION_MIN=4.71.1.Final
-TARGET_PLATFORM_VERSION_MAX=4.73.1.Final
-TARGET_PLATFORM_CENTRAL_MAX=4.73.0.Final-SNAPSHOT
+TARGET_PLATFORM_VERSION_MIN=4.80.0.AM1-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.80.0.AM1-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.80.0.AM1-SNAPSHOT
 respinSuffix=""
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
@@ -594,13 +594,13 @@ You will need to disable the jobs once the bits are staged, so that they won't r
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.3.Final
-versionWithRespin_ds=11.3.0.GA
+versionWithRespin_jbt=4.6.0.AM1
+versionWithRespin_ds=12.0.0.AM1
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # if [[ ${version_jbt} == *".Final" ]]; then # **
-#   stream_jbt=4.5.oxygen
-#   stream_ds=11.0.oxygen
+#   stream_jbt=4.6.photon
+#   stream_ds=12.0.photon
 # else
   stream_jbt=master
   stream_ds=master
@@ -620,9 +620,7 @@ for j in \
   jbosstools-releng-push-to-staging-04-update-ide-config.properties \
   jbosstools-releng-push-to-staging-04-update-merge-composites-html \
   jbosstools-releng-push-to-staging-00-validate-composites \
-  jbosstools-releng-push-to-staging-05-sign-rpm-request-email \
   jbosstools-releng-push-to-staging-06-publish-to-channel-request-email \
-  jbosstools-releng-push-to-staging-06-sign-rpm-fetch \
   jbosstools-releng-push-to-staging-07-notification-emails \
   jbosstools-releng-push-to-staging-08-delete-builds-and-update-sites \
 ; do

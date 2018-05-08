@@ -21,7 +21,7 @@ cd /tmp/jbt.github
 if [[ -d ~/tru/jbosstools-build-ci ]]; then ln -s ~/tru/jbosstools-build-ci; fi
 if [[ ! -d jbosstools-build-ci ]] && [[ -L jbosstools-build-ci ]]; then git clone git@github.com:jbosstools/jbosstools-build-ci.git; fi
 cd jbosstools-build-ci
-git checkout master # later jbosstools-4.5.x
+git checkout master # later jbosstools-4.6.x
 chmod +x -R */*.sh */*/*.sh
 
 ----
@@ -55,7 +55,7 @@ Here are some generalities site promotion/release process. It's not an exhaustiv
 .. When QE approves, release is accepted and promoted
 ... JIRA is checked to ensure all JIRAs for this milestone are resolved
 ... Site moves from 'updates/staging' with respin label to 'static/releases' without respin label
-... Links to 'updates/oxygen' are replaced to link to new version
+... Links to 'updates/photon/' are replaced to link to new version
 ... JBoss Tools website is updated
 ... Git repositories are tagged
 ... Eclipse Marketplace entries are created or updated
@@ -98,19 +98,19 @@ Here are 2 jobs that performs the copy from /staging/ to /development/ and/or to
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.3.Final
-versionWithRespin_ds=11.3.0.GA
+versionWithRespin_jbt=4.6.0.AM1
+versionWithRespin_ds=12.0.0.AM1
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # if [[ ${version_jbt} == *".Final" ]]; then
-#   stream_jbt=4.5.oxygen
-#   stream_ds=11.0.oxygen
+#   stream_jbt=4.6.photon
+#   stream_ds=12.0.photon
 # else
   stream_jbt=master
   stream_ds=master
 # fi
-TARGET_PLATFORM_VERSION_MAX=4.73.1.Final
-TARGET_PLATFORM_CENTRAL_MAX=4.73.0.Final-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.80.0.AM1-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.80.0.AM1-SNAPSHOT
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
@@ -155,14 +155,14 @@ if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
 wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/master/publish/stage.sh --no-check-certificate
 chmod +x stage.sh
 STAGE=${WORKSPACE}/stage.sh
-eclipseReleaseName=oxygen
+eclipseReleaseName=photon
 JBDS="devstudio@[IP FOR filemgmt]:/www_htdocs/devstudio" # use filemgmt IP as it's 3x faster
 TOOLS="tools@[IP FOR filemgmt]:/downloads_htdocs/tools"
 qual=development
 quiet="-q"
 
 # for example, run this for the JBT central discovery plugins:
-versionWithRespin_jbt=4.5.3.Final
+versionWithRespin_jbt=4.6.0.AM1
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 ${STAGE} -sites "discovery.central" -stream "${versionWithRespin_jbt}" -vr ${version_jbt} -DESTINATION "${TOOLS}" \
     -sd ${eclipseReleaseName} -dd static/${eclipseReleaseName} -st staging -dt ${qual} \
@@ -183,8 +183,8 @@ But you can run it again if you'd like:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.3.Final
-versionWithRespin_ds=11.3.0.GA
+versionWithRespin_jbt=4.6.0.AM1
+versionWithRespin_ds=12.0.0.AM1
 
 # buildType=development in this case, development will ALSO check stable URLs if we're pushing out a GA/Final release
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
@@ -213,8 +213,8 @@ done
 
 ==== Publish Site
 
-Webtools site is expected to be found in +http://download.jboss.org/tools/updates/webtools/oxygen+. So, with a sftp client, on filemgmt.jboss.org,
-create a symlink from +/updates/webtools/oxygen+ to http://download.jboss.org/jbosstools/oxygen/stable/updates/ (or /development/updates/ if we're
+Webtools site is expected to be found in +http://download.jboss.org/tools/updates/webtools/photon/+. So, with a sftp client, on filemgmt.jboss.org,
+create a symlink from +/updates/webtools/photon/+ to http://download.jboss.org/jbosstools/photon/stable/updates/ (or /development/updates/ if we're
 before first Final release).
 
 For a GA release, make sure to change this symlink from /development/ or /snapshots/ to /stable/.
@@ -223,13 +223,13 @@ For a GA release, make sure to change this symlink from /development/ or /snapsh
 [source,bash]
 ----
 # verify site contents are shown
-google-chrome && google-chrome http://download.jboss.org/jbosstools/updates/webtools/oxygen http://download.jboss.org/jbosstools/updates/webtools/
+google-chrome && google-chrome http://download.jboss.org/jbosstools/updates/webtools/photon/ http://download.jboss.org/jbosstools/updates/webtools/
 
 ----
 
 ==== Notify webtools project
 
-If this is the first milestone release (ie if you had to create the 'updates/webtools/oxygen' directory (next year will be "oxygen"), ensure that upstream project Web Tools (WTP) knows to include this new URL in their server adapter wizard. New bugzilla required!
+If this is the first milestone release (ie if you had to create the 'updates/webtools/photon/' directory (next year will be "photon"), ensure that upstream project Web Tools (WTP) knows to include this new URL in their server adapter wizard. New bugzilla required!
 
 * https://issues.jboss.org/browse/JBIDE-18921
 * https://bugs.eclipse.org/454810
@@ -264,7 +264,7 @@ export userpass=KERBUSER:PASSWORD
 
 # run this for .Final and -SNAPSHOT target platforms, too... why for SNAPSHOTs ?
 # NOTE: if you released another TP at the same time (eg., 4.7x.0.Final and 4.7y.0.Final), repeat for that version too.
-TARGET_PLATFORM_VERSION_MAXes="4.73.1.Final" # space separated list if more than one to release
+TARGET_PLATFORM_VERSION_MAXes="4.80.0.Final" # space separated list if more than one to release
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
@@ -302,19 +302,19 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 
 To know what values to use for merging in the Integration Stack content (IS-suffixed variables), contact Paul Leacu or compare these URLs:
 
-http://download.jboss.org/jbosstools/oxygen/stable/updates/integration-stack/discovery/4.5.2.Final/ vs
-http://download.jboss.org/jbosstools/oxygen/development/updates/integration-stack/discovery/4.5.2.Final/
+http://download.jboss.org/jbosstools/photon/development/updates/integration-stack/discovery/4.6.0.Final/ vs
+http://download.jboss.org/jbosstools/photon/development/updates/integration-stack/discovery/4.6.0.Final/earlyaccess/
 and
-http://download.jboss.org/jbosstools/oxygen/stable/updates/integration-stack/discovery/4.5.2.Final/ vs
-http://download.jboss.org/jbosstools/oxygen/stable/updates/integration-stack/discovery/4.5.2.Final/earlyaccess/
+http://download.jboss.org/jbosstools/photon/stable/updates/integration-stack/discovery/4.6.0.Final/ vs
+http://download.jboss.org/jbosstools/photon/stable/updates/integration-stack/discovery/4.6.0.Final/earlyaccess/
 
 Similarly for devstudio:
 
-https://devstudio.jboss.com/11/development/updates/integration-stack/discovery/11.2.0.GA/ vs
-https://devstudio.jboss.com/11/development/updates/integration-stack/discovery/11.2.0.GA/earlyaccess
+https://devstudio.jboss.com/12/development/updates/integration-stack/discovery/12.0.0.GA/ vs
+https://devstudio.jboss.com/12/development/updates/integration-stack/discovery/12.0.0.GA/earlyaccess
 and
-https://devstudio.jboss.com/11/development/updates/integration-stack/discovery/11.2.0.GA/ vs
-https://devstudio.jboss.com/11/development/updates/integration-stack/discovery/11.2.0.GA/earlyaccess/
+https://devstudio.jboss.com/12/stable/updates/integration-stack/discovery/12.0.0.GA/ vs
+https://devstudio.jboss.com/12/stable/updates/integration-stack/discovery/12.0.0.GA/earlyaccess
 
 The URLs used to fetch IS content are as follows:
 ====
@@ -322,8 +322,8 @@ The URLs used to fetch IS content are as follows:
 [source,bash]
 ----
 
-eclipseReleaseName=oxygen
-devstudioReleaseVersion=11
+eclipseReleaseName=photon
+devstudioReleaseVersion=12
 qual_IS="stable" # "development" or "stable" as applicable - see tip above
 earlyaccess_IS="" # "" or "earlyaccess/" as applicable - see tip above
 version_jbt_IS=4.5.2.Final
@@ -343,15 +343,15 @@ export userpass=KERBUSER:PASSWORD
 
 ## TODO CONTINUE HERE  ##
 
-versionWithRespin_jbt_PREV_GA=4.5.2.Final
-versionWithRespin_jbt_PREV=4.5.3.AM3 # previous RELEASED milestone as referenced in ide-config.properties
-versionWithRespin_jbt=4.5.3.Final
-versionWithRespin_jbt_NEXT=4.6.0.AM1
+versionWithRespin_jbt_PREV_GA=4.5.3.Final
+versionWithRespin_jbt_PREV=4.5.3.Final # previous RELEASED milestone as referenced in ide-config.properties
+versionWithRespin_jbt=4.6.0.AM1
+versionWithRespin_jbt_NEXT=4.6.0.AM2
 
-versionWithRespin_ds_PREV_GA=11.2.0.GA
-versionWithRespin_ds_PREV=11.2.0.GA # previous RELEASED GA as referenced in ide-config.properties
-versionWithRespin_ds=11.3.0.GA
-versionWithRespin_ds_NEXT=12.0.0.AM1
+versionWithRespin_ds_PREV_GA=11.3.0.GA
+versionWithRespin_ds_PREV=11.3.0.GA # previous RELEASED GA as referenced in ide-config.properties
+versionWithRespin_ds=12.0.0.AM1
+versionWithRespin_ds_NEXT=12.0.0.AM2
 
 version_jbt=$(echo ${version_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${version_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
@@ -419,7 +419,7 @@ WARNING: Only applies to the milestone release before an x.y.0.Final and all .Fi
 
 === If node does not yet exist
 
-For the first Beta, create a new node on Marketplace, using content from http://download.jboss.org/jbosstools/static/oxygen/stable/updates/core/4.x.0.AM1/site.properties
+For the first Beta, create a new node on Marketplace, using content from http://download.jboss.org/jbosstools/static/photon/stable/updates/core/4.x.0.AM1/site.properties
 
 === If node already exists
 
@@ -428,14 +428,14 @@ Access it via +https://marketplace.eclipse.org/content/jboss-tools/edit+ and upd
 * Solution version number to match new version
 * Description to match new version & dependencies
 * Notes / warnings (if applicable, eg., JDK issues)
-* Update list of features, using content of http://download.jboss.org/jbosstools/static/oxygen/stable/updates/core/4.5.2.Final/site.properties
+* Update list of features, using content of http://download.jboss.org/jbosstools/static/photon/stable/updates/core/4.5.2.Final/site.properties
 
 To diff if any new features have been added/removed:
 
 [source,bash]
 ----
-version_jbt_PREV_Mktplace=4.5.2.Final
-version_jbt=4.5.3.Final
+version_jbt_PREV_Mktplace=4.5.3.Final
+version_jbt=4.6.0.AM1
 
 path_jbt_PREV_Mktplace=oxygen/stable/updates/core/${version_jbt_PREV_Mktplace}
 
@@ -443,7 +443,7 @@ path_jbt_PREV_Mktplace=oxygen/stable/updates/core/${version_jbt_PREV_Mktplace}
 if [[ ${version_jbt} == *"Final" ]] || [[ ${path_jbt_PREV_Mktplace} == *"AM"* ]]; then
   cd /tmp
   wget -O ${version_jbt_PREV_Mktplace}.properties http://download.jboss.org/jbosstools/static/${path_jbt_PREV_Mktplace}/site.properties
-  wget -O ${version_jbt}.properties http://download.jboss.org/jbosstools/static/oxygen/development/updates/core/${version_jbt}/site.properties
+  wget -O ${version_jbt}.properties http://download.jboss.org/jbosstools/static/photon/development/updates/core/${version_jbt}/site.properties
   diff -u ${version_jbt_PREV_Mktplace}.properties ${version_jbt}.properties
 
   # then verify the the new feature(s) were added to the CoreTools category
@@ -476,7 +476,7 @@ Before notifying team of release, must check for obvious problems. Any failure t
 === Validate update site install
 
 1. Get a recent Eclipse (compatible with the target version of JBT)
-2. Install Abridged category from http://download.jboss.org/jbosstools/oxygen/development/updates/ and/or http://download.jboss.org/jbosstools/oxygen/stable/updates/
+2. Install Abridged category from http://download.jboss.org/jbosstools/photon/development/updates/ and/or http://download.jboss.org/jbosstools/photon/stable/updates/
 3. Restart. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
 4. Check log for errors, start an example project or run a quickstart, check log again
 5. Check to make sure "Windows > Prefs > Install/Update > Available Software Sites" shows you what you expect to see
@@ -508,7 +508,6 @@ for j in \
   jbosstools-releng-push-to-staging-06-releng-request-email \
   jbosstools-releng-push-to-staging-06-rename-GA-artifacts \
   jbosstools-releng-push-to-staging-00-validate-composites \
-  jbosstools-releng-push-to-dev-stable-02-copy-builds-and-rpms \
   jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites_ds \
   jbosstools-releng-push-to-dev-stable-02-copy-builds-and-update-sites_jbt \
   jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites \
@@ -538,12 +537,12 @@ export userpass=JIRAUSER:JIRAPWD
 # automatically apply changes with -A
 
 # if previous sprint is done, use sprint=sprint_NEXT here
-sprint="devex #147 April 2018"
-sprint_NEXT="devex #148 April 2018"
-versionWithRespin_jbt=4.5.3.Final
-versionWithRespin_jbt_NEXT=4.6.0.AM1
-versionWithRespin_ds=11.3.0.GA
-versionWithRespin_ds_NEXT=12.0.0.AM1
+sprint="devex #148 April 2018"
+sprint_NEXT="devex #149 May 2018"
+versionWithRespin_jbt=4.6.0.AM1
+versionWithRespin_jbt_NEXT=4.6.0.AM2
+versionWithRespin_ds=12.0.0.AM1
+versionWithRespin_ds_NEXT=12.0.0.AM2
 python -W ignore /tmp/jbt.github/jbosstools-build-ci/util/checkUnresolvedIssues.py -S --jira https://issues.jboss.org \
   --jbt ${versionWithRespin_jbt} --jbt_NEXT ${versionWithRespin_jbt_NEXT} \
   --ds ${versionWithRespin_ds} --ds_NEXT ${versionWithRespin_ds_NEXT} \
@@ -576,7 +575,7 @@ pushd jbosstools-build/parent
 BUILD_ALIAS=Final
 BUILD_ALIAS_NEXT=AM1
 
-git fetch origin master # jbosstools-4.5.0.x
+git fetch origin master # jbosstools-4.6.0.x
 git checkout FETCH_HEAD
 
 # TODO after a GA release, bump version of the parent pom too, not just the BUILD_ALIAS
@@ -589,7 +588,7 @@ st pom.xml
 # ...
 
 ci "bump parent pom to BUILD_ALIAS = ${BUILD_ALIAS_NEXT}" pom.xml
-git push origin HEAD:master # jbosstools-4.5.x
+git push origin HEAD:master # jbosstools-4.6.x
 
 ###########
 
@@ -597,7 +596,7 @@ git push origin HEAD:master # jbosstools-4.5.x
 export userpass=KERBUSER:PASSWORD
 
 # rebuild parent pom
-# https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-build.parent_master # jbosstools-4.5.x
+# https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-build.parent_master # jbosstools-4.6.x
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
@@ -632,18 +631,18 @@ Run this job:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt_NEXT=4.6.0.AM1
-versionWithRespin_ds_NEXT=12.0.0.AM1
+versionWithRespin_jbt_NEXT=4.6.0.AM2
+versionWithRespin_ds_NEXT=12.0.0.AM2
 #if [[ ${versionWithRespin_jbt_NEXT} == *".Final" ]]; then
 #  version_parent_NEXT=4.5.0.Final-SNAPSHOT
 #  createBranch=true
-#  github_branch=jbosstools-4.5.0.x
-#  github_branch_fallback=master # or jbosstools-4.5.x?
+#  github_branch=jbosstools-4.6.0.x
+#  github_branch_fallback=master # or jbosstools-4.6.x?
 #else
   version_parent_NEXT=4.6.0.AM1-SNAPSHOT
   createBranch=false
   github_branch=master
-  github_branch_fallback=master # or jbosstools-4.5.x?
+  github_branch_fallback=master # or jbosstools-4.6.x?
 #fi
 TARGET_PLATFORM_VERSION_MIN=4.80.0.AM1-SNAPSHOT
 TARGET_PLATFORM_VERSION_MAX=4.80.0.AM1-SNAPSHOT
@@ -689,13 +688,13 @@ If the next build WILL be a respin, you need to simply:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.5.3.Final
-versionWithRespin_ds=11.3.0.GA
+versionWithRespin_jbt=4.6.0.AM1
+versionWithRespin_ds=12.0.0.AM1
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # if [[ ${version_jbt} == *".Final" ]]; then # **
-#   stream_jbt=4.5.oxygen
-#   stream_ds=11.0.oxygen
+#   stream_jbt=4.6.photon
+#   stream_ds=12.0.photon
 # else
   stream_jbt=master
   stream_ds=master
@@ -712,7 +711,7 @@ done
 echo ""
 # jbosstools-buildflow-force-publish_${stream_jbt} jbosstools-build.parent_${stream_jbt} jbosstoolstargetplatform-central-4.72.x jbosstoolstargetplatform-4.72.x
 for j in jbosstools-buildflow_${stream_jbt} jbosstools-discovery_${stream_jbt} \
-    devstudio.product_${stream_ds} devstudio.rpm_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} \
+    devstudio.product_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} \
     jbosstools-composite-install_${stream_jbt} jbosstools-browsersim_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} \
     jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstools-build-sites.aggregate.child-sites_${stream_jbt} \
     jbosstools-maven-plugins.tycho-plugins_${stream_jbt}; do

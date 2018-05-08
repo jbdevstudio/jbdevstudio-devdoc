@@ -126,8 +126,8 @@ done
 wait
 
 # bootstrap staging by copying old stuff to new folder
-versionWithRespin_jbt=4.5.3.Final
-versionWithRespin_ds=11.3.0.GA
+versionWithRespin_jbt=4.6.0.AM1
+versionWithRespin_ds=12.0.0.AM1
 
 for d in core coretests central discovery.central discovery.earlyaccess fuse-extras integration-tests; do
   scpr ~/TOOLS-ssh/oxygen/staging/updates/${d}/${versionWithRespin_jbt} $TOOLS/photon/staging/updates/${d}/ &

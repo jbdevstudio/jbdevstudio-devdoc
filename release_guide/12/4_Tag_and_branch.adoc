@@ -23,9 +23,9 @@ git clone git@github.com:jbosstools/jbosstools-versionwatch.git
 # maven-plugins does not get released/branched the same as other projects, but tag it anyway
 # download.jboss.org tag might not be valid as tweaks to ide-config.properties happen frequently
 
-version_jbt=4.5.3.Final
+version_jbt=4.6.0.AM1
 # if [[ ${version_jbt} == *".Final" ]]; then
-#   github_branch=jbosstools-4.5.0.x
+#   github_branch=jbosstools-4.6.0.x
 # else
   github_branch=master
 # fi
@@ -59,9 +59,9 @@ git clone git@github.com:jbdevstudio/jbdevstudio-artwork.git
 git clone git@github.com:jbdevstudio/jbdevstudio-devdoc.git
 git clone git@github.com:jbdevstudio/jbdevstudio-ci.git
 
-version_ds=11.3.0.GA
+version_ds=12.0.0.AM1
 # if [[ ${version_ds} == *".GA" ]]; then
-#   github_branch=jbosstools-4.5.0.x
+#   github_branch=jbosstools-4.6.0.x
 # else
   github_branch=master
 # fi
@@ -108,8 +108,8 @@ for d in build build-ci build-sites devdoc discovery download.jboss.org maven-pl
   echo "====================================================================="
   echo "Branching jbosstools-${d} from branch ${github_branch}..."
   pushd jbosstools-${d}
-  git checkout master # not jbosstools-4.5.0.x
-  git pull origin master # not jbosstools-4.5.0.x
+  git checkout master # not jbosstools-4.6.0.x
+  git pull origin master # not jbosstools-4.6.0.x
   git checkout -b ${github_branch}
   git push origin ${github_branch}
   echo ">>> https://github.com/jbosstools/jbosstools-${d}/tree/${github_branch}"
@@ -125,30 +125,30 @@ If you have just branched for a.b.x (rather than a.b.0.y), please make sure you 
 ----
 pushd jbosstools-download.jboss.org/jbosstools/
 
-pushd oxygen/snapshots/updates/
+pushd photon/snapshots/updates/
 ls -l com*
 # lrwxrwxrwx  compositeArtifacts.xml -> discovery.central/master/compositeArtifacts.xml
 # lrwxrwxrwx  compositeContent.xml -> discovery.central/master/compositeContent.xml
 rm -f compositeArtifacts.xml compositeContent.xml
-stream_jbt=4.5.oxygen # not master
+stream_jbt=4.6.photon # not master
 ln -s discovery.central/${stream}/compositeArtifacts.xml
 ln -s discovery.central/${stream}/compositeContent.xml
 popd
 
-# then commit changes to github and rsync new symlinks to to $TOOLS/oxygen/snapshots/updates/
+# then commit changes to github and rsync new symlinks to to $TOOLS/photon/snapshots/updates/
 # ...
 
 # may also want to create new/updated symlinks for future release Eclipse 4.7 Oxygen / JBDS 11
 
 pushd updates/snapshots
-ls -l 11.0.oxygen master
-# lrwxrwxrwx  oxygen -> ../../oxygen/snapshots/updates/
-# lrwxrwxrwx  11 -> oxygen/
-# lrwxrwxrwx  master -> oxygen/
+ls -l 12.0.photon master
+# lrwxrwxrwx  photon -> ../../photon/snapshots/updates/
+# lrwxrwxrwx  12 -> photon/
+# lrwxrwxrwx  master -> photon/
 rm -f master
-ln -s ../../oxygen/snapshots/updates/ oxygen
-ln -s oxygen/ 11
-ln -s oxygen/ master
+ln -s ../../photon/snapshots/updates/ photon
+ln -s photon/ 12
+ln -s photon/ master
 popd
 
 # then commit changes to github and rsync new symlinks to to $TOOLS/updates/snapshots/
@@ -175,8 +175,8 @@ for d in product ci website artwork devdoc; do
   echo "====================================================================="
   echo "Branching jbdevstudio-${d} from branch ${github_branch}..."
   pushd jbdevstudio-${d}
-  git checkout master # not jbosstools-4.5.0.x
-  git pull origin master # not jbosstools-4.5.0.x
+  git checkout master # not jbosstools-4.6.0.x
+  git pull origin master # not jbosstools-4.6.0.x
   git checkout -b ${github_branch}
   git push origin ${github_branch}
   echo ">>> https://github.com/jbosstools/jbosstools-${d}/tree/${github_branch}"
@@ -192,30 +192,30 @@ If you have just branched for a.b.x (rather than a.b.0.y), please make sure you 
 ----
 pushd jbdevstudio-website/content/
 
-pushd 11/snapshots/updates/
+pushd 12/snapshots/updates/
 ls -l com*
 # lrwxrwxrwx  compositeArtifacts.xml -> discovery.central/master/compositeArtifacts.xml
 # lrwxrwxrwx  compositeContent.xml -> discovery.central/master/compositeContent.xml
 rm -f compositeArtifacts.xml compositeContent.xml
-stream_jbt=4.5.oxygen # not master
+stream_jbt=4.6.photon # not master
 ln -s discovery.central/${stream}/compositeArtifacts.xml
 ln -s discovery.central/${stream}/compositeContent.xml
 popd
 
-# then commit changes to github and rsync new symlinks to to $JBDS/11/snapshots/updates/
+# then commit changes to github and rsync new symlinks to to $JBDS/12/snapshots/updates/
 # ...
 
-# may also want to create new/updated symlinks for future release Eclipse 4.7 Oxygen / JBDS 11
+# may also want to create new/updated symlinks for future release Eclipse 4.8 Oxygen / JBDS 12
 
 pushd updates/snapshots
-ls -l 11.0.oxygen master
-# lrwxrwxrwx  11 -> ../../11/snapshots/updates/
-# lrwxrwxrwx  oxygen -> 11/
-# lrwxrwxrwx  master -> 11/
+ls -l 12.0.photon master
+# lrwxrwxrwx  12 -> ../../12/snapshots/updates/
+# lrwxrwxrwx  photon -> 12/
+# lrwxrwxrwx  master -> 12/
 rm -f master
-ln -s ../../11/snapshots/updates/ 11
-ln -s 11 oxygen
-ln -s 11/ master
+ln -s ../../12/snapshots/updates/ 12
+ln -s 12 photon
+ln -s 12/ master
 popd
 
 # then commit changes to github and rsync new symlinks to to $JBDS/updates/snapshots/

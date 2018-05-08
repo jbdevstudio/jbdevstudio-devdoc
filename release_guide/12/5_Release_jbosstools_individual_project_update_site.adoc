@@ -8,7 +8,7 @@ a) a bug fix is urgently needed, and waiting up to 12 weeks for the next release
 
 b) a JBoss Tools component is deemed deprecated or no longer being developed, so the most recent CI build aggregated into JBoss Tools and Red Hat JBoss Developer Studio can be stored as a stable release, to prevent its loss and allow it to be used for future release trains.
 
-The most common of these two scenarios is (a), as RHAMT (Windup) releases on a schedule that only loosely follows that of JBoss Tools. Before it moved to Eclipse.org, Red Deer also used this process. 
+The most common of these two scenarios is (a), as RHAMT (Windup) releases on a schedule that only loosely follows that of JBoss Tools. Before it moved to Eclipse.org, Red Deer also used this process.
 
 The second scenario, (b), is has been used a few times in the past as old projects such as Portlet, Freemarker, or Arquillian are deprecated.
 
@@ -41,15 +41,15 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 
 Since the URLs for Central are fixed at the time of the release train releases, the only way to append this new release it so update the composite*.xml files for the site. Affected files:
 
-* http://download.jboss.org/jbosstools/oxygen/development/updates/compositeArtifacts.xml
-* http://download.jboss.org/jbosstools/oxygen/development/updates/compositeContent.xml
-* https://devstudio.redhat.com/11/development/updates/compositeArtifacts.xml
-* https://devstudio.redhat.com/11/development/updates/compositeContent.xml
+* http://download.jboss.org/jbosstools/photon/development/updates/compositeArtifacts.xml
+* http://download.jboss.org/jbosstools/photon/development/updates/compositeContent.xml
+* https://devstudio.redhat.com/12/development/updates/compositeArtifacts.xml
+* https://devstudio.redhat.com/12/development/updates/compositeContent.xml
 
 To acheive this change, you will need to submit a PR against these repos:
 
-* https://github.com/jbosstools/jbosstools-download.jboss.org/blob/master/jbosstools/oxygen/development/updates/
-* https://github.com/jbdevstudio/jbdevstudio-website/tree/master/content/11/development/updates
+* https://github.com/jbosstools/jbosstools-download.jboss.org/blob/master/jbosstools/photon/development/updates/
+* https://github.com/jbdevstudio/jbdevstudio-website/tree/master/content/12/development/updates
 
 === Smoke test the release
 

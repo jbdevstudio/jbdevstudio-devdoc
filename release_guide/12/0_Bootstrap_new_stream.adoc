@@ -139,6 +139,16 @@ wait
 scpr ~/TOOLS-ssh/oxygen/staging/updates/composite* ~/TOOLS-ssh/oxygen/staging/updates/*index* $TOOLS/photon/staging/updates/ &
 scpr ~/JBDS-ssh/11/staging/updates/composite*      ~/JBDS-ssh/11/staging/updates/*index*      $JBDS/12/staging/updates/ &
 
+# TODO also copy oxygen/staging/updates/README.html to photon/staging/updates/
+# TODO also copy oxygen/staging/updates/p2.index to photon/staging/updates/
+# TODO also copy oxygen/staging/builds/.gitkeep to photon/staging/builds/
+
+# TODO also copy 11/staging/updates/*.*ml to 12/staging/updates/
+# TODO also copy 11/staging/updates/p2.index to 12/staging/updates/
+# TODO also copy 11/staging/builds/.gitkeep to 12/staging/builds/
+
+# TODO bootstrap http://download.jboss.org/jbosstools/photon/development/updates/integration-stack/discovery/4.5.2.Final/ and http://download.jboss.org/jbosstools/photon/development/updates/integration-stack/discovery/compositeArtifacts.xml ? Same for devstudio?
+
 ----
 
 == Update Web Tools Server Adapter Discovery plugin w/ link to new URL

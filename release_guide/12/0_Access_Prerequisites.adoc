@@ -1,0 +1,61 @@
+Before you can do anything in the JBoss Tools / Devstudio release guides, you'll need system access to a few machines and services.
+
+== Jenkins
+
+To run builds and stage/release code via Jenkins jobs, you need access to the Jenkins servers. You should already have Kerberos-based login access to both the Boston MW Jenkins and the Central CI Jenkins. If not, contact PnT (details below).
+
+NOTE: For admin access to CCI jenkins (beyond simple job exec permission) - ask Pavol Srna or Nick Boldt to give you 'admin' access from https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/role-strategy/assign-roles
+
+== File hosting
+
+In case scripts fail or manual file tweaks are needed, direct filesystem access is highly recommended.
+
+NOTE: For both systems listed, open a PnT ticket at https://redhat.service-now.com/pnt/ and submit your ssh public key. Copy your manager on the request to be granted permission. See link:https://mojo.redhat.com/docs/DOC-1093189[PnT Devops Customer Portal FAQ]
+
+* filemgmt.jboss.org
+
+== JIRA
+
+You'll need access to JIRA to be able to close out the fixversions there as part of a release.
+
+IMPORTANT: For JBIDE/JBDS JIRA, you need adminstrator access - ask Nick Boldt, Denis Golovin, or Jeff Maury to give you access.
+
+== Github
+
+You need push rights to some github repos to store changes made live on download.jboss.org or devstudio.redhat.com, and push tags.
+
+IMPORTANT: For github repos under jbosstools and jbdevstudio orgs - ask Jeff Maury or Denis Golovin for access.
+
+These two repos will be updated as part of the release process:
+
+* https://github.com/jbosstools/jbosstools-download.jboss.org
+* https://github.com/jbdevstudio/jbdevstudio-website
+
+Others may be needed as well should a coding issue be found.
+
+* https://github.com/jbosstools/jbosstools-build - parent pom
+* https://github.com/jbosstools/jbosstools-build-ci - releng scripts
+* https://github.com/jbosstools/jbosstools-build-sites - update site configuration & builds
+* https://github.com/jbosstools/jbosstools-discovery - Red Hat Central discovery sites & plugins
+* https://github.com/jbosstools/jbosstools-maven-plugins - tycho plugins needed for builds
+* https://github.com/jbosstools/jbosstools-target-platforms/ - target platform definitions
+* https://github.com/jbosstools/ - more
+* https://github.com/jbdevstudio/jbdevstudio-product - product, installer, and update site configuration & builds
+* https://github.com/jbdevstudio/ - more
+
+== Mailing lists
+
+There are at least three mailing lists to which you should be subscribed.
+
+* public mailing list subscription to jbosstools-dev@lists.jboss.org from https://lists.jboss.org/mailman/listinfo/jbosstools-dev
+* private mailing list subscription to jboss-devstudio-list@redhat.com and devtools-program@redhat.com from https://www.redhat.com/mailman/listinfo
+
+== Eclipse.org
+
+To be able to publish a new version of JBoss Tools or Devstudio to the Eclipse Marketplace, you'll need to log in as the jbosstools user (or have your own @eclipse.org user added to the Marketplace listings' ACLs.)
+
+IMPORTANT: Ask Nick Boldt or Jeff Maury for access to these pages.
+
+* https://marketplace.eclipse.org/content/jboss-tools/edit
+* https://marketplace.eclipse.org/content/red-hat-jboss-developer-studio/edit
+

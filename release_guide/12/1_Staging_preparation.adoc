@@ -10,6 +10,8 @@ Before beginning a stage at the end of a sprint, a number of things need to be d
 
 * Confirm latest Integration Stack (IS) release & URLs
 
+NOTE: Make sure the steps listed in link:0_Start_new_sprint.adoc[Start new sprint] are complete too!
+
 
 == Clone jbosstools-build-ci repo or link to it from elsewhere on disk
 

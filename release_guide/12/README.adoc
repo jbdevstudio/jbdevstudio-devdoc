@@ -11,7 +11,11 @@ These documents are generally updated every sprint with the versions used to do 
 * Bootstrapping (Annually)
 ** link:0_Bootstrap_new_stream.adoc[Bootstrap a new stream]
 
+* Start a New Sprint (Once Per Sprint)
+** link:0_Start_new_sprint.adoc[Start a new sprint]
+
 * Staging (Once Per Sprint)
+** link:0_Start_new_sprint.adoc[Start a new sprint]
 ** link:1_Staging_preparation.adoc[Preparing to Stage]
 ** link:2_Staging_jbosstools.adoc[Stage JBoss Tools]
 ** link:2_Staging_devstudio.adoc[Stage Devstudio]
@@ -31,3 +35,6 @@ These documents are generally updated every sprint with the versions used to do 
 
 * Release Day (Quarterly)
 ** link:6_Release_day_steps.adoc[Release Day Steps]
+
+* Accessing Systems (Once Per Person)
+** link:0_Access_Prerequisites.adoc[Access Prerequisites]

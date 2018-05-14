@@ -246,6 +246,7 @@ popd
 
 Commit changes and submit PR, eg.,
 
+* https://github.com/jbosstools/jbosstools-website/pull/821,
 * https://github.com/jbosstools/jbosstools-website/pull/814,
 * https://github.com/jbosstools/jbosstools-website/pull/803,
 * https://github.com/jbosstools/jbosstools-website/pull/794,
@@ -316,13 +317,13 @@ export userpass=KERBUSER:PASSWORD
 
 ## TODO CONTINUE HERE  ##
 
-# for AMx milestones, use file like 4.6.0.am1-for-photon.0.M6.html
+# for AMx milestones, use file like 4.6.0.am1-for-photon.0.m6.html
 # for GA releases, use file like 12.0.0.ga-for-photon.0.html
-blogURL=/blog/4.6.0.am1-for-photon.0.M6.html
+blogURL=/blog/4.6.0.am1-for-photon.0.m6.html
 # Pull Request (PR)
-pullrequestNum=TODO
+pullrequestNum=821
 eclipseVersionSuffix=".0.M6" # TODO: use .0.M6 for Eclipse 4.8.0.M6 Oxygen.0.M6
-GOLIVEDATE="2018-07-10"
+GOLIVEDATE="2018-05-14"
 
 versionWithRespin_jbt=4.6.0.AM1
 versionWithRespin_ds=12.0.0.AM1

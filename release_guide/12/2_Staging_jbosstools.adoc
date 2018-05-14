@@ -620,7 +620,6 @@ for j in \
   jbosstools-releng-push-to-staging-04-update-ide-config.properties \
   jbosstools-releng-push-to-staging-04-update-merge-composites-html \
   jbosstools-releng-push-to-staging-00-validate-composites \
-  jbosstools-releng-push-to-staging-06-publish-to-channel-request-email \
   jbosstools-releng-push-to-staging-07-notification-emails \
   jbosstools-releng-push-to-staging-08-delete-builds-and-update-sites \
 ; do

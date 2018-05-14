@@ -428,7 +428,9 @@ Access it via +https://marketplace.eclipse.org/content/jboss-tools/edit+ and upd
 * Solution version number to match new version
 * Description to match new version & dependencies
 * Notes / warnings (if applicable, eg., JDK issues)
-* Update list of features, using content of http://download.jboss.org/jbosstools/static/photon/stable/updates/core/4.5.2.Final/site.properties
+* Update list of features, using content of last milestone or Final
+* http://download.jboss.org/jbosstools/static/oxygen/stable/updates/core/4.5.3.Final/site.properties
+* http://download.jboss.org/jbosstools/static/photon/development/updates/core/4.6.0.AM1/site.properties
 
 To diff if any new features have been added/removed:
 
@@ -532,7 +534,7 @@ Here's a script to do all the moving for you automatically.
 export userpass=JIRAUSER:JIRAPWD
 
 # can filter out labels using --skipLabels "releasework, task, qa" etc.
-# can do a dry run (list issues, do not change them with -D
+# can do a dry run (list issues, do not change them) with -D
 # skip verifying JIRA fixversions with -S
 # automatically apply changes with -A
 
@@ -573,7 +575,7 @@ Once the current milestone is done, the BUILD_ALIAS in parent pom should be bump
 cd ~/tru # ~
 pushd jbosstools-build/parent
 BUILD_ALIAS=Final
-BUILD_ALIAS_NEXT=AM1
+BUILD_ALIAS_NEXT=AM2
 
 git fetch origin master # jbosstools-4.6.0.x
 git checkout FETCH_HEAD

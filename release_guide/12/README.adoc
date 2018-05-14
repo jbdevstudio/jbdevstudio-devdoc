@@ -15,19 +15,19 @@ These documents are generally updated every sprint with the versions used to do 
 ** link:1_Staging_preparation.adoc[Preparing to Stage]
 ** link:2_Staging_jbosstools.adoc[Stage JBoss Tools]
 ** link:2_Staging_devstudio.adoc[Stage Devstudio]
-** link:2_Staging_jbosstools_GA_Respin_Hackaround.adoc[]
 
 * Milestones, Final & GA releases (Once Per Sprint or Quarterly)
 ** link:3_Release_preparation.adoc[Preparing to Release]
 ** link:4_Release_jbosstools.adoc[Release JBoss Tools Milestones and Final builds]
 ** link:4_Release_devstudio.adoc[Release Devstudio GA builds]
-** link:4_Tag_and_branch.adoc[]
+** link:4_Tag_and_branch.adoc[Tagging / Branching]
 
-* Special Releases (Ad Hoc)
-** link:5_Release_jbosstools_individual_project_update_site.adoc[]
+* Special Staging / Release Docs (Ad Hoc)
+** link:2_Staging_jbosstools_GA_Respin_Hackaround.adoc[Respinning a GA]
+** link:5_Release_jbosstools_individual_project_update_site.adoc[Release a JBoss Tools project update site]
 
 * Nexus Releases (Quarterly)
-** link:5_Release_nexus.adoc[]
+** link:5_Release_nexus.adoc[Release to Nexus]
 
 * Release Day (Quarterly)
-** link:6_Release_day_steps.adoc[]
+** link:6_Release_day_steps.adoc[Release Day Steps]

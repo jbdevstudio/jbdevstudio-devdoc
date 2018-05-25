@@ -54,12 +54,12 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-rele
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-sprint="devex #148 April 2018"
-sprint_NEXT="devex #149 May 2018"
-versionWithRespin_jbt=4.6.0.AM1
-versionWithRespin_jbt_NEXT=4.6.0.AM2
-versionWithRespin_ds=12.0.0.AM1
-versionWithRespin_ds_NEXT=12.0.0.AM2
+sprint="devex #149 May 2018"
+sprint_NEXT="devex #150 June 2018"
+versionWithRespin_jbt=4.6.0.AM2
+versionWithRespin_jbt_NEXT=4.6.0.AM3
+versionWithRespin_ds=12.0.0.AM2
+versionWithRespin_ds_NEXT=12.0.0.AM3
 TOrecipients1="jmaury@redhat.com, scela@redhat.com"
 TOrecipients2="jbosstools-dev@lists.jboss.org"
 CCrecipients="jmaury@redhat.com, scela@redhat.com"
@@ -106,6 +106,11 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 
 Currently:
 
-version_jbt_IS=4.5.2.Final
-version_ds_IS=11.2.0.GA
+version_jbt_IS=4.5.3.Final
+version_ds_IS=11.3.0.GA
+
+As seen here:
+
+http://download.jboss.org/jbosstools/oxygen/stable/updates/integration-stack/discovery/
+https://devstudio.redhat.com/11/stable/updates/integration-stack/discovery/
 

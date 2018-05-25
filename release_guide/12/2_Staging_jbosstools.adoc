@@ -73,13 +73,6 @@ versionWithRespin_|version_|PREV|NEXT|TARGET_PLATFORM_|version_parent|version_jb
 ====
 
 
-== Enable pipeline jobs
-
-You will need to enable the pipeline.
-
-TODO: https://issues.jboss.org/browse/JBIDE-24182 wrap staging/release process with pipeline job
-
-
 == Verify correct versions, branches exist, and root poms are correct
 
 Configure, then run this job:
@@ -91,8 +84,8 @@ Configure, then run this job:
 export userpass=KERBUSER:PASSWORD
 
 version_parent=4.6.0.AM1-SNAPSHOT
-versionWithRespin_jbt=4.6.0.AM1
-versionWithRespin_ds=12.0.0.AM1
+versionWithRespin_jbt=4.6.0.AM2
+versionWithRespin_ds=12.0.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # if [[ ${version_jbt} == *".Final" ]]; then # **
@@ -151,8 +144,8 @@ To prevent accidentally rebuilding something while you're copying it away, make 
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.6.0.AM1
-versionWithRespin_ds=12.0.0.AM1
+versionWithRespin_jbt=4.6.0.AM2
+versionWithRespin_ds=12.0.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # if [[ ${version_jbt} == *".Final" ]]; then # **
@@ -200,8 +193,8 @@ Then respin the job:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.6.0.AM1
-versionWithRespin_ds=12.0.0.AM1
+versionWithRespin_jbt=4.6.0.AM2
+versionWithRespin_ds=12.0.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # if [[ ${version_jbt} == *".Final" ]]; then # **
@@ -209,10 +202,10 @@ version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\
 # else
   stream_jbt=master
 # fi
-TARGET_PLATFORM_VERSION_MAX=4.80.0.AM1-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.80.0.AM1-SNAPSHOT
-version_jbt_IS=4.5.2.Final
-version_ds_IS=11.2.0.GA
+TARGET_PLATFORM_VERSION_MAX=4.80.0.AM2-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.80.0.AM2-SNAPSHOT
+version_jbt_IS=4.5.3.Final
+version_ds_IS=11.3.0.GA
 qual_IS=stable # or development
 earlyaccess_IS="" # or earlyaccess/
 
@@ -248,7 +241,7 @@ You'll need this later for smoke testing. Start fetching it now to save time lat
 [source,bash]
 ----
 
-cd ~/tmp; wget http://download.eclipse.org/technology/epp/downloads/release/photon/M6/eclipse-jee-photon-M6-linux-gtk-x86_64.tar.gz &
+cd ~/tmp; wget http://download.eclipse.org/technology/epp/downloads/release/photon/M7/eclipse-jee-photon-M7-linux-gtk-x86_64.tar.gz &
 # or
 cd ~/tmp; wget https://hudson.eclipse.org/packaging/job/photon.epp-tycho-build/lastSuccessfulBuild/artifact/org.eclipse.epp.packages/archive/20180507-2024_eclipse-jee-photon-M6-linux.gtk.x86_64.tar.gz &
 
@@ -275,12 +268,12 @@ export userpass=KERBUSER:PASSWORD
 
 eclipseReleaseName=photon
 devstudioReleaseVersion=12
-versionWithRespin_jbt=4.6.0.AM1
-versionWithRespin_ds=12.0.0.AM1
+versionWithRespin_jbt=4.6.0.AM2
+versionWithRespin_ds=12.0.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
-TARGET_PLATFORM_VERSION_MAX=4.80.0.AM1-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.80.0.AM1-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.80.0.AM2-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.80.0.AM2-SNAPSHOT
 # if [[ ${version_jbt} == *".Final" ]]; then # **
 #   stream_jbt=4.6.photon
 #   stream_ds=12.0.photon
@@ -351,8 +344,8 @@ export userpass=KERBUSER:PASSWORD
 
 eclipseReleaseName=photon
 devstudioReleaseVersion=12
-versionWithRespin_jbt=4.6.0.AM1
-versionWithRespin_ds=12.0.0.AM1
+versionWithRespin_jbt=4.6.0.AM2
+versionWithRespin_ds=12.0.0.AM2
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
@@ -394,19 +387,19 @@ export userpass=KERBUSER:PASSWORD
 ## TODO CONTINUE HERE ##
 
 versionWithRespin_jbt_PREV_GA=4.5.3.Final
-versionWithRespin_jbt_PREV=4.5.3.Final # milestones
-versionWithRespin_jbt=4.6.0.AM1
-versionWithRespin_jbt_NEXT=4.6.0.AM2
+versionWithRespin_jbt_PREV=4.6.0.AM1 # milestones
+versionWithRespin_jbt=4.6.0.AM2
+versionWithRespin_jbt_NEXT=4.6.0.AM3
 
 versionWithRespin_ds_PREV_GA=11.3.0.GA
-versionWithRespin_ds_PREV=11.3.0.GA # milestones
-versionWithRespin_ds=12.0.0.AM1
-versionWithRespin_ds_NEXT=12.0.0.AM2
+versionWithRespin_ds_PREV=12.0.0.AM1 # milestones
+versionWithRespin_ds=12.0.0.AM2
+versionWithRespin_ds_NEXT=12.0.0.AM3
 
 buildType="staging"
 
-version_jbt_IS=4.5.2.Final
-version_ds_IS=11.2.0.GA
+version_jbt_IS=4.5.3.Final
+version_ds_IS=11.3.0.GA
 qual_IS=stable # or development
 earlyaccess_IS="" # "" or "earlyaccess/" as applicable - see tip above
 
@@ -493,8 +486,8 @@ If the next build WILL be a respin, you need to simply:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.6.0.AM1
-versionWithRespin_ds=12.0.0.AM1
+versionWithRespin_jbt=4.6.0.AM2
+versionWithRespin_ds=12.0.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # if [[ ${version_jbt} == *".Final" ]]; then # **
@@ -547,8 +540,8 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-rele
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.6.0.AM1
-versionWithRespin_ds=12.0.0.AM1
+versionWithRespin_jbt=4.6.0.AM2
+versionWithRespin_ds=12.0.0.AM2
 # if [[ ${version_jbt} == *".Final" ]]; then # **
 #   stream_jbt=4.6.photon
 #   github_branch=jbosstools-4.6.0.x
@@ -556,9 +549,9 @@ versionWithRespin_ds=12.0.0.AM1
   stream_jbt=master
   github_branch=master # later jbosstools-4.6.0.x
 # fi
-TARGET_PLATFORM_VERSION_MIN=4.80.0.AM1-SNAPSHOT
-TARGET_PLATFORM_VERSION_MAX=4.80.0.AM1-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.80.0.AM1-SNAPSHOT
+TARGET_PLATFORM_VERSION_MIN=4.80.0.AM2-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.80.0.AM2-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.80.0.AM2-SNAPSHOT
 respinSuffix=""
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
@@ -594,8 +587,8 @@ You will need to disable the jobs once the bits are staged, so that they won't r
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.6.0.AM1
-versionWithRespin_ds=12.0.0.AM1
+versionWithRespin_jbt=4.6.0.AM2
+versionWithRespin_ds=12.0.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # if [[ ${version_jbt} == *".Final" ]]; then # **

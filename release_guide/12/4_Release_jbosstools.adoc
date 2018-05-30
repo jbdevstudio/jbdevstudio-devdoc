@@ -234,6 +234,8 @@ If this is the first milestone release (ie if you had to create the 'updates/web
 * https://issues.jboss.org/browse/JBIDE-18921
 * https://bugs.eclipse.org/454810
 
+For the first GA, be sure to update the update/webtools/photon/ symlink to point at /stable intead of /development. See https://issues.jboss.org/browse/JBIDE-25585.
+
 == Update Target Platforms
 
 If this new release includes a new Target Platform, you need to release the latest target platform. If not, there's nothing to do here.
@@ -436,10 +438,10 @@ To diff if any new features have been added/removed:
 
 [source,bash]
 ----
-version_jbt_PREV_Mktplace=4.5.3.Final
+version_jbt_PREV_Mktplace=4.6.0.AM1
 version_jbt=4.6.0.AM2
 
-path_jbt_PREV_Mktplace=oxygen/stable/updates/core/${version_jbt_PREV_Mktplace}
+path_jbt_PREV_Mktplace=photon/development/updates/core/${version_jbt_PREV_Mktplace}
 
 # for Final releases only, or for milestones prior to the first x.y.0.Final.
 if [[ ${version_jbt} == *"Final" ]] || [[ ${path_jbt_PREV_Mktplace} == *"AM"* ]]; then
@@ -493,7 +495,7 @@ See link:4_Tag_and_branch.adoc[Tag and branch]
 See link:4_Release_devstudio.adoc[Devstudio Release]
 
 
-== Disable dev-stable jobs
+== Disable releng jobs
 
 You will need to disable the jobs once the bits are released, so that they won't run accidentally.
 
@@ -540,7 +542,7 @@ export userpass=JIRAUSER:JIRAPWD
 
 # if previous sprint is done, use sprint=sprint_NEXT here
 sprint="devex #149 May 2018"
-sprint_NEXT="devex #150 June 2018"
+sprint_NEXT="devex #150 June 2019"
 versionWithRespin_jbt=4.6.0.AM2
 versionWithRespin_jbt_NEXT=4.6.0.AM3
 versionWithRespin_ds=12.0.0.AM2

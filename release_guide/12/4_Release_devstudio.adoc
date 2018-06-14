@@ -127,7 +127,7 @@ Run this:
 
 echo "" > /tmp/yml.txt
 
-versionWithRespin_ds=12.0.0.AM2
+versionWithRespin_ds=12.0.0.AM3
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # **
   theURL=https://devstudio.redhat.com/12/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all
@@ -174,8 +174,8 @@ Then, back on your own machine...
 
 [source,bash]
 ----
-version_jbt=4.6.0.AM2
-version_ds=12.0.0.AM2
+version_jbt=4.6.0.AM3
+version_ds=12.0.0.AM3
 
 topic=release-${version_jbt}
 github_branch=master
@@ -283,7 +283,7 @@ Before notifying team of release, must check for obvious problems. Any failure t
 [source,bash]
 ----
 
-version_ds=12.0.0.AM2
+version_ds=12.0.0.AM3
 if [[ ${version_ds} == *"GA" ]]; then # **
   qual="stable"
   cd ~/tmp # ~
@@ -326,8 +326,8 @@ pullrequestNum=827
 eclipseVersionSuffix=".0.M7" # TODO: use .0.M7 for Eclipse 4.8.0.M7 Oxygen.0.M7
 GOLIVEDATE="2018-05-30"
 
-versionWithRespin_jbt=4.6.0.AM2
-versionWithRespin_ds=12.0.0.AM2
+versionWithRespin_jbt=4.6.0.AM3
+versionWithRespin_ds=12.0.0.AM3
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # \) # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 
@@ -363,8 +363,8 @@ done
 
 cd ~/truu # ~
 
-version_jbt=4.6.0.AM2
-version_ds=12.0.0.AM2
+version_jbt=4.6.0.AM3
+version_ds=12.0.0.AM3
 cd jbdevstudio-devdoc/release_guide/
 git commit -s -m "update release guide for ${version_jbt} and ${version_ds}" .
 git push origin HEAD:master

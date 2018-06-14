@@ -32,7 +32,7 @@ org.jboss.tools.targetplatforms
 * 4.71.1.Final
 * 4.73.1.Final
 |
-* 4.80.0.AM1-SNAPSHOT
+* 4.80.0.AM3-SNAPSHOT
 
 | ###### *Tycho Plugins & Rules*
 |

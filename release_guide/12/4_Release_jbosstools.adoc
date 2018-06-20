@@ -480,7 +480,10 @@ Before notifying team of release, must check for obvious problems. Any failure t
 === Validate update site install
 
 1. Get a recent Eclipse (compatible with the target version of JBT)
-2. Install Abridged category from http://download.jboss.org/jbosstools/photon/development/updates/ and/or http://download.jboss.org/jbosstools/photon/stable/updates/
+2. Install Abridged category from
+http://download.jboss.org/jbosstools/photon/development/updates/
+and/or
+http://download.jboss.org/jbosstools/photon/stable/updates/
 3. Restart. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
 4. Check log for errors, start an example project or run a quickstart, check log again
 5. Check to make sure "Windows > Prefs > Install/Update > Available Software Sites" shows you what you expect to see

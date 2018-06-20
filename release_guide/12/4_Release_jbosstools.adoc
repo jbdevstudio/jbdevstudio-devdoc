@@ -547,7 +547,7 @@ export userpass=JIRAUSER:JIRAPWD
 # sometimes the sprint_NEXT is already created, but with a name that's different from what you might expect (eg., different month, wrong year)
 
 # if previous sprint is done, use sprint=sprint_NEXT here
-sprint="devex #150 May 2018"
+sprint="devex #150 June 2018"
 sprint_NEXT="devex #151 June 2018"
 versionWithRespin_jbt=4.6.0.AM3
 versionWithRespin_jbt_NEXT=4.6.0.Final
@@ -654,8 +654,8 @@ versionWithRespin_ds_NEXT=12.0.0.GA
   github_branch=master
   github_branch_fallback=master # or jbosstools-4.6.x?
 #fi
-TARGET_PLATFORM_VERSION_MIN=4.80.0.AM3-SNAPSHOT
-TARGET_PLATFORM_VERSION_MAX=4.80.0.AM3-SNAPSHOT
+TARGET_PLATFORM_VERSION_MIN=4.80.0.Final-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.80.0.Final-SNAPSHOT
 JIRA_HOST="https://issues.jboss.org"
 TOrecipients="nboldt@redhat.com"
 
@@ -698,8 +698,8 @@ If the next build WILL be a respin, you need to simply:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.6.0.AM3
-versionWithRespin_ds=12.0.0.AM3
+versionWithRespin_jbt=4.6.0.Final
+versionWithRespin_ds=12.0.0.GA
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # if [[ ${version_jbt} == *".Final" ]]; then # **

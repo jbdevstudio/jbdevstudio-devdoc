@@ -353,7 +353,8 @@ done
 
 ----
 
-== Commit updates to release guide (including this document):
+
+== Commit updates to release guide (including this document)
 
 [source,bash]
 ----
@@ -367,6 +368,16 @@ git commit -s -m "update release guide for ${version_jbt} and ${version_ds}" .
 git push origin HEAD:master
 
 ----
+
+
+== Commit updates to job configs
+
+See https://github.com/jbosstools/jbosstools-devdoc/blob/master/building/jenkins_job_maintenance.adoc
+
+Jobs are stored in this repo:
+
+https://github.com/jbdevstudio/jbdevstudio-ci/tree/master/cache/https
+
 
 == Final release steps
 

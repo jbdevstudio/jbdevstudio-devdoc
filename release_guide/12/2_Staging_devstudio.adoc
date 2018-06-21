@@ -298,3 +298,27 @@ fi
 
 ----
 
+
+== Commit updates to release guide (including this document)
+
+[source,bash]
+----
+
+cd ~/truu # ~
+
+version_jbt=4.6.0.Final
+version_ds=12.0.0.GA
+cd jbdevstudio-devdoc/release_guide/
+git commit -s -m "update release guide for ${version_jbt} and ${version_ds}" .
+git push origin HEAD:master
+
+----
+
+
+== Commit updates to job configs
+
+See https://github.com/jbosstools/jbosstools-devdoc/blob/master/building/jenkins_job_maintenance.adoc
+
+Jobs are stored in this repo:
+
+https://github.com/jbdevstudio/jbdevstudio-ci/tree/master/cache/https

@@ -29,6 +29,13 @@ The resulting site is created here:
 
 http://download.jboss.org/jbosstools/neon/stable/updates/core/freemarker/1.5.300.v20161214-1103
 
+A composite site should also be created in the /freemarker/ folder which references the new release.
+
+If you want to adjust those composite*.xml files, you can use a bash script. Details here:
+
+https://github.com/jbosstools/jbosstools-devdoc/blob/master/source/composite_site_regeneration.adoc
+
+
 == Release Steps
 
 === Copy staging to development or stable

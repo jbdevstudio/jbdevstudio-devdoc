@@ -10,6 +10,10 @@ Latest version is here:
 
 This should be created by copying from the old year's URL and then updating URLs inside the composite*.xml files to remove anything we no longer include in JBT/devstudio.
 
+To automatically generate composite*.xml files in a given folder, you can use a bash script. Details here:
+
+https://github.com/jbosstools/jbosstools-devdoc/blob/master/source/composite_site_regeneration.adoc
+
 == Create Stable, Development, Staging, Snapshots placeholder update sites & build folders
 
 Every year we need to create placeholder URLs for these locations:

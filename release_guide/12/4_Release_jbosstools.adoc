@@ -98,8 +98,8 @@ Here are 2 jobs that performs the copy from /staging/ to /development/ and/or to
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.6.0.AM3
-versionWithRespin_ds=12.0.0.AM3
+versionWithRespin_jbt=4.6.0.Final
+versionWithRespin_ds=12.0.0.GA
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 # if [[ ${version_jbt} == *".Final" ]]; then
@@ -109,8 +109,8 @@ version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\
   stream_jbt=master
   stream_ds=master
 # fi
-TARGET_PLATFORM_VERSION_MAX=4.80.0.AM3-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.80.0.AM3-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.80.1.Final
+TARGET_PLATFORM_CENTRAL_MAX=4.80.0.Final-SNAPSHOT
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
@@ -162,7 +162,7 @@ qual=development
 quiet="-q"
 
 # for example, run this for the JBT central discovery plugins:
-versionWithRespin_jbt=4.6.0.AM3
+versionWithRespin_jbt=4.6.0.Final
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 ${STAGE} -sites "discovery.central" -stream "${versionWithRespin_jbt}" -vr ${version_jbt} -DESTINATION "${TOOLS}" \
     -sd ${eclipseReleaseName} -dd static/${eclipseReleaseName} -st staging -dt ${qual} \
@@ -183,8 +183,8 @@ But you can run it again if you'd like:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.6.0.AM3
-versionWithRespin_ds=12.0.0.AM3
+versionWithRespin_jbt=4.6.0.Final
+versionWithRespin_ds=12.0.0.GA
 
 # buildType=development in this case, development will ALSO check stable URLs if we're pushing out a GA/Final release
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
@@ -266,7 +266,7 @@ export userpass=KERBUSER:PASSWORD
 
 # run this for .Final and -SNAPSHOT target platforms, too... why for SNAPSHOTs ?
 # NOTE: if you released another TP at the same time (eg., 4.7x.0.Final and 4.7y.0.Final), repeat for that version too.
-TARGET_PLATFORM_VERSION_MAXes="4.80.0.Final" # space separated list if more than one to release
+TARGET_PLATFORM_VERSION_MAXes="4.80.1.Final" # space separated list if more than one to release
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
@@ -346,14 +346,14 @@ export userpass=KERBUSER:PASSWORD
 ## TODO CONTINUE HERE  ##
 
 versionWithRespin_jbt_PREV_GA=4.5.3.Final
-versionWithRespin_jbt_PREV=4.6.0.AM2 # milestones
-versionWithRespin_jbt=4.6.0.AM3
-versionWithRespin_jbt_NEXT=4.6.0.Final
+versionWithRespin_jbt_PREV=4.6.0.AM3 # milestones
+versionWithRespin_jbt=4.6.0.Final
+versionWithRespin_jbt_NEXT=4.9.0.AM1
 
 versionWithRespin_ds_PREV_GA=11.3.0.GA
 versionWithRespin_ds_PREV=11.3.0.GA # previous RELEASED GA as referenced in ide-config.properties
-versionWithRespin_ds=12.0.0.AM3
-versionWithRespin_ds_NEXT=12.0.0.GA
+versionWithRespin_ds=12.0.0.GA
+versionWithRespin_ds_NEXT=12.9.0.AM1
 
 version_jbt=$(echo ${version_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${version_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
@@ -438,8 +438,8 @@ To diff if any new features have been added/removed:
 
 [source,bash]
 ----
-version_jbt_PREV_Mktplace=4.6.0.AM2
-version_jbt=4.6.0.AM3
+version_jbt_PREV_Mktplace=4.6.0.AM3
+version_jbt=4.6.0.Final
 
 path_jbt_PREV_Mktplace=photon/development/updates/core/${version_jbt_PREV_Mktplace}
 
@@ -547,12 +547,12 @@ export userpass=JIRAUSER:JIRAPWD
 # sometimes the sprint_NEXT is already created, but with a name that's different from what you might expect (eg., different month, wrong year)
 
 # if previous sprint is done, use sprint=sprint_NEXT here
-sprint="devex #150 June 2018"
-sprint_NEXT="devex #151 June 2018"
-versionWithRespin_jbt=4.6.0.AM3
-versionWithRespin_jbt_NEXT=4.6.0.Final
-versionWithRespin_ds=12.0.0.AM3
-versionWithRespin_ds_NEXT=12.0.0.GA
+sprint="devex #151 June 2018"
+sprint_NEXT="devex #152 July 2018"
+versionWithRespin_jbt=4.6.0.Final
+versionWithRespin_jbt_NEXT=4.9.0.AM1
+versionWithRespin_ds=12.0.0.GA
+versionWithRespin_ds_NEXT=12.9.0.AM1
 python -W ignore /tmp/jbt.github/jbosstools-build-ci/util/checkUnresolvedIssues.py -S --jira https://issues.jboss.org \
   --jbt ${versionWithRespin_jbt} --jbt_NEXT ${versionWithRespin_jbt_NEXT} \
   --ds ${versionWithRespin_ds} --ds_NEXT ${versionWithRespin_ds_NEXT} \
@@ -582,8 +582,8 @@ Once the current milestone is done, the BUILD_ALIAS in parent pom should be bump
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru # ~
 pushd jbosstools-build/parent
-BUILD_ALIAS=AM3
-BUILD_ALIAS_NEXT=Final
+BUILD_ALIAS=Final
+BUILD_ALIAS_NEXT=AM1
 
 git fetch origin master # jbosstools-4.6.0.x
 git checkout FETCH_HEAD
@@ -641,21 +641,21 @@ Run this job:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt_NEXT=4.6.0.Final
-versionWithRespin_ds_NEXT=12.0.0.GA
+versionWithRespin_jbt_NEXT=4.9.0.AM1
+versionWithRespin_ds_NEXT=12.9.0.AM1
 #if [[ ${versionWithRespin_jbt_NEXT} == *".Final" ]]; then
 #  version_parent_NEXT=4.5.0.Final-SNAPSHOT
 #  createBranch=true
 #  github_branch=jbosstools-4.6.0.x
 #  github_branch_fallback=master # or jbosstools-4.6.x?
 #else
-  version_parent_NEXT=4.6.0.Final-SNAPSHOT
+  version_parent_NEXT=4.9.0.AM1-SNAPSHOT
   createBranch=false
   github_branch=master
   github_branch_fallback=master # or jbosstools-4.6.x?
 #fi
-TARGET_PLATFORM_VERSION_MIN=4.80.0.Final-SNAPSHOT
-TARGET_PLATFORM_VERSION_MAX=4.80.0.Final-SNAPSHOT
+TARGET_PLATFORM_VERSION_MIN=4.80.1.Final
+TARGET_PLATFORM_VERSION_MAX=4.80.1.Final
 JIRA_HOST="https://issues.jboss.org"
 TOrecipients="nboldt@redhat.com"
 

@@ -24,15 +24,13 @@ org.jboss.tools.targetplatforms
 * https://repository.jboss.org/nexus/#nexus-search;gav%7Eorg.jboss.tools.targetplatforms%7Ejbosstools-multiple%7E4.6*%7E%7E[jbosstools-multiple]
 * https://repository.jboss.org/nexus/#nexus-search;gav%7Eorg.jboss.tools.targetplatforms%7Ejbosstools-unified%7E4.6*%7E%7E[jbosstools-unified]
 |
-* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstoolstargetplatform-4.73.x/[jbosstoolstargetplatform-4.73.x]
-* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstoolstargetplatform-4.71.x/[jbosstoolstargetplatform-4.71.x]
+* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstoolstargetplatform-4.80.x/[jbosstoolstargetplatform-4.80.x]
 |
 * https://repository.jboss.org/nexus/#stagingRepositories[Close then release]
 |
-* 4.71.1.Final
-* 4.73.1.Final
+* 4.80.1.Final
 |
-* 4.80.0.AM3-SNAPSHOT
+* 4.90.0.AM1-SNAPSHOT
 
 | ###### *Tycho Plugins & Rules*
 |
@@ -53,7 +51,6 @@ org.jboss.tools.releng
 |
 * https://repository.jboss.org/nexus/#stagingRepositories[Close then release]
 |
-* 1.0.0
 * 1.1.0
 |
 * 1.2.0-SNAPSHOT
@@ -70,9 +67,9 @@ org.jboss.tools.releng
 |
 * https://repository.jboss.org/nexus/#stagingRepositories[Close then release]
 |
-* 4.5.3.Final
+* 4.6.0
 |
-* 4.6.0-SNAPSHOT
+* 4.9.0-SNAPSHOT
 
 | ###### *Parent Pom*
 |
@@ -86,9 +83,9 @@ org.jboss.tools
 |
 * https://repository.jboss.org/nexus/#stagingRepositories[Close then release]
 |
-* 4.5.3.Final-SNAPSHOT
+* 4.6.0.Final-SNAPSHOT
 |
-* 4.6.0.AM1-SNAPSHOT
+* 4.9.0.AM1-SNAPSHOT
 
 |===
 

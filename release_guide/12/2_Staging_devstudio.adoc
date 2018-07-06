@@ -248,9 +248,9 @@ IMPORTANT: As this takes some time and requires coordination with other teams, t
 
 Previous tickets:
 
+* https://projects.engineering.redhat.com/browse/RCM-37161
 * https://projects.engineering.redhat.com/browse/RCM-31845
 * https://projects.engineering.redhat.com/browse/RCM-20050
-* https://projects.engineering.redhat.com/browse/RCM-12959
 
 Communicate with Chris O'Brien (internal IRC: siege) to coordinate the release. All the above can happen in parallel / before the updates below.
 
@@ -267,7 +267,6 @@ export userpass=KERBUSER:PASSWORD
 versionWithRespin_ds=12.0.0.GA
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   # TODO set these ticket URL values for this release!
-  errataTicket="https://errata.devel.redhat.com/advisory/33102"
   STAGE_DATE="2018-07-11" # tues or wed after QE review
   GOLIVEDATE="2018-07-16" # monday before GA announcement
   TOrecipients="release-engineering@redhat.com"
@@ -282,7 +281,7 @@ JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
     sleep 3s
 
     data="token=RELENG&versionWithRespin_ds=${versionWithRespin_ds}&GOLIVEDATE=${GOLIVEDATE}&STAGE_DATE=${STAGE_DATE}\
-&TOrecipients=${TOrecipients}&CCrecipients=${CCrecipients}&recipientOverride=${recipientOverride}&errataTicket=${errataTicket}"
+&TOrecipients=${TOrecipients}&CCrecipients=${CCrecipients}&recipientOverride=${recipientOverride}"
     nextJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
     sleep 15s
 

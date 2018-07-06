@@ -268,8 +268,8 @@ versionWithRespin_ds=12.0.0.GA
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   # TODO set these ticket URL values for this release!
   errataTicket="https://errata.devel.redhat.com/advisory/33102"
-  STAGE_DATE="2018-04-18"
-  GOLIVEDATE="2018-04-23"
+  STAGE_DATE="2018-07-11" # tues or wed after QE review
+  GOLIVEDATE="2018-07-16" # monday before GA announcement
   TOrecipients="release-engineering@redhat.com"
   CCrecipients="cobrien@redhat.com, erooney@redhat.com, rkratky@redhat.com, sbharadw@redhat.com, nboldt@redhat.com, mat.booth@redhat.com, jmaury@redhat.com, mbenitez@redhat.com, scela@redhat.com, timoran@redhat.com, bodavis@redhat.com"
   CCrecipients=${CCrecipients// /%20}

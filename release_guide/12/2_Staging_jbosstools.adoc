@@ -241,7 +241,7 @@ You'll need this later for smoke testing. Start fetching it now to save time lat
 [source,bash]
 ----
 
-cd ~/tmp; wget http://download.eclipse.org/technology/epp/downloads/release/photon/M7/eclipse-jee-photon-M7-linux-gtk-x86_64.tar.gz &
+cd ~/tmp; wget http://download.eclipse.org/technology/epp/downloads/release/photon/R/eclipse-jee-photon-R-linux-gtk-x86_64.tar.gz &
 # or
 cd ~/tmp; wget https://hudson.eclipse.org/packaging/job/photon.epp-tycho-build/lastSuccessfulBuild/artifact/org.eclipse.epp.packages/archive/20180614-1200_eclipse-jee-photon-RC4-linux.gtk.x86_64.tar.gz &
 

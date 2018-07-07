@@ -1,6 +1,6 @@
 = Staging milestone devstudio Installers & update sites for QE
 
-This document describe how to provide a valid JBoss Developer Studio build to QE so they can test us.
+This document describe how to provide a valid Red Hat Developer Studio build to QE so they can test us.
 
 = Pre-Staging Steps
 

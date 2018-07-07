@@ -6,7 +6,7 @@ These asynchronous releases can be done for two reasons:
 
 a) a bug fix is urgently needed, and waiting up to 12 weeks for the next release train GA is unacceptable
 
-b) a JBoss Tools component is deemed deprecated or no longer being developed, so the most recent CI build aggregated into JBoss Tools and Red Hat JBoss Developer Studio can be stored as a stable release, to prevent its loss and allow it to be used for future release trains.
+b) a JBoss Tools component is deemed deprecated or no longer being developed, so the most recent CI build aggregated into JBoss Tools and Red Hat Developer Studio can be stored as a stable release, to prevent its loss and allow it to be used for future release trains.
 
 The most common of these two scenarios is (a), as RHAMT (Windup) releases on a schedule that only loosely follows that of JBoss Tools. Before it moved to Eclipse.org, Red Deer also used this process.
 

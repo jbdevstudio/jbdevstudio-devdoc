@@ -36,7 +36,7 @@ google-chrome http://tools.jboss.org/downloads/overview.html http://tools.jboss.
 
 Send email announcements to the mailing lists (one for jBT, one for devstudio) - see details in these emails, usually sent on the Wed or Thursday after the end of the sprint:
 
-* Ready for JBoss Developer Studio 12.0.0.GA blog & announcement
+* Ready for Red Hat Developer Studio 12.0.0.GA blog & announcement
 * Ready for JBoss Tools 4.6.0.Final blog & announcement
 
 

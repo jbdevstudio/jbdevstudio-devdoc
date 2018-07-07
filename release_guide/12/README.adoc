@@ -1,6 +1,6 @@
-= JBoss Tools & Red Hat JBoss Developer Studio Release Guide
+= JBoss Tools & Red Hat Developer Studio Release Guide
 
-This repository contains documentation for releasing JBoss Tools & Red Hat JBoss Developer Studio
+This repository contains documentation for releasing JBoss Tools & Red Hat Developer Studio
 
 This repo should be considered a wiki, into which all developers can push docs. External contributors can do pull requests or report issues to improve the quality, clarity, and breadth of this documentation.
 

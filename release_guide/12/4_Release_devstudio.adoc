@@ -290,7 +290,6 @@ if [[ ${version_ds} == *"GA" ]]; then # **
   # should have already downloaded this above
   if [[ ! -f ${installerJar} ]]; then wget https://devstudio.redhat.com/12/${qual}/builds/devstudio-${version_ds}-build-product/latest/all/${installerJar}; fi
 
-  wget https://devstudio.redhat.com/static/12/${qual}/builds/devstudio-${version_ds}-build-product/latest/all/${installerJar}
   java -jar ~/tmp/${installerJar} # ~
 fi
 

@@ -139,75 +139,10 @@ done
 
 ----
 
-If any of the above fails, ssh to dev01 or dev90, sudo to hudson, and do this.
-
-NOTE: will not work if run from within a screen session.
-
-NOTE: This backup step has not been needed since June 2017.
-
-[source,bash]
-----
-
-# get stage script
-WORKSPACE=/tmp
-cd ${WORKSPACE}
-if [[ -f /tmp/stage.sh ]]; then rm -f /tmp/stage.sh; fi
-wget https://raw.githubusercontent.com/jbosstools/jbosstools-build-ci/master/publish/stage.sh --no-check-certificate
-chmod +x stage.sh
-STAGE=${WORKSPACE}/stage.sh
-eclipseReleaseName=photon
-JBDS="devstudio@[IP FOR filemgmt]:/www_htdocs/devstudio" # use filemgmt IP as it's 3x faster
-TOOLS="tools@[IP FOR filemgmt]:/downloads_htdocs/tools"
-qual=development
-quiet="-q"
-
-# for example, run this for the JBT central discovery plugins:
-versionWithRespin_jbt=4.6.0.Final
-version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
-${STAGE} -sites "discovery.central" -stream "${versionWithRespin_jbt}" -vr ${version_jbt} -DESTINATION "${TOOLS}" \
-    -sd ${eclipseReleaseName} -dd static/${eclipseReleaseName} -st staging -dt ${qual} \
-    -JOB_NAME jbosstools-${versionWithRespin_jbt}-build-\${site} ${quiet} -suz -sus &
-
-----
-
-
 When the job above is done, this verification job will trigger automatically if it's enabled:
 
 https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites/
 
-But you can run it again if you'd like:
-
-[source,bash]
-----
-
-# kerberos login for the Jenkins server
-export userpass=KERBUSER:PASSWORD
-
-versionWithRespin_jbt=4.6.0.Final
-versionWithRespin_ds=12.0.0.GA
-
-# buildType=development in this case, development will ALSO check stable URLs if we're pushing out a GA/Final release
-ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
-JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for j in jbosstools-releng-push-to-dev-stable-03-verify-builds-update-sites; do
-  prevJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
-  sleep 3s
-  data="versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
-skipdiscovery=false&onlydiscovery=false&buildType=development"
-  nextJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
-  sleep 15s
-
-  if [[ "${prevJob}" == "${nextJob}" ]]; then
-    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
-    echo "[WARN] ${ccijenkins}/${j}"
-  else
-    ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t disable
-    ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t lastBuild/toggleLogKeep
-  fi
-done
-
-----
 
 === WebTools
 
@@ -264,30 +199,26 @@ IMPORTANT: This job also verifies that -SNAPSHOT content is properly populated o
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-# run this for .Final and -SNAPSHOT target platforms, too... why for SNAPSHOTs ?
-# NOTE: if you released another TP at the same time (eg., 4.7x.0.Final and 4.7y.0.Final), repeat for that version too.
-TARGET_PLATFORM_VERSION_MAXes="4.80.1.Final" # space separated list if more than one to release
+# this will pull the TP version from the parent pom
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 
-for TARGET_PLATFORM_VERSION_MAX in ${TARGET_PLATFORM_VERSION_MAXes}; do
-  for j in jbosstools-releng-push-to-dev-stable-05-release-target-platforms; do
-    prevJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+for j in jbosstools-releng-push-to-dev-stable-05-release-target-platforms; do
+  prevJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
 
-    sleep 3s
-    data="token=RELENG&TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}"
-    nextJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
-    sleep 15s
-    if [[ "${prevJob}" == "${nextJob}" ]]; then
-      echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
-      echo "[WARN] ${ccijenkins}/${j}"
-    else
-      ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t disable
-      ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t lastBuild/toggleLogKeep
-    fi
-  done
+  sleep 3s
+  data="token=RELENG&"
+  nextJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t build -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+  sleep 15s
+  if [[ "${prevJob}" == "${nextJob}" ]]; then
+    echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
+    echo "[WARN] ${ccijenkins}/${j}"
+  else
+    ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t disable
+    ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t lastBuild/toggleLogKeep
+  fi
 done
 
 ----
@@ -446,15 +377,21 @@ path_jbt_PREV_Mktplace=photon/development/updates/core/${version_jbt_PREV_Mktpla
 # for Final releases only, or for milestones prior to the first x.y.0.Final.
 if [[ ${version_jbt} == *"Final" ]] || [[ ${path_jbt_PREV_Mktplace} == *"AM"* ]]; then
   cd /tmp
-  wget -O ${version_jbt_PREV_Mktplace}.properties http://download.jboss.org/jbosstools/static/${path_jbt_PREV_Mktplace}/site.properties
-  wget -O ${version_jbt}.properties http://download.jboss.org/jbosstools/static/photon/development/updates/core/${version_jbt}/site.properties
-  diff -u ${version_jbt_PREV_Mktplace}.properties ${version_jbt}.properties
-
-  # then verify the the new feature(s) were added to the CoreTools category
-  google-chrome && google-chrome https://marketplace.eclipse.org/content/jboss-tools/edit
+  wget -q -O ${version_jbt_PREV_Mktplace}.properties http://download.jboss.org/jbosstools/static/${path_jbt_PREV_Mktplace}/site.properties
+  wget -q -O ${version_jbt}.properties http://download.jboss.org/jbosstools/static/photon/development/updates/core/${version_jbt}/site.properties
+  thediff=$(diff -u ${version_jbt_PREV_Mktplace}.properties ${version_jbt}.properties)
+  if [[ $thediff ]]; then
+    echo $thediff
+  else
+    echo "Nothing changed since ${version_jbt_PREV_Mktplace}"
+    echo ""
+  fi
 
   rm -f /tmp/${version_jbt_PREV_Mktplace}.properties /tmp/${version_jbt}.properties
 fi
+
+# then verify the the new feature(s) were added to the CoreTools category, or just update the listing with the new release version number
+google-chrome && google-chrome https://marketplace.eclipse.org/content/jboss-tools/edit
 
 ----
 

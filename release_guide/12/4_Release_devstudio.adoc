@@ -39,7 +39,6 @@ Note: if any step seems to fail, you can download all the zips from the destinat
 ----
 
 # devstudio-12.0.0.GA-target-platform-central.zip
-# devstudio-12.0.0.GA-target-platform-earlyaccess.zip
 # devstudio-12.0.0.GA-target-platform.zip
 # devstudio-12.0.0.GA-updatesite-core.zip
 for z in *.zip; do echo $z; unzip -tq $z; sha256sum ${z}; cat ${z}.sha256; echo ""; echo "-----"; done
@@ -315,13 +314,13 @@ export userpass=KERBUSER:PASSWORD
 
 ## TODO CONTINUE HERE  ##
 
-# for AMx milestones, use file like 4.6.0.am1-for-photon.0.m6.html
-# for GA releases, use file like 12.0.0.ga-for-photon.0.html
-blogURL=/blog/4.6.0.am3-for-photon.0.rc3.html
+# for AMx milestones, use file like 4.9.0.am1-for-eclipse-4.9.m1.html
+# for GA releases, use file like 12.9.0.ga-for-eclipse-4.9.html
+blogURL=/blog/12.0.0.ga-for-photon.html
 # Pull Request (PR)
-pullrequestNum=833
-eclipseVersionSuffix=".0.RC3" # TODO: use .0.M7 for Eclipse 4.8.0.M7 Oxygen.0.M7
-GOLIVEDATE="2018-06-20"
+pullrequestNum=836
+eclipseVersionSuffix="" # TODO: use .M1 for Eclipse 4.9.M1
+GOLIVEDATE="2018-07-16"
 
 versionWithRespin_jbt=4.6.0.Final
 versionWithRespin_ds=12.0.0.GA

@@ -183,7 +183,7 @@ done
 
 == Verify install instructions are correct
 
-Look at the .txt and .html files in https://devstudio.redhat.com/12/staging/builds/devstudio-12.0.0.GA-build-product/latest/all/
+Look at the .txt and .html files in https://devstudio.redhat.com/12/staging/builds/devstudio-12.9.0.GA-build-product/latest/all/
 
 Verify that they contain correct install/usage instructions & versions.
 

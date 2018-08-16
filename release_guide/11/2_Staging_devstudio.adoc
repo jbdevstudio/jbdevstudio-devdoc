@@ -458,7 +458,8 @@ rm -f /tmp/a5787476.txt
 
 signedURL=https://devstudio.redhat.com/11/snapshots/builds/devstudio.rpm_master/latest/x86_64/ # unsigned
 signedURL=http://download-node-02.eng.bos.redhat.com/devel/candidates/jboss/devstudio/devstudio-11.3.0/rpms/signed/ # signed
-signedURL=https://devstudio.redhat.com/11/staging/builds/devstudio-11.3.0.GA-build-rpm/latest/x86_64/ # if updated from the step above, must be signed
+signedURL=https://devstudio.redhat.com/static/11/stable/builds/devstudio-11.3.0.GA-build-rpm/latest/x86_64/ # if updated from the step above, must be signed
+signedURL=https://devstudio.redhat.com/static/11/stable/rpms/x86_64/ # if updated from the step above, must be signed
 
 theFiles=$(curl -s -S -k ${signedURL} | grep href=\" | grep rpm\" | sed -e "s#.\+href=\"\([^\"]\+\)\".\+#\1#")
 for theFile in ${theFiles}; do

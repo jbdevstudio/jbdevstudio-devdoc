@@ -23,12 +23,8 @@ git clone git@github.com:jbosstools/jbosstools-versionwatch.git
 # maven-plugins does not get released/branched the same as other projects, but tag it anyway
 # download.jboss.org tag might not be valid as tweaks to ide-config.properties happen frequently
 
-version_jbt=4.6.0.Final
-# if [[ ${version_jbt} == *".Final" ]]; then
-#   github_branch=jbosstools-4.6.0.x
-# else
-  github_branch=master
-# fi
+version_jbt=4.9.0.AM2
+github_branch=master
 cd ~/tru # ~
 for d in build build-ci build-sites devdoc discovery download.jboss.org maven-plugins versionwatch; do
   echo "====================================================================="
@@ -59,12 +55,8 @@ git clone git@github.com:jbdevstudio/jbdevstudio-artwork.git
 git clone git@github.com:jbdevstudio/jbdevstudio-devdoc.git
 git clone git@github.com:jbdevstudio/jbdevstudio-ci.git
 
-version_ds=12.0.0.GA
-# if [[ ${version_ds} == *".GA" ]]; then
-#   github_branch=jbosstools-4.6.0.x
-# else
-  github_branch=master
-# fi
+version_ds=12.9.0.AM2
+github_branch=master
 cd ~/truu # ~
 for d in product website artwork devdoc ci; do # note: ci repo is private
   echo "====================================================================="

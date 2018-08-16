@@ -16,7 +16,7 @@ cd /tmp/jbt.github
 if [[ -d ~/tru/jbosstools-build-ci ]]; then ln -s ~/tru/jbosstools-build-ci; fi
 if [[ ! -d jbosstools-build-ci ]] && [[ -L jbosstools-build-ci ]]; then git clone git@github.com:jbosstools/jbosstools-build-ci.git; fi
 cd jbosstools-build-ci
-git checkout master # later jbosstools-4.6.x
+git checkout master
 chmod +x -R */*.sh */*/*.sh
 
 ----
@@ -83,18 +83,13 @@ Configure, then run this job:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-version_parent=4.6.0.Final-SNAPSHOT
-versionWithRespin_jbt=4.6.0.Final
-versionWithRespin_ds=12.0.0.GA
+version_parent=4.9.0.AM1-SNAPSHOT
+versionWithRespin_jbt=4.9.0.AM2
+versionWithRespin_ds=12.9.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
-# if [[ ${version_jbt} == *".Final" ]]; then # **
-#   stream_jbt=4.6.photon
-#   github_branch=jbosstools-4.6.0.x
-# else
-  stream_jbt=master # later 4.6.photon
-  github_branch=master # later jbosstools-4.6.0.x
-# fi
+stream_jbt=master
+github_branch=master
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
@@ -144,17 +139,12 @@ To prevent accidentally rebuilding something while you're copying it away, make 
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.6.0.Final
-versionWithRespin_ds=12.0.0.GA
+versionWithRespin_jbt=4.9.0.AM2
+versionWithRespin_ds=12.9.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
-# if [[ ${version_jbt} == *".Final" ]]; then # **
-#  stream_jbt=4.6.photon
-#  stream_ds=12.0.photon
-# else
-  stream_jbt=master # later 4.6.photon
-  stream_ds=master # later 12.0.photon
-# fi
+stream_jbt=master
+stream_ds=master
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
@@ -193,19 +183,15 @@ Then respin the job:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.6.0.Final
-versionWithRespin_ds=12.0.0.GA
+versionWithRespin_jbt=4.9.0.AM2
+versionWithRespin_ds=12.9.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
-# if [[ ${version_jbt} == *".Final" ]]; then # **
-#   stream_jbt=4.6.photon
-# else
-  stream_jbt=master
-# fi
-TARGET_PLATFORM_VERSION_MAX=4.80.1.Final
-TARGET_PLATFORM_CENTRAL_MAX=4.80.0.Final-SNAPSHOT
-version_jbt_IS=4.5.3.Final
-version_ds_IS=11.3.0.GA
+stream_jbt=master
+TARGET_PLATFORM_VERSION_MAX=4.9.0.AM2-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.9.0.AM2-SNAPSHOT
+version_jbt_IS=4.6.0.Final
+version_ds_IS=12.0.0.GA
 qual_IS=stable # or development
 earlyaccess_IS="" # or earlyaccess/
 
@@ -268,19 +254,14 @@ export userpass=KERBUSER:PASSWORD
 
 eclipseReleaseName=photon
 devstudioReleaseVersion=12
-versionWithRespin_jbt=4.6.0.Final
-versionWithRespin_ds=12.0.0.GA
+versionWithRespin_jbt=4.9.0.AM2
+versionWithRespin_ds=12.9.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
-TARGET_PLATFORM_VERSION_MAX=4.80.1.Final
-TARGET_PLATFORM_CENTRAL_MAX=4.80.0.Final-SNAPSHOT
-# if [[ ${version_jbt} == *".Final" ]]; then # **
-#   stream_jbt=4.6.photon
-#   stream_ds=12.0.photon
-# else
-  stream_jbt=master
-  stream_ds=master
-# fi
+TARGET_PLATFORM_VERSION_MAX=4.9.0.AM2-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.9.0.AM2-SNAPSHOT
+stream_jbt=master
+stream_ds=master
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
@@ -344,8 +325,8 @@ export userpass=KERBUSER:PASSWORD
 
 eclipseReleaseName=photon
 devstudioReleaseVersion=12
-versionWithRespin_jbt=4.6.0.Final
-versionWithRespin_ds=12.0.0.GA
+versionWithRespin_jbt=4.9.0.AM2
+versionWithRespin_ds=12.9.0.AM2
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
@@ -386,20 +367,20 @@ export userpass=KERBUSER:PASSWORD
 
 ## TODO CONTINUE HERE ##
 
-versionWithRespin_jbt_PREV_GA=4.5.3.Final
-versionWithRespin_jbt_PREV=4.6.0.AM3 # milestones
-versionWithRespin_jbt=4.6.0.Final
-versionWithRespin_jbt_NEXT=4.9.0.AM1
+versionWithRespin_jbt_PREV_GA=4.6.0.Final
+versionWithRespin_jbt_PREV=4.9.0.AM1 # milestones
+versionWithRespin_jbt=4.9.0.AM2
+versionWithRespin_jbt_NEXT=4.9.0.AM3
 
-versionWithRespin_ds_PREV_GA=11.3.0.GA
-versionWithRespin_ds_PREV=12.0.0.AM3 # milestones
-versionWithRespin_ds=12.0.0.GA
-versionWithRespin_ds_NEXT=12.9.0.AM1
+versionWithRespin_ds_PREV_GA=12.0.0.GA
+versionWithRespin_ds_PREV=12.9.0.AM1 # milestones
+versionWithRespin_ds=12.9.0.AM2
+versionWithRespin_ds_NEXT=12.9.0.AM3
 
 buildType="staging"
 
-version_jbt_IS=4.5.3.Final
-version_ds_IS=11.3.0.GA
+version_jbt_IS=4.6.0.Final
+version_ds_IS=12.0.0.GA
 qual_IS=stable # or development
 earlyaccess_IS="" # "" or "earlyaccess/" as applicable - see tip above
 
@@ -486,17 +467,12 @@ If the next build WILL be a respin, you need to simply:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.6.0.Final
-versionWithRespin_ds=12.0.0.GA
+versionWithRespin_jbt=4.9.0.AM2
+versionWithRespin_ds=12.9.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
-# if [[ ${version_jbt} == *".Final" ]]; then # **
-#   stream_jbt=4.6.photon
-#   stream_ds=12.0.photon
-# else
-  stream_jbt=master
-  stream_ds=master
-# fi
+stream_jbt=master
+stream_ds=master
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
@@ -540,18 +516,13 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-rele
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.6.0.Final
-versionWithRespin_ds=12.0.0.GA
-# if [[ ${version_jbt} == *".Final" ]]; then # **
-#   stream_jbt=4.6.photon
-#   github_branch=jbosstools-4.6.0.x
-# else
-  stream_jbt=master
-  github_branch=master # later jbosstools-4.6.0.x
-# fi
-TARGET_PLATFORM_VERSION_MIN=4.80.1.Final
-TARGET_PLATFORM_VERSION_MAX=4.80.1.Final
-TARGET_PLATFORM_CENTRAL_MAX=4.80.0.Final-SNAPSHOT
+versionWithRespin_jbt=4.9.0.AM2
+versionWithRespin_ds=12.9.0.AM2
+stream_jbt=master
+github_branch=master
+TARGET_PLATFORM_VERSION_MIN=4.9.0.AM2-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.9.0.AM2-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.9.0.AM2-SNAPSHOT
 respinSuffix=""
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
@@ -587,17 +558,12 @@ You will need to disable the jobs once the bits are staged, so that they won't r
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.6.0.Final
-versionWithRespin_ds=12.0.0.GA
+versionWithRespin_jbt=4.9.0.AM2
+versionWithRespin_ds=12.9.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
-# if [[ ${version_jbt} == *".Final" ]]; then # **
-#   stream_jbt=4.6.photon
-#   stream_ds=12.0.photon
-# else
-  stream_jbt=master
-  stream_ds=master
-# fi
+stream_jbt=master
+stream_ds=master
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh

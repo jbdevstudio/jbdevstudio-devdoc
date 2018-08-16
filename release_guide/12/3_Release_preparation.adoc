@@ -13,7 +13,7 @@ cd /tmp/jbt.github
 if [[ -d ~/tru/jbosstools-build-ci ]]; then ln -s ~/tru/jbosstools-build-ci; fi
 if [[ ! -d jbosstools-build-ci ]] && [[ -L jbosstools-build-ci ]]; then git clone git@github.com:jbosstools/jbosstools-build-ci.git; fi
 cd jbosstools-build-ci
-git checkout master # later jbosstools-4.6.x
+git checkout master
 chmod +x -R */*.sh */*/*.sh
 
 ----

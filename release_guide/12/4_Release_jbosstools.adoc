@@ -21,7 +21,7 @@ cd /tmp/jbt.github
 if [[ -d ~/tru/jbosstools-build-ci ]]; then ln -s ~/tru/jbosstools-build-ci; fi
 if [[ ! -d jbosstools-build-ci ]] && [[ -L jbosstools-build-ci ]]; then git clone git@github.com:jbosstools/jbosstools-build-ci.git; fi
 cd jbosstools-build-ci
-git checkout master # later jbosstools-4.6.x
+git checkout master
 chmod +x -R */*.sh */*/*.sh
 
 ----
@@ -98,19 +98,14 @@ Here are 2 jobs that performs the copy from /staging/ to /development/ and/or to
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.6.0.Final
-versionWithRespin_ds=12.0.0.GA
+versionWithRespin_jbt=4.9.0.AM2
+versionWithRespin_ds=12.9.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
-# if [[ ${version_jbt} == *".Final" ]]; then
-#   stream_jbt=4.6.photon
-#   stream_ds=12.0.photon
-# else
-  stream_jbt=master
-  stream_ds=master
-# fi
-TARGET_PLATFORM_VERSION_MAX=4.80.1.Final
-TARGET_PLATFORM_CENTRAL_MAX=4.80.0.Final-SNAPSHOT
+stream_jbt=master
+stream_ds=master
+TARGET_PLATFORM_VERSION_MAX=4.9.0.AM2-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.9.0.AM2-SNAPSHOT
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
@@ -259,8 +254,8 @@ eclipseReleaseName=photon
 devstudioReleaseVersion=12
 qual_IS="stable" # "development" or "stable" as applicable - see tip above
 earlyaccess_IS="" # "" or "earlyaccess/" as applicable - see tip above
-version_jbt_IS=4.5.3.Final
-version_ds_IS=11.3.0.GA
+version_jbt_IS=4.6.0.Final
+version_ds_IS=12.0.0.GA
 
 google-chrome \
 http://download.jboss.org/jbosstools/${eclipseReleaseName}/${qual_IS}/updates/integration-stack/discovery/${version_jbt_IS}/${earlyaccess_IS} \
@@ -276,22 +271,22 @@ export userpass=KERBUSER:PASSWORD
 
 ## TODO CONTINUE HERE  ##
 
-versionWithRespin_jbt_PREV_GA=4.5.3.Final
-versionWithRespin_jbt_PREV=4.6.0.AM3 # milestones
-versionWithRespin_jbt=4.6.0.Final
-versionWithRespin_jbt_NEXT=4.9.0.AM1
+versionWithRespin_jbt_PREV_GA=4.6.0.Final
+versionWithRespin_jbt_PREV=4.9.0.AM1 # milestones
+versionWithRespin_jbt=4.9.0.AM2
+versionWithRespin_jbt_NEXT=4.9.0.AM3
 
-versionWithRespin_ds_PREV_GA=11.3.0.GA
-versionWithRespin_ds_PREV=11.3.0.GA # previous RELEASED GA as referenced in ide-config.properties
-versionWithRespin_ds=12.0.0.GA
-versionWithRespin_ds_NEXT=12.9.0.AM1
+versionWithRespin_ds_PREV_GA=12.0.0.GA
+versionWithRespin_ds_PREV=12.0.0.GA # previous RELEASED GA as referenced in ide-config.properties
+versionWithRespin_ds=12.9.0.AM2
+versionWithRespin_ds_NEXT=12.9.0.AM3
 
 version_jbt=$(echo ${version_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${version_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 buildType="development"; if [[ ${version_jbt} == *".Final" ]]; then buildType="stable"; fi
 
-version_jbt_IS=4.5.3.Final
-version_ds_IS=11.3.0.GA
+version_jbt_IS=4.6.0.Final
+version_ds_IS=12.0.0.GA
 qual_IS="stable" # "development" or "stable" as applicable - see tip above
 earlyaccess_IS="" # "" or "earlyaccess/" as applicable - see tip above
 
@@ -362,15 +357,15 @@ Access it via +https://marketplace.eclipse.org/content/jboss-tools/edit+ and upd
 * Description to match new version & dependencies
 * Notes / warnings (if applicable, eg., JDK issues)
 * Update list of features, using content of last milestone or Final
-* http://download.jboss.org/jbosstools/static/oxygen/stable/updates/core/4.5.3.Final/site.properties
-* http://download.jboss.org/jbosstools/static/photon/development/updates/core/4.6.0.AM1/site.properties
+* http://download.jboss.org/jbosstools/static/photon/stable/updates/core/4.6.0.Final/site.properties
+* http://download.jboss.org/jbosstools/static/photon/development/updates/core/4.9.0.AM2/site.properties
 
 To diff if any new features have been added/removed:
 
 [source,bash]
 ----
-version_jbt_PREV_Mktplace=4.6.0.AM3
-version_jbt=4.6.0.Final
+version_jbt_PREV_Mktplace=4.6.0.Final
+version_jbt=4.9.0.AM2
 
 path_jbt_PREV_Mktplace=photon/development/updates/core/${version_jbt_PREV_Mktplace}
 
@@ -484,12 +479,12 @@ export userpass=JIRAUSER:JIRAPWD
 # sometimes the sprint_NEXT is already created, but with a name that's different from what you might expect (eg., different month, wrong year)
 
 # if previous sprint is done, use sprint=sprint_NEXT here
-sprint="devex #151 June 2018"
-sprint_NEXT="devex #152 July 2018"
-versionWithRespin_jbt=4.6.0.Final
-versionWithRespin_jbt_NEXT=4.9.0.AM1
-versionWithRespin_ds=12.0.0.GA
-versionWithRespin_ds_NEXT=12.9.0.AM1
+sprint="devex #153 August 2018"
+sprint_NEXT="devex #154 September 2018"
+versionWithRespin_jbt=4.9.0.AM2
+versionWithRespin_jbt_NEXT=4.9.0.AM3
+versionWithRespin_ds=12.9.0.AM2
+versionWithRespin_ds_NEXT=12.9.0.AM3
 python -W ignore /tmp/jbt.github/jbosstools-build-ci/util/checkUnresolvedIssues.py -S --jira https://issues.jboss.org \
   --jbt ${versionWithRespin_jbt} --jbt_NEXT ${versionWithRespin_jbt_NEXT} \
   --ds ${versionWithRespin_ds} --ds_NEXT ${versionWithRespin_ds_NEXT} \
@@ -578,10 +573,10 @@ Run this job:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt_NEXT=4.9.0.AM1
-versionWithRespin_ds_NEXT=12.9.0.AM1
+versionWithRespin_jbt_NEXT=4.9.0.AM3
+versionWithRespin_ds_NEXT=12.9.0.AM3
 #if [[ ${versionWithRespin_jbt_NEXT} == *".Final" ]]; then
-#  version_parent_NEXT=4.5.0.Final-SNAPSHOT
+#  version_parent_NEXT=4.9.0.Final-SNAPSHOT
 #  createBranch=true
 #  github_branch=jbosstools-4.6.0.x
 #  github_branch_fallback=master # or jbosstools-4.6.x?
@@ -591,8 +586,8 @@ versionWithRespin_ds_NEXT=12.9.0.AM1
   github_branch=master
   github_branch_fallback=master # or jbosstools-4.6.x?
 #fi
-TARGET_PLATFORM_VERSION_MIN=4.80.1.Final
-TARGET_PLATFORM_VERSION_MAX=4.80.1.Final
+TARGET_PLATFORM_VERSION_MIN=4.9.0.AM2-SNAPSHOT # TODO remove this variable - no longer needed
+TARGET_PLATFORM_VERSION_MAX=4.9.0.AM2-SNAPSHOT
 JIRA_HOST="https://issues.jboss.org"
 TOrecipients="nboldt@redhat.com"
 
@@ -635,17 +630,12 @@ If the next build WILL be a respin, you need to simply:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.6.0.Final
-versionWithRespin_ds=12.0.0.GA
+versionWithRespin_jbt=4.9.0.AM2
+versionWithRespin_ds=12.9.0.AM2
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
-# if [[ ${version_jbt} == *".Final" ]]; then # **
-#   stream_jbt=4.6.photon
-#   stream_ds=12.0.photon
-# else
-  stream_jbt=master
-  stream_ds=master
-# fi
+stream_jbt=master
+stream_ds=master
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh

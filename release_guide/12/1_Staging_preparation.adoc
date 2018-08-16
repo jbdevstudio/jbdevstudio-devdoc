@@ -23,7 +23,7 @@ cd /tmp/jbt.github
 if [[ -d ~/tru/jbosstools-build-ci ]]; then ln -s ~/tru/jbosstools-build-ci; fi
 if [[ ! -d jbosstools-build-ci ]] && [[ -L jbosstools-build-ci ]]; then git clone git@github.com:jbosstools/jbosstools-build-ci.git; fi
 cd jbosstools-build-ci
-git checkout master # later jbosstools-4.5.x
+git checkout master
 chmod +x -R */*.sh */*/*.sh
 
 ----
@@ -58,12 +58,12 @@ export userpass=KERBUSER:PASSWORD
 # for the latest sprint names see agile board https://issues.jboss.org/secure/RapidBoard.jspa?rapidView=641&view=planning
 # sometimes the sprint_NEXT is already created, but with a name that's different from what you might expect (eg., different month, wrong year)
 
-sprint="devex #151 June 2018"
-sprint_NEXT="devex #152 July 2018"
-versionWithRespin_jbt=4.6.0.Final
-versionWithRespin_jbt_NEXT=4.9.0.AM1
-versionWithRespin_ds=12.0.0.GA
-versionWithRespin_ds_NEXT=12.9.0.AM1
+sprint="devex #153 August 2018"
+sprint_NEXT="devex #154 September 2018"
+versionWithRespin_jbt=4.9.0.AM2
+versionWithRespin_jbt_NEXT=4.9.0.AM3
+versionWithRespin_ds=12.9.0.AM2
+versionWithRespin_ds_NEXT=12.9.0.AM3
 TOrecipients1="jmaury@redhat.com, scela@redhat.com"
 TOrecipients2="jbosstools-dev@lists.jboss.org"
 CCrecipients="jmaury@redhat.com, scela@redhat.com"
@@ -110,11 +110,11 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 
 Currently:
 
-version_jbt_IS=4.5.3.Final
-version_ds_IS=11.3.0.GA
+version_jbt_IS=4.6.0.Final
+version_ds_IS=12.0.0.GA
 
 As seen here:
 
-http://download.jboss.org/jbosstools/oxygen/stable/updates/integration-stack/discovery/
-https://devstudio.redhat.com/11/stable/updates/integration-stack/discovery/
+http://download.jboss.org/jbosstools/photon/stable/updates/integration-stack/discovery/
+https://devstudio.redhat.com/12/stable/updates/integration-stack/discovery/
 

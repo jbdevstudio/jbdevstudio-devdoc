@@ -16,7 +16,7 @@ cd /tmp/jbt.github
 if [[ -d ~/tru/jbosstools-build-ci ]]; then ln -s ~/tru/jbosstools-build-ci; fi
 if [[ ! -d jbosstools-build-ci ]] && [[ -L jbosstools-build-ci ]]; then git clone git@github.com:jbosstools/jbosstools-build-ci.git; fi
 cd jbosstools-build-ci
-git checkout master # later jbosstools-4.6.x
+git checkout master
 chmod +x -R */*.sh */*/*.sh
 
 ----
@@ -67,7 +67,7 @@ TIP: Once the staging build folder exists, start fetching the devstudio installe
 ## TODO CONTINUE HERE ##
 
 cd ~/tmp
-versionWithRespin_ds=12.0.0.GA
+versionWithRespin_ds=12.9.0.AM2
 installerJar=$(wget -O - -q https://devstudio.redhat.com/12/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 echo "Installer jar: ${installerJar}"
 if [[ ${installerJar} ]]; then
@@ -115,7 +115,7 @@ https://devstudio.redhat.com/12/staging/updates/
 [source,bash]
 ----
 
-versionWithRespin_ds=12.0.0.GA
+versionWithRespin_ds=12.9.0.AM2
 cd ~/tmp
 installerJar=$(wget -O - -q https://devstudio.redhat.com/12/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 echo "Installer jar: ${installerJar}"
@@ -159,7 +159,7 @@ Trigger the QE smoke tests in https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_ds=12.0.0.GA
+versionWithRespin_ds=12.9.0.AM2
 installerJar=$(wget -O - -q https://devstudio.redhat.com/12/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 version_ds_INST=${installerJar#devstudio-}
 version_ds_INST=${version_ds_INST%-installer*}
@@ -214,7 +214,7 @@ Configure, then run this job: https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_ds=12.0.0.GA
+versionWithRespin_ds=12.9.0.AM2
 
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
@@ -264,7 +264,7 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-rele
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_ds=12.0.0.GA
+versionWithRespin_ds=12.9.0.AM2
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   # TODO set these ticket URL values for this release!
   STAGE_DATE="2018-07-11" # tues or wed after QE review
@@ -305,8 +305,8 @@ fi
 
 cd ~/truu # ~
 
-version_jbt=4.6.0.Final
-version_ds=12.0.0.GA
+version_jbt=4.9.0.AM2
+version_ds=12.9.0.AM2
 cd jbdevstudio-devdoc/release_guide/
 git commit -s -m "update release guide for ${version_jbt} and ${version_ds}" .
 git push origin HEAD:master

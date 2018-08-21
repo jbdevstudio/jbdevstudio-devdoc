@@ -514,10 +514,10 @@ Once the current milestone is done, the BUILD_ALIAS in parent pom should be bump
 # adjust these steps to fit your own path location & git workflow
 cd ~/tru # ~
 pushd jbosstools-build/parent
-BUILD_ALIAS=Final
-BUILD_ALIAS_NEXT=AM1
+BUILD_ALIAS=AM2
+BUILD_ALIAS_NEXT=AM3
 
-git fetch origin master # jbosstools-4.6.0.x
+git fetch origin master
 git checkout FETCH_HEAD
 
 # TODO after a GA release, bump version of the parent pom too, not just the BUILD_ALIAS
@@ -530,7 +530,7 @@ st pom.xml
 # ...
 
 ci "bump parent pom to BUILD_ALIAS = ${BUILD_ALIAS_NEXT}" pom.xml
-git push origin HEAD:master # jbosstools-4.6.x
+git push origin HEAD:master
 
 ###########
 
@@ -579,12 +579,12 @@ versionWithRespin_ds_NEXT=12.9.0.AM3
 #  version_parent_NEXT=4.9.0.Final-SNAPSHOT
 #  createBranch=true
 #  github_branch=jbosstools-4.6.0.x
-#  github_branch_fallback=master # or jbosstools-4.6.x?
+#  github_branch_fallback=master
 #else
   version_parent_NEXT=4.9.0.AM1-SNAPSHOT
   createBranch=false
   github_branch=master
-  github_branch_fallback=master # or jbosstools-4.6.x?
+  github_branch_fallback=master
 #fi
 TARGET_PLATFORM_VERSION_MIN=4.9.0.AM2-SNAPSHOT # TODO remove this variable - no longer needed
 TARGET_PLATFORM_VERSION_MAX=4.9.0.AM2-SNAPSHOT

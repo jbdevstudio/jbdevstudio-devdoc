@@ -313,13 +313,13 @@ export userpass=KERBUSER:PASSWORD
 
 ## TODO CONTINUE HERE  ##
 
-# for AMx milestones, use file like 4.9.0.am1-for-eclipse-4.9.m1.html
-# for GA releases, use file like 12.9.0.ga-for-eclipse-4.9.html
-blogURL=/blog/12.0.0.ga-for-photon.html
+# for AMx milestones, use file like 4.9.0.am2.html
+# for GA releases, use file like 12.9.0.html
+blogURL=/blog/4.9.0.am2.html
 # Pull Request (PR)
-pullrequestNum=836
-eclipseVersionSuffix="" # TODO: use .M1 for Eclipse 4.9.M1
-GOLIVEDATE="2018-07-16"
+pullrequestNum=848
+eclipseVersionSuffix=".M2" # TODO: use .M1 for Eclipse 4.9.M1
+GOLIVEDATE="2018-08-22"
 
 versionWithRespin_jbt=4.9.0.AM2
 versionWithRespin_ds=12.9.0.AM2

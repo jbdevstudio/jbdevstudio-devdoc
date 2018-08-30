@@ -258,6 +258,8 @@ Here is a job that creates the RCM ticket:
 
 https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-06-releng-request-email/configure
 
+TODO: migrate from email address to JSON post: https://projects.engineering.redhat.com/browse/RCMWORK-8759
+
 [source,bash]
 ----
 

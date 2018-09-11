@@ -98,13 +98,13 @@ Here are 2 jobs that performs the copy from /staging/ to /development/ and/or to
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.9.0.AM2
-versionWithRespin_ds=12.9.0.AM2
+versionWithRespin_jbt=4.9.0.AM3
+versionWithRespin_ds=12.9.0.AM3
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 stream_jbt=master
 stream_ds=master
-TARGET_PLATFORM_VERSION_MAX=4.9.0.AM2-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.9.0.AM3-SNAPSHOT
 TARGET_PLATFORM_CENTRAL_MAX=4.9.0.AM2-SNAPSHOT
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
@@ -272,14 +272,14 @@ export userpass=KERBUSER:PASSWORD
 ## TODO CONTINUE HERE  ##
 
 versionWithRespin_jbt_PREV_GA=4.6.0.Final
-versionWithRespin_jbt_PREV=4.9.0.AM1 # milestones
-versionWithRespin_jbt=4.9.0.AM2
-versionWithRespin_jbt_NEXT=4.9.0.AM3
+versionWithRespin_jbt_PREV=4.9.0.AM2 # milestones
+versionWithRespin_jbt=4.9.0.AM3
+versionWithRespin_jbt_NEXT=4.9.0.Final
 
 versionWithRespin_ds_PREV_GA=12.0.0.GA
 versionWithRespin_ds_PREV=12.0.0.GA # previous RELEASED GA as referenced in ide-config.properties
-versionWithRespin_ds=12.9.0.AM2
-versionWithRespin_ds_NEXT=12.9.0.AM3
+versionWithRespin_ds=12.9.0.AM3
+versionWithRespin_ds_NEXT=12.9.0.GA
 
 version_jbt=$(echo ${version_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${version_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
@@ -365,7 +365,7 @@ To diff if any new features have been added/removed:
 [source,bash]
 ----
 version_jbt_PREV_Mktplace=4.6.0.Final
-version_jbt=4.9.0.AM2
+version_jbt=4.9.0.AM3
 
 path_jbt_PREV_Mktplace=photon/development/updates/core/${version_jbt_PREV_Mktplace}
 
@@ -479,12 +479,12 @@ export userpass=JIRAUSER:JIRAPWD
 # sometimes the sprint_NEXT is already created, but with a name that's different from what you might expect (eg., different month, wrong year)
 
 # if previous sprint is done, use sprint=sprint_NEXT here
-sprint="devex #153 August 2018"
-sprint_NEXT="devex #154 September 2018"
-versionWithRespin_jbt=4.9.0.AM2
-versionWithRespin_jbt_NEXT=4.9.0.AM3
-versionWithRespin_ds=12.9.0.AM2
-versionWithRespin_ds_NEXT=12.9.0.AM3
+sprint="devex #154 September 2018"
+sprint_NEXT="devex #155 September 2018"
+versionWithRespin_jbt=4.9.0.AM3
+versionWithRespin_jbt_NEXT=4.9.0.Final
+versionWithRespin_ds=12.9.0.AM3
+versionWithRespin_ds_NEXT=12.9.0.GA
 python -W ignore /tmp/jbt.github/jbosstools-build-ci/util/checkUnresolvedIssues.py -S --jira https://issues.jboss.org \
   --jbt ${versionWithRespin_jbt} --jbt_NEXT ${versionWithRespin_jbt_NEXT} \
   --ds ${versionWithRespin_ds} --ds_NEXT ${versionWithRespin_ds_NEXT} \
@@ -573,21 +573,21 @@ Run this job:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt_NEXT=4.9.0.AM3
-versionWithRespin_ds_NEXT=12.9.0.AM3
+versionWithRespin_jbt_NEXT=4.9.0.Final
+versionWithRespin_ds_NEXT=12.9.0.GA
 #if [[ ${versionWithRespin_jbt_NEXT} == *".Final" ]]; then
 #  version_parent_NEXT=4.9.0.Final-SNAPSHOT
 #  createBranch=true
 #  github_branch=jbosstools-4.6.0.x
 #  github_branch_fallback=master
 #else
-  version_parent_NEXT=4.9.0.AM1-SNAPSHOT
+  version_parent_NEXT=4.9.0.Final-SNAPSHOT
   createBranch=false
   github_branch=master
   github_branch_fallback=master
 #fi
-TARGET_PLATFORM_VERSION_MIN=4.9.0.AM2-SNAPSHOT # TODO remove this variable - no longer needed
-TARGET_PLATFORM_VERSION_MAX=4.9.0.AM2-SNAPSHOT
+TARGET_PLATFORM_VERSION_MIN=4.9.0.AM3-SNAPSHOT # TODO remove this variable - no longer needed
+TARGET_PLATFORM_VERSION_MAX=4.9.0.AM3-SNAPSHOT
 JIRA_HOST="https://issues.jboss.org"
 TOrecipients="nboldt@redhat.com"
 
@@ -630,8 +630,8 @@ If the next build WILL be a respin, you need to simply:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.9.0.AM2
-versionWithRespin_ds=12.9.0.AM2
+versionWithRespin_jbt=4.9.0.AM3
+versionWithRespin_ds=12.9.0.AM3
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 stream_jbt=master

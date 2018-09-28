@@ -58,12 +58,12 @@ export userpass=KERBUSER:PASSWORD
 # for the latest sprint names see agile board https://issues.jboss.org/secure/RapidBoard.jspa?rapidView=641&view=planning
 # sometimes the sprint_NEXT is already created, but with a name that's different from what you might expect (eg., different month, wrong year)
 
-sprint="devex #153 August 2018"
-sprint_NEXT="devex #154 September 2018"
-versionWithRespin_jbt=4.9.0.AM2
-versionWithRespin_jbt_NEXT=4.9.0.AM3
-versionWithRespin_ds=12.9.0.AM2
-versionWithRespin_ds_NEXT=12.9.0.AM3
+sprint="devex #155 September 2018"
+sprint_NEXT="devex #156 October 2018"
+versionWithRespin_jbt=4.9.0.Final
+versionWithRespin_jbt_NEXT=4.10.0.AM1
+versionWithRespin_ds=12.9.0.GA
+versionWithRespin_ds_NEXT=12.10.0.AM1
 TOrecipients1="jmaury@redhat.com, scela@redhat.com"
 TOrecipients2="jbosstools-dev@lists.jboss.org"
 CCrecipients="jmaury@redhat.com, scela@redhat.com"

@@ -272,14 +272,14 @@ export userpass=KERBUSER:PASSWORD
 ## TODO CONTINUE HERE  ##
 
 versionWithRespin_jbt_PREV_GA=4.6.0.Final
-versionWithRespin_jbt_PREV=4.9.0.Final # milestones
+versionWithRespin_jbt_PREV=4.9.0.AM3 # milestones
 versionWithRespin_jbt=4.9.0.Final
-versionWithRespin_jbt_NEXT=4.9.0.Final
+versionWithRespin_jbt_NEXT=4.10.0.AM1
 
 versionWithRespin_ds_PREV_GA=12.0.0.GA
 versionWithRespin_ds_PREV=12.0.0.GA # previous RELEASED GA as referenced in ide-config.properties
 versionWithRespin_ds=12.9.0.GA
-versionWithRespin_ds_NEXT=12.9.0.GA
+versionWithRespin_ds_NEXT=12.10.0.AM1
 
 version_jbt=$(echo ${version_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${version_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***

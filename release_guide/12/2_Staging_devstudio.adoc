@@ -242,62 +242,18 @@ fi
 
 == Announce internally for push to CSP staging site
 
-Submit an RCM ticket to release-engineering@redhat.com to requet that the binaries be uploaded to the CSP (Red Hat Customer Portal) and Download Manager.
+Submit an RCM ticket to request that the binaries be uploaded to the CSP (Red Hat Customer Portal) and Download Manager.
 
-IMPORTANT: As this takes some time and requires coordination with other teams, this step should be initiated a few days before release to allow processing time.
-
-Previous tickets:
-
-* https://projects.engineering.redhat.com/browse/RCM-37161
-* https://projects.engineering.redhat.com/browse/RCM-31845
-* https://projects.engineering.redhat.com/browse/RCM-20050
+IMPORTANT: As this takes some time and requires coordination with other teams, this step should be initiated as part of staging the bits for QE, to allow processing time.
 
 Communicate with Chris O'Brien (internal IRC: siege) to coordinate the release. All the above can happen in parallel / before the updates below.
 
-Here is a job that creates the RCM ticket:
+The easiest approach is to clone an old ticket and update the links/versions to the new release version.
 
-https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-06-releng-request-email/configure
+Previous tickets:
 
-TODO: migrate from email address to JSON post: https://projects.engineering.redhat.com/browse/RCMWORK-8759
-
-[source,bash]
-----
-
-# kerberos login for the Jenkins server
-export userpass=KERBUSER:PASSWORD
-
-versionWithRespin_ds=12.9.0.GA
-if [[ ${versionWithRespin_ds} == *"GA" ]]; then
-  # TODO set these ticket URL values for this release!
-  STAGE_DATE="2018-07-11" # tues or wed after QE review
-  GOLIVEDATE="2018-07-16" # monday before GA announcement
-  TOrecipients="release-engineering@redhat.com"
-  CCrecipients="cobrien@redhat.com, erooney@redhat.com, rkratky@redhat.com, sbharadw@redhat.com, nboldt@redhat.com, mat.booth@redhat.com, jmaury@redhat.com, mbenitez@redhat.com, scela@redhat.com, timoran@redhat.com, bodavis@redhat.com"
-  CCrecipients=${CCrecipients// /%20}
-  recipientOverride="" # or "nboldt@redhat.com"
-  ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-  jpcrumb=$(wget -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
-JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-  for j in jbosstools-releng-push-to-staging-06-releng-request-email; do
-    prevJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
-    sleep 3s
-
-    data="token=RELENG&versionWithRespin_ds=${versionWithRespin_ds}&GOLIVEDATE=${GOLIVEDATE}&STAGE_DATE=${STAGE_DATE}\
-&TOrecipients=${TOrecipients}&CCrecipients=${CCrecipients}&recipientOverride=${recipientOverride}"
-    nextJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
-    sleep 15s
-
-    if [[ "${prevJob}" != "${nextJob}" ]]; then
-      echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
-      echo "[WARN] ${ccijenkins}/${j}"
-    else
-      ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t disable
-      ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t lastBuild/toggleLogKeep
-    fi
-  done
-fi
-
-----
+* https://projects.engineering.redhat.com/browse/RCM-42535
+* https://projects.engineering.redhat.com/browse/RCM-37161
 
 
 == Commit updates to release guide (including this document)

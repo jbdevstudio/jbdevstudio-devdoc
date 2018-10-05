@@ -8,7 +8,7 @@ Note that the merges to master have already happened, so that content can be vie
 
 [0] https://github.com/jbosstools/jbosstools-website/pull/813
 
-[1] https://github.com/jbosstools/jbosstools-website/pull/814/
+[1] https://github.com/jbosstools/jbosstools-website/pull/814
 
 [2] http://tools.stage.jboss.org/downloads/overview.html and http://tools.stage.jboss.org/blog/
 
@@ -29,18 +29,18 @@ google-chrome http://tools.jboss.org/downloads/overview.html http://tools.jboss.
 
 * Tell RCM (Chris O'Brien / siege on IRC) to release the staged stuff in the customer portal to production, via the RCM tickets [5].
 
-[5] https://projects.engineering.redhat.com/browse/RCM-37161 + all linked RCM tickets for stage and production
+[5] https://projects.engineering.redhat.com/browse/RCM-42535 + all linked RCM tickets for stage and production
 
 
 == Announce releases to mailing lists
 
 Send email announcements to the mailing lists (one for jBT, one for devstudio) - see details in these emails, usually sent on the Wed or Thursday after the end of the sprint:
 
-* Ready for Red Hat Developer Studio 12.0.0.GA blog & announcement
-* Ready for JBoss Tools 4.6.0.Final blog & announcement
+* Ready for Red Hat Developer Studio 12.9.0.GA blog & announcement
+* Ready for JBoss Tools 4.9.0.Final blog & announcement
 
 
-== Check Devstudio marketing materials are updated to include latest devstudio 12.0.0.GA release
+== Check Devstudio marketing materials are updated to include latest devstudio 12.9.0.GA release
 
 [source,bash]
 ----

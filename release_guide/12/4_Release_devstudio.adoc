@@ -69,7 +69,7 @@ WARNING: Only applies to Beta and better versions (but usually just GA).
 
 ## TODO CONTINUE HERE FOR GA ##
 
-google-chrome && google-chrome http://marketplace.eclipse.org/content/red-hat-jboss-developer-studio/edit
+google-chrome http://marketplace.eclipse.org/content/red-hat-jboss-developer-studio/edit
 
 ----
 
@@ -243,6 +243,7 @@ popd
 
 Commit changes and submit PR, eg.,
 
+* https://github.com/jbosstools/jbosstools-website/pull/864,
 * https://github.com/jbosstools/jbosstools-website/pull/833,
 * https://github.com/jbosstools/jbosstools-website/pull/827,
 * https://github.com/jbosstools/jbosstools-website/pull/821,
@@ -309,15 +310,15 @@ Using the script below, you can trigger the job remotely.
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-## TODO CONTINUE HERE  ##
+## TODO CONTINUE HERE ##
 
 # for AMx milestones, use file like 4.9.0.am3.html
 # for GA releases, use file like 12.9.0.html
 blogURL=/blog/12.9.0.html
 # Pull Request (PR)
-pullrequestNum=856
+pullrequestNum=864
 eclipseVersionSuffix=".R" # TODO: use .M1 for Eclipse 4.9.M1
-GOLIVEDATE="2018-09-12"
+GOLIVEDATE="2018-10-08"
 
 versionWithRespin_jbt=4.9.0.Final
 versionWithRespin_ds=12.9.0.GA

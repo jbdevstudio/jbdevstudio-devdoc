@@ -269,7 +269,7 @@ https://devstudio.redhat.com/${devstudioReleaseVersion}/${qual_IS}/updates/integ
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-## TODO CONTINUE HERE  ##
+## TODO CONTINUE HERE ##
 
 versionWithRespin_jbt_PREV_GA=4.6.0.Final
 versionWithRespin_jbt_PREV=4.9.0.AM3 # milestones
@@ -364,6 +364,9 @@ To diff if any new features have been added/removed:
 
 [source,bash]
 ----
+
+## TODO CONTINUE HERE FOR FINAL ##
+
 version_jbt_PREV_Mktplace=4.6.0.Final
 version_jbt=4.9.0.Final
 
@@ -376,7 +379,7 @@ if [[ ${version_jbt} == *"Final" ]] || [[ ${path_jbt_PREV_Mktplace} == *"AM"* ]]
   wget -q -O ${version_jbt}.properties http://download.jboss.org/jbosstools/static/photon/development/updates/core/${version_jbt}/site.properties
   thediff=$(diff -u ${version_jbt_PREV_Mktplace}.properties ${version_jbt}.properties)
   if [[ $thediff ]]; then
-    echo $thediff
+    diff -u ${version_jbt_PREV_Mktplace}.properties ${version_jbt}.properties
   else
     echo "Nothing changed since ${version_jbt_PREV_Mktplace}"
     echo ""
@@ -386,7 +389,7 @@ if [[ ${version_jbt} == *"Final" ]] || [[ ${path_jbt_PREV_Mktplace} == *"AM"* ]]
 fi
 
 # then verify the the new feature(s) were added to the CoreTools category, or just update the listing with the new release version number
-google-chrome && google-chrome https://marketplace.eclipse.org/content/jboss-tools/edit
+google-chrome https://marketplace.eclipse.org/content/jboss-tools/edit
 
 ----
 
@@ -499,7 +502,7 @@ Launch the config pages for JBIDE and JBDS and using the gear icons, release the
 [source,bash]
 ----
 
-google-chrome && google-chrome https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
+google-chrome https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
   https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
 
 ----

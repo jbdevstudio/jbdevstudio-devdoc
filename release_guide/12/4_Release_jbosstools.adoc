@@ -576,15 +576,15 @@ Run this job:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt_NEXT=4.9.0.Final
-versionWithRespin_ds_NEXT=12.9.0.GA
+versionWithRespin_jbt_NEXT=4.10.0.AM1
+versionWithRespin_ds_NEXT=12.10.0.AM1
 #if [[ ${versionWithRespin_jbt_NEXT} == *".Final" ]]; then
 #  version_parent_NEXT=4.9.0.Final-SNAPSHOT
 #  createBranch=true
 #  github_branch=jbosstools-4.6.0.x
 #  github_branch_fallback=master
 #else
-  version_parent_NEXT=4.9.0.Final-SNAPSHOT
+  version_parent_NEXT=4.10.0.AM1-SNAPSHOT
   createBranch=false
   github_branch=master
   github_branch_fallback=master
@@ -633,10 +633,6 @@ If the next build WILL be a respin, you need to simply:
 # kerberos login for the Jenkins server
 export userpass=KERBUSER:PASSWORD
 
-versionWithRespin_jbt=4.9.0.Final
-versionWithRespin_ds=12.9.0.GA
-version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
-version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 stream_jbt=master
 stream_ds=master
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
@@ -649,7 +645,6 @@ for p in base build-ci build.parent central discovery fabric8analytics forge fus
   ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable &
 done
 echo ""
-# jbosstools-buildflow-force-publish_${stream_jbt} jbosstools-build.parent_${stream_jbt} jbosstoolstargetplatform-central-4.72.x jbosstoolstargetplatform-4.72.x
 for j in jbosstools-buildflow_${stream_jbt} jbosstools-discovery_${stream_jbt} \
     devstudio.product_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} \
     jbosstools-composite-install_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} \

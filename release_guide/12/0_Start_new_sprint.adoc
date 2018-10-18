@@ -10,6 +10,7 @@ At the start of a sprint, a number of things need to be done:
 
 * Update jobs to run against the correct branch / target platform versions (if applicable)
 
+* Update jobs to run against the correct Eclipse Platform / EPP bundle
 
 == Create New & Noteworthy JIRAs
 
@@ -84,3 +85,15 @@ Then run:
 
 If applicable, you might need to update jobs to pull sources from a new branch (4.4.x or 4.4.4.x) or a new target platform.
 
+== Update jobs to run against the correct Eclipse Platform / EPP bundle
+
+Remember to update this file as it's the one that automated tests used to know which version of Eclipse to use:
+
+https://github.com/jbosstools/jbosstools-build-ci/blob/master/util/jbosstools-jenkins.properties
+
+This should be updated every time the target platform is updated, so that the platform version matches the version in the target platform.
+
+If these don't match, headless installation tests will fail, such as:
+
+* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-install-p2director.install-tests.matrix_master/
+* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-composite-install_master/

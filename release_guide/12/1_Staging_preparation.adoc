@@ -4,6 +4,8 @@ Before beginning a stage at the end of a sprint, a number of things need to be d
 
 * Clone jbosstools-build-ci repo
 
+* Update jobs to run against the correct Eclipse Platform / EPP bundle
+
 * Email jbosstools-dev@lists.jboss.org re: upcoming target platform and code freezes (usually the last Wed of sprint)
 
 * Email jmaury@redhat.com & scela@redhat.com re: creation of next sprint, and jbosstools-dev@lists.jboss.org to remind about JIRA triage
@@ -27,6 +29,19 @@ git checkout master
 chmod +x -R */*.sh */*/*.sh
 
 ----
+
+== Update jobs to run against the correct Eclipse Platform / EPP bundle
+
+Reminder: update the jbosstools-jenkins.properties file as it's the one that automated tests used to know which version of Eclipse to use:
+
+https://github.com/jbosstools/jbosstools-build-ci/blob/master/util/jbosstools-jenkins.properties
+
+This should be updated every time the target platform is updated, so that the platform version matches the version in the target platform.
+
+If these don't match, headless installation tests will fail, such as:
+
+* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-install-p2director.install-tests.matrix_master/
+* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-composite-install_master/
 
 
 == Email jbosstools-dev@lists.jboss.org re: upcoming target platform and code freezes

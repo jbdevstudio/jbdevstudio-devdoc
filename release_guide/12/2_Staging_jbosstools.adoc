@@ -32,7 +32,7 @@ Kick this job to send reminder emails to the team re unresolved JIRAs with fixve
 export userpass=KERBUSER:PASSWORD
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
+jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user KER_USER --password KERB_PWD --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-jiralint-weekly; do
   ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t build
@@ -94,7 +94,7 @@ stream_jbt=master
 github_branch=master
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
+jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user KER_USER --password KERB_PWD --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-01-check-versions-branches-root-poms; do
   prevJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
@@ -134,7 +134,7 @@ version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\
 stream_jbt=master
 stream_ds=master
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
+jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user KER_USER --password KERB_PWD --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for p in base build-ci build.parent central discovery fabric8analytics forge fuse-extras hibernate integration-tests.aggregate \
     javaee-tests-matrix javaee jst livereload openshift-restclient-java openshift server-Run-Unit-and-ITests server vpe webservices \
@@ -184,7 +184,7 @@ qual_IS=stable # or development
 earlyaccess_IS="" # or earlyaccess/
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
+jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user KER_USER --password KERB_PWD --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-discovery_${stream_jbt}; do
   prevJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
@@ -252,7 +252,7 @@ stream_jbt=master
 stream_ds=master
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
+jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user KER_USER --password KERB_PWD --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-03-verify-builds-update-sites; do
   prevJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
@@ -317,7 +317,7 @@ versionWithRespin_jbt=4.9.0.Final
 versionWithRespin_ds=12.9.0.GA
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
+jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user KER_USER --password KERB_PWD --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-03-verify-builds-update-sites; do
   prevJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
@@ -373,7 +373,7 @@ qual_IS=stable # or development
 earlyaccess_IS="" # "" or "earlyaccess/" as applicable - see tip above
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
+jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user KER_USER --password KERB_PWD --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 
 for j in jbosstools-releng-push-to-staging-00-validate-composites \
@@ -462,7 +462,7 @@ version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\
 stream_jbt=master
 stream_ds=master
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
+jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user KER_USER --password KERB_PWD --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for p in base build-ci build.parent central discovery fabric8analytics forge fuse-extras hibernate integration-tests.aggregate \
     javaee-tests-matrix javaee jst livereload openshift-restclient-java openshift server-Run-Unit-and-ITests server vpe webservices \
@@ -513,7 +513,7 @@ TARGET_PLATFORM_VERSION_MAX=4.9.0.Final-SNAPSHOT
 TARGET_PLATFORM_CENTRAL_MAX=4.9.0.Final-SNAPSHOT
 respinSuffix=""
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
+jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user KER_USER --password KERB_PWD --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-07-notification-emails; do
   prevJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
@@ -553,7 +553,7 @@ version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\
 stream_jbt=master
 stream_ds=master
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user nboldt --password "\$uck1tRH" --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
+jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user KER_USER --password KERB_PWD --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in \
   jbosstools-releng-push-to-staging-00-bootstrap-next-snapshot-sites \

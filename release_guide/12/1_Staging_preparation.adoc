@@ -82,7 +82,7 @@ versionWithRespin_ds_NEXT=12.10.0.AM1
 TOrecipients1="jmaury@redhat.com, scela@redhat.com"
 TOrecipients2="jbosstools-dev@lists.jboss.org"
 CCrecipients="jmaury@redhat.com, scela@redhat.com"
-recipientOverride="" # or "nboldt@redhat.com"
+recipientOverride="" # or "jmaury@redhat.com"
 # encode spaces
 sprint=${sprint// /%20}
 sprint_NEXT=${sprint_NEXT// /%20}

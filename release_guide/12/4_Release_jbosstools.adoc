@@ -592,7 +592,7 @@ versionWithRespin_ds_NEXT=12.10.0.AM1
 TARGET_PLATFORM_VERSION_MIN=4.9.0.Final-SNAPSHOT # TODO remove this variable - no longer needed
 TARGET_PLATFORM_VERSION_MAX=4.9.0.Final-SNAPSHOT
 JIRA_HOST="https://issues.jboss.org"
-TOrecipients="nboldt@redhat.com"
+TOrecipients="jmaury@redhat.com"
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user KER_USER --password KERB_PWD --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")

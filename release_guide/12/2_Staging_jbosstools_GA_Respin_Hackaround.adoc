@@ -1,7 +1,7 @@
 # This script was used to work around some limitations in the 2_Staging_jbosstools.adoc scripts caused by the need for a respin.
 # 20180122 nboldt
 
-
+```
 # globals
 eclipseReleaseName=oxygen
 devstudioReleaseVersion=11
@@ -48,3 +48,4 @@ for d in browsersim central core coretests discovery.earlyaccess discovery.centr
   echo ""
 done
 git push origin master
+```

@@ -10,7 +10,7 @@ Once cloned to disk, this script will create the tags if run from the location w
 [source,bash]
 ----
 
-# if not already cloned, the do this:
+# if not already cloned, then do this:
 git clone git@github.com:jbosstools/jbosstools-build.git
 git clone git@github.com:jbosstools/jbosstools-build-ci.git
 git clone git@github.com:jbosstools/jbosstools-build-sites.git

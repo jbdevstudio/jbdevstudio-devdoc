@@ -69,16 +69,16 @@ Here are some generalities site promotion/release process. It's not an exhaustiv
 
 Before running any of the jobs or scripts below, make sure to set the correct versions to the values for the release you're staging or releasing.
 
-* look for versionWithRespin, update to version you're staging
-* look for PREV and NEXT variables; set to previous / next milestone (AM4, AM5, AM6, Final/GA)
-* check target platform versions are current w/ latest versions
-* check current/NEXT sprint values are correct
+* look for *versionWithRespin*, update to version you're staging
+* look for *PREV* and *NEXT* variables; set to previous / next milestone (AMx, AMy, AMz, Final/GA)
+* check *TARGET_PLATFORM_* versions are current w/ latest versions
+* check *current*/*NEXT* sprint values are correct
 * check parent pom version, version_parent, is current
-* check Integration Stack variables like earlyaccess_IS, version_jbt_IS, version_ds_IS are correct. Double-check best values with Paul Leacu (pleacu).
+* check Integration Stack variables like *earlyaccess_IS*, *version_jbt_IS*, *version_ds_IS* are correct. Double-check best values with Paul Leacu (pleacu).
 
 Search for this regex:
 
-versionWithRespin_(jbt|ds)=[0-9]|version_(parent|jbt|ds|jbt_IS|ds_IS)=[0-9]|_PREV=[0-9]|_NEXT=[0-9]|TARGET_PLATFORM_.+(MIN|MAX)=[0-9]
+ versionWithRespin_(jbt|ds)=[0-9]|version_(parent|jbt|ds|jbt_IS|ds_IS)=[0-9]|_PREV=[0-9]|_NEXT=[0-9]|TARGET_PLATFORM_.+(MIN|MAX)=[0-9]
 
 ====
 
@@ -102,14 +102,14 @@ KERBUSER=
 KERBPWD=
 export userpass=${KERBUSER}:${KERBPWD}
 
-versionWithRespin_jbt=4.9.0.Final
-versionWithRespin_ds=12.9.0.GA
+versionWithRespin_jbt=4.13.0.Final
+versionWithRespin_ds=12.13.0.GA
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 stream_jbt=master
 stream_ds=master
-TARGET_PLATFORM_VERSION_MAX=4.9.0.Final-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.9.0.Final-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.13.0.Final-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.13.0.Final-SNAPSHOT
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user ${KERBUSER} --password ${KERBPWD} --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
@@ -135,6 +135,8 @@ TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&TARGET_PLATFORM_CENTR
     ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t lastBuild/toggleLogKeep
   fi
 done
+echo "done."
+exit 0
 
 ----
 
@@ -169,7 +171,7 @@ If this is the first milestone release (ie if you had to create the 'updates/web
 * https://issues.jboss.org/browse/JBIDE-18921
 * https://bugs.eclipse.org/454810
 
-For the first GA, be sure to update the update/webtools/photon/ symlink to point at /stable intead of /development. See https://issues.jboss.org/browse/JBIDE-25585.
+For the first GA, be sure to update the update/webtools/photon/ symlink to point at /stable instead of /development. See https://issues.jboss.org/browse/JBIDE-25585.
 
 == Update Target Platforms
 
@@ -222,6 +224,8 @@ for j in jbosstools-releng-push-to-dev-stable-05-release-target-platforms; do
     ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t lastBuild/toggleLogKeep
   fi
 done
+echo "done."
+exit 0
 
 ----
 
@@ -261,8 +265,8 @@ eclipseReleaseName=photon
 devstudioReleaseVersion=12
 qual_IS="stable" # "development" or "stable" as applicable - see tip above
 earlyaccess_IS="" # "" or "earlyaccess/" as applicable - see tip above
-version_jbt_IS=4.6.0.Final
-version_ds_IS=12.0.0.GA
+version_jbt_IS=4.11.0.Final
+version_ds_IS=12.11.0.GA
 
 browser=/usr/bin/google-chrome; if [[ ! -x ${browser} ]]; then browser=/usr/bin/firefox; fi
 ${browser} \
@@ -281,22 +285,22 @@ export userpass=${KERBUSER}:${KERBPWD}
 
 ## TODO CONTINUE HERE ##
 
-versionWithRespin_jbt_PREV_GA=4.6.0.Final
-versionWithRespin_jbt_PREV=4.9.0.AM3 # milestones
-versionWithRespin_jbt=4.9.0.Final
-versionWithRespin_jbt_NEXT=4.10.0.AM1
+versionWithRespin_jbt_PREV_GA=4.12.0.Final
+versionWithRespin_jbt_PREV=4.13.0.AM1 # milestones
+versionWithRespin_jbt=4.13.0.Final
+versionWithRespin_jbt_NEXT=4.14.0.AM1
 
-versionWithRespin_ds_PREV_GA=12.0.0.GA
-versionWithRespin_ds_PREV=12.0.0.GA # previous RELEASED GA as referenced in ide-config.properties
-versionWithRespin_ds=12.9.0.GA
-versionWithRespin_ds_NEXT=12.10.0.AM1
+versionWithRespin_ds_PREV_GA=12.12.0.GA
+versionWithRespin_ds_PREV=12.12.0.GA # previous RELEASED GA as referenced in ide-config.properties
+versionWithRespin_ds=12.13.0.GA
+versionWithRespin_ds_NEXT=12.14.0.AM1
 
-version_jbt=$(echo ${version_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
-version_ds=$(echo ${version_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
+version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
+version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 buildType="development"; if [[ ${version_jbt} == *".Final" ]]; then buildType="stable"; fi
 
-version_jbt_IS=4.6.0.Final
-version_ds_IS=12.0.0.GA
+version_jbt_IS=4.11.0.Final
+version_ds_IS=12.11.0.GA
 qual_IS="stable" # "development" or "stable" as applicable - see tip above
 earlyaccess_IS="" # "" or "earlyaccess/" as applicable - see tip above
 
@@ -335,6 +339,8 @@ version_jbt_IS=${version_jbt_IS}&version_ds_IS=${version_ds_IS}"
     ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t lastBuild/toggleLogKeep
   fi
 done
+echo "done."
+exit 0
 
 ----
 
@@ -377,8 +383,8 @@ To diff if any new features have been added/removed:
 
 ## TODO CONTINUE HERE FOR FINAL ##
 
-version_jbt_PREV_Mktplace=4.6.0.Final
-version_jbt=4.9.0.Final
+version_jbt_PREV_Mktplace=4.12.0.Final
+version_jbt=4.13.0.Final
 
 path_jbt_PREV_Mktplace=photon/development/updates/core/${version_jbt_PREV_Mktplace}
 
@@ -401,6 +407,9 @@ fi
 # then verify the the new feature(s) were added to the CoreTools category, or just update the listing with the new release version number
 browser=/usr/bin/google-chrome; if [[ ! -x ${browser} ]]; then browser=/usr/bin/firefox; fi
 ${browser} https://marketplace.eclipse.org/content/jboss-tools/edit
+
+echo "done."
+exit 0
 
 ----
 
@@ -471,6 +480,9 @@ for j in \
   jbosstools-releng-push-to-dev-stable-07-notification-emails; do
   { ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t disable & }
 done
+sleep 5s
+echo "done."
+exit 0
 
 ----
 
@@ -478,7 +490,21 @@ done
 
 The new policy (@since 4.5) is to bump issues to the next fixversion if they're in the next sprint target (or if they're blocker/critical), or to the .x fixversion if they're not.
 
-Here's a script to do all the moving for you automatically.
+Launch the config pages for JBIDE and JBDS and using the gear icons, release the milestone version in JIRA.
+
+[source,bash]
+----
+
+browser=/usr/bin/google-chrome; if [[ ! -x ${browser} ]]; then browser=/usr/bin/firefox; fi
+${browser} https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
+  https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
+
+----
+
+
+If there is any open issues, JIRA will ask to move them to the next version.
+
+Here's a script to do all the moving for you automatically if needed before releasing the version in JIRA.
 
 [source,bash]
 ----
@@ -507,19 +533,6 @@ python -W ignore /tmp/jbt.github/jbosstools-build-ci/util/checkUnresolvedIssues.
 
 ----
 
-When there are no unresolved issues, release the milestone version in JIRA.
-
-Launch the config pages for JBIDE and JBDS and using the gear icons, release the milestone version in JIRA.
-
-[source,bash]
-----
-
-browser=/usr/bin/google-chrome; if [[ ! -x ${browser} ]]; then browser=/usr/bin/firefox; fi
-${browser} https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
-  https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
-
-----
-
 == Bump parent pom to newer BUILD_ALIAS value
 
 Once the current milestone is done, the BUILD_ALIAS in parent pom should be bumped to a new value.
@@ -540,20 +553,15 @@ git checkout FETCH_HEAD
 
 sed -i -e "s#<BUILD_ALIAS>${BUILD_ALIAS}</BUILD_ALIAS>#<BUILD_ALIAS>${BUILD_ALIAS_NEXT}</BUILD_ALIAS>#" pom.xml
 
-####### TODO: bump the version of the parent pom too? eg., from AM1 -> Final?
+####### TODO: bump the version of the parent pom 
 st pom.xml
 # vim pom.xml
 # ...
 
-ci "bump parent pom to BUILD_ALIAS = ${BUILD_ALIAS_NEXT}" pom.xml
+git commit -m "bump parent pom to BUILD_ALIAS = ${BUILD_ALIAS_NEXT}" pom.xml
 git push origin HEAD:master
 
 ###########
-
-# kerberos login for the Jenkins server
-KERBUSER=
-KERBPWD=
-export userpass=${KERBUSER}:${KERBPWD}
 
 # rebuild parent pom
 # https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-build.parent_master # jbosstools-4.6.x
@@ -577,6 +585,8 @@ for j in jbosstools-build.parent_${stream_jbt}; do
     { ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t disable && ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t lastBuild/toggleLogKeep & }
   fi
 done
+echo "done."
+exit 0
 
 ----
 
@@ -594,21 +604,13 @@ KERBUSER=
 KERBPWD=
 export userpass=${KERBUSER}:${KERBPWD}
 
-versionWithRespin_jbt_NEXT=4.10.0.AM1
-versionWithRespin_ds_NEXT=12.10.0.AM1
-#if [[ ${versionWithRespin_jbt_NEXT} == *".Final" ]]; then
-#  version_parent_NEXT=4.9.0.Final-SNAPSHOT
-#  createBranch=true
-#  github_branch=jbosstools-4.6.0.x
-#  github_branch_fallback=master
-#else
-  version_parent_NEXT=4.10.0.AM1-SNAPSHOT
-  createBranch=false
-  github_branch=master
-  github_branch_fallback=master
-#fi
-TARGET_PLATFORM_VERSION_MIN=4.9.0.Final-SNAPSHOT # TODO remove this variable - no longer needed
-TARGET_PLATFORM_VERSION_MAX=4.9.0.Final-SNAPSHOT
+versionWithRespin_jbt_NEXT=4.14.0.AM1 #Final
+versionWithRespin_ds_NEXT=12.14.0.AM1 #GA
+version_parent_NEXT=4.14.0.AM1-SNAPSHOT
+createBranch=false
+github_branch=master
+github_branch_fallback=master
+TARGET_PLATFORM_VERSION_MAX=4.13.0.AM1-SNAPSHOT
 JIRA_HOST="https://issues.jboss.org"
 TOrecipients="jmaury@redhat.com"
 
@@ -621,8 +623,7 @@ for j in jbosstools-releng-push-to-staging-00-parent-pom-update-task-jiras; do
 
   data="versionWithRespin_jbt_NEXT=${versionWithRespin_jbt_NEXT}&versionWithRespin_ds_NEXT=${versionWithRespin_ds_NEXT}&\
 version_parent_NEXT=${version_parent_NEXT}&github_branch=${github_branch}&github_branch_fallback=${github_branch_fallback}&\
-TARGET_PLATFORM_VERSION_MIN=${TARGET_PLATFORM_VERSION_MIN}&TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&\
-JIRA_HOST=${JIRA_HOST}&TOrecipients=${TOrecipients}&createBranch=${createBranch}"
+TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&JIRA_HOST=${JIRA_HOST}&TOrecipients=${TOrecipients}&createBranch=${createBranch}"
   nextJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
   sleep 15s
 
@@ -634,12 +635,14 @@ JIRA_HOST=${JIRA_HOST}&TOrecipients=${TOrecipients}&createBranch=${createBranch}
     ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t lastBuild/toggleLogKeep
   fi
 done
+echo "done."
+exit 0
 
 ----
 
-== Enable jobs
+== Enable Main jobs
 
-You will need to re-enable the jobs once the bits are staged, so that CI builds can continue.
+You will need to re-enable the main (master) jobs once the bits are staged, so that CI builds can continue.
 
 If the next build WILL be a respin, you need to simply:
 
@@ -658,21 +661,20 @@ stream_ds=master
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user ${KERBUSER} --password ${KERBPWD} --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for p in base build-ci build.parent central discovery fabric8analytics forge fuse-extras hibernate integration-tests.aggregate \
-    javaee-tests-matrix javaee jst livereload openshift-restclient-java openshift server-Run-Unit-and-ITests server vpe webservices \
-    base.sonar openshift.sonar server.sonar; do
+for p in base build-ci build.parent central discovery fabric8analytics forge fuse-extras hibernate integration-tests.aggregate javaee-tests-matrix javaee jst livereload openshift-restclient-java openshift server-Run-Unit-and-ITests server vpe webservices quarkus base.sonar openshift.sonar server.sonar; do
   j=jbosstools-${p}_master
-  ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable &
+  echo "[${JP}] ${ccijenkins}/${j} enable"
+  { ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable & }
 done
-echo ""
-for j in jbosstools-buildflow_${stream_jbt} jbosstools-discovery_${stream_jbt} \
-    devstudio.product_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} \
-    jbosstools-composite-install_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} \
-    jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstools-build-sites.aggregate.child-sites_${stream_jbt} \
-    jbosstools-maven-plugins.tycho-plugins_${stream_jbt}; do
-  ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable &
+
+for j in jbosstools-buildflow_${stream_jbt} jbosstools-discovery_${stream_jbt} devstudio.product_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} jbosstools-composite-install_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstools-build-sites.aggregate.child-sites_${stream_jbt} jbosstools-maven-plugins.tycho-plugins_${stream_jbt}; do
+  echo "[${JP}] ${ccijenkins}/${j} enable"
+  { ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable & }
 done
-echo ""
+echo "done."
+exit 0
+
+----
 
 == Commit updates to release guide (including this document):
 

@@ -6,7 +6,7 @@ Every year we need a new pair of composite sites. These are used to determine wh
 
 Latest version is here:
 
-* http://download.jboss.org/jbosstools/photon/snapshots/builds/_composite_/core/
+* http://download.jboss.org/jbosstools/photon/snapshots/builds/\_composite_/core/
 
 This should be created by copying from the old year's URL and then updating URLs inside the composite*.xml files to remove anything we no longer include in JBT/devstudio.
 
@@ -161,7 +161,7 @@ Every year the WTP Server Adapter discovery plugin needs to be updated to point 
 
 See https://issues.jboss.org/browse/JBIDE-24080 and https://bugs.eclipse.org/513578
 
-In addition to making the change in the webtools project, the destination folder must also ezist as a valid update site.
+In addition to making the change in the webtools project, the destination folder must also exist as a valid update site.
 
 Initially, this will be a symlink to the latest CI build or last year's stable site (if no CI available). Once a stable is available, the symlink then needs to be updated. So in order, the symlinks from http://download.jboss.org/jbosstools/updates/webtools/photon/ could be:
 

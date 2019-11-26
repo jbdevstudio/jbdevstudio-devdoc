@@ -1,6 +1,6 @@
 = Staging milestone devstudio Installers & update sites for QE
 
-This document describe how to provide a valid Red Hat Developer Studio build to QE so they can test us.
+This document describe how to provide a valid http://devstudio.jboss.com/[Red Hat CodeReady Studio] (formerly Developer Studio) build to QE so they can test us.
 
 = Pre-Staging Steps
 
@@ -21,7 +21,6 @@ chmod +x -R */*.sh */*/*.sh
 
 ----
 
-
 = Staging steps
 
 [IMPORTANT]
@@ -29,15 +28,15 @@ chmod +x -R */*.sh */*/*.sh
 
 Before running any of the jobs or scripts below, make sure to set the correct versions to the values for the release you're staging or releasing.
 
-* look for versionWithRespin_ or version_, update to version you're staging
-* look for PREV and NEXT variables; set to previous / next milestone (AMx, AMy, AMz, Final/GA)
-* check TARGET_PLATFORM_ versions are current w/ latest versions
+* look for *versionWithRespin_* or *version_*, update to version you're staging
+* look for *PREV* and *NEXT* variables; set to previous / next milestone (AMx, AMy, AMz, Final/GA)
+* check *TARGET_PLATFORM_* versions are current w/ latest versions
 * check parent pom version, version_parent, is current
-* check Integration Stack variables like earlyaccess_IS, version_jbt_IS, version_ds_IS are correct. Double-check best values with Paul Leacu (pleacu).
+* check Integration Stack variables like *earlyaccess_IS*, *version_jbt_IS*, *version_ds_IS* are correct. Double-check best values with Paul Leacu (pleacu).
 
 Search for this regex:
 
-versionWithRespin_(jbt|ds)=[0-9]|version_(parent|jbt|ds|jbt_IS|ds_IS)=[0-9]|_PREV=[0-9]|_NEXT=[0-9]|TARGET_PLATFORM_.+(MIN|MAX)=[0-9]
+ versionWithRespin_(jbt|ds)=[0-9]|version_(parent|jbt|ds|jbt_IS|ds_IS)=[0-9]|_PREV=[0-9]|_NEXT=[0-9]|TARGET_PLATFORM_.+(MIN|MAX)=[0-9]
 
 ====
 
@@ -64,10 +63,8 @@ TIP: Once the staging build folder exists, start fetching the devstudio installe
 [source,bash]
 ----
 
-## TODO CONTINUE HERE ##
-
 cd ~/tmp
-versionWithRespin_ds=12.9.0.GA
+versionWithRespin_ds=12.13.0.GA
 installerJar=$(wget -O - -q https://devstudio.redhat.com/12/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 echo "Installer jar: ${installerJar}"
 if [[ ${installerJar} ]]; then
@@ -80,42 +77,43 @@ fi
 
 You'll use this downloaded installer later, but since it takes a while to download, it's more efficient to start it now.
 
-
 === Cleanup OLD builds
 
-Optional step.
+_Optional step._
 
 Run this job to move any old builds into an OLD/ folder for later cleanup, or delete them immediately.
 
 https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-08-delete-builds-and-update-sites/
 
-
 === Update /staging/updates/ sites and merge in Integration Stack content
 
 See link:2_Staging_jbosstools.adoc[JBoss Tools Staging]
-
 
 == Release the latest staging site to ide-config.properties
 
 See link:2_Staging_jbosstools.adoc[JBoss Tools Staging]
 
-
 == Smoke test the release (manually)
 
-Before notifying team of staged release, must check for obvious problems.
+Before notifying team of staged release, check for obvious problems must be done.
 
-1. Get a recent Eclipse (compatible with the target version of JBT)
-2. Install Bring Your Own Eclipse category from
+- For JBossTools :
+====
+. Get a recent Eclipse (compatible with the target version of JBT, for example the one used by the integration tests : https://github.com/jbosstools/jbosstools-build-ci/blob/master/util/jbosstools-jenkins.properties
+. Install Bring Your Own Eclipse category from https://devstudio.redhat.com/12/staging/updates/
 
-https://devstudio.redhat.com/12/staging/updates/
+. Restart when prompted. Open Central Software/Updates tab, enable Early Access, select and install all connectors; Restart
+. Check log, start an example project, check log again
+====
+- For DevStudio :
+====
 
-3. Restart when prompted. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
-4. Check log, start an example project, check log again
+. use this script to download and install devstudio
 
 [source,bash]
 ----
 
-versionWithRespin_ds=12.9.0.GA
+versionWithRespin_ds=12.13.0.GA
 cd ~/tmp
 installerJar=$(wget -O - -q https://devstudio.redhat.com/12/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 echo "Installer jar: ${installerJar}"
@@ -131,17 +129,12 @@ if [[ -d ~/devstudio_BAK ]]; then mv ~/devstudio{_BAK,}; fi
 cd ~/${installerJar/.jar/}/studio; ./devstudio -data /tmp/wksp-${installerJar/.jar/}
 
 ----
-
-0. After downloading and installing devstudio from the step above...
-1. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
-2. Check log, start an example project, check log again
+[start=2]
+. Open Central Software/Updates tab, enable Early Access, select and install all connectors; Restart
+. Check log, start an example project, check log again
+====
 
 If this fails, it is most likely due to a bug or a failure in a step above. If possible, fix it before notifying team below.
-
-
-== Enable jobs
-
-See link:2_Staging_jbosstools.adoc[JBoss Tools Staging]
 
 
 == Notify the team (send 1 email)
@@ -161,7 +154,7 @@ KERBUSER=
 KERBPWD=
 export userpass=${KERBUSER}:${KERBPWD}
 
-versionWithRespin_ds=12.9.0.GA
+versionWithRespin_ds=12.13.0.GA
 installerJar=$(wget -O - -q https://devstudio.redhat.com/12/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 version_ds_INST=${installerJar#devstudio-}
 version_ds_INST=${version_ds_INST%-installer*}
@@ -185,12 +178,11 @@ done
 
 == Verify install instructions are correct
 
-Look at the .txt and .html files in https://devstudio.redhat.com/12/staging/builds/devstudio-12.9.0.GA-build-product/latest/all/
+Look at the .txt and .html files in https://devstudio.redhat.com/12/staging/builds/devstudio-12.13.0.GA-build-product/latest/all/
 
 Verify that they contain correct install/usage instructions & versions.
 
-If anything is wrong, fix it by hand, then also commit your changes to the templates.
-
+If anything is wrong, fix it by hand, then also commit your changes to the templates. See for example these commits:
 https://github.com/jbdevstudio/jbdevstudio-product/commit/3827045dca85e73c5ae339cc13f514591e3c1835
 https://github.com/jbdevstudio/jbdevstudio-product/commit/e6c2954207d1db7451f7adfd2d89c7ceccd6adbe
 
@@ -203,7 +195,7 @@ NOTE: If you're staging a non-GA release, you can ignore everything below this l
 
 == Rename GA artifacts to remove timestamp and buildID
 
-For GA releases only!
+IMPORTANT: For GA releases only!
 
 To comply with Goldengate URL rules, we need to rename artifacts before they go to the CSP. For example
 `devstudio-10.4.0.GA-v20151002-2235-B124-installer-standalone.jar` must be renamed to `devstudio-10.4.0.GA-installer-standalone.jar`.
@@ -218,7 +210,7 @@ KERBUSER=
 KERBPWD=
 export userpass=${KERBUSER}:${KERBPWD}
 
-versionWithRespin_ds=12.9.0.GA
+versionWithRespin_ds=12.13.0.GA
 
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
@@ -241,6 +233,8 @@ JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
     fi
   done
 fi
+echo "done."
+exit 0
 
 ----
 
@@ -267,8 +261,8 @@ Previous tickets:
 
 cd ~/truu # ~
 
-version_jbt=4.9.0.Final
-version_ds=12.9.0.GA
+version_jbt=4.13.0.Final
+version_ds=12.13.0.GA
 cd jbdevstudio-devdoc/release_guide/
 git commit -s -m "update release guide for ${version_jbt} and ${version_ds}" .
 git push origin HEAD:master
@@ -283,3 +277,8 @@ See https://github.com/jbosstools/jbosstools-devdoc/blob/master/building/jenkins
 Jobs are stored in this repo:
 
 https://github.com/jbdevstudio/jbdevstudio-ci/tree/master/cache/https
+
+
+== Enable jobs
+
+See link:2_Staging_jbosstools.adoc[JBoss Tools Staging]

@@ -16,16 +16,16 @@ Once QE has signed off, and bits are staged to CSP, you can proceed w/ the rest 
 
 Before running any of the jobs or scripts below, make sure to set the correct versions to the values for the release you're staging or releasing.
 
-* look for versionWithRespin, update to version you're staging
-* look for PREV and NEXT variables; set to previous / next milestone (AM4, AM5, AM6, Final/GA)
-* check target platform versions are current w/ latest versions
-* check current/NEXT sprint values are correct
+* look for *versionWithRespin*, update to version you're staging
+* look for *PREV* and *NEXT* variables; set to previous / next milestone (AMx, AMy, AMz, Final/GA)
+* check *TARGET_PLATFORM_* versions are current w/ latest versions
+* check *current/NEXT* sprint values are correct
 * check parent pom version, version_parent, is current
-* check Integration Stack variables like earlyaccess_IS, version_jbt_IS, version_ds_IS are correct. Double-check best values with Paul Leacu (pleacu).
+* check Integration Stack variables like *earlyaccess_IS*, *version_jbt_IS*, *version_ds_IS* are correct. Double-check best values with Paul Leacu (pleacu).
 
 Search for this regex:
 
-versionWithRespin_(jbt|ds)=[0-9]|version_(parent|jbt|ds|jbt_IS|ds_IS)=[0-9]|_PREV=[0-9]|_NEXT=[0-9]|TARGET_PLATFORM_.+(MIN|MAX)=[0-9]
+ versionWithRespin_(jbt|ds)=[0-9]|version_(parent|jbt|ds|jbt_IS|ds_IS)=[0-9]|_PREV=[0-9]|_NEXT=[0-9]|TARGET_PLATFORM_.+(MIN|MAX)=[0-9]
 
 ====
 
@@ -38,9 +38,9 @@ Note: if any step seems to fail, you can download all the zips from the destinat
 [source,bash]
 ----
 
-# devstudio-12.0.0.GA-target-platform-central.zip
-# devstudio-12.0.0.GA-target-platform.zip
-# devstudio-12.0.0.GA-updatesite-core.zip
+# devstudio-12.13.0.GA-target-platform-central.zip
+# devstudio-12.13.0.GA-target-platform.zip
+# devstudio-12.13.0.GA-updatesite-core.zip
 for z in *.zip; do echo $z; unzip -tq $z; sha256sum ${z}; cat ${z}.sha256; echo ""; echo "-----"; done
 
 ----
@@ -105,8 +105,6 @@ Provide a PR to add the latest JBDS milestones to this listing:
 
 https://github.com/jbosstools/jbosstools-website/blob/master/_config/products.yml
 
-__
-
 For non-Final/GA releases, only JBT should be added. Examples:
 
 * https://github.com/jbosstools/jbosstools-website/pull/622 (JBT 4.4.1 / JBDS 10.1)
@@ -122,11 +120,9 @@ Run this:
 [source,bash]
 ----
 
-## TODO CONTINUE HERE FOR GA ##
-
 echo "" > /tmp/yml.txt
 
-versionWithRespin_ds=12.9.0.GA
+versionWithRespin_ds=12.13.0.GA
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # **
   theURL=https://devstudio.redhat.com/12/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all
@@ -159,6 +155,8 @@ if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   done
 fi
 cat /tmp/yml.txt; rm -f /tmp/yml.txt
+echo "done."
+exit 0
 
 ----
 
@@ -171,8 +169,8 @@ https://hub.github.com/
 
 [source,bash]
 ----
-version_jbt=4.9.0.Final
-version_ds=12.9.0.GA
+version_jbt=4.13.0.Final
+version_ds=12.13.0.GA
 
 topic=release-${version_jbt}
 github_branch=master
@@ -271,14 +269,17 @@ Before notifying team of release, must check for obvious problems. Any failure t
 
 1. Download JBDS installer from https://devstudio.redhat.com/12/stable/builds/
 2. Install via UI or headlessly with
-    java -jar devstudio-*.jar -console -options /dev/null # **
+
+ java -jar codereadystudio-*.jar -console -options /dev/null # **
+
 3. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
 4. Check log, start an example project, check log again
 
+The following script does it automatically:
 [source,bash]
 ----
 
-version_ds=12.9.0.GA
+version_ds=12.13.0.GA
 if [[ ${version_ds} == *"GA" ]]; then # **
   qual="stable"
   cd ~/tmp # ~
@@ -298,7 +299,7 @@ fi
 == Notify Team Lead(s)
 
 Here's a job that notifies Jeff (or Matt) that the website is ready to be updated with a new blog post, and will provide a script
-to perform tagging of the jbosstools-* and jbdevstudio-* repos:
+to perform tagging of the +jbosstools-*+ and +jbdevstudio-*+ repos:
 
 https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-dev-stable-07-notification-emails/configure
 
@@ -312,18 +313,16 @@ KERBUSER=
 KERBPWD=
 export userpass=${KERBUSER}:${KERBPWD}
 
-## TODO CONTINUE HERE ##
-
 # for AMx milestones, use file like 4.9.0.am3.html
 # for GA releases, use file like 12.9.0.html
-blogURL=/blog/12.9.0.html
+blogURL=/blog/12.13.0.ga.html
 # Pull Request (PR)
-pullrequestNum=864
+pullrequestNum=897
 eclipseVersionSuffix=".R" # TODO: use .M1 for Eclipse 4.9.M1
-GOLIVEDATE="2018-10-08"
+GOLIVEDATE="2019-11-06"
 
-versionWithRespin_jbt=4.9.0.Final
-versionWithRespin_ds=12.9.0.GA
+versionWithRespin_jbt=4.13.0.Final #Final
+versionWithRespin_ds=12.13.0.GA #GA
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # \) # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 
@@ -349,6 +348,8 @@ for j in jbosstools-releng-push-to-dev-stable-07-notification-emails; do
     ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t lastBuild/toggleLogKeep
   fi
 done
+echo "done."
+exit 0
 
 ----
 
@@ -360,8 +361,8 @@ done
 
 cd ~/truu # ~
 
-version_jbt=4.9.0.Final
-version_ds=12.9.0.GA
+version_jbt=4.13.0.Final
+version_ds=12.13.0.GA
 cd jbdevstudio-devdoc/release_guide/
 git commit -s -m "update release guide for ${version_jbt} and ${version_ds}" .
 git push origin HEAD:master

@@ -50,7 +50,7 @@ If these don't match, headless installation tests will fail, such as:
 
 This will also serve as a reminder of the upcoming CODE FREEZE on the last Wednesday of the sprint.
 
-2. For GA releases, the target plaform must also be link:5_Release_nexus.adoc[released to Nexus].
+2. For GA releases, the target platform must also be link:5_Release_nexus.adoc[released to Nexus].
 
 3. If there has not been a change to the target platform for this sprint, you should still send a reminder about the upcoming code freeze.
 
@@ -127,8 +127,8 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 
 Currently:
 
-version_jbt_IS=4.6.0.Final
-version_ds_IS=12.0.0.GA
+ version_jbt_IS=4.6.0.Final
+ version_ds_IS=12.0.0.GA
 
 As seen here:
 

@@ -10,15 +10,13 @@ NOTE: For admin access to CCI jenkins (beyond simple job exec permission) - ask 
 
 In case scripts fail or manual file tweaks are needed, direct filesystem access is highly recommended.
 
-NOTE: For both systems listed, open a PnT ticket at https://redhat.service-now.com/pnt/ and submit your ssh public key. Copy your manager on the request to be granted permission. See link:https://mojo.redhat.com/docs/DOC-1093189[PnT Devops Customer Portal FAQ]
-
-* filemgmt.jboss.org
+NOTE: For both systems listed, open a general PnT ticket at https://redhat.service-now.com/help/, choose *MiddleWare* as category and *JBoss.org Filemgmt* as Item and attach your ssh public key. Copy your manager on the request to be granted permission. See link:https://mojo.redhat.com/docs/DOC-1093189[PnT Devops Customer Portal FAQ]
 
 == JIRA
 
 You'll need access to JIRA to be able to close out the fixversions there as part of a release.
 
-IMPORTANT: For JBIDE/JBDS JIRA, you need adminstrator access - ask Nick Boldt, Denis Golovin, or Jeff Maury to give you access.
+IMPORTANT: For JBIDE/JBDS JIRA, you need administrator access - ask Nick Boldt, Denis Golovin, or Jeff Maury to give you access.
 
 == Github
 
@@ -45,10 +43,9 @@ Others may be needed as well should a coding issue be found.
 
 == Mailing lists
 
-There are at least three mailing lists to which you should be subscribed.
+There are at least one mailing list to which you should be subscribed.
 
 * public mailing list subscription to jbosstools-dev@lists.jboss.org from https://lists.jboss.org/mailman/listinfo/jbosstools-dev
-* private mailing list subscription to jboss-devstudio-list@redhat.com and devtools-program@redhat.com from https://www.redhat.com/mailman/listinfo
 
 == Eclipse.org
 

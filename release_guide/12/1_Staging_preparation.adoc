@@ -127,8 +127,8 @@ https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view
 
 Currently:
 
- version_jbt_IS=4.6.0.Final
- version_ds_IS=12.0.0.GA
+ version_jbt_IS=4.11.0.Final
+ version_ds_IS=12.11.0.GA
 
 As seen here:
 

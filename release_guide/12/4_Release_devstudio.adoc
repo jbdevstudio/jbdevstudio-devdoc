@@ -270,7 +270,7 @@ Before notifying team of release, must check for obvious problems. Any failure t
 1. Download JBDS installer from https://devstudio.redhat.com/12/stable/builds/
 2. Install via UI or headlessly with
 
- java -jar devstudio-*.jar -console -options /dev/null # **
+ java -jar codereadystudio-*.jar -console -options /dev/null # **
 
 3. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
 4. Check log, start an example project, check log again

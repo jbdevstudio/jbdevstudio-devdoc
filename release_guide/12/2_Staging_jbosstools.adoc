@@ -43,8 +43,8 @@ done
 
 # optional
 browser=/usr/bin/google-chrome; if [[ ! -x ${browser} ]]; then browser=/usr/bin/firefox; fi
-${browser} https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
-  https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
+${browser} https://issues.redhat.com/plugins/servlet/project-config/JBIDE/versions \
+  https://issues.redhat.com/plugins/servlet/project-config/JBDS/versions
 
 ----
 

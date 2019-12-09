@@ -168,10 +168,10 @@ ${browser} http://download.jboss.org/jbosstools/updates/webtools/photon/ http://
 
 If this is the first milestone release (ie if you had to create the 'updates/webtools/photon/' directory (next year will be "photon"), ensure that upstream project Web Tools (WTP) knows to include this new URL in their server adapter wizard. New bugzilla required!
 
-* https://issues.jboss.org/browse/JBIDE-18921
+* https://issues.redhat.com/browse/JBIDE-18921
 * https://bugs.eclipse.org/454810
 
-For the first GA, be sure to update the update/webtools/photon/ symlink to point at /stable instead of /development. See https://issues.jboss.org/browse/JBIDE-25585.
+For the first GA, be sure to update the update/webtools/photon/ symlink to point at /stable instead of /development. See https://issues.redhat.com/browse/JBIDE-25585.
 
 == Update Target Platforms
 
@@ -496,8 +496,8 @@ Launch the config pages for JBIDE and JBDS and using the gear icons, release the
 ----
 
 browser=/usr/bin/google-chrome; if [[ ! -x ${browser} ]]; then browser=/usr/bin/firefox; fi
-${browser} https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions \
-  https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
+${browser} https://issues.redhat.com/plugins/servlet/project-config/JBIDE/versions \
+  https://issues.redhat.com/plugins/servlet/project-config/JBDS/versions
 
 ----
 
@@ -516,7 +516,7 @@ export userpass=JIRAUSER:JIRAPWD
 # skip verifying JIRA fixversions with -S
 # automatically apply changes with -A
 
-# for the latest sprint names see agile board https://issues.jboss.org/secure/RapidBoard.jspa?rapidView=641&view=planning
+# for the latest sprint names see agile board https://issues.redhat.com/secure/RapidBoard.jspa?rapidView=641&view=planning
 # sometimes the sprint_NEXT is already created, but with a name that's different from what you might expect (eg., different month, wrong year)
 
 # if previous sprint is done, use sprint=sprint_NEXT here
@@ -526,7 +526,7 @@ versionWithRespin_jbt=4.9.0.Final
 versionWithRespin_jbt_NEXT=4.10.0.AM1
 versionWithRespin_ds=12.9.0.GA
 versionWithRespin_ds_NEXT=12.10.0.AM1
-python -W ignore /tmp/jbt.github/jbosstools-build-ci/util/checkUnresolvedIssues.py -S --jira https://issues.jboss.org \
+python -W ignore /tmp/jbt.github/jbosstools-build-ci/util/checkUnresolvedIssues.py -S --jira https://issues.redhat.com \
   --jbt ${versionWithRespin_jbt} --jbt_NEXT ${versionWithRespin_jbt_NEXT} \
   --ds ${versionWithRespin_ds} --ds_NEXT ${versionWithRespin_ds_NEXT} \
   --sprint "${sprint}" --sprint_NEXT "${sprint_NEXT}" --skipLabels "task, releasework" -A
@@ -611,7 +611,7 @@ createBranch=false
 github_branch=master
 github_branch_fallback=master
 TARGET_PLATFORM_VERSION_MAX=4.13.0.AM1-SNAPSHOT
-JIRA_HOST="https://issues.jboss.org"
+JIRA_HOST="https://issues.redhat.com"
 TOrecipients="jmaury@redhat.com"
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job

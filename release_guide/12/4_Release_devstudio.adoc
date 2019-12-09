@@ -232,7 +232,7 @@ ${lastCommitComment}" -b ${parentProject}:${github_branch} -h ${gituser}:${topic
   echo "  >> Pull Request: https://github.com/${parentProject}/${thisProject}/pulls/${gituser}"
   echo "  >> Topic Branch: https://github.com/${gituser}/${thisProject}/commits/${topic}"
   echo "  >> Origin Branch: https://github.com/${parentProject}/${thisProject}/commits/${github_branch}"
-  echo "  >> JIRA / Topic: https://issues.jboss.org/browse/${topic}"
+  echo "  >> JIRA / Topic: https://issues.redhat.com/browse/${topic}"
   echo ""
 
 popd

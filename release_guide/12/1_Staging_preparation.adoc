@@ -72,7 +72,7 @@ KERBPWD=
 export userpass=${KERBUSER}:${KERBPWD}
 
 
-# for the latest sprint names see agile board https://issues.jboss.org/secure/RapidBoard.jspa?rapidView=641&view=planning
+# for the latest sprint names see agile board https://issues.redhat.com/secure/RapidBoard.jspa?rapidView=641&view=planning
 # sometimes the sprint_NEXT is already created, but with a name that's different from what you might expect (eg., different month, wrong year)
 
 sprint="devex #155 September 2018"

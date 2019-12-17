@@ -59,24 +59,24 @@ python /tmp/jbt.github/jbosstools-build-ci/util/createnewandnoteworthy.py -u use
 
 ----
 
-NOTE: Replace issues.stage.jboss.org with issues.jboss.org to create real issues.
+NOTE: Replace issues.stage.redhat.com with issues.redhat.com to create real issues.
 
 == Close out previous sprint and start a new one in JIRA
 
 See:
 
-* https://issues.jboss.org/secure/RapidBoard.jspa?rapidView=3484&view=planning.nodetail
-* https://issues.jboss.org/secure/RapidBoard.jspa?rapidView=3410&view=planning.nodetail
-* https://issues.jboss.org/secure/RapidBoard.jspa?rapidView=641&view=planning.nodetail
-* https://issues.jboss.org/secure/RapidBoard.jspa?rapidView=3482&view=planning.nodetail
-* https://issues.jboss.org/secure/RapidBoard.jspa?rapidView=3382&view=planning.nodetail
+* https://issues.redhat.com/secure/RapidBoard.jspa?rapidView=3484&view=planning.nodetail
+* https://issues.redhat.com/secure/RapidBoard.jspa?rapidView=3410&view=planning.nodetail
+* https://issues.redhat.com/secure/RapidBoard.jspa?rapidView=641&view=planning.nodetail
+* https://issues.redhat.com/secure/RapidBoard.jspa?rapidView=3482&view=planning.nodetail
+* https://issues.redhat.com/secure/RapidBoard.jspa?rapidView=3382&view=planning.nodetail
 
 == Verify correct versions in JIRA for JBIDE and JBDS, including start/end/code freeze dates (or else jiralint will break)
 
 See:
 
-* https://issues.jboss.org/plugins/servlet/project-config/JBIDE/versions
-* https://issues.jboss.org/plugins/servlet/project-config/JBDS/versions
+* https://issues.redhat.com/plugins/servlet/project-config/JBIDE/versions
+* https://issues.redhat.com/plugins/servlet/project-config/JBDS/versions
 
 Then run:
 

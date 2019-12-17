@@ -245,7 +245,7 @@ A PR should be sent out for public review.  Something similar to the following w
    https://devstudio.redhat.com/targetplatforms/devstudioistarget/11.0.0.GA.devstudio-is-target-platform
 
    See Jira discusion:
-https://issues.jboss.org/projects/JBTIS/issues/JBTIS-1008
+https://issues.redhat.com/projects/JBTIS/issues/JBTIS-1008
 
    Modifications:
 + <unit id="org.jboss.tools.openshift.cdk.feature.feature.group" version="3.3.1.v20161025-0131"/>

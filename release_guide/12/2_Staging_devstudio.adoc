@@ -64,7 +64,7 @@ TIP: Once the staging build folder exists, start fetching the devstudio installe
 ----
 
 cd ~/tmp
-versionWithRespin_ds=12.13.0.GA
+versionWithRespin_ds=12.14.0.GA
 installerJar=$(wget -O - -q https://devstudio.redhat.com/12/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 echo "Installer jar: ${installerJar}"
 if [[ ${installerJar} ]]; then
@@ -113,7 +113,7 @@ Before notifying team of staged release, check for obvious problems must be done
 [source,bash]
 ----
 
-versionWithRespin_ds=12.13.0.GA
+versionWithRespin_ds=12.14.0.GA
 cd ~/tmp
 installerJar=$(wget -O - -q https://devstudio.redhat.com/12/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 echo "Installer jar: ${installerJar}"
@@ -154,7 +154,7 @@ KERBUSER=
 KERBPWD=
 export userpass=${KERBUSER}:${KERBPWD}
 
-versionWithRespin_ds=12.13.0.GA
+versionWithRespin_ds=12.14.0.GA
 installerJar=$(wget -O - -q https://devstudio.redhat.com/12/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/ | grep -v latest | grep installer-standalone.jar\" | sed "s#.\+href=\"\([^\"]\+\)\">.\+#\1#")
 version_ds_INST=${installerJar#devstudio-}
 version_ds_INST=${version_ds_INST%-installer*}
@@ -178,7 +178,7 @@ done
 
 == Verify install instructions are correct
 
-Look at the .txt and .html files in https://devstudio.redhat.com/12/staging/builds/devstudio-12.13.0.GA-build-product/latest/all/
+Look at the .txt and .html files in https://devstudio.redhat.com/12/staging/builds/devstudio-12.14.0.GA-build-product/latest/all/
 
 Verify that they contain correct install/usage instructions & versions.
 
@@ -210,7 +210,7 @@ KERBUSER=
 KERBPWD=
 export userpass=${KERBUSER}:${KERBPWD}
 
-versionWithRespin_ds=12.13.0.GA
+versionWithRespin_ds=12.14.0.GA
 
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
   ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
@@ -250,8 +250,8 @@ The easiest approach is to clone an old ticket and update the links/versions to 
 
 Previous tickets:
 
-* https://projects.engineering.redhat.com/browse/RCM-42535
-* https://projects.engineering.redhat.com/browse/RCM-37161
+* https://projects.engineering.redhat.com/browse/RCM-73199
+* https://projects.engineering.redhat.com/browse/RCM-68584
 
 
 == Commit updates to release guide (including this document)
@@ -261,8 +261,8 @@ Previous tickets:
 
 cd ~/truu # ~
 
-version_jbt=4.13.0.Final
-version_ds=12.13.0.GA
+version_jbt=4.14.0.Final
+version_ds=12.14.0.GA
 cd jbdevstudio-devdoc/release_guide/
 git commit -s -m "update release guide for ${version_jbt} and ${version_ds}" .
 git push origin HEAD:master

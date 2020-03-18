@@ -90,9 +90,9 @@ KERBUSER=
 KERBPWD=
 export userpass=${KERBUSER}:${KERBPWD}
 
-version_parent=4.13.0.Final-SNAPSHOT
-versionWithRespin_jbt=4.13.0.Final
-versionWithRespin_ds=12.13.0.GA
+version_parent=4.14.0.Final-SNAPSHOT
+versionWithRespin_jbt=4.14.0.Final
+versionWithRespin_ds=12.14.0.GA
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 stream_jbt=master
@@ -142,7 +142,7 @@ stream_ds=master
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user ${KERBUSER} --password ${KERBPWD} --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for p in base build-ci build.parent central discovery fabric8analytics forge fuse-extras hibernate integration-tests.aggregate javaee-tests-matrix javaee jst livereload openshift-restclient-java openshift server-Run-Unit-and-ITests server vpe webservices quarkus base.sonar openshift.sonar server.sonar; do
+for p in base build-ci build.parent central discovery fabric8analytics forge fuse-extras hibernate integration-tests.aggregate javaee-tests-matrix javaee jst livereload openshift-restclient-java openshift server-Run-Unit-and-ITests server vpe webservices quarkus base.sonar openshift.sonar server.sonar quarkus.sonar integration-tests.sonar; do
     j=jbosstools-${p}_master
     echo "[${JP}] ${ccijenkins}/${j} disable"
     { ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t disable && ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t lastBuild/toggleLogKeep & }
@@ -173,15 +173,15 @@ KERBUSER=
 KERBPWD=
 export userpass=${KERBUSER}:${KERBPWD}
 
-versionWithRespin_jbt=4.13.0.Final
-versionWithRespin_ds=12.13.0.GA
+versionWithRespin_jbt=4.14.0.Final
+versionWithRespin_ds=12.14.0.GA
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 stream_jbt=master
-TARGET_PLATFORM_VERSION_MAX=4.13.0.Final-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.13.0.Final-SNAPSHOT
-version_jbt_IS=4.12.0.Final
-version_ds_IS=12.12.0.GA
+TARGET_PLATFORM_VERSION_MAX=4.14.0.Final-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.14.0.Final-SNAPSHOT
+version_jbt_IS=4.11.0.Final
+version_ds_IS=12.11.0.GA
 qual_IS=stable # or development
 earlyaccess_IS="" # or earlyaccess/
 
@@ -247,12 +247,12 @@ export userpass=${KERBUSER}:${KERBPWD}
 
 eclipseReleaseName=photon
 devstudioReleaseVersion=12
-versionWithRespin_jbt=4.13.0.Final
-versionWithRespin_ds=12.13.0.GA
+versionWithRespin_jbt=4.14.0.Final
+versionWithRespin_ds=12.14.0.GA
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
-TARGET_PLATFORM_VERSION_MAX=4.13.0.Final-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.13.0.Final-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.14.0.Final-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.14.0.Final-SNAPSHOT
 stream_jbt=master
 stream_ds=master
 
@@ -324,8 +324,8 @@ export userpass=${KERBUSER}:${KERBPWD}
 
 eclipseReleaseName=photon
 devstudioReleaseVersion=12
-versionWithRespin_jbt=4.13.0.Final
-versionWithRespin_ds=12.13.0.GA
+versionWithRespin_jbt=4.14.0.Final
+versionWithRespin_ds=12.14.0.GA
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user ${KERBUSER} --password ${KERBPWD} --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
@@ -369,15 +369,15 @@ export userpass=${KERBUSER}:${KERBPWD}
 
 ## TODO CONTINUE HERE ##
 
-versionWithRespin_jbt_PREV_GA=4.12.0.Final
-versionWithRespin_jbt_PREV=4.13.0.AM1 # milestones
-versionWithRespin_jbt=4.13.0.Final
-versionWithRespin_jbt_NEXT=4.14.0.AM1
+versionWithRespin_jbt_PREV_GA=4.13.0.Final
+versionWithRespin_jbt_PREV=4.14.0.AM1 # milestones
+versionWithRespin_jbt=4.14.0.Final
+versionWithRespin_jbt_NEXT=4.15.0.AM1
 
-versionWithRespin_ds_PREV_GA=12.12.0.GA
-versionWithRespin_ds_PREV=12.13.0.AM1 # milestones
-versionWithRespin_ds=12.13.0.GA
-versionWithRespin_ds_NEXT=12.14.0.AM1
+versionWithRespin_ds_PREV_GA=12.13.0.GA
+versionWithRespin_ds_PREV=12.14.0.AM1 # milestones
+versionWithRespin_ds=12.14.0.GA
+versionWithRespin_ds_NEXT=12.15.0.AM1
 
 buildType="staging"
 
@@ -468,13 +468,13 @@ KERBUSER=
 KERBPWD=
 export userpass=${KERBUSER}:${KERBPWD}
 
-versionWithRespin_jbt=4.13.0.Final
-versionWithRespin_ds=12.13.0.GA
+versionWithRespin_jbt=4.14.0.Final
+versionWithRespin_ds=12.14.0.GA
 stream_jbt=master
 github_branch=master
-TARGET_PLATFORM_VERSION_MIN=4.13.0.Final-SNAPSHOT
-TARGET_PLATFORM_VERSION_MAX=4.13.0.Final-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.13.0.Final-SNAPSHOT
+TARGET_PLATFORM_VERSION_MIN=4.14.0.Final-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.14.0.Final-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.14.0.Final-SNAPSHOT
 respinSuffix=""
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user ${KERBUSER} --password ${KERBPWD} --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
@@ -565,7 +565,7 @@ stream_ds=master
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user ${KERBUSER} --password ${KERBPWD} --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for p in base build-ci build.parent central discovery fabric8analytics forge fuse-extras hibernate integration-tests.aggregate javaee-tests-matrix javaee jst livereload openshift-restclient-java openshift server-Run-Unit-and-ITests server vpe webservices quarkus base.sonar openshift.sonar server.sonar; do
+for p in base build-ci build.parent central discovery fabric8analytics forge fuse-extras hibernate integration-tests.aggregate javaee-tests-matrix javaee jst livereload openshift-restclient-java openshift server-Run-Unit-and-ITests server vpe webservices quarkus base.sonar openshift.sonar server.sonar quarkus.sonar integration-tests.sonar; do
   j=jbosstools-${p}_master
   echo "[${JP}] ${ccijenkins}/${j} enable"
   { ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable & }

@@ -102,14 +102,14 @@ KERBUSER=
 KERBPWD=
 export userpass=${KERBUSER}:${KERBPWD}
 
-versionWithRespin_jbt=4.13.0.Final
-versionWithRespin_ds=12.13.0.GA
+versionWithRespin_jbt=4.14.0.Final
+versionWithRespin_ds=12.14.0.GA
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 stream_jbt=master
 stream_ds=master
-TARGET_PLATFORM_VERSION_MAX=4.13.0.Final-SNAPSHOT
-TARGET_PLATFORM_CENTRAL_MAX=4.13.0.Final-SNAPSHOT
+TARGET_PLATFORM_VERSION_MAX=4.14.0.Final-SNAPSHOT
+TARGET_PLATFORM_CENTRAL_MAX=4.14.0.Final-SNAPSHOT
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user ${KERBUSER} --password ${KERBPWD} --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
@@ -285,15 +285,15 @@ export userpass=${KERBUSER}:${KERBPWD}
 
 ## TODO CONTINUE HERE ##
 
-versionWithRespin_jbt_PREV_GA=4.12.0.Final
-versionWithRespin_jbt_PREV=4.13.0.AM1 # milestones
-versionWithRespin_jbt=4.13.0.Final
-versionWithRespin_jbt_NEXT=4.14.0.AM1
+versionWithRespin_jbt_PREV_GA=4.13.0.Final
+versionWithRespin_jbt_PREV=4.14.0.AM1 # milestones
+versionWithRespin_jbt=4.14.0.Final
+versionWithRespin_jbt_NEXT=4.15.0.AM1
 
-versionWithRespin_ds_PREV_GA=12.12.0.GA
-versionWithRespin_ds_PREV=12.12.0.GA # previous RELEASED GA as referenced in ide-config.properties
-versionWithRespin_ds=12.13.0.GA
-versionWithRespin_ds_NEXT=12.14.0.AM1
+versionWithRespin_ds_PREV_GA=12.13.0.GA
+versionWithRespin_ds_PREV=12.13.0.GA # previous RELEASED GA as referenced in ide-config.properties
+versionWithRespin_ds=12.14.0.GA
+versionWithRespin_ds_NEXT=12.15.0.AM1
 
 version_jbt=$(echo ${versionWithRespin_jbt} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
 version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\)/\1/') # ***
@@ -383,8 +383,8 @@ To diff if any new features have been added/removed:
 
 ## TODO CONTINUE HERE FOR FINAL ##
 
-version_jbt_PREV_Mktplace=4.12.0.Final
-version_jbt=4.13.0.Final
+version_jbt_PREV_Mktplace=4.13.0.Final
+version_jbt=4.14.0.Final
 
 path_jbt_PREV_Mktplace=photon/development/updates/core/${version_jbt_PREV_Mktplace}
 
@@ -520,12 +520,12 @@ export userpass=JIRAUSER:JIRAPWD
 # sometimes the sprint_NEXT is already created, but with a name that's different from what you might expect (eg., different month, wrong year)
 
 # if previous sprint is done, use sprint=sprint_NEXT here
-sprint="devex #155 September 2018"
-sprint_NEXT="devex #156 October 2018"
-versionWithRespin_jbt=4.9.0.Final
-versionWithRespin_jbt_NEXT=4.10.0.AM1
-versionWithRespin_ds=12.9.0.GA
-versionWithRespin_ds_NEXT=12.10.0.AM1
+sprint="devex #180 Feb/Mar 2020"
+sprint_NEXT="devex #181 Mar 2020"
+versionWithRespin_jbt=4.14.0.Final
+versionWithRespin_jbt_NEXT=4.15.0.AM1
+versionWithRespin_ds=12.14.0.GA
+versionWithRespin_ds_NEXT=12.15.0.AM1
 python -W ignore /tmp/jbt.github/jbosstools-build-ci/util/checkUnresolvedIssues.py -S --jira https://issues.redhat.com \
   --jbt ${versionWithRespin_jbt} --jbt_NEXT ${versionWithRespin_jbt_NEXT} \
   --ds ${versionWithRespin_ds} --ds_NEXT ${versionWithRespin_ds_NEXT} \
@@ -604,15 +604,14 @@ KERBUSER=
 KERBPWD=
 export userpass=${KERBUSER}:${KERBPWD}
 
-versionWithRespin_jbt_NEXT=4.14.0.AM1 #Final
-versionWithRespin_ds_NEXT=12.14.0.AM1 #GA
-version_parent_NEXT=4.14.0.AM1-SNAPSHOT
-createBranch=false
+versionWithRespin_jbt_NEXT=4.15.0.AM1 # AM or Final
+versionWithRespin_ds_NEXT=12.15.0.AM1 # AM or GA
+version_parent_NEXT=4.15.0.AM1-SNAPSHOT
 github_branch=master
 github_branch_fallback=master
-TARGET_PLATFORM_VERSION_MAX=4.13.0.AM1-SNAPSHOT
 JIRA_HOST="https://issues.redhat.com"
-TOrecipients="jmaury@redhat.com"
+TOrecipients="sbouchet@redhat.com, jmaury@redhat.com"
+createBranch=false
 
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user ${KERBUSER} --password ${KERBPWD} --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
@@ -623,7 +622,7 @@ for j in jbosstools-releng-push-to-staging-00-parent-pom-update-task-jiras; do
 
   data="versionWithRespin_jbt_NEXT=${versionWithRespin_jbt_NEXT}&versionWithRespin_ds_NEXT=${versionWithRespin_ds_NEXT}&\
 version_parent_NEXT=${version_parent_NEXT}&github_branch=${github_branch}&github_branch_fallback=${github_branch_fallback}&\
-TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&JIRA_HOST=${JIRA_HOST}&TOrecipients=${TOrecipients}&createBranch=${createBranch}"
+JIRA_HOST=${JIRA_HOST}&TOrecipients=${TOrecipients}&createBranch=${createBranch}"
   nextJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
   sleep 15s
 
@@ -661,7 +660,7 @@ stream_ds=master
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
 jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user ${KERBUSER} --password ${KERBPWD} --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for p in base build-ci build.parent central discovery fabric8analytics forge fuse-extras hibernate integration-tests.aggregate javaee-tests-matrix javaee jst livereload openshift-restclient-java openshift server-Run-Unit-and-ITests server vpe webservices quarkus base.sonar openshift.sonar server.sonar; do
+for p in base build-ci build.parent central discovery fabric8analytics forge fuse-extras hibernate integration-tests.aggregate javaee-tests-matrix javaee jst livereload openshift-restclient-java openshift server-Run-Unit-and-ITests server vpe webservices quarkus base.sonar openshift.sonar server.sonar quarkus.sonar integration-tests.sonar; do
   j=jbosstools-${p}_master
   echo "[${JP}] ${ccijenkins}/${j} enable"
   { ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable & }

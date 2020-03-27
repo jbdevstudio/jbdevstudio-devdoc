@@ -143,6 +143,7 @@ See link:2_Staging_jbosstools.adoc[JBoss Tools Staging]
 
 
 == Trigger QE Smoke tests (automated)
+WARNING: *Deprecated as march 2020 while QE is working on a new test suite. skip this step.*
 
 Trigger the QE smoke tests in https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/devstudio_integration_tests/
 

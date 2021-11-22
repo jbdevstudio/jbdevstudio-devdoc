@@ -2,11 +2,11 @@
 
 This document describe how to provide a valid JBoss Tools build to QE so they can test us.
 
-= Pre-Staging Steps
+== Pre-Staging Steps
 
 See link:1_Staging_preparation.adoc[Pre-Staging]
 
-== Clone jbosstools-build-ci repo or link to it from elsewhere on disk
+=== Clone jbosstools-build-ci repo or link to it from elsewhere on disk
 
 [source,bash]
 ----
@@ -21,7 +21,7 @@ chmod +x -R */*.sh */*/*.sh
 
 ----
 
-== Remind people about jira triage
+=== Remind people about jira triage
 
 Kick this job to send reminder emails to the team re unresolved JIRAs with fixversion = current release.
 
@@ -33,11 +33,10 @@ KERBUSER=
 KERBPWD=
 export userpass=${KERBUSER}:${KERBPWD}
 
-ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user ${KERBUSER} --password ${KERBPWD} --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
+ccijenkins=https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/releng/job/
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-jiralint-weekly; do
-  ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t build
+  ${JP} -s ${ccijenkins} -j ${j} -t build
 done
 
 
@@ -48,7 +47,7 @@ ${browser} https://issues.redhat.com/plugins/servlet/project-config/JBIDE/versio
 
 ----
 
-= Staging steps
+== Staging steps
 
 [NOTE]
 ====
@@ -57,7 +56,7 @@ Note that +sftp://tools@[IP FOR filemgmt]:/downloads_htdocs/tools/+ maps to +htt
 (Use filemgmt IP instead of FQDN because it's 3x faster!)
 
 If you do not need it urgently, you can push files there simply by pushing a change into the following location: https://github.com/jbosstools/jbosstools-download.jboss.org/tree/master/jbosstools .
-A Jenkins job can then be triggered to sync changes to download.jboss.org: https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-download.jboss.org-rsync-from-git/
+A Jenkins job can then be triggered to sync changes to download.jboss.org: https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/releng/job/jbosstools-download.jboss.org-rsync-from-git/
 ====
 
 [IMPORTANT]
@@ -78,7 +77,7 @@ Search for this regex:
 ====
 
 
-== Verify correct versions, branches exist, and root poms are correct
+=== Verify correct versions, branches exist, and root poms are correct
 
 Configure, then run this job:
 
@@ -98,15 +97,14 @@ version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\
 stream_jbt=master
 github_branch=master
 
-ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user ${KERBUSER} --password ${KERBPWD} --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
+ccijenkins=https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/releng/job/
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-01-check-versions-branches-root-poms; do
-  prevJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
   sleep 3s
 
   data="stream_jbt=${stream_jbt}&github_branch=${github_branch}&version_parent=${version_parent}&version_jbt=${version_jbt}&version_ds=${version_ds}"
-  nextJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
   sleep 15s
 
   if [[ "${prevJob}" == "${nextJob}" ]]; then
@@ -115,7 +113,7 @@ for j in jbosstools-releng-push-to-staging-01-check-versions-branches-root-poms;
     browser=/usr/bin/google-chrome; if [[ ! -x ${browser} ]]; then browser=/usr/bin/firefox; fi
     ${browser} ${ccijenkins}/${j} &
   else
-    { ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t disable && ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t lastBuild/toggleLogKeep & }
+    { ${JP} -s ${ccijenkins} -j ${j} -t disable && ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep & }
   fi
 done
 echo "done."
@@ -126,9 +124,9 @@ exit 0
 Once the above conditions have been met, you can proceed to the next steps.
 
 
-== Disable jobs
+=== Disable jobs
 
-To prevent accidentally rebuilding something while you're copying it away, make sure that all the master branch jobs are disabled. These include all product, composite and aggregate jobs:
+To prevent accidentally rebuilding something while you\'re copying it away, make sure that all the master branch jobs are disabled. These include all product, composite and aggregate jobs:
 
 [source,bash]
 ----
@@ -139,29 +137,52 @@ export userpass=${KERBUSER}:${KERBPWD}
 
 stream_jbt=master
 stream_ds=master
-ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user ${KERBUSER} --password ${KERBPWD} --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
+ccijenkins=https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/build_master/job/
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for p in base build-ci build.parent central discovery fabric8analytics forge fuse-extras hibernate integration-tests.aggregate javaee-tests-matrix javaee jst livereload openshift-restclient-java openshift server-Run-Unit-and-ITests server vpe webservices quarkus base.sonar openshift.sonar server.sonar quarkus.sonar integration-tests.sonar; do
+# MASTER jobs
+for p in base build-ci build.parent central discovery forge fuse-extras fuse \
+hibernate integration-tests.aggregate javaee-tests-matrix javaee jst \
+livereload openshift-restclient-java openshift quarkus server vpe webservices \
+install-p2director.install-tests.matrix composite-install \
+build-sites.aggregate.site build-sites.aggregate.coretests-site build-sites.aggregate.child-sites; do
     j=jbosstools-${p}_master
     echo "[${JP}] ${ccijenkins}/${j} disable"
-    { ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t disable && ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t lastBuild/toggleLogKeep & }
+    { ${JP} -s ${ccijenkins} -j ${j} -t disable && ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep & }
 done
 
-for j in jbosstools-buildflow_${stream_jbt} jbosstools-discovery_${stream_jbt} devstudio.product_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} jbosstools-composite-install_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstools-build-sites.aggregate.child-sites_${stream_jbt} jbosstools-maven-plugins.tycho-plugins_${stream_jbt}; do
+# DEVSTUDIO jobs
+for p in product versionwatch; do
+    j=devstudio.${p}_${stream_ds}
     echo "[${JP}] ${ccijenkins}/${j} disable"
-    { ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t disable && ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t lastBuild/toggleLogKeep & }
+    { ${JP} -s ${ccijenkins} -j ${j} -t disable && ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep & }
 done
+
+# RELENG jobs
+ccijenkins=https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/releng/job/
+for p in maven-plugins.tycho-plugins pipeline; do
+    j=jbosstools-${p}_${stream_jbt}
+    echo "[${JP}] ${ccijenkins}/${j} disable"
+    { ${JP} -s ${ccijenkins} -j ${j} -t disable && ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep & }
+done
+
+# CENTRAL PROJECTS jobs
+ccijenkins=https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/central-projects/job/
+for p in fabric8analytics; do
+    j=jbosstools-${p}_${stream_jbt}
+    echo "[${JP}] ${ccijenkins}/${j} disable"
+    { ${JP} -s ${ccijenkins} -j ${j} -t disable && ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep & }
+done
+
 echo "done."
 exit 0
 
 ----
 
 
-== Update Discovery Sites and URLs
+=== Update Discovery Sites and URLs
 
 [[update-discovery-urls]]
-Update the *stable branch* (or master) discovery job ( https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-discovery_4.6.photon/configure (or jbosstools-discovery_master)) to use the correct source URLs and versions 
+Update the *stable branch* (or master) discovery job ( https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/build_master/job/jbosstools-discovery_master/ ) to use the correct source URLs and versions 
 
 Then respin the job:
 
@@ -185,17 +206,16 @@ version_ds_IS=12.11.0.GA
 qual_IS=stable # or development
 earlyaccess_IS="" # or earlyaccess/
 
-ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user ${KERBUSER} --password ${KERBPWD} --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
+ccijenkins=https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/build_master/job/
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-discovery_${stream_jbt}; do
-  prevJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
   sleep 3
 
   data="buildType=staging&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
 TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&TARGET_PLATFORM_CENTRAL_MAX=${TARGET_PLATFORM_CENTRAL_MAX}&\
 version_jbt_IS=${version_jbt_IS}&version_ds_IS=${version_ds_IS}&qual_IS=${qual_IS}&earlyaccess_IS=${earlyaccess_IS}"
-  nextJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
   sleep 15s
 
   if [[ "${prevJob}" == "${nextJob}" ]]; then
@@ -204,7 +224,7 @@ version_jbt_IS=${version_jbt_IS}&version_ds_IS=${version_ds_IS}&qual_IS=${qual_I
     browser=/usr/bin/google-chrome; if [[ ! -x ${browser} ]]; then browser=/usr/bin/firefox; fi
     ${browser} ${ccijenkins}/${j} &
   else
-    { ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t disable && ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t lastBuild/toggleLogKeep & }
+    { ${JP} -s ${ccijenkins} -j ${j} -t disable && ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep & }
   fi
 done
 echo "done."
@@ -213,9 +233,9 @@ exit 0
 ----
 
 
-== Download the latest Eclipse
+=== Download the latest Eclipse
 
-You'll need this later for smoke testing. Start fetching it now to save time later.
+You\'ll need this later for smoke testing. Start fetching it now to save time later.
 
 [source,bash]
 ----
@@ -225,15 +245,15 @@ cd ~/tmp; wget http://download.eclipse.org/technology/epp/downloads/release/2019
 ----
 
 
-== Stage to download.jboss.org
+=== Stage to download.jboss.org
 
 
-=== Copy & rename builds & update sites from "snapshots" to "staging"
+==== Copy & rename builds & update sites from "snapshots" to "staging"
 
 Here is a pair of jobs that perform the copy (& rename) from /snapshots/ to /staging/:
 
-* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites_jbt/
-* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites_ds/
+* https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/releng/job/jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites_jbt/
+* https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/releng/job/jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites_ds/
 
 NOTE: To save time, you can run this in parallel with the above step to create the Red Hat Central discovery site.
 
@@ -256,30 +276,29 @@ TARGET_PLATFORM_CENTRAL_MAX=4.14.0.Final-SNAPSHOT
 stream_jbt=master
 stream_ds=master
 
-ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user ${KERBUSER} --password ${KERBPWD} --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
+ccijenkins=https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/releng/job/
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-03-verify-builds-update-sites; do
-  prevJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
   browser=/usr/bin/google-chrome; if [[ ! -x ${browser} ]]; then browser=/usr/bin/firefox; fi
   ${browser} ${ccijenkins}/${j} &
 done
 jobs="jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites_ds jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites_jbt"
 for j in ${jobs}; do
-  prevJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
   sleep 3s
 
   data="eclipseReleaseName=${eclipseReleaseName}&devstudioReleaseVersion=${devstudioReleaseVersion}&stream_jbt=${stream_jbt}&stream_ds=${stream_ds}&\
 versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&skipdiscovery=false&onlydiscovery=false&buildType=staging&\
 TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&TARGET_PLATFORM_CENTRAL_MAX=${TARGET_PLATFORM_CENTRAL_MAX}"
-  nextJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
   sleep 15s
 
   if [[ "${prevJob}" == "${nextJob}" ]]; then
     echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
     echo "[WARN] ${ccijenkins}/${j}"
   else
-    ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t lastBuild/toggleLogKeep & # do not disable jobs as children may not all have started
+    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep & # do not disable jobs as children may not all have started
   fi
   browser=/usr/bin/google-chrome; if [[ ! -x ${browser} ]]; then browser=/usr/bin/firefox; fi
   ${browser} ${ccijenkins}/${j} &
@@ -289,10 +308,11 @@ exit 0
 
 ----
 
-If you can't get the job to run because CCI Jenkins is backlogged with a long queue, look in the job configuration and run the script manually on dev90.
+If you can\'t get the job to run because CCI Jenkins is backlogged with a long queue, look in the job configuration and run the script manually on dev90.
 
-https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites_jbt/configure-readonly/
-https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites_ds/configure-readonly/
+https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/releng/job/jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites_jbt/configure-readonly/
+
+https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/releng/job/jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites_ds//configure-readonly/
 
 And now, we wait about 35 mins for the above jobs to complete.
 
@@ -300,18 +320,18 @@ And now, we wait about 35 mins for the above jobs to complete.
 Time passes...
 ```
 
-When done, it's time to verify everything was pushed correctly.
+When done, it\'s time to verify everything was pushed correctly.
 
 
-=== Verify builds and update sites correctly pushed
+==== Verify builds and update sites correctly pushed
 
 [IMPORTANT]
 ====
 This step should have fired automatically when the jbosstools-releng-push-to-staging-02-copy-builds-and-update-sites_* jobs completed.
 
-But if it ran too early and not everything was ready, here's a job that verifies everything is published:
+But if it ran too early and not everything was ready, here\'s a job that verifies everything is published:
 
-https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-03-verify-builds-update-sites/
+https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/releng/job/jbosstools-releng-push-to-staging-03-verify-builds-update-sites/
 ====
 
 [source,bash]
@@ -327,17 +347,16 @@ devstudioReleaseVersion=12
 versionWithRespin_jbt=4.14.0.Final
 versionWithRespin_ds=12.14.0.GA
 
-ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user ${KERBUSER} --password ${KERBPWD} --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
+ccijenkins=https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/releng/job/
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-03-verify-builds-update-sites; do
-  prevJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
   sleep 3s
 
   data="eclipseReleaseName=${eclipseReleaseName}&devstudioReleaseVersion=${devstudioReleaseVersion}&\
 versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
 skipdiscovery=false&onlydiscovery=false&buildType=staging"
-  nextJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
   sleep 15s
 
   if [[ "${prevJob}" == "${nextJob}" ]]; then
@@ -346,18 +365,18 @@ skipdiscovery=false&onlydiscovery=false&buildType=staging"
     browser=/usr/bin/google-chrome; if [[ ! -x ${browser} ]]; then browser=/usr/bin/firefox; fi
     ${browser} ${ccijenkins}/${j} &
   else
-    { ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t disable && ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t lastBuild/toggleLogKeep & }
+    { ${JP} -s ${ccijenkins} -j ${j} -t disable && ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep & }
   fi
 done
 
 ----
 
 
-== Update /staging/updates/ sites and merge in Integration Stack content
+=== Update /staging/updates/ sites and merge in Integration Stack content
 
-Here's a job that verifies everything is updated & merged:
+Here\'s a job that verifies everything is updated & merged:
 
-https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-staging-04-update-merge-composites-html/
+https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/releng/job/jbosstools-releng-push-to-staging-04-update-merge-composites-html/
 
 [source,bash]
 ----
@@ -386,14 +405,13 @@ version_ds_IS=12.11.0.GA
 qual_IS=stable # or development
 earlyaccess_IS="" # "" or "earlyaccess/" as applicable - see tip above
 
-ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user ${KERBUSER} --password ${KERBPWD} --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
+ccijenkins=https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/releng/job/
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 
 for j in jbosstools-releng-push-to-staging-00-validate-composites \
   jbosstools-releng-push-to-staging-04-update-ide-config.properties \
   jbosstools-releng-push-to-staging-04-update-merge-composites-html; do
-  prevJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
 done
 sleep 3s
 
@@ -403,7 +421,7 @@ versionWithRespin_jbt_PREV_GA=${versionWithRespin_jbt_PREV_GA}&versionWithRespin
 versionWithRespin_jbt_NEXT=${versionWithRespin_jbt_NEXT}&versionWithRespin_ds_PREV_GA=${versionWithRespin_ds_PREV_GA}&versionWithRespin_ds_PREV=${versionWithRespin_ds_PREV}&\
 versionWithRespin_ds=${versionWithRespin_ds}&versionWithRespin_ds_NEXT=${versionWithRespin_ds_NEXT}&version_jbt_IS=${version_jbt_IS}&version_ds_IS=${version_ds_IS}&\
 qual_IS=${qual_IS}&earlyaccess_IS=${earlyaccess_IS}"
-  nextJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
 
   sleep 15s
 
@@ -413,7 +431,7 @@ qual_IS=${qual_IS}&earlyaccess_IS=${earlyaccess_IS}"
     browser=/usr/bin/google-chrome; if [[ ! -x ${browser} ]]; then browser=/usr/bin/firefox; fi
     ${browser} ${ccijenkins}/${j} &
   else
-    { ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t disable && ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t lastBuild/toggleLogKeep & }
+    { ${JP} -s ${ccijenkins} -j ${j} -t disable && ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep & }
   fi
 done
 echo "done."
@@ -421,29 +439,29 @@ exit 0
 
 ----
 
-=== Release the latest staging site to ide-config.properties
+==== Release the latest staging site to ide-config.properties
 
-Here's a job that updates the ide-config.properties. Should have triggered in the previous step automatically.
+Here\'s a job that updates the ide-config.properties. Should have triggered in the previous step automatically.
 
-https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-staging-04-update-ide-config.properties/
+https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/releng/job/jbosstools-releng-push-to-staging-04-update-ide-config.properties/
 
-=== Validate ide-config.properties - check composite sites
+==== Validate ide-config.properties - check composite sites
 
-Here's a job that verifies everything is updated. Should have triggered in the previous step automatically.
+Here\'s a job that verifies everything is updated. Should have triggered in the previous step automatically.
 
-https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-staging-00-validate-composites/
+https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/releng/job/jbosstools-releng-push-to-staging-00-validate-composites/
 
 
-=== Cleanup OLD builds
+==== Cleanup OLD builds
 
 _Optional step._
 
 Run this job to move any old builds into an OLD/ folder for later cleanup, or delete them immediately.
 
-https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-08-delete-builds-and-update-sites/
+https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/releng/job/jbosstools-releng-push-to-staging-08-delete-builds-and-update-sites/
 
 
-== Smoke test the release (manually)
+=== Smoke test the release (manually)
 
 Before notifying team of staged release, must check for obvious problems.
 
@@ -454,11 +472,11 @@ http://download.jboss.org/jbosstools/photon/staging/updates/
 . Restart when prompted. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
 . Check log, start an example project, check log again
 
-== Notify the team (send 1 email)
+=== Notify the team (send 1 email)
 
 Run this build:
 
-https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-07-notification-emails/
+https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/releng/job/jbosstools-releng-push-to-staging-07-notification-emails/
 
 [source,bash]
 ----
@@ -476,16 +494,15 @@ TARGET_PLATFORM_VERSION_MIN=4.14.0.Final-SNAPSHOT
 TARGET_PLATFORM_VERSION_MAX=4.14.0.Final-SNAPSHOT
 TARGET_PLATFORM_CENTRAL_MAX=4.14.0.Final-SNAPSHOT
 respinSuffix=""
-ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user ${KERBUSER} --password ${KERBPWD} --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
+ccijenkins=https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/releng/job/
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-07-notification-emails; do
-  prevJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
   sleep 3s
 
   data="github_branch=${github_branch}&versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}&\
 TARGET_PLATFORM_VERSION_MIN=${TARGET_PLATFORM_VERSION_MIN}&TARGET_PLATFORM_VERSION_MAX=${TARGET_PLATFORM_VERSION_MAX}&TARGET_PLATFORM_CENTRAL_MAX=${TARGET_PLATFORM_CENTRAL_MAX}"
-  nextJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
   sleep 15s
 
   if [[ "${prevJob}" == "${nextJob}" ]]; then
@@ -494,7 +511,7 @@ TARGET_PLATFORM_VERSION_MIN=${TARGET_PLATFORM_VERSION_MIN}&TARGET_PLATFORM_VERSI
     browser=/usr/bin/google-chrome; if [[ ! -x ${browser} ]]; then browser=/usr/bin/firefox; fi
     ${browser} ${ccijenkins}/${j} &
   else
-    { ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t disable && ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t lastBuild/toggleLogKeep & }
+    { ${JP} -s ${ccijenkins} -j ${j} -t disable && ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep & }
   fi
 done
 echo "done."
@@ -503,9 +520,9 @@ exit 0
 ----
 
 
-== Disable staging jobs
+=== Disable staging jobs
 
-You will need to disable the jobs once the bits are staged, so that they won't run accidentally.
+You will need to disable the jobs once the bits are staged, so that they won\'t run accidentally.
 
 [source,bash]
 ----
@@ -515,8 +532,7 @@ KERBUSER=
 KERBPWD=
 export userpass=${KERBUSER}:${KERBPWD}
 
-ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user ${KERBUSER} --password ${KERBPWD} --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
+ccijenkins=https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/releng/job/
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in \
   jbosstools-releng-push-to-staging-00-bootstrap-next-snapshot-sites \
@@ -533,7 +549,7 @@ for j in \
   jbosstools-releng-push-to-staging-07-notification-emails \
   jbosstools-releng-push-to-staging-08-delete-builds-and-update-sites \
 ; do
-  { ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t disable & }
+  { ${JP} -s ${ccijenkins} -j ${j} -t disable & }
 done
 sleep 5s
 echo "done."
@@ -542,7 +558,7 @@ exit 0
 ----
 
 
-== Enable Main jobs
+=== Enable Main jobs
 
 You will need to re-enable the main (master) jobs once the bits are staged, so that CI builds can continue.
 
@@ -562,18 +578,40 @@ export userpass=${KERBUSER}:${KERBPWD}
 
 stream_jbt=master
 stream_ds=master
-ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user ${KERBUSER} --password ${KERBPWD} --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
+ccijenkins=https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/build_master/job/
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
-for p in base build-ci build.parent central discovery fabric8analytics forge fuse-extras hibernate integration-tests.aggregate javaee-tests-matrix javaee jst livereload openshift-restclient-java openshift server-Run-Unit-and-ITests server vpe webservices quarkus base.sonar openshift.sonar server.sonar quarkus.sonar integration-tests.sonar; do
-  j=jbosstools-${p}_master
-  echo "[${JP}] ${ccijenkins}/${j} enable"
-  { ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable & }
+# MASTER jobs
+for p in base build-ci build.parent central discovery forge fuse-extras fuse \
+hibernate integration-tests.aggregate javaee-tests-matrix javaee jst \
+livereload openshift-restclient-java openshift quarkus server vpe webservices \
+install-p2director.install-tests.matrix composite-install \
+build-sites.aggregate.site build-sites.aggregate.coretests-site build-sites.aggregate.child-sites; do
+    j=jbosstools-${p}_master
+    echo "[${JP}] ${ccijenkins}/${j} enable"
+    { ${JP} -s ${ccijenkins} -j ${j} -t enable & }
 done
 
-for j in jbosstools-buildflow_${stream_jbt} jbosstools-discovery_${stream_jbt} devstudio.product_${stream_ds} devstudio.versionwatch_${stream_ds} jbosstools-install-p2director.install-tests.matrix_${stream_jbt} jbosstools-composite-install_${stream_jbt} jbosstools-build-sites.aggregate.site_${stream_jbt} jbosstools-build-sites.aggregate.coretests-site_${stream_jbt} jbosstools-build-sites.aggregate.child-sites_${stream_jbt} jbosstools-maven-plugins.tycho-plugins_${stream_jbt}; do
-  echo "[${JP}] ${ccijenkins}/${j} enable"
-  { ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable & }
+# DEVSTUDIO jobs
+for p in product versionwatch; do
+    j=devstudio.${p}_${stream_ds}
+    echo "[${JP}] ${ccijenkins}/${j} enable"
+    { ${JP} -s ${ccijenkins} -j ${j} -t enable & }
+done
+
+# RELENG jobs
+ccijenkins=https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/releng/job/
+for p in maven-plugins.tycho-plugins pipeline; do
+    j=jbosstools-${p}_${stream_jbt}
+    echo "[${JP}] ${ccijenkins}/${j} enable"
+    { ${JP} -s ${ccijenkins} -j ${j} -t enable & }
+done
+
+# CENTRAL PROJECTS jobs
+ccijenkins=https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/central-projects/job/
+for p in fabric8analytics; do
+    j=jbosstools-${p}_${stream_jbt}
+    echo "[${JP}] ${ccijenkins}/${j} enable"
+    { ${JP} -s ${ccijenkins} -j ${j} -t enable & }
 done
 echo "done."
 exit 0
@@ -582,9 +620,9 @@ exit 0
 
 IMPORTANT: TODO: if you switched the master branch jobs to run from origin/jbosstools-4.6.x or some other branch, make sure that the jobs are once again building from the correct branch.
 
-If the next build will NOT be a respin, you will also need to ALSO make these changes to jobs, and upversion/release artifacts such as releng scripts or target platforms if you haven't done so already:
+If the next build will NOT be a respin, you will also need to ALSO make these changes to jobs, and upversion/release artifacts such as releng scripts or target platforms if you haven\'t done so already:
 
 * set correct github branch, eg., switch from 4.5.3.x to 4.6.x
-* upversion dependencies, eg., releng scripts move from version CR1 to CR1 (if that's been released)
+* upversion dependencies, eg., releng scripts move from version CR1 to CR1 (if that\'s been released)
 * upversion target platforms / Central version (if those have been released)
 

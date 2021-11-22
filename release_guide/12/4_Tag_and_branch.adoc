@@ -1,5 +1,4 @@
-
-= Tagging
+= Tagging and Branching
 
 == Tagging JBoss Tools
 
@@ -76,6 +75,6 @@ done
 ----
 
 
-= Branching
+== Branching
 
 Branching is not done any more. Instead we currently just freeze for a GA/Final, and continue in master.

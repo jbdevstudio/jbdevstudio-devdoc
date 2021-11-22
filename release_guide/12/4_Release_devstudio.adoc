@@ -2,12 +2,12 @@
 
 This document describes how to publish a valid Red Hat Developer Studio build to production after being verified by QE.
 
-= Pre-Release Steps
+== Pre-Release Steps
 
 See link:3_Release_preparation.adoc[Pre-Release]
 
 
-= Release steps
+== Release steps
 
 Once QE has signed off, and bits are staged to CSP, you can proceed w/ the rest of the release.
 
@@ -29,7 +29,7 @@ Search for this regex:
 
 ====
 
-== Copy content to release directory
+=== Copy content to release directory
 
 See link:4_Release_jbosstools.adoc[JBT Release]
 
@@ -45,22 +45,22 @@ for z in *.zip; do echo $z; unzip -tq $z; sha256sum ${z}; cat ${z}.sha256; echo 
 
 ----
 
-== Update /development/updates/ sites (and /stable/updates if Final)
+=== Update /development/updates/ sites (and /stable/updates if Final)
 
 See link:4_Release_jbosstools.adoc[JBT Release]
 
 
-== Update Target Platforms
+=== Update Target Platforms
 
 See link:4_Release_jbosstools.adoc[JBT Release]
 
 
-== Release the latest milestone to ide-config.properties
+=== Release the latest milestone to ide-config.properties
 
 See link:4_Release_jbosstools.adoc[JBT Release]
 
 
-== Update Marketplace entry
+=== Update Marketplace entry
 
 WARNING: Only applies to Beta and better versions (but usually just GA).
 
@@ -74,11 +74,11 @@ google-chrome http://marketplace.eclipse.org/content/red-hat-jboss-developer-stu
 ----
 
 
-=== If node doesn't exist yet
+==== If node doesn't exist yet
 
 For the first Beta, create a new node on Marketplace, using single feature, com.jboss.devstudio.core.feature
 
-=== If node already exists
+==== If node already exists
 
 Access it via +http://marketplace.eclipse.org/content/red-hat-jboss-developer-studio/edit+ and update the following things:
 
@@ -86,7 +86,7 @@ Access it via +http://marketplace.eclipse.org/content/red-hat-jboss-developer-st
 * Description to match new version & dependencies
 * Notes / warnings (if applicable, eg., JDK issues)
 
-=== Validate Marketplace install
+==== Validate Marketplace install
 
 1. Get a compatible Eclipse
 2. Install from Marketplace
@@ -94,12 +94,12 @@ Access it via +http://marketplace.eclipse.org/content/red-hat-jboss-developer-st
 4. Test a project example
 
 
-== Release JIRA
+=== Release JIRA
 
 See link:4_Release_jbosstools.adoc[JBT Release]
 
 
-== Submit PR to update tools.jboss.org
+=== Submit PR to update tools.jboss.org
 
 Provide a PR to add the latest JBDS milestones to this listing:
 
@@ -110,7 +110,7 @@ For non-Final/GA releases, only JBT should be added. Examples:
 * https://github.com/jbosstools/jbosstools-website/pull/622 (JBT 4.4.1 / JBDS 10.1)
 * https://github.com/jbosstools/jbosstools-website/pull/651 (JBT 4.4.2.AM3)
 
-=== SHA256 values
+==== SHA256 values
 
 To get the SHA256 values for easy pasting into the product.yml file, fetch & parse the staging build page, eg.
   https://devstudio.redhat.com/12/staging/builds/devstudio-${versionWithRespin_ds}-build-product/latest/all/
@@ -247,25 +247,25 @@ Commit changes and submit PR, eg.,
 * https://github.com/jbosstools/jbosstools-website/pull/821,
 * https://github.com/jbosstools/jbosstools-website/pull/814
 
-== Tag Developer Studio
+=== Tag Developer Studio
 
 See link:4_Tag_and_branch.adoc[Tag and branch]
 
 
-== Smoke test the release
+=== Smoke test the release
 
 For a GA release only. AMx milestones are not released so there's nothing to smoke test.
 
 Before notifying team of release, must check for obvious problems. Any failure there should be fixed with highest priority. In general, it could be wrong URLs in a composite site.
 
-=== Validate update site install (BYOE)
+==== Validate update site install (BYOE)
 
 1. Get a recent Eclipse (compatible with the target version of JBT)
 2. Install BYOE category from https://devstudio.redhat.com/12/stable/updates/
 3. Restart. Open Central Software/Updates tab, enable Early Access select and install all connectors; restart
 4. Check log, start an example project, check log again
 
-=== Validate installer install
+==== Validate installer install
 
 1. Download JBDS installer from https://devstudio.redhat.com/12/stable/builds/
 2. Install via UI or headlessly with
@@ -296,12 +296,12 @@ fi
 ----
 
 
-== Notify Team Lead(s)
+=== Notify Team Lead(s)
 
 Here's a job that notifies Jeff (or Matt) that the website is ready to be updated with a new blog post, and will provide a script
 to perform tagging of the +jbosstools-*+ and +jbdevstudio-*+ repos:
 
-https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-dev-stable-07-notification-emails/configure
+https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/releng/job/jbosstools-releng-push-to-staging-07-notification-emails/configure
 
 Using the script below, you can trigger the job remotely.
 
@@ -328,24 +328,23 @@ version_ds=$(echo ${versionWithRespin_ds} | sed -e '/[abcdwxyz]$/ s/\(^.*\)\(.$\
 
 recipientOverride="" # or "jmaury@redhat.com"
 
-ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user ${KERBUSER} --password ${KERBPWD} --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
+ccijenkins=https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/releng/job/
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-dev-stable-07-notification-emails; do
-  prevJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
   sleep 3s
 
   data="version_jbt=${version_jbt}&version_ds=${version_ds}&GOLIVEDATE=${GOLIVEDATE}\
 &blogURL=${blogURL}&pullrequestNum=${pullrequestNum}&eclipseVersion=${eclipseVersion}&recipientOverride=${recipientOverride}"
-  nextJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
   sleep 15s
 
   if [[ "${prevJob}" == "${nextJob}" ]]; then
     echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
     echo "[WARN] ${ccijenkins}/${j}"
   else
-    ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t disable
-    ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t lastBuild/toggleLogKeep
+    ${JP} -s ${ccijenkins} -j ${j} -t disable
+    ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
   fi
 done
 echo "done."
@@ -354,7 +353,7 @@ exit 0
 ----
 
 
-== Commit updates to release guide (including this document)
+=== Commit updates to release guide (including this document)
 
 [source,bash]
 ----
@@ -370,7 +369,7 @@ git push origin HEAD:master
 ----
 
 
-== Commit updates to job configs
+=== Commit updates to job configs
 
 See https://github.com/jbosstools/jbosstools-devdoc/blob/master/building/jenkins_job_maintenance.adoc
 
@@ -379,7 +378,7 @@ Jobs are stored in this repo:
 https://github.com/jbdevstudio/jbdevstudio-ci/tree/master/cache/https
 
 
-== Final release steps
+=== Final release steps
 
 On Release Day (currently the Monday after the end of the GA sprint), there are a few remaining TODOs to do.
 

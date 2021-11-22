@@ -2,11 +2,11 @@
 
 This document describe how to provide a valid http://devstudio.jboss.com/[Red Hat CodeReady Studio] (formerly Developer Studio) build to QE so they can test us.
 
-= Pre-Staging Steps
+== Pre-Staging Steps
 
 See link:1_Staging_preparation.adoc[Pre-Staging]
 
-== Clone jbosstools-build-ci repo or link to it from elsewhere on disk
+=== Clone jbosstools-build-ci repo or link to it from elsewhere on disk
 
 [source,bash]
 ----
@@ -21,7 +21,7 @@ chmod +x -R */*.sh */*/*.sh
 
 ----
 
-= Staging steps
+== Staging steps
 
 [IMPORTANT]
 ====
@@ -40,23 +40,23 @@ Search for this regex:
 
 ====
 
-== Update Discovery Sites and URLs
+=== Update Discovery Sites and URLs
 
 See link:2_Staging_jbosstools.adoc[JBoss Tools Staging]
 
-== Verify correct version set in com.jboss.devstudio.central.core
+=== Verify correct version set in com.jboss.devstudio.central.core
 
 See link:2_Staging_jbosstools.adoc[JBoss Tools Staging]
 
-== Disable jobs
+=== Disable jobs
 
 See link:2_Staging_jbosstools.adoc[JBoss Tools Staging]
 
-== Stage to devstudio.redhat.com
+=== Stage to devstudio.redhat.com
 
 See link:2_Staging_jbosstools.adoc[JBoss Tools Staging]
 
-=== Fetch devstudio installer (for later smoke test)
+==== Fetch devstudio installer (for later smoke test)
 
 TIP: Once the staging build folder exists, start fetching the devstudio installer (we'll need it later to do a smoke test)
 
@@ -77,23 +77,23 @@ fi
 
 You'll use this downloaded installer later, but since it takes a while to download, it's more efficient to start it now.
 
-=== Cleanup OLD builds
+==== Cleanup OLD builds
 
 _Optional step._
 
 Run this job to move any old builds into an OLD/ folder for later cleanup, or delete them immediately.
 
-https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-08-delete-builds-and-update-sites/
+https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/releng/job/jbosstools-releng-push-to-staging-08-delete-builds-and-update-sites/
 
-=== Update /staging/updates/ sites and merge in Integration Stack content
-
-See link:2_Staging_jbosstools.adoc[JBoss Tools Staging]
-
-== Release the latest staging site to ide-config.properties
+==== Update /staging/updates/ sites and merge in Integration Stack content
 
 See link:2_Staging_jbosstools.adoc[JBoss Tools Staging]
 
-== Smoke test the release (manually)
+=== Release the latest staging site to ide-config.properties
+
+See link:2_Staging_jbosstools.adoc[JBoss Tools Staging]
+
+=== Smoke test the release (manually)
 
 Before notifying team of staged release, check for obvious problems must be done.
 
@@ -137,12 +137,12 @@ cd ~/${installerJar/.jar/}/studio; ./devstudio -data /tmp/wksp-${installerJar/.j
 If this fails, it is most likely due to a bug or a failure in a step above. If possible, fix it before notifying team below.
 
 
-== Notify the team (send 1 email)
+=== Notify the team (send 1 email)
 
 See link:2_Staging_jbosstools.adoc[JBoss Tools Staging]
 
 
-== Trigger QE Smoke tests (automated)
+=== Trigger QE Smoke tests (automated)
 WARNING: *Deprecated as march 2020 while QE is working on a new test suite. skip this step.*
 
 Trigger the QE smoke tests in https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/devstudio_integration_tests/
@@ -163,21 +163,20 @@ echo "Devstudio installer version: ${version_ds_INST}"
 
 # run the one buildflow job
 ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user ${KERBUSER} --password ${KERBPWD} --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in devstudio.buildflow.it.smoke; do
-  prevJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
   sleep 3s
 
   data="DEVSTUDIO_VERSION=${version_ds_INST}"
-  nextJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
   sleep 15s
 done
 
 ----
 
 
-== Verify install instructions are correct
+=== Verify install instructions are correct
 
 Look at the .txt and .html files in https://devstudio.redhat.com/12/staging/builds/devstudio-12.14.0.GA-build-product/latest/all/
 
@@ -192,16 +191,16 @@ NOTE: If you're staging a non-GA release, you can ignore everything below this l
 
 ---
 
-= Staging GA devstudio Installers & update sites for QE
+== Staging GA devstudio Installers & update sites for QE
 
-== Rename GA artifacts to remove timestamp and buildID
+=== Rename GA artifacts to remove timestamp and buildID
 
 IMPORTANT: For GA releases only!
 
 To comply with Goldengate URL rules, we need to rename artifacts before they go to the CSP. For example
 `devstudio-10.4.0.GA-v20151002-2235-B124-installer-standalone.jar` must be renamed to `devstudio-10.4.0.GA-installer-standalone.jar`.
 
-Configure, then run this job: https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-staging-06-rename-GA-artifacts/
+Configure, then run this job: https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/releng/job/jbosstools-releng-push-to-staging-06-rename-GA-artifacts/
 
 [source,bash]
 ----
@@ -214,23 +213,22 @@ export userpass=${KERBUSER}:${KERBPWD}
 versionWithRespin_ds=12.14.0.GA
 
 if [[ ${versionWithRespin_ds} == *"GA" ]]; then
-  ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-  jpcrumb=$(wget --no-check-certificate -q --auth-no-challenge --user ${KERBUSER} --password ${KERBPWD} --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
-JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
+  ccijenkins=https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/releng/job/
+  JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
   for j in jbosstools-releng-push-to-staging-06-rename-GA-artifacts; do
-    prevJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+    prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
     sleep 3s
 
     data="versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_ds=${versionWithRespin_ds}"
-    nextJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+    nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
     sleep 15s
 
     if [[ "${prevJob}" == "${nextJob}" ]]; then
       echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
       echo "[WARN] ${ccijenkins}/${j}"
     else
-      ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t disable
-      ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t lastBuild/toggleLogKeep
+      ${JP} -s ${ccijenkins} -j ${j} -t disable
+      ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep
     fi
   done
 fi
@@ -239,7 +237,7 @@ exit 0
 
 ----
 
-== Announce internally for push to CSP staging site
+=== Announce internally for push to CSP staging site
 
 Submit an RCM ticket to request that the binaries be uploaded to the CSP (Red Hat Customer Portal) and Download Manager.
 
@@ -255,7 +253,7 @@ Previous tickets:
 * https://projects.engineering.redhat.com/browse/RCM-68584
 
 
-== Commit updates to release guide (including this document)
+=== Commit updates to release guide (including this document)
 
 [source,bash]
 ----
@@ -271,7 +269,7 @@ git push origin HEAD:master
 ----
 
 
-== Commit updates to job configs
+=== Commit updates to job configs
 
 See https://github.com/jbosstools/jbosstools-devdoc/blob/master/building/jenkins_job_maintenance.adoc
 
@@ -280,6 +278,6 @@ Jobs are stored in this repo:
 https://github.com/jbdevstudio/jbdevstudio-ci/tree/master/cache/https
 
 
-== Enable jobs
+=== Enable jobs
 
 See link:2_Staging_jbosstools.adoc[JBoss Tools Staging]

@@ -2,9 +2,9 @@ Before you can do anything in the JBoss Tools / Devstudio release guides, you'll
 
 == Jenkins
 
-To run builds and stage/release code via Jenkins jobs, you need access to the Jenkins servers. You should already have Kerberos-based login access to both the Boston MW Jenkins and the Central CI Jenkins. If not, contact PnT (details below).
+To run builds and stage/release code via Jenkins jobs, you need access to the Jenkins servers. You should already have Kerberos-based login access to the Central CI Jenkins. If not, contact PnT (details below).
 
-NOTE: For admin access to CCI jenkins (beyond simple job exec permission) - ask Pavol Srna or Nick Boldt to give you 'admin' access from https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/role-strategy/assign-roles
+NOTE: For admin access to CCI jenkins (beyond simple job exec permission) - ask Ondrej Dockal or Stephane Bouchet to give you 'admin' access from https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/role-strategy/assign-roles
 
 == File hosting
 

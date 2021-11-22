@@ -18,7 +18,7 @@ Regardless of the motivation for the async release, you need to ensure your rele
 
 Copying the site can most easily be done using this job:
 
-https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-rsync/
+https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/releng/job/jbosstools-rsync/
 
 By passing in parameters such as these:
 
@@ -42,7 +42,7 @@ https://github.com/jbosstools/jbosstools-devdoc/blob/master/source/composite_sit
 
 Once approved, the staged build can be copied to a /development/ or /stable/ URL and can then be linked from Central so users can discover the update. See example above and use the jbostools-rsync job to copy the bits.
 
-https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-rsync/
+https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/releng/job/jbosstools-rsync/
 
 === Update composite sites
 

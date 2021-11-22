@@ -8,7 +8,7 @@ Before beginning a stage at the end of a sprint, a number of things need to be d
 
 * Email jbosstools-dev@lists.jboss.org re: upcoming target platform and code freezes (usually the last Wed of sprint)
 
-* Email jmaury@redhat.com & scela@redhat.com re: creation of next sprint, and jbosstools-dev@lists.jboss.org to remind about JIRA triage
+* Email jmaury@redhat.com re: creation of next sprint, and jbosstools-dev@lists.jboss.org to remind about JIRA triage
 
 * Confirm latest Integration Stack (IS) release & URLs
 
@@ -40,8 +40,8 @@ This should be updated every time the target platform is updated, so that the pl
 
 If these don't match, headless installation tests will fail, such as:
 
-* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-install-p2director.install-tests.matrix_master/
-* https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-composite-install_master/
+* https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/build_master/job/jbosstools-install-p2director.install-tests.matrix_master/
+* https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/build_master/job/jbosstools-composite-install_master/
 
 
 == Email jbosstools-dev@lists.jboss.org re: upcoming target platform and code freezes
@@ -57,11 +57,11 @@ This will also serve as a reminder of the upcoming CODE FREEZE on the last Wedne
 TODO: script this via a Jenkins job
 
 
-== Email jmaury@redhat.com & scela@redhat.com re: creation of next sprint, and jbosstools-dev@lists.jboss.org to remind about JIRA triage
+== Email jmaury@redhat.com re: creation of next sprint, and jbosstools-dev@lists.jboss.org to remind about JIRA triage
 
 Run this build:
 
-https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job/jbosstools-releng-push-to-staging-00-sprint-creation-and-jira-triage-request-emails/
+https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/releng/job/jbosstools-releng-push-to-staging-00-sprint-creation-and-jira-triage-request-emails/
 
 [source,bash]
 ----
@@ -92,25 +92,24 @@ TOrecipients1=${TOrecipients1// /%20}
 TOrecipients2=${TOrecipients2// /%20}
 CCrecipients=${CCrecipients// /%20}
 
-ccijenkins=https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/job
-jpcrumb=$(wget -q --auth-no-challenge --no-check-certificate --user ${KERBUSER} --password ${KERBPWD} --output-document - "${ccijenkins//\/job/}/crumbIssuer/api/xml?xpath=//crumb" | sed "s#<crumb>\([0-9a-f]\+\)</crumb>#\1#")
+ccijenkins=https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/releng/job/
 JP=/tmp/jbt.github/jbosstools-build-ci/util/jenkinsPost.sh
 for j in jbosstools-releng-push-to-staging-00-sprint-creation-and-jira-triage-request-emails; do
-  prevJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
+  prevJob=$(${JP} -s ${ccijenkins} -j ${j} -t enable -q); echo "[${prevJob}] ${ccijenkins}/${j} enable"
   sleep 3s
 
   data="recipientOverride=${recipientOverride}&sprint=${sprint}&sprint_NEXT=${sprint_NEXT}&\
 versionWithRespin_jbt=${versionWithRespin_jbt}&versionWithRespin_jbt_NEXT=${versionWithRespin_jbt_NEXT}&\
 versionWithRespin_ds=${versionWithRespin_ds}&versionWithRespin_ds_NEXT=${versionWithRespin_ds_NEXT}&\
 TOrecipients1=${TOrecipients1}&TOrecipients2=${TOrecipients2}&CCrecipients=${CCrecipients}&"
-  nextJob=$(${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
+  nextJob=$(${JP} -s ${ccijenkins} -j ${j} -t buildWithParameters -q -d ${data}); echo "[${nextJob}] ${ccijenkins}/${j} buildWithParameters ${data}"
   sleep 15s
 
   if [[ "${prevJob}" == "${nextJob}" ]]; then
     echo "[WARN] Build has not started yet! Must manually disable and toggle keeping the log once the job has started."
     echo "[WARN] ${ccijenkins}/${j}"
   else
-    { ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t disable && ${JP} -s ${ccijenkins} -c ${jpcrumb} -j ${j} -t lastBuild/toggleLogKeep & }
+    { ${JP} -s ${ccijenkins} -j ${j} -t disable && ${JP} -s ${ccijenkins} -j ${j} -t lastBuild/toggleLogKeep & }
   fi
 done
 
@@ -123,7 +122,7 @@ Contact Paul Leacu (pleacu@redhat.com) to ask what the latest IS releases are (4
 
 The job that will handles this merge step is:
 
-https://dev-platform-jenkins.rhev-ci-vms.eng.rdu2.redhat.com/view/Devstudio/view/jbosstools-releng/job/jbosstools-releng-push-to-staging-04-update-merge-composites-html/
+https://studio-jenkins-csb-codeready.apps.ocp4.prod.psi.redhat.com/job/Studio/job/Engineering/job/releng/job/jbosstools-releng-push-to-staging-04-update-merge-composites-html/
 
 Currently:
 

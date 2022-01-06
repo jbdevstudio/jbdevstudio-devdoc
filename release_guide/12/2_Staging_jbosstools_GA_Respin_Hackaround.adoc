@@ -6,6 +6,7 @@ Create a specific branch in the following repositories:
 
 - devstudio-product
 - base
+- build
 - central
 - discovery
 - forge
@@ -29,9 +30,14 @@ include::create-respin-branches.sh[]
 
 At least the following should be done:
 
+## jbosstools-build
+
+The parent version must be updated to the respin version because it is checked by foundation.
+
 ## jbosstools-base
 
 The version should be updated `foundation/plugins/org.jboss.tools.foundation.core/src/org/jboss/tools/foundation/core/properties/internal/currentversion.properties` and foundation should be upversioned because of this change.
+The parent should also be updated according to the change done in jbosstools-build
 
 # Create respin jobs
 

@@ -1,3 +1,51 @@
+# Perform the following steps for a respin
+
+# Create branch
+
+Create a specific branch in the following repositories:
+
+- devstudio-product
+- base
+- central
+- discovery
+- forge
+- fuse-extras
+- fuse
+- hibernate
+- javaee
+- jst
+- livereload
+- openshift
+- quarkus
+- server
+- vpe
+- webservice
+- integration-tests
+
+```sh
+include::create-respin-branches.sh[]
+```
+# Update the created branch in the repositories
+
+At least the following should be done:
+
+## jbosstools-base
+
+The version should be updated `foundation/plugins/org.jboss.tools.foundation.core/src/org/jboss/tools/foundation/core/properties/internal/currentversion.properties` and foundation should be upversioned because of this change.
+
+# Create respin jobs
+
+Checkout the cci-config repository and go to `jobs/Studio/Engineering`.
+
+From here, run the following command:
+
+```sh
+generate-respin.sh 4.21.2.Final
+```
+
+Then commit and create a PR on the cci-config repo and once the PR has been merged and the Jenkins configuration has been regenerate (the `job-configurator` is configured to run daily so you may manually have to launch it), you will see a new folder under `Studio/Engineering` called `build_4.21.2.Final`.
+
+
 # This script was used to work around some limitations in the 2_Staging_jbosstools.adoc scripts caused by the need for a respin.
 # 20180122 nboldt
 

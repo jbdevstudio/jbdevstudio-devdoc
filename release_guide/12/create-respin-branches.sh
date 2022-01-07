@@ -3,7 +3,7 @@ versionWithRespin_jbt=4.21.2.Final
 versionWithRespin_ds_PREV=12.21.0.GA
 versionWithRespin_ds=12.21.2.GA
 
-for i in base build central discovery forge fuse hibernate javaee jst livereload openshift quarkus server vpe webservices
+for i in base build build-sites central discovery forge fuse hibernate javaee jst livereload openshift quarkus server vpe webservices
 do
 	git clone git@github.com:jbosstools/jbosstools-$i -b jbosstools-${versionWithRespin_jbt_PREV}
 	cd jbosstools-$i

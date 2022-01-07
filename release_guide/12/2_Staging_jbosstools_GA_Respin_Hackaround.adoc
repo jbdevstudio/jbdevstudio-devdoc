@@ -7,6 +7,7 @@ Create a specific branch in the following repositories:
 - devstudio-product
 - base
 - build
+- build-sites
 - central
 - discovery
 - forge

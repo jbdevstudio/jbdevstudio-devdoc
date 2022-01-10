@@ -53,7 +53,7 @@ generate-respin.sh 4.21.2.Final
 
 Then commit and create a PR on the cci-config repo and once the PR has been merged and the Jenkins configuration has been regenerate (the `job-configurator` is configured to run daily so you may manually have to launch it), you will see a new folder under `Studio/Engineering` called `build_4.21.2.Final`.
 
-#manual modifications
+# Manual modifications
 - Manually change hibernate/openshift/central on the first builds to use the central master repository, then the next builds should be ok.
 - copy/paste the 'snapshots/updates/earlyaccess.properties/master/devstudio-earlyaccess.properties' file to the correct subfolder like 'snapshots/updates/earlyaccess.properties/4.21.2.Final/devstudio-earlyaccess.properties' for both devstudio and jbosstools server
 - copy/paste the composite files from  jboss 'snapshots/builds/_composite_/core/master/' folder and modify the contents to point to the branch results 
